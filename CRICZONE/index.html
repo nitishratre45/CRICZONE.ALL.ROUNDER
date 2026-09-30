@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRICZONE Live</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+}
+
+.page{
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#000;
+}
+
+.player-wrap{
+  position:relative;
+  width:100%;
+  flex:1;
+  overflow:hidden;
+}
+
+.player-wrap iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+.watermark{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:10;
+}
+
+.watermark a{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:#0b7cff;
+  color:#fff;
+  text-decoration:none;
+  padding:8px 16px 8px 10px;
+  border-radius:9px;
+  font-size:14px;
+  font-weight:700;
+  font-family:Arial,sans-serif;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+
+.wm-icon{
+  width:28px;
+  height:28px;
+  background:rgba(255,255,255,.2);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+}
+
+.popup{
+  background:#fff;
+  border-radius:16px;
+  width:290px;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.popup-top{
+  background:#0b7cff;
+  padding:22px 18px 16px;
+  text-align:center;
+}
+
+.popup-close{
+  position:absolute;
+  top:10px;
+  right:11px;
+  background:rgba(255,255,255,.2);
+  border:0;
+  color:#fff;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.popup-circle{
+  width:54px;
+  height:54px;
+  background:rgba(255,255,255,.2);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 10px;
+}
+
+.popup-top h2{
+  color:#fff;
+  font-size:16px;
+}
+
+.popup-top p{
+  color:rgba(255,255,255,.85);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.popup-body{
+  padding:14px 16px 18px;
+  text-align:center;
+}
+
+.popup-body p{
+  font-size:12.5px;
+  color:#666;
+  line-height:1.55;
+  margin-bottom:13px;
+}
+
+.join-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#0b7cff;
+  color:#fff;
+  text-decoration:none;
+  border-radius:9px;
+  padding:11px;
+  font-size:14px;
+  font-weight:700;
+  width:100%;
+}
+
+.skip-btn{
+  margin-top:10px;
+  font-size:12px;
+  color:#999;
+  background:none;
+  border:0;
+  cursor:pointer;
+}
+
+.state-msg{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#888;
+  font-family:Arial,sans-serif;
+  font-size:14px;
+  z-index:5;
+}
+
+.fs-btn{
+  position:fixed;
+  right:12px;
+  bottom:12px;
+  z-index:99999;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:6px;
+  background:#fff;
+  color:#111;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="player-wrap" id="playerWrap">
+
+    <div class="state-msg" id="stateMsg">
+      Loading stream...
+    </div>
+
+    <div class="watermark">
+      <a href="#" target="_blank">
+        <div class="wm-icon">🏏</div>
+        CRICZONE
+      </a>
+    </div>
+
+    <!-- FIRST POPUP -->
+    <div class="overlay" id="overlay">
+
+      <div class="popup">
+
+        <div class="popup-top">
+
+          <button
+            class="popup-close"
+            onclick="document.getElementById('overlay').style.display='none'">
+            ✕
+          </button>
+
+          <div class="popup-circle">
+            🏏
+          </div>
+
+          <h2>Join CRICZONE</h2>
+
+          <p>Live Cricket & Updates</p>
+
+        </div>
+
+        <div class="popup-body">
+
+          <p>
+            Get live match updates, cricket alerts
+            and exclusive cricket content on CRICZONE.
+          </p>
+
+          <a
+            class="join-btn"
+            href="#"
+            target="_blank">
+            Join Channel
+          </a>
+
+          <button
+            class="skip-btn"
+            onclick="document.getElementById('overlay').style.display='none'">
+            No thanks, watch now
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- FULLSCREEN -->
+    <button
+      class="fs-btn"
+      id="fullscreenBtn"
+      aria-label="Enter fullscreen">
+      ⛶
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+/* =========================
+   STREAM LOADER
+========================= */
+
+(async function(){
+
+  const JSON_URL =
+    "https://allrounder2-0.pages.dev/id.json";
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const rawId =
+    params.get("stream") ||
+    params.get("id");
+
+  const stateMsg =
+    document.getElementById("stateMsg");
+
+  const playerWrap =
+    document.getElementById("playerWrap");
+
+  if(!rawId){
+
+    stateMsg.textContent =
+      "No stream selected. Use ?stream=ID";
+
+    return;
+  }
+
+  try{
+
+    const res =
+      await fetch(JSON_URL,{
+        cache:"no-store"
+      });
+
+    if(!res.ok)
+      throw new Error("Failed to load stream list");
+
+    const data =
+      await res.json();
+
+    const list =
+      Array.isArray(data)
+      ? data
+      : (data.iframes || []);
+
+    const entry =
+      list.find(item =>
+        item && String(item.id) === String(rawId)
+      );
+
+    if(!entry){
+
+      stateMsg.textContent =
+        "Stream not found: " + rawId;
+
+      return;
+    }
+
+    const url =
+      entry.iframeSrc ||
+      entry.url ||
+      entry.src;
+
+    if(!url){
+
+      stateMsg.textContent =
+        "Stream URL missing";
+
+      return;
+    }
+
+    const iframe =
+      document.createElement("iframe");
+
+    iframe.src = url;
+
+    iframe.setAttribute(
+      "allowfullscreen",
+      ""
+    );
+
+    iframe.setAttribute(
+      "allow",
+      "autoplay; fullscreen; encrypted-media"
+    );
+
+    iframe.setAttribute(
+      "scrolling",
+      "no"
+    );
+
+    stateMsg.remove();
+
+    playerWrap.prepend(iframe);
+
+    /* Optional authorized hit endpoint */
+    if(entry.hit){
+
+      try{
+
+        fetch(entry.hit,{
+          mode:"no-cors"
+        });
+
+      }catch(e){}
+
+    }
+
+  }catch(error){
+
+    stateMsg.textContent =
+      "Error loading stream.";
+
+    console.error(error);
+
+  }
+
+})();
+
+
+/* =========================
+   24 HOUR LOCAL ACCESS
+========================= */
+
+(function(){
+
+  const first =
+    document.getElementById("overlay");
+
+  const second =
+    document.getElementById("access24Overlay");
+
+  if(!first || !second)
+    return;
+
+  const KEY =
+    "criczone_access_timestamp";
+
+  const cooldown =
+    24 * 60 * 60 * 1000;
+
+  let timer;
+
+  function canShow(){
+
+    const joinedAt =
+      parseInt(
+        localStorage.getItem(KEY) || "0",
+        10
+      );
+
+    return !joinedAt ||
+      Date.now() - joinedAt >= cooldown;
+  }
+
+  function showSecond(){
+
+    if(canShow())
+      second.style.display = "flex";
+
+  }
+
+  function schedule(){
+
+    clearTimeout(timer);
+
+    timer =
+      setTimeout(showSecond,15000);
+
+  }
+
+  const observer =
+    new MutationObserver(function(){
+
+      if(first.style.display === "none"){
+
+        observer.disconnect();
+
+        schedule();
+
+      }
+
+    });
+
+  observer.observe(
+    first,
+    {
+      attributes:true,
+      attributeFilter:["style"]
+    }
+  );
+
+})();
+
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+(function(){
+
+  const btn =
+    document.getElementById(
+      "fullscreenBtn"
+    );
+
+  const wrap =
+    document.getElementById(
+      "playerWrap"
+    );
+
+  btn.onclick = function(){
+
+    if(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement
+    ){
+
+      const exit =
+        document.exitFullscreen ||
+        document.webkitExitFullscreen;
+
+      if(exit)
+        exit.call(document);
+
+      return;
+    }
+
+    const fn =
+      wrap.requestFullscreen ||
+      wrap.webkitRequestFullscreen;
+
+    if(fn)
+      fn.call(wrap);
+
+  };
+
+})();
+
+</script>
+
+</body>
+</html>
