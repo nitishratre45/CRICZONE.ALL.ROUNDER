@@ -923,43 +923,55 @@
         const popupClose = document.getElementById("popupClose");
         const toast = document.getElementById("toast");
 
-     /* =========================================
-           FETCH STREAM DATA (WITH MULTIPLE CORS PROXIES)
+   /* =========================================
+           FETCH STREAM DATA WITH SESSION CACHE
         ========================================= */
         async function fetchStreamData() {
-            // 1. Direct API try karenge
+            // 1. Check if data is already cached in session
+            const cached = sessionStorage.getItem("criczone_channels");
+            if (cached) {
+                try {
+                    return JSON.parse(cached);
+                } catch(e) {}
+            }
+
+            // 2. Direct API try
             try {
                 const response = await fetch(STREAM_API, { method: "GET", cache: "no-store" });
-                if (response.ok) return await response.json();
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem("criczone_channels", JSON.stringify(data));
+                    return data;
+                }
             } catch (e) {
                 console.log("Direct API failed, trying CORS proxies...");
             }
 
-            // 2. Proxies List (agar ek block ho toh doosra kaam karega)
+            // 3. Reliable Proxy List
             const proxyUrls = [
-                "https://corsproxy.io/?" + encodeURIComponent(STREAM_API),
+                "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(STREAM_API),
                 "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API),
-                "https://thingproxy.freeboard.io/fetch/" + STREAM_API
+                "https://corsproxy.io/?" + encodeURIComponent(STREAM_API)
             ];
 
             for (const url of proxyUrls) {
                 try {
                     const response = await fetch(url, { cache: "no-store" });
                     if (response.ok) {
-                        const data = await response.json();
+                        let data = await response.json();
                         
-                        // AllOrigins ka wrapper check
+                        // Handle stringified wrappers
                         if (data && data.contents) {
-                            return typeof data.contents === "string" ? JSON.parse(data.contents) : data.contents;
+                            data = typeof data.contents === "string" ? JSON.parse(data.contents) : data.contents;
                         }
-                        
-                        // Direct data check
+
                         if (data && (data.iframes || Array.isArray(data))) {
+                            sessionStorage.setItem("criczone_channels", JSON.stringify(data));
                             return data;
                         }
                     }
                 } catch (err) {
-                    console.warn("Proxy failed:", url, err);
+                    console.warn("Proxy failed:", url);
                 }
             }
 
