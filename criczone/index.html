@@ -13,16 +13,7 @@
 
 <title>CRICZONE LIVE — Sports Hub</title>
 
-<link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
->
-
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
->
+<link rel="preconnect" href="https://fonts.googleapis.com">
 
 <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap"
@@ -30,7 +21,6 @@
 >
 
 <style>
-
 html,
 body {
     margin: 0;
@@ -38,36 +28,25 @@ body {
     min-height: 100%;
     background: #050a0f;
 }
-
 </style>
 
 </head>
 
 <body>
 
-
-<!-- =====================================================
-     CRICZONE
-     ===================================================== -->
-
 <criczone-ui></criczone-ui>
 
-
-<!-- =====================================================
-     FIREBASE + CRICZONE
-     ===================================================== -->
 
 <script type="module">
 
 /* =========================================================
-   FIREBASE IMPORTS
+   FIREBASE
    ========================================================= */
 
 import {
     initializeApp
 } from
 "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-
 
 import {
     getDatabase,
@@ -81,10 +60,6 @@ import {
 } from
 "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-
-/* =========================================================
-   FIREBASE CONFIG
-   ========================================================= */
 
 const firebaseConfig = {
 
@@ -111,24 +86,18 @@ const firebaseConfig = {
 
     measurementId:
         "G-ZNEZC8YVMX"
-
 };
 
 
-/* =========================================================
-   INITIALIZE FIREBASE
-   ========================================================= */
-
 const firebaseApp =
     initializeApp(firebaseConfig);
-
 
 const database =
     getDatabase(firebaseApp);
 
 
 /* =========================================================
-   CRICZONE CONFIG
+   CONFIG
    ========================================================= */
 
 window.CricConfig = {
@@ -140,8 +109,12 @@ window.CricConfig = {
         "https://t.me/+MueCDjlpoS8yNmJl",
 
     previewDuration:
-        10000
+        10000,
 
+    /* BASE WATCHING COUNT */
+
+    baseWatching:
+        345
 };
 
 
@@ -151,13 +124,12 @@ window.CricConfig = {
 
 class CriczoneUI extends HTMLElement {
 
-
     constructor() {
 
         super();
 
 
-        /* IMPORTANT */
+        /* IMPORTANT FIX */
 
         this.shadow =
             this.attachShadow({
@@ -167,53 +139,41 @@ class CriczoneUI extends HTMLElement {
 
         this.masterChannels = [];
 
+        this.currentStreamId = null;
 
-        this.currentStreamId =
-            null;
+        this.currentChannelTitle = "";
 
-
-        this.currentChannelTitle =
-            "";
+        this.currentFilter = "all";
 
 
-        this.isUnlocked =
-            false;
+        /* REAL FIREBASE VIEWERS */
+
+        this.viewerCount = 0;
 
 
-        this.lockTimer =
-            null;
+        /* FAKE/BASE START */
+
+        this.viewerBaseCount =
+            Number(
+                window.CricConfig.baseWatching
+            );
 
 
-        this.currentFilter =
-            "all";
+        this.presenceRef = null;
 
+        this.presenceDisconnect = null;
 
-        this.presenceRef =
-            null;
+        this.viewerListener = null;
 
+        this.firebaseConnected = false;
 
-        this.presenceDisconnect =
-            null;
+        this.lockTimer = null;
 
-
-        this.viewerListener =
-            null;
-
-
-        this.firebaseConnected =
-            false;
-
-
-        this.viewerCount =
-            0;
-
+        this.isUnlocked = false;
 
         this.stars = [];
 
-
-        this.animationFrameId =
-            null;
-
+        this.animationFrameId = null;
     }
 
 
@@ -222,7 +182,6 @@ class CriczoneUI extends HTMLElement {
        ===================================================== */
 
     connectedCallback() {
-
 
         this.shadow.innerHTML = `
 
@@ -234,15 +193,17 @@ class CriczoneUI extends HTMLElement {
 
 :host {
 
-    --accent: #00ffcc;
-
-    --accent2: #0096ff;
-
     --bg: #050a0f;
+
+    --card: rgba(8,17,27,.88);
 
     --text: #f5f7fa;
 
     --muted: #8293a0;
+
+    --accent: #00ffcc;
+
+    --accent2: #0096ff;
 
     --border: rgba(0,255,204,.18);
 
@@ -299,7 +260,7 @@ button {
 
     pointer-events: none;
 
-    opacity: .75;
+    opacity: .7;
 }
 
 
@@ -318,7 +279,7 @@ button {
 
 
 /* =========================================================
-   NAV
+   NAVBAR
    ========================================================= */
 
 .nav {
@@ -353,8 +314,6 @@ button {
     font-weight: 900;
 
     letter-spacing: -1.5px;
-
-    color: white;
 }
 
 
@@ -363,7 +322,7 @@ button {
     background:
         linear-gradient(
             135deg,
-            #ffffff,
+            #fff,
             #00ffcc,
             #0096ff
         );
@@ -405,8 +364,6 @@ button {
     background:
         rgba(5,12,18,.80);
 
-    color: white;
-
     font-family:
         DM Mono,
         monospace;
@@ -431,11 +388,11 @@ button {
         0 0 12px #ff3030;
 
     animation:
-        livePulse 1.4s infinite;
+        pulse 1.4s infinite;
 }
 
 
-@keyframes livePulse {
+@keyframes pulse {
 
     0%,100% {
         opacity: 1;
@@ -446,7 +403,6 @@ button {
         opacity: .35;
         transform: scale(.75);
     }
-
 }
 
 
@@ -484,19 +440,17 @@ button {
     letter-spacing: .7px;
 
     text-decoration: none;
-
-    transition: .25s ease;
 }
 
 
 .telegram-btn:hover {
 
-    transform:
-        translateY(-2px);
-
     box-shadow:
         0 0 28px
         rgba(0,255,204,.30);
+
+    transform:
+        translateY(-2px);
 }
 
 
@@ -515,8 +469,7 @@ button {
 
 .hero-label {
 
-    color:
-        var(--accent);
+    color: var(--accent);
 
     font-family:
         Space Grotesk,
@@ -552,12 +505,10 @@ button {
     letter-spacing: -7px;
 
     font-weight: 900;
-
-    text-transform: uppercase;
 }
 
 
-.hero h1 .gradient {
+.gradient {
 
     background:
         linear-gradient(
@@ -600,7 +551,7 @@ button {
 
 
 .hero-info strong {
-    color: white;
+    color: #fff;
 }
 
 
@@ -656,16 +607,12 @@ button {
 
     background:
         rgba(4,14,22,.80);
-
-    backdrop-filter:
-        blur(15px);
 }
 
 
 .search-icon {
 
-    color:
-        var(--accent);
+    color: var(--accent);
 
     font-size: 23px;
 
@@ -683,7 +630,7 @@ button {
 
     background: transparent;
 
-    color: white;
+    color: #fff;
 
     font-size: 14px;
 }
@@ -732,17 +679,6 @@ button {
     font-size: 12px;
 
     font-weight: 700;
-
-    transition: .2s ease;
-}
-
-
-.filter-btn:hover {
-
-    border-color:
-        var(--accent);
-
-    color: white;
 }
 
 
@@ -809,7 +745,7 @@ button {
 
 
 /* =========================================================
-   CHANNEL CARD
+   TEXT ONLY CHANNEL CARD
    ========================================================= */
 
 .channel-card {
@@ -843,30 +779,8 @@ button {
             rgba(4,11,18,.90)
         );
 
-    backdrop-filter:
-        blur(18px);
-
     transition:
-        transform .25s ease,
-        border-color .25s ease,
-        box-shadow .25s ease;
-}
-
-
-.channel-card:hover {
-
-    transform:
-        translateY(-5px);
-
-    border-color:
-        var(--border-hover);
-
-    box-shadow:
-        0 18px 45px
-        rgba(0,0,0,.45),
-
-        0 0 25px
-        rgba(0,255,204,.08);
+        .25s ease;
 }
 
 
@@ -893,9 +807,19 @@ button {
 }
 
 
-/* =========================================================
-   CHANNEL TEXT ONLY
-   ========================================================= */
+.channel-card:hover {
+
+    transform:
+        translateY(-5px);
+
+    border-color:
+        var(--border-hover);
+
+    box-shadow:
+        0 18px 45px
+        rgba(0,0,0,.45);
+}
+
 
 .card-title {
 
@@ -931,8 +855,6 @@ button {
 
     display: flex;
 
-    align-items: center;
-
     justify-content: space-between;
 
     gap: 10px;
@@ -950,72 +872,7 @@ button {
 
 
 .watch {
-
-    color:
-        var(--accent);
-
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.state {
-
-    grid-column: 1 / -1;
-
-    min-height: 220px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 15px;
-
-    color: #8293a0;
-
-    font-family:
-        DM Mono,
-        monospace;
-
-    font-size: 12px;
-
-    text-align: center;
-}
-
-
-.spinner {
-
-    width: 35px;
-
-    height: 35px;
-
-    border:
-        3px solid
-        rgba(255,255,255,.08);
-
-    border-top-color:
-        var(--accent);
-
-    border-radius: 50%;
-
-    animation:
-        spin .8s linear infinite;
-}
-
-
-@keyframes spin {
-
-    to {
-        transform: rotate(360deg);
-    }
-
+    color: var(--accent);
 }
 
 
@@ -1060,21 +917,7 @@ button {
 
     color: white;
 
-    font-family:
-        Space Grotesk,
-        sans-serif;
-
     font-weight: 700;
-}
-
-
-.back-btn:hover {
-
-    color:
-        var(--accent);
-
-    border-color:
-        var(--accent);
 }
 
 
@@ -1094,7 +937,7 @@ button {
 
     border-radius: 18px;
 
-    background: black;
+    background: #000;
 
     box-shadow:
         0 30px 80px
@@ -1108,11 +951,11 @@ button {
 
     height: 100%;
 
-    display: block;
-
     border: 0;
 
-    background: black;
+    display: block;
+
+    background: #000;
 }
 
 
@@ -1142,19 +985,6 @@ button {
     z-index: 5;
 }
 
-
-.fullscreen-btn:hover {
-
-    background:
-        var(--accent);
-
-    color: black;
-}
-
-
-/* =========================================================
-   PLAYER INFO
-   ========================================================= */
 
 .player-info {
 
@@ -1208,7 +1038,7 @@ button {
 
 
 /* =========================================================
-   LIVE WATCHING
+   WATCHING NOW
    ========================================================= */
 
 .watching-box {
@@ -1217,7 +1047,7 @@ button {
 
     align-items: center;
 
-    gap: 9px;
+    gap: 8px;
 
     margin-top: 12px;
 
@@ -1229,7 +1059,7 @@ button {
 
     font-size: 11px;
 
-    letter-spacing: .6px;
+    letter-spacing: .5px;
 }
 
 
@@ -1241,8 +1071,7 @@ button {
 
     border-radius: 50%;
 
-    background:
-        #00ff7f;
+    background: #00ff7f;
 
     box-shadow:
         0 0 12px
@@ -1264,14 +1093,12 @@ button {
         opacity: .45;
         transform: scale(.75);
     }
-
 }
 
 
 .watching-count {
 
-    color:
-        #00ffcc;
+    color: var(--accent);
 
     font-weight: 700;
 }
@@ -1306,7 +1133,7 @@ button {
     background:
         var(--accent);
 
-    color: black;
+    color: #000;
 }
 
 
@@ -1364,10 +1191,6 @@ button {
             #0b1822,
             #050b10
         );
-
-    box-shadow:
-        0 30px 90px
-        rgba(0,0,0,.65);
 }
 
 
@@ -1382,17 +1205,6 @@ button {
     font-size: 26px;
 
     font-weight: 900;
-
-    background:
-        linear-gradient(
-            135deg,
-            white,
-            #00ffcc
-        );
-
-    -webkit-background-clip: text;
-
-    -webkit-text-fill-color: transparent;
 }
 
 
@@ -1449,6 +1261,32 @@ button {
             #00ffcc,
             #0096ff
         );
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.state {
+
+    grid-column: 1 / -1;
+
+    min-height: 220px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: var(--muted);
+
+    font-family:
+        DM Mono,
+        monospace;
+
+    font-size: 12px;
 }
 
 
@@ -1513,16 +1351,13 @@ button {
     }
 
     .player-info {
-
         flex-direction: column;
-
         align-items: stretch;
     }
 
     .share-btn {
         width: 100%;
     }
-
 }
 
 
@@ -1535,7 +1370,6 @@ button {
     .hero h1 {
         font-size: 58px;
     }
-
 }
 
 </style>
@@ -1728,11 +1562,7 @@ button {
 >
 
     <div class="state">
-
-        <div class="spinner"></div>
-
         Loading channels...
-
     </div>
 
 </div>
@@ -1800,13 +1630,14 @@ button {
 
             <div class="player-subtitle">
 
-                CRICZONE •
-                HIGH-DEFINITION LIVE STREAM
+                CRICZONE • HIGH-DEFINITION LIVE STREAM
 
             </div>
 
 
-            <!-- LIVE WATCHING -->
+            <!-- =================================================
+                 WATCHING
+                 ================================================= -->
 
             <div class="watching-box">
 
@@ -1818,7 +1649,7 @@ button {
                         class="watching-count"
                         id="viewerCount"
                     >
-                        0
+                        345
                     </span>
 
                     WATCHING NOW
@@ -1891,9 +1722,9 @@ button {
 `;
 
 
-        /* =================================================
+        /* =====================================================
            CACHE
-           ================================================= */
+           ===================================================== */
 
         this.$ = {
 
@@ -1946,13 +1777,14 @@ button {
                 this.shadow.querySelector(
                     "#shareBtn"
                 )
-
         };
 
 
         this.setupEvents();
 
         this.setupBackground();
+
+        this.checkUnlock();
 
         this.fetchChannels();
 
@@ -2081,8 +1913,6 @@ button {
         );
 
 
-        /* Browser close / refresh */
-
         window.addEventListener(
             "pagehide",
             () => {
@@ -2123,12 +1953,6 @@ button {
                 );
 
 
-                /*
-                 * If a channel is already open
-                 * and connection comes back,
-                 * register viewer again.
-                 */
-
                 if (
                     this.firebaseConnected &&
                     this.currentStreamId !== null
@@ -2147,17 +1971,12 @@ button {
 
 
     /* =====================================================
-       ENTER LIVE VIEWER
+       ENTER VIEWER
        ===================================================== */
 
     async enterViewer(channelId) {
 
-
         try {
-
-            /*
-             * Remove previous presence first.
-             */
 
             await this.leaveViewer();
 
@@ -2171,21 +1990,17 @@ button {
             }
 
 
-            const safeChannelId =
+            const safeId =
                 this.safeFirebaseKey(
                     channelId
                 );
 
 
-            /*
-             * Create unique connection.
-             */
-
             const viewersRef =
                 ref(
                     database,
                     "liveViewers/" +
-                    safeChannelId
+                    safeId
                 );
 
 
@@ -2194,12 +2009,6 @@ button {
                     viewersRef
                 );
 
-
-            /*
-             * IMPORTANT:
-             * Register disconnect cleanup
-             * BEFORE marking user online.
-             */
 
             this.presenceDisconnect =
                 onDisconnect(
@@ -2211,13 +2020,10 @@ button {
                 .remove();
 
 
-            /*
-             * Mark this viewer online.
-             */
-
             await set(
                 this.presenceRef,
                 {
+
                     online: true,
 
                     channelId:
@@ -2225,23 +2031,20 @@ button {
 
                     joinedAt:
                         serverTimestamp()
+
                 }
             );
 
 
-            /*
-             * Listen to current channel count.
-             */
-
             this.listenViewerCount(
-                safeChannelId
+                safeId
             );
 
 
         } catch (error) {
 
             console.error(
-                "Viewer presence error:",
+                "Firebase viewer error:",
                 error
             );
 
@@ -2260,7 +2063,6 @@ button {
 
     async leaveViewer() {
 
-
         try {
 
             if (
@@ -2276,31 +2078,17 @@ button {
         } catch (error) {
 
             console.warn(
-                "Could not remove viewer:",
+                "Viewer cleanup:",
                 error
             );
 
         }
 
 
-        this.presenceRef =
-            null;
+        this.presenceRef = null;
 
+        this.presenceDisconnect = null;
 
-        this.presenceDisconnect =
-            null;
-
-
-        this.viewerCount =
-            0;
-
-
-        this.updateViewerCount();
-
-
-        /*
-         * Stop previous Firebase listener.
-         */
 
         if (
             this.viewerListener
@@ -2315,22 +2103,22 @@ button {
         }
 
 
-        this.viewerListener =
-            null;
+        this.viewerListener = null;
+
+
+        this.viewerCount = 0;
+
+        this.updateViewerCount();
 
     }
 
 
     /* =====================================================
-       LISTEN VIEWER COUNT
+       VIEWER LISTENER
        ===================================================== */
 
     listenViewerCount(channelId) {
 
-
-        /*
-         * Remove previous listener.
-         */
 
         if (
             this.viewerListener
@@ -2389,8 +2177,7 @@ button {
                         error
                     );
 
-                    this.viewerCount =
-                        0;
+                    this.viewerCount = 0;
 
                     this.updateViewerCount();
 
@@ -2401,22 +2188,36 @@ button {
 
 
     /* =====================================================
-       UPDATE VIEWER UI
+       UPDATE WATCHING COUNT
        ===================================================== */
 
     updateViewerCount() {
 
+
         if (
-            this.$ &&
-            this.$.viewerCount
+            !this.$ ||
+            !this.$.viewerCount
         ) {
 
-            this.$.viewerCount.textContent =
-                String(
-                    this.viewerCount
-                );
+            return;
 
         }
+
+
+        /*
+         * BASE = 345
+         *
+         * Firebase real viewers are added
+         * on top of 345.
+         */
+
+        const total =
+            this.viewerBaseCount +
+            this.viewerCount;
+
+
+        this.$.viewerCount.textContent =
+            String(total);
 
     }
 
@@ -2428,7 +2229,10 @@ button {
     safeFirebaseKey(value) {
 
         return String(value)
-            .replace(/[.#$[\]/]/g, "_");
+            .replace(
+                /[.#$[\]/]/g,
+                "_"
+            );
 
     }
 
@@ -2438,7 +2242,6 @@ button {
        ===================================================== */
 
     async fetchChannels() {
-
 
         try {
 
@@ -2510,7 +2313,6 @@ button {
 
             this.handleUrl();
 
-
         } catch (error) {
 
             console.error(
@@ -2524,12 +2326,6 @@ button {
                 <div class="state">
 
                     Unable to load channels.
-
-                    <br>
-
-                    <small>
-                        Please refresh the page.
-                    </small>
 
                 </div>
 
@@ -2545,7 +2341,6 @@ button {
        ===================================================== */
 
     renderChannels() {
-
 
         this.$.grid.innerHTML = "";
 
@@ -2640,9 +2435,7 @@ button {
 
                 card.onclick = () => {
 
-                    this.openPlayer(
-                        id
-                    );
+                    this.openPlayer(id);
 
                 };
 
@@ -2663,7 +2456,6 @@ button {
 
     applyFilters() {
 
-
         const query =
             (
                 this.$.search.value ||
@@ -2683,7 +2475,6 @@ button {
             )
             .forEach(card => {
 
-
                 const title =
                     card.dataset.title ||
                     "";
@@ -2696,8 +2487,7 @@ button {
                     );
 
 
-                let filterMatch =
-                    true;
+                let filterMatch = true;
 
 
                 if (
@@ -2761,12 +2551,9 @@ button {
 
 
                 card.style.display =
-
                     searchMatch &&
                     filterMatch
-
                         ? ""
-
                         : "none";
 
             });
@@ -2780,7 +2567,6 @@ button {
 
     async openPlayer(identifier) {
 
-
         const target =
             this.masterChannels.find(
                 (channel, index) => {
@@ -2789,7 +2575,6 @@ button {
                         channel.id !== undefined
                             ? channel.id
                             : index;
-
 
                     return String(id) ===
                         String(identifier);
@@ -2806,10 +2591,6 @@ button {
 
         }
 
-
-        /*
-         * Leave previous channel.
-         */
 
         await this.leaveViewer();
 
@@ -2831,18 +2612,12 @@ button {
             target.src;
 
 
-        /*
-         * Existing fallback.
-         */
-
         if (
             !streamUrl
         ) {
 
             streamUrl =
-
                 "https://sonucdn-v2.pages.dev/star.html?id=" +
-
                 encodeURIComponent(
                     target.id !== undefined
                         ? target.id
@@ -2873,8 +2648,13 @@ button {
             this.currentChannelTitle;
 
 
-        this.$.viewerCount.textContent =
-            "0";
+        /*
+         * Immediately show base count.
+         */
+
+        this.viewerCount = 0;
+
+        this.updateViewerCount();
 
 
         this.$.player.src =
@@ -2905,8 +2685,7 @@ button {
 
 
         /*
-         * Register this user as
-         * watching this channel.
+         * Add actual Firebase viewer.
          */
 
         this.enterViewer(
@@ -2925,9 +2704,7 @@ button {
 
     async closePlayer() {
 
-
         this.stopPreviewTimer();
-
 
         await this.leaveViewer();
 
@@ -2970,11 +2747,10 @@ button {
 
 
     /* =====================================================
-       URL ROUTING
+       URL
        ===================================================== */
 
     handleUrl() {
-
 
         const id =
             new URLSearchParams(
@@ -2995,9 +2771,7 @@ button {
             this.masterChannels.length
         ) {
 
-            this.openPlayer(
-                id
-            );
+            this.openPlayer(id);
 
         }
 
@@ -3005,11 +2779,10 @@ button {
 
 
     /* =====================================================
-       PREVIEW
+       TELEGRAM PREVIEW
        ===================================================== */
 
     startPreviewTimer() {
-
 
         this.stopPreviewTimer();
 
@@ -3033,14 +2806,12 @@ button {
 
                 window.CricConfig
                     .previewDuration
-
             );
 
     }
 
 
     stopPreviewTimer() {
-
 
         if (
             this.lockTimer
@@ -3050,20 +2821,14 @@ button {
                 this.lockTimer
             );
 
-            this.lockTimer =
-                null;
+            this.lockTimer = null;
 
         }
 
     }
 
 
-    /* =====================================================
-       TELEGRAM
-       ===================================================== */
-
     showTelegramModal() {
-
 
         if (
             this.isUnlocked
@@ -3104,17 +2869,13 @@ button {
 
     joinTelegram() {
 
-
         localStorage.setItem(
             "criczone_unlocked_time",
-            String(
-                Date.now()
-            )
+            String(Date.now())
         );
 
 
-        this.isUnlocked =
-            true;
+        this.isUnlocked = true;
 
 
         this.closeModal();
@@ -3142,11 +2903,50 @@ button {
 
 
     /* =====================================================
+       UNLOCK
+       ===================================================== */
+
+    checkUnlock() {
+
+        const saved =
+            localStorage.getItem(
+                "criczone_unlocked_time"
+            );
+
+
+        if (!saved) {
+            return;
+        }
+
+
+        const timestamp =
+            Number(saved);
+
+
+        if (
+            Date.now() -
+            timestamp <
+            24 * 60 * 60 * 1000
+        ) {
+
+            this.isUnlocked = true;
+
+        } else {
+
+            localStorage.removeItem(
+                "criczone_unlocked_time"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
        FULLSCREEN
        ===================================================== */
 
     async toggleFullscreen() {
-
 
         try {
 
@@ -3167,6 +2967,7 @@ button {
         } catch (error) {
 
             console.error(
+                "Fullscreen:",
                 error
             );
 
@@ -3180,7 +2981,6 @@ button {
        ===================================================== */
 
     async shareStream() {
-
 
         try {
 
@@ -3202,36 +3002,34 @@ button {
 
                 });
 
-            } else {
-
-                await navigator.clipboard
-                    .writeText(
-                        window.location.href
-                    );
-
-
-                const old =
-                    this.$.share
-                        .textContent;
-
-
-                this.$.share
-                    .textContent =
-                    "COPIED!";
-
-
-                setTimeout(
-                    () => {
-
-                        this.$.share
-                            .textContent =
-                            old;
-
-                    },
-                    1800
-                );
+                return;
 
             }
+
+
+            await navigator.clipboard
+                .writeText(
+                    window.location.href
+                );
+
+
+            const oldText =
+                this.$.share.textContent;
+
+
+            this.$.share.textContent =
+                "COPIED!";
+
+
+            setTimeout(
+                () => {
+
+                    this.$.share.textContent =
+                        oldText;
+
+                },
+                1800
+            );
 
         } catch (error) {}
 
@@ -3244,7 +3042,6 @@ button {
 
     setupBackground() {
 
-
         const canvas =
             this.shadow.querySelector(
                 "#bgCanvas"
@@ -3252,9 +3049,7 @@ button {
 
 
         const ctx =
-            canvas.getContext(
-                "2d"
-            );
+            canvas.getContext("2d");
 
 
         const resize = () => {
@@ -3275,9 +3070,6 @@ button {
             "resize",
             resize
         );
-
-
-        this.stars = [];
 
 
         for (
@@ -3315,7 +3107,6 @@ button {
 
         const draw = () => {
 
-
             ctx.clearRect(
                 0,
                 0,
@@ -3326,7 +3117,6 @@ button {
 
             this.stars.forEach(
                 star => {
-
 
                     ctx.strokeStyle =
                         `rgba(
@@ -3342,19 +3132,16 @@ button {
 
                     ctx.beginPath();
 
-
                     ctx.moveTo(
                         star.x,
                         star.y
                     );
-
 
                     ctx.lineTo(
                         star.x +
                         star.length,
                         star.y
                     );
-
 
                     ctx.stroke();
 
@@ -3370,7 +3157,6 @@ button {
 
                         star.x =
                             -star.length;
-
 
                         star.y =
                             Math.random() *
@@ -3400,7 +3186,6 @@ button {
        ===================================================== */
 
     escapeHtml(value) {
-
 
         return String(value)
 
@@ -3444,12 +3229,8 @@ customElements.define(
 );
 
 
-/* =========================================================
-   DEBUG
-   ========================================================= */
-
 console.log(
-    "CRICZONE Firebase Live Watching initialized"
+    "CRICZONE LIVE + Firebase initialized"
 );
 
 </script>
