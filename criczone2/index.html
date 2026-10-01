@@ -923,31 +923,47 @@
         const popupClose = document.getElementById("popupClose");
         const toast = document.getElementById("toast");
 
-        /* =========================================
-           FETCH STREAM DATA (WITH CORS FALLBACKS)
+     /* =========================================
+           FETCH STREAM DATA (WITH MULTIPLE CORS PROXIES)
         ========================================= */
         async function fetchStreamData() {
+            // 1. Direct API try karenge
             try {
                 const response = await fetch(STREAM_API, { method: "GET", cache: "no-store" });
                 if (response.ok) return await response.json();
             } catch (e) {
-                console.log("Direct API failed, trying AllOrigins...");
+                console.log("Direct API failed, trying CORS proxies...");
             }
 
-            try {
-                const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API);
-                const response = await fetch(proxyURL, { cache: "no-store" });
-                if (response.ok) {
-                    const wrapper = await response.json();
-                    if (wrapper.contents) {
-                        return typeof wrapper.contents === "string" 
-                            ? JSON.parse(wrapper.contents) 
-                            : wrapper.contents;
-                    }
-                }
-            } catch (e) {}
+            // 2. Proxies List (agar ek block ho toh doosra kaam karega)
+            const proxyUrls = [
+                "https://corsproxy.io/?" + encodeURIComponent(STREAM_API),
+                "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API),
+                "https://thingproxy.freeboard.io/fetch/" + STREAM_API
+            ];
 
-            throw new Error("Unable to load data.");
+            for (const url of proxyUrls) {
+                try {
+                    const response = await fetch(url, { cache: "no-store" });
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // AllOrigins ka wrapper check
+                        if (data && data.contents) {
+                            return typeof data.contents === "string" ? JSON.parse(data.contents) : data.contents;
+                        }
+                        
+                        // Direct data check
+                        if (data && (data.iframes || Array.isArray(data))) {
+                            return data;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Proxy failed:", url, err);
+                }
+            }
+
+            throw new Error("All proxies failed to fetch channel list.");
         }
 
         /* =========================================
