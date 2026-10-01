@@ -130,6 +130,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
 
         .brand-logo {
@@ -201,7 +204,7 @@
            HERO
         ========================================================= */
         .hero {
-            padding: 62px 0 38px;
+            padding: 45px 0 25px;
         }
 
         .hero-label {
@@ -224,9 +227,9 @@
 
         .hero h1 {
             max-width: 760px;
-            font-size: clamp(38px,6vw,68px);
-            line-height: 1.02;
-            letter-spacing: -3.8px;
+            font-size: clamp(32px,5vw,56px);
+            line-height: 1.05;
+            letter-spacing: -2px;
             font-weight: 900;
         }
 
@@ -239,17 +242,132 @@
 
         .hero p {
             max-width: 620px;
-            margin-top: 19px;
+            margin-top: 14px;
             color: var(--muted);
             font-size: 13px;
-            line-height: 1.75;
+            line-height: 1.6;
         }
 
         /* =========================================================
-           PLAYER HEADER
+           CHANNELS GRID (HOME PAGE)
         ========================================================= */
+        .channels-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .channels-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .channels-count {
+            background: rgba(61,124,255,0.15);
+            color: var(--blue);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(61,124,255,0.3);
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .channel-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-blue);
+            background: linear-gradient(145deg, rgba(61,124,255,0.12), rgba(255,255,255,0.02));
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .channel-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+
+        .channel-info {
+            overflow: hidden;
+        }
+
+        .channel-name {
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channel-tag {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* =========================================================
+           PLAYER VIEW
+        ========================================================= */
+        .back-nav {
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: .2s ease;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+
         .player-section {
-            margin-top: 18px;
+            margin-top: 5px;
         }
 
         .player-top {
@@ -298,11 +416,6 @@
             font-size: 8px;
             font-weight: 800;
             letter-spacing: 1.2px;
-        }
-
-        .player-actions {
-            display: flex;
-            gap: 7px;
         }
 
         .action-btn {
@@ -576,10 +689,10 @@
         }
 
         /* =========================================================
-           LOADING
+           LOADING & ERROR
         ========================================================= */
         .loading {
-            min-height: 520px;
+            min-height: 350px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -605,14 +718,6 @@
             font-size: 11px;
         }
 
-        .loading-sub {
-            color: #4e5a6c;
-            font-size: 8px;
-        }
-
-        /* =========================================================
-           ERROR
-        ========================================================= */
         .error-box {
             margin-top: 30px;
             padding: 40px 25px;
@@ -633,18 +738,8 @@
             background: rgba(255,70,93,.08);
         }
 
-        .error-box h2 {
-            font-size: 17px;
-        }
-
-        .error-box p {
-            margin-top: 7px;
-            color: var(--muted);
-            font-size: 10px;
-        }
-
         /* =========================================================
-           POPUP
+           POPUP & TOAST
         ========================================================= */
         .overlay {
             position: fixed;
@@ -667,23 +762,9 @@
             padding: 30px 25px 25px;
             border: 1px solid rgba(255,255,255,.10);
             border-radius: 23px;
-            background:
-                radial-gradient(circle at 50% 0%, rgba(34,158,217,.12), transparent 40%),
-                #0b101b;
+            background: #0b101b;
             box-shadow: 0 35px 100px rgba(0,0,0,.65);
             text-align: center;
-            animation: popupIn .35s ease;
-        }
-
-        @keyframes popupIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(.96);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
         }
 
         .popup-icon {
@@ -696,106 +777,39 @@
             color: white;
             background: linear-gradient(145deg, #229ed9, #147fb3);
             font-size: 28px;
-            box-shadow: 0 15px 35px rgba(34,158,217,.24);
         }
 
-        .popup h2 {
-            font-size: 20px;
-            font-weight: 900;
-        }
-
-        .popup p {
-            margin: 9px auto 20px;
-            max-width: 320px;
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.65;
-        }
+        .popup h2 { font-size: 20px; font-weight: 900; }
+        .popup p { margin: 9px auto 20px; color: var(--muted); font-size: 11px; line-height: 1.65; }
 
         .popup-join {
-            width: 100%;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: 0;
-            border-radius: 12px;
-            color: white;
-            background: linear-gradient(135deg, #229ed9, #147fb3);
-            font-size: 10px;
-            font-weight: 850;
-            text-decoration: none;
+            width: 100%; height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px;
+            border-radius: 12px; color: white; background: linear-gradient(135deg, #229ed9, #147fb3);
+            font-size: 10px; font-weight: 850; text-decoration: none;
         }
 
         .popup-close {
-            width: 100%;
-            height: 42px;
-            margin-top: 8px;
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 11px;
-            color: #8a96a9;
-            background: rgba(255,255,255,.035);
-            font-size: 9px;
-            font-weight: 700;
-            cursor: pointer;
+            width: 100%; height: 42px; margin-top: 8px; border: 1px solid rgba(255,255,255,.07);
+            border-radius: 11px; color: #8a96a9; background: rgba(255,255,255,.035); font-size: 9px; cursor: pointer;
         }
 
-        /* =========================================================
-           TOAST
-        ========================================================= */
         .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 25px;
-            z-index: 12000;
-            padding: 11px 16px;
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 10px;
-            color: white;
-            background: #111827;
-            font-size: 10px;
-            opacity: 0;
-            pointer-events: none;
-            transform: translate(-50%,15px);
-            transition: .25s ease;
+            position: fixed; left: 50%; bottom: 25px; z-index: 12000; padding: 11px 16px;
+            border-radius: 10px; color: white; background: #111827; font-size: 10px; opacity: 0;
+            transform: translate(-50%,15px); transition: .25s ease; pointer-events: none;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translate(-50%,0);
-        }
+        .toast.show { opacity: 1; transform: translate(-50%,0); }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================= */
+        /* RESPONSIVE */
         @media (max-width: 760px) {
-            .container { width: calc(100% - 22px); }
-            .header { height: 68px; }
-            .brand-logo { width: 38px; height: 38px; border-radius: 11px; }
-            .brand-name { font-size: 16px; }
-            .live-status { padding: 7px 9px; font-size: 8px; }
-            .hero { padding: 45px 0 30px; }
-            .hero h1 { font-size: 39px; letter-spacing: -2.5px; }
-            .hero p { font-size: 11px; }
-            .player-top { align-items: flex-start; }
-            .player-name { max-width: 190px; font-size: 13px; }
-            .action-btn { padding: 0 10px; font-size: 8px; }
-            .video-container { min-height: 215px; }
-            .video-shell { border-radius: 15px; }
-            .video-bottom { flex-direction: column; align-items: flex-start; }
-            .watching { align-self: flex-start; }
+            .channels-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+            .channel-card { padding: 12px; }
+            .channel-icon { width: 36px; height: 36px; font-size: 15px; }
+            .channel-name { font-size: 12px; }
             .info-grid { grid-template-columns: 1fr; }
-            .telegram-content { flex-direction: column; align-items: flex-start; }
+            .telegram-content { flex-direction: column; }
             .telegram-btn { width: 100%; }
-        }
-
-        @media (max-width: 430px) {
-            .hero h1 { font-size: 35px; }
-            .header-right { gap: 5px; }
-            .live-status { padding: 6px 8px; }
-            .player-actions { gap: 4px; }
-            .player-icon { width: 36px; height: 36px; }
         }
     </style>
 </head>
@@ -810,13 +824,13 @@
 
             <!-- HEADER -->
             <header class="header">
-                <div class="brand">
+                <a class="brand" href="./">
                     <div class="brand-logo">🏏</div>
                     <div class="brand-text">
                         <div class="brand-name">Criczone</div>
                         <div class="brand-sub">PREMIUM CRICKET HUB</div>
                     </div>
-                </div>
+                </a>
 
                 <div class="header-right">
                     <div class="live-status">
@@ -845,12 +859,11 @@
                 </p>
             </section>
 
-            <!-- STREAM AREA -->
+            <!-- STREAM / CHANNEL LIST CONTENT -->
             <main id="stream-content">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div class="loading-text">Loading live stream...</div>
-                    <div class="loading-sub">Connecting to Criczone</div>
+                    <div class="loading-text">Loading channels...</div>
                 </div>
             </main>
 
@@ -891,25 +904,18 @@
                 <i class="fa-brands fa-telegram"></i>
             </div>
             <h2>Join Criczone</h2>
-            <p>
-                Don't miss live cricket updates, match alerts and stream updates.
-                Join our Telegram channel now.
-            </p>
+            <p>Don't miss live cricket updates, match alerts and stream updates.</p>
             <a class="popup-join" href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" rel="noopener noreferrer">
                 <i class="fa-brands fa-telegram"></i>
                 JOIN TELEGRAM CHANNEL
             </a>
-            <button class="popup-close" id="popupClose" type="button">
-                I'VE ALREADY JOINED
-            </button>
+            <button class="popup-close" id="popupClose" type="button">I'VE ALREADY JOINED</button>
         </div>
     </div>
 
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
     <script>
-        const TELEGRAM_LINK = "https://t.me/+MueCDjlpoS8yNmJl";
         const STREAM_API = "https://cineiframe.cinearena08.workers.dev/";
 
         const streamContent = document.getElementById("stream-content");
@@ -918,23 +924,16 @@
         const toast = document.getElementById("toast");
 
         /* =========================================
-           FETCH STREAM DATA (MULTIPLE PROXY BACKUPS)
+           FETCH STREAM DATA (WITH CORS FALLBACKS)
         ========================================= */
         async function fetchStreamData() {
-            // METHOD 1 — DIRECT FETCH
             try {
-                const response = await fetch(STREAM_API, {
-                    method: "GET",
-                    cache: "no-store"
-                });
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.log("Direct API blocked by CORS. Trying AllOrigins proxy...");
+                const response = await fetch(STREAM_API, { method: "GET", cache: "no-store" });
+                if (response.ok) return await response.json();
+            } catch (e) {
+                console.log("Direct API failed, trying AllOrigins...");
             }
 
-            // METHOD 2 — ALLORIGINS GET WRAPPER (BYPASSES CORS BLOCKS)
             try {
                 const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API);
                 const response = await fetch(proxyURL, { cache: "no-store" });
@@ -946,86 +945,93 @@
                             : wrapper.contents;
                     }
                 }
-            } catch (error) {
-                console.warn("AllOrigins proxy failed, trying corsproxy.io...");
-            }
+            } catch (e) {}
 
-            // METHOD 3 — CORSPROXY.IO
-            try {
-                const proxyURL = "https://corsproxy.io/?" + encodeURIComponent(STREAM_API);
-                const response = await fetch(proxyURL, { cache: "no-store" });
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.warn("Corsproxy.io failed, trying Thingproxy...");
-            }
-
-            // METHOD 4 — THINGPROXY
-            try {
-                const proxyURL = "https://thingproxy.freeboard.io/fetch/" + STREAM_API;
-                const response = await fetch(proxyURL, { cache: "no-store" });
-                if (response.ok) {
-                    return await response.json();
-                }
-            } catch (error) {
-                console.error("All proxies failed:", error);
-            }
-
-            throw new Error("Unable to load data via proxy.");
+            throw new Error("Unable to load data.");
         }
 
         /* =========================================
-           INITIALIZE
+           INITIALIZE ROUTING
         ========================================= */
         async function initializeApp() {
             try {
                 const data = await fetchStreamData();
-                console.log("Stream API loaded:", data);
+                const streams = Array.isArray(data.iframes) ? data.iframes : [];
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const streamId = urlParams.get("id");
 
-                const streams = Array.isArray(data.iframes) ? data.iframes : [];
-
-                // FALLBACK: ID milne par wo stream, varna pehle (0th) stream ko load karega
-                const streamData = streamId
-                    ? streams.find(item => String(item.id) === String(streamId))
-                    : streams[0];
-
-                if (!streamData) {
-                    renderError(
-                        "Stream Not Found",
-                        "The requested stream ID is invalid or the stream is currently offline."
-                    );
-                    return;
+                if (streamId) {
+                    // PLAYER VIEW
+                    const streamData = streams.find(item => String(item.id) === String(streamId));
+                    if (!streamData) {
+                        renderError("Stream Not Found", "The requested channel ID is invalid or offline.");
+                        return;
+                    }
+                    document.title = (streamData.name || "Criczone") + " - Live";
+                    renderStream(streamData);
+                } else {
+                    // HOME PAGE VIEW (ALL CHANNELS)
+                    document.title = "Criczone - Live Channels";
+                    renderHome(streams);
                 }
 
-                document.title = (streamData.name || "Criczone Live") + " // Live";
-
-                renderStream(streamData);
-
-                setTimeout(() => {
-                    showTelegramPopup();
-                }, 2000);
-
             } catch (error) {
-                console.error("Failed to load streams:", error);
-                renderError(
-                    "Connection Failed",
-                    "Could not load stream configuration. Please check network connection."
-                );
+                renderError("Connection Failed", "Could not fetch channel list. Please try again.");
             }
         }
 
         /* =========================================
-           RENDER STREAM
+           RENDER HOME PAGE (ALL CHANNELS GRID)
+        ========================================= */
+        function renderHome(channels) {
+            let html = `
+                <div class="channels-header">
+                    <div class="channels-title">
+                        Available Live Channels
+                        <span class="channels-count">${channels.length} Channels</span>
+                    </div>
+                </div>
+                <div class="channels-grid">
+            `;
+
+            channels.forEach(ch => {
+                const name = escapeHtml(ch.name || "Live Channel");
+                const id = escapeAttr(ch.id);
+
+                html += `
+                    <a class="channel-card" href="?id=${id}">
+                        <div class="channel-icon">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                        <div class="channel-info">
+                            <div class="channel-name">${name}</div>
+                            <div class="channel-tag">
+                                <i class="fa-solid fa-signal" style="color:var(--green)"></i> Live Stream
+                            </div>
+                        </div>
+                    </a>
+                `;
+            });
+
+            html += `</div>`;
+            streamContent.innerHTML = html;
+        }
+
+        /* =========================================
+           RENDER PLAYER VIEW
         ========================================= */
         function renderStream(data) {
             const name = escapeHtml(data.name || "Criczone Live");
             const iframeSrc = escapeAttr(data.iframeSrc || data.stream_url || data.url || "");
 
             streamContent.innerHTML = `
+                <div class="back-nav">
+                    <a class="back-btn" href="./">
+                        <i class="fa-solid fa-arrow-left"></i> All Channels
+                    </a>
+                </div>
+
                 <section class="player-section">
                     <div class="player-top">
                         <div class="player-title">
@@ -1067,7 +1073,7 @@
 
                             <div class="watching">
                                 <span class="watching-dot"></span>
-                                <span><strong id="watchCount">345</strong> watching live</span>
+                                <span><strong>345</strong> watching live</span>
                             </div>
                         </div>
                     </div>
@@ -1093,98 +1099,59 @@
                     </div>
                 </section>
             `;
+
+            setTimeout(showTelegramPopup, 2000);
         }
 
         /* =========================================
-           TELEGRAM POPUP
+           HELPERS & EVENTS
         ========================================= */
-        function showTelegramPopup() {
-            telegramOverlay.classList.add("show");
-        }
-
-        function hideTelegramPopup() {
-            telegramOverlay.classList.remove("show");
-        }
+        function showTelegramPopup() { telegramOverlay.classList.add("show"); }
+        function hideTelegramPopup() { telegramOverlay.classList.remove("show"); }
 
         popupClose.addEventListener("click", hideTelegramPopup);
+        telegramOverlay.addEventListener("click", e => { if (e.target === telegramOverlay) hideTelegramPopup(); });
 
-        telegramOverlay.addEventListener("click", event => {
-            if (event.target === telegramOverlay) {
-                hideTelegramPopup();
-            }
-        });
-
-        /* =========================================
-           SHARE
-        ========================================= */
         async function shareStream() {
             const url = window.location.href;
-
             if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: "Criczone Live",
-                        text: "Watch live cricket on Criczone.",
-                        url: url
-                    });
-                } catch (error) {}
+                try { await navigator.share({ title: "Criczone Live", url: url }); } catch (e) {}
                 return;
             }
-
             try {
                 await navigator.clipboard.writeText(url);
                 showToast("Stream link copied!");
-            } catch (error) {
+            } catch (e) {
                 showToast(url);
             }
         }
 
-        /* =========================================
-           TOAST
-        ========================================= */
-        function showToast(message) {
-            toast.textContent = message;
+        function showToast(msg) {
+            toast.textContent = msg;
             toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2200);
+            setTimeout(() => toast.classList.remove("show"), 2200);
         }
 
-        /* =========================================
-           ERROR
-        ========================================= */
         function renderError(title, message) {
             streamContent.innerHTML = `
                 <div class="error-box">
-                    <div class="error-icon">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
+                    <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                     <h2>${escapeHtml(title)}</h2>
                     <p>${escapeHtml(message)}</p>
                 </div>
             `;
         }
 
-        /* =========================================
-           ESCAPE
-        ========================================= */
         function escapeHtml(value) {
-            if (value === null || value === undefined) return "";
+            if (!value) return "";
             return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
 
-        function escapeAttr(value) {
-            return escapeHtml(value);
-        }
+        function escapeAttr(value) { return escapeHtml(value); }
 
-        /* =========================================
-           START
-        ========================================= */
         document.addEventListener("DOMContentLoaded", initializeApp);
     </script>
 </body>
