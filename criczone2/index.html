@@ -918,7 +918,7 @@
         const toast = document.getElementById("toast");
 
         /* =========================================
-           FETCH STREAM DATA (WITH MULTIPLE PROXIES)
+           FETCH STREAM DATA (MULTIPLE PROXY BACKUPS)
         ========================================= */
         async function fetchStreamData() {
             // METHOD 1 — DIRECT FETCH
@@ -931,10 +931,26 @@
                     return await response.json();
                 }
             } catch (error) {
-                console.log("Direct API blocked by CORS. Trying corsproxy.io...");
+                console.log("Direct API blocked by CORS. Trying AllOrigins proxy...");
             }
 
-            // METHOD 2 — PRIMARY CORS PROXY (corsproxy.io)
+            // METHOD 2 — ALLORIGINS GET WRAPPER (BYPASSES CORS BLOCKS)
+            try {
+                const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API);
+                const response = await fetch(proxyURL, { cache: "no-store" });
+                if (response.ok) {
+                    const wrapper = await response.json();
+                    if (wrapper.contents) {
+                        return typeof wrapper.contents === "string" 
+                            ? JSON.parse(wrapper.contents) 
+                            : wrapper.contents;
+                    }
+                }
+            } catch (error) {
+                console.warn("AllOrigins proxy failed, trying corsproxy.io...");
+            }
+
+            // METHOD 3 — CORSPROXY.IO
             try {
                 const proxyURL = "https://corsproxy.io/?" + encodeURIComponent(STREAM_API);
                 const response = await fetch(proxyURL, { cache: "no-store" });
@@ -942,21 +958,21 @@
                     return await response.json();
                 }
             } catch (error) {
-                console.warn("Primary proxy failed, trying codetabs proxy...");
+                console.warn("Corsproxy.io failed, trying Thingproxy...");
             }
 
-            // METHOD 3 — SECONDARY CORS PROXY (codetabs)
+            // METHOD 4 — THINGPROXY
             try {
-                const secondaryProxy = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(STREAM_API);
-                const response = await fetch(secondaryProxy, { cache: "no-store" });
+                const proxyURL = "https://thingproxy.freeboard.io/fetch/" + STREAM_API;
+                const response = await fetch(proxyURL, { cache: "no-store" });
                 if (response.ok) {
                     return await response.json();
                 }
             } catch (error) {
-                console.error("Secondary proxy failed:", error);
+                console.error("All proxies failed:", error);
             }
 
-            throw new Error("All CORS bypass methods failed.");
+            throw new Error("Unable to load data via proxy.");
         }
 
         /* =========================================
@@ -972,7 +988,7 @@
 
                 const streams = Array.isArray(data.iframes) ? data.iframes : [];
 
-                // FALLBACK: If streamId is provided, find it; otherwise default to streams[0]
+                // FALLBACK: ID milne par wo stream, varna pehle (0th) stream ko load karega
                 const streamData = streamId
                     ? streams.find(item => String(item.id) === String(streamId))
                     : streams[0];
@@ -997,7 +1013,7 @@
                 console.error("Failed to load streams:", error);
                 renderError(
                     "Connection Failed",
-                    "Could not load the live stream configuration due to network or CORS issues."
+                    "Could not load stream configuration. Please check network connection."
                 );
             }
         }
