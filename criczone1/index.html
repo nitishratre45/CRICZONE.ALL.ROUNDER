@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>Criczone Live — Premium Cricket Hub</title>
 
@@ -24,2492 +21,1748 @@
 
 <body>
 
-  <criczone-ui></criczone-ui>
+<criczone-ui></criczone-ui>
 
-  <script>
+<script>
+(() => {
 
-    (() => {
+  class CriczoneUI extends HTMLElement {
 
-      class CriczoneUI extends HTMLElement {
+    constructor() {
+      super();
 
-        constructor() {
+      this.shadow = this.attachShadow({
+        mode: "open"
+      });
 
-          super();
+      /* =========================================
+         EXISTING CONFIG — DO NOT CHANGE
+      ========================================= */
 
-          this.shadow = this.attachShadow({
-            mode: "open"
-          });
+      this.config = {
+        telegramLink:
+          "https://t.me/+MueCDjlpoS8yNmJl",
 
-          this.config = {
+        jsonUrl:
+          "https://allrounderid2.pages.dev/id.json"
+      };
 
-            telegramLink:
-              "https://t.me/+MueCDjlpoS8yNmJl",
+      /* =========================================
+         STATE
+      ========================================= */
 
-            jsonUrl:
-              "https://allrounderid2.pages.dev/id.json"
+      this.state = {
+        channels: [],
+        filteredChannels: [],
+        currentChannel: null
+      };
 
-          };
+      /* =========================================
+         LIVE WATCHING
+      ========================================= */
 
-          this.state = {
+      this.BASE_WATCHING = 345;
 
-            channels: [],
+      this.firebaseApp = null;
+      this.firebaseDB = null;
+      this.firebaseReady = false;
 
-            filteredChannels: [],
+      this.firebaseRef = null;
+      this.firebasePush = null;
+      this.firebaseSet = null;
+      this.firebaseRemove = null;
+      this.firebaseOnDisconnect = null;
+      this.firebaseOnValue = null;
 
-            currentChannel: null
+      this.viewerRef = null;
+      this.viewerListener = null;
+      this.viewerChannelId = null;
 
-          };
+      this.toastTimer = null;
+    }
 
-          /* =====================================================
+
+    /* =========================================
+       CONNECTED
+    ========================================= */
+
+    connectedCallback() {
+
+      this.render();
+
+      this.initEvents();
+
+      this.initFirebaseViewers();
+
+      this.loadChannelsData();
+
+    }
+
+
+    /* =========================================
+       RENDER
+    ========================================= */
+
+    render() {
+
+      this.shadow.innerHTML = `
+
+        <style>
+
+          :host {
+            --bg: #050812;
+            --bg2: #080d18;
+            --card: rgba(255,255,255,.045);
+            --card-hover: rgba(255,255,255,.075);
+            --text: #f7f9fc;
+            --muted: #8995a8;
+            --blue: #4b82ff;
+            --blue2: #2961e8;
+            --cyan: #27d9ff;
+            --green: #25e58a;
+            --red: #ff526b;
+            --border: rgba(255,255,255,.08);
+
+            display: block;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+          }
+
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+          }
+
+          body {
+            margin: 0;
+          }
+
+          button,
+          input {
+            font-family: inherit;
+          }
+
+          button {
+            cursor: pointer;
+          }
+
+          .app {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+
+            background:
+              radial-gradient(
+                circle at 10% -5%,
+                rgba(53,105,255,.18),
+                transparent 32%
+              ),
+              radial-gradient(
+                circle at 95% 5%,
+                rgba(0,214,190,.08),
+                transparent 28%
+              ),
+              linear-gradient(
+                180deg,
+                #050812 0%,
+                #070c17 100%
+              );
+          }
+
+          .background-glow {
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(110px);
+            opacity: .45;
+            z-index: 0;
+          }
+
+          .glow-one {
+            top: -250px;
+            left: -150px;
+            background: rgba(47,100,255,.18);
+          }
+
+          .glow-two {
+            right: -250px;
+            bottom: -100px;
+            background: rgba(0,210,180,.10);
+          }
+
+          .container {
+            width: min(1240px, calc(100% - 40px));
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+          }
+
+          /* =====================================
+             HEADER
+          ===================================== */
+
+          .header {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,.055);
+          }
+
+          .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+          }
+
+          .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+
+            display: grid;
+            place-items: center;
+
+            font-size: 20px;
+
+            background:
+              linear-gradient(
+                145deg,
+                #4d8dff,
+                #2853d6
+              );
+
+            box-shadow:
+              0 10px 30px rgba(55,105,255,.3),
+              inset 0 1px rgba(255,255,255,.25);
+          }
+
+          .brand-name {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+          }
+
+          .brand-sub {
+            color: #68778e;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-top: 4px;
+          }
+
+          .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 12px;
+            border-radius: 999px;
+
+            color: var(--green);
+            background: rgba(37,229,138,.07);
+            border: 1px solid rgba(37,229,138,.18);
+
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .7px;
+          }
+
+          .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+
+            animation: pulse 1.7s infinite;
+          }
+
+          @keyframes pulse {
+
+            0% {
+              box-shadow: 0 0 0 0 rgba(37,229,138,.6);
+            }
+
+            70% {
+              box-shadow: 0 0 0 7px rgba(37,229,138,0);
+            }
+
+            100% {
+              box-shadow: 0 0 0 0 rgba(37,229,138,0);
+            }
+
+          }
+
+
+          /* =====================================
+             HERO
+          ===================================== */
+
+          .hero {
+            padding: 62px 0 42px;
+          }
+
+          .hero-small {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            color: #7190ca;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+
+            margin-bottom: 15px;
+          }
+
+          .hero-small-line {
+            width: 25px;
+            height: 1px;
+            background: var(--blue);
+          }
+
+          .hero h1 {
+            max-width: 780px;
+
+            font-size: clamp(36px,5.5vw,64px);
+            line-height: 1.02;
+            letter-spacing: -3px;
+            font-weight: 800;
+          }
+
+          .gradient-text {
+            background:
+              linear-gradient(
+                100deg,
+                #ffffff 15%,
+                #72a2ff 65%,
+                #35d8c3
+              );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+          }
+
+          .hero p {
+            max-width: 620px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-top: 19px;
+          }
+
+
+          /* =====================================
+             TOOLBAR
+          ===================================== */
+
+          .toolbar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 19px;
+          }
+
+          .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.6px;
+          }
+
+          .section-count {
+            color: #68768b;
+            font-size: 11px;
+            margin-top: 5px;
+          }
+
+          .search {
+            position: relative;
+            width: 280px;
+          }
+
+          .search input {
+            width: 100%;
+            height: 44px;
+
+            border-radius: 13px;
+            outline: none;
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,.04);
+            color: white;
+
+            padding: 0 14px 0 40px;
+            font-size: 12px;
+
+            transition: .25s ease;
+          }
+
+          .search input::placeholder {
+            color: #657389;
+          }
+
+          .search input:focus {
+            border-color: rgba(75,130,255,.55);
+
+            background: rgba(255,255,255,.06);
+
+            box-shadow:
+              0 0 0 4px
+              rgba(75,130,255,.07);
+          }
+
+          .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #73829a;
+            font-size: 15px;
+          }
+
+
+          /* =====================================
+             CHANNEL GRID
+          ===================================== */
+
+          .channels-grid {
+            display: grid;
+
+            grid-template-columns:
+              repeat(
+                auto-fill,
+                minmax(245px,1fr)
+              );
+
+            gap: 14px;
+            padding-bottom: 70px;
+          }
+
+          .channel-card {
+            min-height: 150px;
+            position: relative;
+            overflow: hidden;
+
+            padding: 18px;
+            border-radius: 19px;
+
+            border: 1px solid var(--border);
+
+            background:
+              linear-gradient(
+                145deg,
+                rgba(255,255,255,.055),
+                rgba(255,255,255,.018)
+              );
+
+            box-shadow:
+              0 10px 35px rgba(0,0,0,.12);
+
+            cursor: pointer;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            transition: .25s ease;
+
+            animation: cardIn .45s ease both;
+          }
+
+          @keyframes cardIn {
+
+            from {
+              opacity: 0;
+              transform: translateY(12px);
+            }
+
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+
+          }
+
+          .channel-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            border-radius: 50%;
+
+            right: -85px;
+            top: -85px;
+
+            background: rgba(75,130,255,.09);
+
+            filter: blur(4px);
+          }
+
+          .channel-card:hover {
+            transform: translateY(-5px);
+
+            border-color:
+              rgba(75,130,255,.42);
+
+            background:
+              linear-gradient(
+                145deg,
+                rgba(75,130,255,.09),
+                rgba(255,255,255,.025)
+              );
+
+            box-shadow:
+              0 20px 50px rgba(0,0,0,.28);
+          }
+
+          .channel-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+
+          .channel-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 13px;
+
+            display: grid;
+            place-items: center;
+
+            background:
+              linear-gradient(
+                145deg,
+                rgba(75,130,255,.18),
+                rgba(39,217,255,.04)
+              );
+
+            border:
+              1px solid
+              rgba(75,130,255,.16);
+
+            font-size: 19px;
+          }
+
+          .channel-live {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+
+            padding: 5px 8px;
+
+            border-radius: 7px;
+
+            background: rgba(37,229,138,.07);
+            color: var(--green);
+
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: .8px;
+          }
+
+          .channel-live::before {
+            content: "";
+
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+          }
+
+          .channel-bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 10px;
+            margin-top: 18px;
+          }
+
+          .channel-name {
+            color: #fff;
+
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+
+            max-width: 85%;
+          }
+
+          .watch-arrow {
+            width: 30px;
+            height: 30px;
+
+            flex-shrink: 0;
+
+            border-radius: 10px;
+
+            display: grid;
+            place-items: center;
+
+            color: #9bb5ef;
+
+            background:
+              rgba(75,130,255,.08);
+
+            font-size: 16px;
+
+            transition: .25s ease;
+          }
+
+          .channel-card:hover .watch-arrow {
+            background: var(--blue);
+            color: white;
+            transform: translateX(2px);
+          }
+
+
+          /* =====================================
+             PLAYER
+          ===================================== */
+
+          .player-view {
+            display: none;
+            padding: 28px 0 70px;
+          }
+
+          .player-view.active {
+            display: block;
+          }
+
+          .player-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+            margin-bottom: 16px;
+          }
+
+          .player-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+          }
+
+          .player-icon {
+            width: 42px;
+            height: 42px;
+
+            flex-shrink: 0;
+
+            border-radius: 12px;
+
+            display: grid;
+            place-items: center;
+
+            background:
+              rgba(75,130,255,.1);
+
+            font-size: 18px;
+          }
+
+          .player-title h2 {
+            font-size: 17px;
+            font-weight: 800;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .player-title p {
+            color: var(--green);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-top: 3px;
+          }
+
+          .player-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .action-btn {
+            height: 38px;
+            padding: 0 13px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            background:
+              rgba(255,255,255,.04);
+
+            color: white;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            transition: .2s ease;
+          }
+
+          .action-btn:hover {
+            background:
+              rgba(255,255,255,.08);
+          }
+
+          .video-shell {
+            overflow: hidden;
+            position: relative;
+
+            width: 100%;
+
+            border-radius: 18px;
+
+            background: #000;
+
+            border:
+              1px solid
+              rgba(255,255,255,.08);
+
+            box-shadow:
+              0 30px 80px
+              rgba(0,0,0,.45);
+          }
+
+          .video-card {
+            width: 100%;
+          }
+
+          .video-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            min-height: 320px;
+
+            position: relative;
+
+            background: #000;
+          }
+
+          #streamIframe {
+            width: 100%;
+            height: 100%;
+
+            position: absolute;
+            inset: 0;
+
+            border: 0;
+            background: #000;
+          }
+
+          .video-info {
+            min-height: 68px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 12px 15px;
+
+            background:
+              linear-gradient(
+                180deg,
+                #0a1020,
+                #080d18
+              );
+          }
+
+          .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+          }
+
+          .now-dot {
+            width: 9px;
+            height: 9px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+              0 0 12px
+              rgba(37,229,138,.65);
+          }
+
+          .now-playing div {
+            min-width: 0;
+          }
+
+          .now-playing strong {
+            display: block;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .now-playing span {
+            display: block;
+
+            color: #68768b;
+
+            font-size: 9px;
+            margin-top: 3px;
+          }
+
+
+          /* =====================================
              LIVE WATCHING
-          ===================================================== */
+          ===================================== */
 
-          this.BASE_WATCHING = 345;
+          .live-watching {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
 
-          this.viewerRef = null;
+            padding: 7px 11px;
 
-          this.viewerListener = null;
+            border-radius: 999px;
 
-          this.viewerChannelId = null;
+            background:
+              rgba(37,229,138,.07);
 
-          this.firebaseDB = null;
+            border:
+              1px solid
+              rgba(37,229,138,.16);
 
-          this.firebaseReady = false;
+            color: #8c99ad;
 
-        }
+            font-size: 9px;
+            font-weight: 700;
 
+            white-space: nowrap;
+          }
 
-        connectedCallback() {
+          .live-watching strong {
+            color: white;
+            font-size: 10px;
+          }
 
-          this.render();
+          .live-watching-dot {
+            width: 6px;
+            height: 6px;
 
-          this.initEvents();
+            border-radius: 50%;
 
-          this.initFirebaseViewers();
+            background: var(--green);
 
-          this.loadChannelsData();
+            box-shadow:
+              0 0 10px
+              rgba(37,229,138,.65);
 
-        }
+            animation:
+              watchingPulse 1.5s infinite;
+          }
 
+          @keyframes watchingPulse {
 
-        /* =====================================================
-           RENDER
-        ===================================================== */
+            0% {
+              box-shadow:
+                0 0 0 0
+                rgba(37,229,138,.45);
+            }
 
-        render() {
+            70% {
+              box-shadow:
+                0 0 0 6px
+                rgba(37,229,138,0);
+            }
 
-          this.shadow.innerHTML = `
+            100% {
+              box-shadow:
+                0 0 0 0
+                rgba(37,229,138,0);
+            }
 
-            <style>
+          }
 
-              /* =================================================
-                 ROOT
-              ================================================= */
 
-              :host {
+          /* =====================================
+             LOADING
+          ===================================== */
 
-                --bg:
-                  #050812;
+          .loading {
+            min-height: 240px;
 
-                --bg2:
-                  #080d18;
+            grid-column: 1 / -1;
 
-                --card:
-                  rgba(255,255,255,.045);
+            display: flex;
+            flex-direction: column;
 
-                --card-hover:
-                  rgba(255,255,255,.075);
+            align-items: center;
+            justify-content: center;
 
-                --text:
-                  #f7f9fc;
+            gap: 10px;
 
-                --muted:
-                  #8995a8;
+            color: var(--muted);
+            font-size: 12px;
+          }
 
-                --blue:
-                  #4b82ff;
+          .loader {
+            width: 28px;
+            height: 28px;
 
-                --blue2:
-                  #2961e8;
+            border:
+              3px solid
+              rgba(255,255,255,.08);
 
-                --cyan:
-                  #27d9ff;
+            border-top-color:
+              var(--blue);
 
-                --green:
-                  #25e58a;
+            border-radius: 50%;
 
-                --red:
-                  #ff526b;
+            animation:
+              spin .8s linear infinite;
+          }
 
-                --border:
-                  rgba(255,255,255,.08);
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
 
-                --shadow:
-                  0 25px 70px rgba(0,0,0,.4);
 
-                display: block;
+          /* =====================================
+             COMMUNITY
+          ===================================== */
 
-                min-height: 100vh;
+          .community {
+            padding: 25px 0 70px;
+          }
 
-                color: var(--text);
+          .community-head {
+            margin-bottom: 20px;
+          }
 
-                font-family:
-                  Inter,
-                  Arial,
-                  sans-serif;
+          .community-mini {
+            color: #7190ca;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+          }
 
-                background:
-                  var(--bg);
+          .community-head h2 {
+            font-size: 24px;
+            font-weight: 800;
+          }
 
-              }
+          .community-head p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 7px;
+          }
 
+          .community-grid {
+            display: grid;
 
-              * {
+            grid-template-columns:
+              repeat(2,1fr);
 
-                box-sizing: border-box;
+            gap: 12px;
+          }
 
-                margin: 0;
+          .community-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-                padding: 0;
+            gap: 15px;
 
-                -webkit-tap-highlight-color:
-                  transparent;
+            padding: 18px;
 
-              }
+            border:
+              1px solid
+              var(--border);
 
+            border-radius: 16px;
 
-              button,
-              input {
+            background:
+              rgba(255,255,255,.035);
+          }
 
-                font-family: inherit;
+          .community-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
 
-              }
+          .community-icon {
+            width: 42px;
+            height: 42px;
 
+            display: grid;
+            place-items: center;
 
-              button {
+            border-radius: 12px;
 
-                cursor: pointer;
+            background:
+              rgba(75,130,255,.1);
 
-              }
+            font-size: 18px;
+          }
 
+          .community-card h3 {
+            font-size: 12px;
+            font-weight: 800;
+          }
 
-              body {
+          .community-card p {
+            color: #68768b;
+            font-size: 9px;
+            margin-top: 4px;
+          }
 
-                margin: 0;
+          .telegram-btn {
+            height: 36px;
 
-              }
+            padding: 0 14px;
 
+            border: 0;
+            border-radius: 10px;
 
-              /* =================================================
-                 APP BACKGROUND
-              ================================================= */
+            color: white;
 
-              .app {
+            background:
+              linear-gradient(
+                135deg,
+                #0088cc,
+                #006db1
+              );
 
-                min-height: 100vh;
+            font-size: 10px;
+            font-weight: 800;
+          }
 
-                position: relative;
 
-                overflow: hidden;
+          /* =====================================
+             TELEGRAM FLOAT
+          ===================================== */
 
-                background:
+          .floating-telegram {
+            position: fixed;
 
-                  radial-gradient(
-                    circle at 10% -5%,
-                    rgba(53,105,255,.18),
-                    transparent 32%
-                  ),
+            right: 20px;
+            bottom: 20px;
 
-                  radial-gradient(
-                    circle at 95% 5%,
-                    rgba(0,214,190,.08),
-                    transparent 28%
-                  ),
+            z-index: 100;
 
-                  linear-gradient(
-                    180deg,
-                    #050812 0%,
-                    #070c17 100%
-                  );
+            width: 50px;
+            height: 50px;
 
-              }
+            border: 0;
+            border-radius: 15px;
 
+            display: grid;
+            place-items: center;
 
-              .background-glow {
+            background: #229ed9;
+            color: white;
 
-                position: fixed;
+            box-shadow:
+              0 15px 35px
+              rgba(34,158,217,.28);
 
-                width: 420px;
+            transition: .25s ease;
+          }
 
-                height: 420px;
+          .floating-telegram:hover {
+            transform: translateY(-4px);
+          }
 
-                border-radius: 50%;
+          .floating-telegram svg {
+            width: 23px;
+            height: 23px;
+            fill: currentColor;
+          }
 
-                pointer-events: none;
 
-                filter: blur(110px);
+          /* =====================================
+             MODAL
+          ===================================== */
 
-                opacity: .45;
+          .modal {
+            position: fixed;
+            inset: 0;
 
-                z-index: 0;
+            z-index: 1000;
 
-              }
+            display: none;
 
+            align-items: center;
+            justify-content: center;
 
-              .glow-one {
+            padding: 20px;
 
-                top: -250px;
+            background:
+              rgba(0,0,0,.65);
 
-                left: -150px;
+            backdrop-filter:
+              blur(10px);
+          }
 
-                background:
-                  rgba(47,100,255,.18);
+          .modal.show {
+            display: flex;
+          }
 
-              }
+          .modal-card {
+            width: min(420px,100%);
 
+            padding: 28px;
 
-              .glow-two {
+            border-radius: 20px;
 
-                right: -250px;
+            border:
+              1px solid
+              var(--border);
 
-                bottom: -100px;
+            background: #0a1020;
 
-                background:
-                  rgba(0,210,180,.10);
+            box-shadow:
+              0 30px 90px
+              rgba(0,0,0,.5);
 
-              }
+            text-align: center;
+          }
 
+          .modal-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+          }
 
-              .container {
+          .modal-card h3 {
+            font-size: 20px;
+            font-weight: 800;
+          }
 
-                width:
-                  min(
-                    1240px,
-                    calc(100% - 40px)
-                  );
+          .modal-card p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 10px 0 20px;
+          }
 
-                margin:
-                  0 auto;
+          .modal-buttons {
+            display: flex;
+            gap: 8px;
+          }
 
-                position:
-                  relative;
+          .modal-buttons button {
+            flex: 1;
+            height: 42px;
 
-                z-index: 2;
+            border: none;
+            border-radius: 11px;
 
-              }
+            font-size: 10px;
+            font-weight: 800;
+          }
 
+          .modal-join {
+            color: white;
 
-              /* =================================================
-                 HEADER
-              ================================================= */
+            background:
+              linear-gradient(
+                135deg,
+                #0088cc,
+                #006db1
+              );
+          }
 
-              .header {
+          .modal-close {
+            color: #b6c0d0;
 
-                height: 76px;
+            background:
+              rgba(255,255,255,.06);
 
-                display: flex;
+            border:
+              1px solid
+              rgba(255,255,255,.07) !important;
+          }
 
-                align-items: center;
 
-                justify-content:
-                  space-between;
+          /* =====================================
+             TOAST
+          ===================================== */
 
-                border-bottom:
-                  1px solid
-                  rgba(255,255,255,.055);
+          .toast {
+            position: fixed;
 
-              }
+            left: 50%;
+            bottom: 26px;
 
+            z-index: 10000;
 
-              .brand {
+            transform:
+              translate(-50%,20px);
 
-                display: flex;
+            opacity: 0;
 
-                align-items: center;
+            pointer-events: none;
 
-                gap: 11px;
+            padding: 11px 16px;
 
-              }
+            border-radius: 11px;
 
+            color: white;
 
-              .brand-logo {
+            background: #141d2b;
 
-                width: 42px;
+            border:
+              1px solid
+              rgba(255,255,255,.08);
 
-                height: 42px;
+            box-shadow:
+              0 15px 40px
+              rgba(0,0,0,.35);
 
-                border-radius: 13px;
+            font-size: 11px;
 
-                display: grid;
+            transition: .25s ease;
+          }
 
-                place-items: center;
+          .toast.show {
+            opacity: 1;
 
-                font-size: 20px;
+            transform:
+              translate(-50%,0);
+          }
 
-                background:
-                  linear-gradient(
-                    145deg,
-                    #4d8dff,
-                    #2853d6
-                  );
 
-                box-shadow:
-                  0 10px 30px
-                  rgba(55,105,255,.3),
+          /* =====================================
+             FOOTER
+          ===================================== */
 
-                  inset 0 1px
-                  rgba(255,255,255,.25);
+          .footer {
+            padding: 0 0 35px;
 
-              }
+            color: #566277;
 
+            text-align: center;
 
-              .brand-name {
+            font-size: 9px;
+            letter-spacing: .2px;
+          }
 
-                font-size: 18px;
 
-                font-weight: 800;
+          /* =====================================
+             MOBILE
+          ===================================== */
 
-                letter-spacing:
-                  -.5px;
+          @media (max-width:760px) {
 
-              }
+            .container {
+              width: calc(100% - 24px);
+            }
 
+            .header {
+              height: 68px;
+            }
 
-              .brand-sub {
+            .brand-logo {
+              width: 38px;
+              height: 38px;
+              border-radius: 11px;
+            }
 
-                color:
-                  #68778e;
+            .brand-name {
+              font-size: 16px;
+            }
 
-                font-size: 8px;
+            .brand-sub {
+              font-size: 7px;
+            }
 
-                font-weight: 700;
+            .live-badge {
+              padding: 7px 9px;
+              font-size: 8px;
+            }
 
-                letter-spacing:
-                  2px;
+            .hero {
+              padding: 43px 0 32px;
+            }
 
-                margin-top: 4px;
+            .hero h1 {
+              font-size: 39px;
+              letter-spacing: -2.1px;
+            }
 
-              }
+            .hero p {
+              font-size: 12px;
+              line-height: 1.65;
+            }
 
+            .toolbar {
+              flex-direction: column;
+              align-items: stretch;
+              gap: 13px;
+            }
 
-              .live-badge {
+            .search {
+              width: 100%;
+            }
 
-                display: flex;
+            .channels-grid {
+              grid-template-columns:
+                repeat(2,minmax(0,1fr));
 
-                align-items: center;
+              gap: 9px;
+            }
 
-                gap: 7px;
+            .channel-card {
+              min-height: 142px;
+              padding: 13px;
+              border-radius: 15px;
+            }
 
-                padding:
-                  8px 12px;
+            .channel-icon {
+              width: 37px;
+              height: 37px;
+              border-radius: 11px;
+              font-size: 16px;
+            }
 
-                border-radius:
-                  999px;
+            .channel-name {
+              font-size: 11px;
+            }
 
-                color:
-                  var(--green);
+            .watch-arrow {
+              width: 27px;
+              height: 27px;
+            }
 
-                background:
-                  rgba(37,229,138,.07);
+            .community {
+              padding: 45px 0 70px;
+            }
 
-                border:
-                  1px solid
-                  rgba(37,229,138,.18);
+            .community-grid {
+              grid-template-columns: 1fr;
+            }
 
-                font-size: 10px;
+            .community-card {
+              padding: 16px;
+            }
 
-                font-weight: 800;
+            .player-header {
+              padding: 20px 0 13px;
+            }
 
-                letter-spacing:
-                  .7px;
+            .player-title {
+              min-width: 0;
+            }
 
-              }
+            .player-title h2 {
+              max-width: 170px;
+              font-size: 14px;
+            }
 
+            .player-icon {
+              width: 38px;
+              height: 38px;
+              border-radius: 11px;
+            }
 
-              .live-dot {
+            .action-btn {
+              padding: 0 10px;
+              font-size: 9px;
+            }
 
-                width: 7px;
+            .video-container {
+              min-height: 210px;
+            }
 
-                height: 7px;
+            .video-shell {
+              border-radius: 15px;
+            }
 
-                border-radius: 50%;
+            .video-info {
+              min-height: 64px;
+              padding: 12px 13px;
 
-                background:
-                  var(--green);
+              align-items: flex-start;
+              flex-direction: column;
+            }
 
-                box-shadow:
-                  0 0 0 0
-                  rgba(37,229,138,.6);
+            .live-watching {
+              align-self: flex-start;
+            }
 
-                animation:
-                  livePulse 1.7s infinite;
+            .floating-telegram {
+              width: 48px;
+              height: 48px;
 
-              }
+              right: 14px;
+              bottom: 14px;
 
+              border-radius: 15px;
+            }
 
-              @keyframes livePulse {
+          }
 
-                0% {
+          @media (max-width:430px) {
 
-                  box-shadow:
-                    0 0 0 0
-                    rgba(37,229,138,.6);
+            .hero h1 {
+              font-size: 35px;
+            }
 
-                }
+            .channels-grid {
+              gap: 8px;
+            }
 
-                70% {
+            .channel-card {
+              min-height: 133px;
+              padding: 11px;
+            }
 
-                  box-shadow:
-                    0 0 0 7px
-                    rgba(37,229,138,0);
+            .channel-name {
+              font-size: 10px;
+            }
 
-                }
+            .community-card {
+              flex-direction: column;
+              align-items: stretch;
+            }
 
-                100% {
+            .telegram-btn {
+              width: 100%;
+            }
 
-                  box-shadow:
-                    0 0 0 0
-                    rgba(37,229,138,0);
+          }
 
-                }
+        </style>
 
-              }
 
+        <div class="app">
 
-              /* =================================================
-                 LIVE WATCHING
-              ================================================= */
+          <div class="background-glow glow-one"></div>
+          <div class="background-glow glow-two"></div>
 
-              .live-watching {
 
-                display: inline-flex;
+          <div class="container">
 
-                align-items: center;
+            <!-- HEADER -->
 
-                gap: 7px;
+            <header class="header">
 
-                padding:
-                  7px 11px;
+              <div class="brand">
 
-                border-radius:
-                  999px;
+                <div class="brand-logo">
+                  🏏
+                </div>
 
-                background:
-                  rgba(37,229,138,.07);
+                <div>
 
-                border:
-                  1px solid
-                  rgba(37,229,138,.16);
-
-                color:
-                  #8c99ad;
-
-                font-size: 9px;
-
-                font-weight: 700;
-
-                white-space:
-                  nowrap;
-
-              }
-
-
-              .live-watching strong {
-
-                color:
-                  #ffffff;
-
-                font-size: 10px;
-
-              }
-
-
-              .live-watching-dot {
-
-                width: 6px;
-
-                height: 6px;
-
-                border-radius: 50%;
-
-                background:
-                  var(--green);
-
-                box-shadow:
-                  0 0 10px
-                  rgba(37,229,138,.65);
-
-                animation:
-                  liveWatchingPulse 1.5s infinite;
-
-              }
-
-
-              @keyframes liveWatchingPulse {
-
-                0% {
-
-                  box-shadow:
-                    0 0 0 0
-                    rgba(37,229,138,.45);
-
-                }
-
-                70% {
-
-                  box-shadow:
-                    0 0 0 6px
-                    rgba(37,229,138,0);
-
-                }
-
-                100% {
-
-                  box-shadow:
-                    0 0 0 0
-                    rgba(37,229,138,0);
-
-                }
-
-              }
-
-
-              /* =================================================
-                 HERO
-              ================================================= */
-
-              .hero {
-
-                padding:
-                  62px 0 42px;
-
-              }
-
-
-              .hero-small {
-
-                display: inline-flex;
-
-                align-items: center;
-
-                gap: 8px;
-
-                color:
-                  #7190ca;
-
-                font-size: 10px;
-
-                font-weight: 800;
-
-                letter-spacing:
-                  1.8px;
-
-                text-transform:
-                  uppercase;
-
-                margin-bottom:
-                  15px;
-
-              }
-
-
-              .hero-small-line {
-
-                width: 25px;
-
-                height: 1px;
-
-                background:
-                  var(--blue);
-
-              }
-
-
-              .hero h1 {
-
-                max-width:
-                  780px;
-
-                font-size:
-                  clamp(
-                    36px,
-                    5.5vw,
-                    64px
-                  );
-
-                line-height:
-                  1.02;
-
-                letter-spacing:
-                  -3px;
-
-                font-weight:
-                  800;
-
-              }
-
-
-              .gradient-text {
-
-                background:
-                  linear-gradient(
-                    100deg,
-                    #ffffff 15%,
-                    #72a2ff 65%,
-                    #35d8c3
-                  );
-
-                -webkit-background-clip:
-                  text;
-
-                background-clip:
-                  text;
-
-                color:
-                  transparent;
-
-              }
-
-
-              .hero p {
-
-                max-width:
-                  620px;
-
-                color:
-                  var(--muted);
-
-                font-size:
-                  14px;
-
-                line-height:
-                  1.7;
-
-                margin-top:
-                  19px;
-
-              }
-
-
-              /* =================================================
-                 CHANNEL SECTION
-              ================================================= */
-
-              .toolbar {
-
-                display:
-                  flex;
-
-                align-items:
-                  flex-end;
-
-                justify-content:
-                  space-between;
-
-                gap:
-                  20px;
-
-                margin-bottom:
-                  19px;
-
-              }
-
-
-              .section-title {
-
-                font-size:
-                  20px;
-
-                font-weight:
-                  800;
-
-                letter-spacing:
-                  -.6px;
-
-              }
-
-
-              .section-count {
-
-                color:
-                  #68768b;
-
-                font-size:
-                  11px;
-
-                margin-top:
-                  5px;
-
-              }
-
-
-              .search {
-
-                position:
-                  relative;
-
-                width:
-                  280px;
-
-              }
-
-
-              .search input {
-
-                width:
-                  100%;
-
-                height:
-                  44px;
-
-                border-radius:
-                  13px;
-
-                outline:
-                  none;
-
-                border:
-                  1px solid
-                  var(--border);
-
-                background:
-                  rgba(255,255,255,.04);
-
-                color:
-                  white;
-
-                padding:
-                  0 14px 0 40px;
-
-                font-size:
-                  12px;
-
-                transition:
-                  .25s ease;
-
-              }
-
-
-              .search input::placeholder {
-
-                color:
-                  #657389;
-
-              }
-
-
-              .search input:focus {
-
-                border-color:
-                  rgba(75,130,255,.55);
-
-                background:
-                  rgba(255,255,255,.06);
-
-                box-shadow:
-                  0 0 0 4px
-                  rgba(75,130,255,.07);
-
-              }
-
-
-              .search-icon {
-
-                position:
-                  absolute;
-
-                left:
-                  14px;
-
-                top:
-                  50%;
-
-                transform:
-                  translateY(-50%);
-
-                color:
-                  #73829a;
-
-                font-size:
-                  15px;
-
-              }
-
-
-              /* =================================================
-                 CHANNEL GRID
-              ================================================= */
-
-              .channels-grid {
-
-                display:
-                  grid;
-
-                grid-template-columns:
-                  repeat(
-                    auto-fill,
-                    minmax(245px, 1fr)
-                  );
-
-                gap:
-                  14px;
-
-                padding-bottom:
-                  70px;
-
-              }
-
-
-              .channel-card {
-
-                min-height:
-                  150px;
-
-                position:
-                  relative;
-
-                overflow:
-                  hidden;
-
-                padding:
-                  18px;
-
-                border-radius:
-                  19px;
-
-                border:
-                  1px solid
-                  var(--border);
-
-                background:
-                  linear-gradient(
-                    145deg,
-                    rgba(255,255,255,.055),
-                    rgba(255,255,255,.018)
-                  );
-
-                box-shadow:
-                  0 10px 35px
-                  rgba(0,0,0,.12);
-
-                cursor:
-                  pointer;
-
-                display:
-                  flex;
-
-                flex-direction:
-                  column;
-
-                justify-content:
-                  space-between;
-
-                transition:
-                  .25s ease;
-
-                animation:
-                  cardIn .45s ease both;
-
-              }
-
-
-              @keyframes cardIn {
-
-                from {
-
-                  opacity: 0;
-
-                  transform:
-                    translateY(12px);
-
-                }
-
-                to {
-
-                  opacity: 1;
-
-                  transform:
-                    translateY(0);
-
-                }
-
-              }
-
-
-              .channel-card::after {
-
-                content: "";
-
-                position:
-                  absolute;
-
-                width:
-                  150px;
-
-                height:
-                  150px;
-
-                border-radius:
-                  50%;
-
-                right:
-                  -85px;
-
-                top:
-                  -85px;
-
-                background:
-                  rgba(75,130,255,.09);
-
-                filter:
-                  blur(4px);
-
-              }
-
-
-              .channel-card:hover {
-
-                transform:
-                  translateY(-5px);
-
-                border-color:
-                  rgba(75,130,255,.42);
-
-                background:
-                  linear-gradient(
-                    145deg,
-                    rgba(75,130,255,.09),
-                    rgba(255,255,255,.025)
-                  );
-
-                box-shadow:
-                  0 20px 50px
-                  rgba(0,0,0,.28);
-
-              }
-
-
-              .channel-top {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                justify-content:
-                  space-between;
-
-              }
-
-
-              .channel-icon {
-
-                width:
-                  43px;
-
-                height:
-                  43px;
-
-                border-radius:
-                  13px;
-
-                display:
-                  grid;
-
-                place-items:
-                  center;
-
-                background:
-                  linear-gradient(
-                    145deg,
-                    rgba(75,130,255,.18),
-                    rgba(39,217,255,.04)
-                  );
-
-                border:
-                  1px solid
-                  rgba(75,130,255,.16);
-
-                font-size:
-                  19px;
-
-              }
-
-
-              .channel-live {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                gap:
-                  5px;
-
-                padding:
-                  5px 8px;
-
-                border-radius:
-                  7px;
-
-                background:
-                  rgba(37,229,138,.07);
-
-                color:
-                  var(--green);
-
-                font-size:
-                  8px;
-
-                font-weight:
-                  800;
-
-                letter-spacing:
-                  .8px;
-
-              }
-
-
-              .channel-live::before {
-
-                content: "";
-
-                width:
-                  5px;
-
-                height:
-                  5px;
-
-                border-radius:
-                  50%;
-
-                background:
-                  var(--green);
-
-              }
-
-
-              .channel-bottom {
-
-                display:
-                  flex;
-
-                align-items:
-                  flex-end;
-
-                justify-content:
-                  space-between;
-
-                gap:
-                  10px;
-
-                margin-top:
-                  18px;
-
-              }
-
-
-              .channel-name {
-
-                color:
-                  #ffffff;
-
-                font-size:
-                  13px;
-
-                font-weight:
-                  700;
-
-                line-height:
-                  1.4;
-
-                max-width:
-                  85%;
-
-              }
-
-
-              .watch-arrow {
-
-                width:
-                  30px;
-
-                height:
-                  30px;
-
-                flex-shrink:
-                  0;
-
-                border-radius:
-                  10px;
-
-                display:
-                  grid;
-
-                place-items:
-                  center;
-
-                color:
-                  #9bb5ef;
-
-                background:
-                  rgba(75,130,255,.08);
-
-                font-size:
-                  16px;
-
-                transition:
-                  .25s ease;
-
-              }
-
-
-              .channel-card:hover
-              .watch-arrow {
-
-                background:
-                  var(--blue);
-
-                color:
-                  white;
-
-                transform:
-                  translateX(2px);
-
-              }
-
-
-              /* =================================================
-                 PLAYER
-              ================================================= */
-
-              .player-view {
-
-                display:
-                  none;
-
-                padding:
-                  28px 0 70px;
-
-              }
-
-
-              .player-view.active {
-
-                display:
-                  block;
-
-              }
-
-
-              .player-header {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                justify-content:
-                  space-between;
-
-                gap:
-                  15px;
-
-                margin-bottom:
-                  16px;
-
-              }
-
-
-              .player-header-left {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                gap:
-                  12px;
-
-                min-width:
-                  0;
-
-              }
-
-
-              .back-btn {
-
-                width:
-                  40px;
-
-                height:
-                  40px;
-
-                flex-shrink:
-                  0;
-
-                border:
-                  1px solid
-                  var(--border);
-
-                border-radius:
-                  12px;
-
-                background:
-                  rgba(255,255,255,.045);
-
-                color:
-                  #ffffff;
-
-                display:
-                  grid;
-
-                place-items:
-                  center;
-
-                font-size:
-                  18px;
-
-                transition:
-                  .2s ease;
-
-              }
-
-
-              .back-btn:hover {
-
-                background:
-                  rgba(255,255,255,.08);
-
-                transform:
-                  translateX(-2px);
-
-              }
-
-
-              .player-channel-name {
-
-                font-size:
-                  17px;
-
-                font-weight:
-                  800;
-
-                white-space:
-                  nowrap;
-
-                overflow:
-                  hidden;
-
-                text-overflow:
-                  ellipsis;
-
-              }
-
-
-              .player-channel-live {
-
-                color:
-                  var(--green);
-
-                font-size:
-                  9px;
-
-                font-weight:
-                  800;
-
-                letter-spacing:
-                  1px;
-
-                margin-top:
-                  3px;
-
-              }
-
-
-              .player-actions {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                gap:
-                  8px;
-
-              }
-
-
-              .action-btn {
-
-                height:
-                  38px;
-
-                padding:
-                  0 13px;
-
-                border:
-                  1px solid
-                  var(--border);
-
-                border-radius:
-                  11px;
-
-                background:
-                  rgba(255,255,255,.04);
-
-                color:
-                  #ffffff;
-
-                font-size:
-                  10px;
-
-                font-weight:
-                  700;
-
-                transition:
-                  .2s ease;
-
-              }
-
-
-              .action-btn:hover {
-
-                background:
-                  rgba(255,255,255,.08);
-
-              }
-
-
-              .video-shell {
-
-                overflow:
-                  hidden;
-
-                position:
-                  relative;
-
-                width:
-                  100%;
-
-                aspect-ratio:
-                  16 / 9;
-
-                min-height:
-                  320px;
-
-                border-radius:
-                  18px;
-
-                background:
-                  #000000;
-
-                border:
-                  1px solid
-                  rgba(255,255,255,.08);
-
-                box-shadow:
-                  0 30px 80px
-                  rgba(0,0,0,.45);
-
-              }
-
-
-              #streamIframe {
-
-                width:
-                  100%;
-
-                height:
-                  100%;
-
-                position:
-                  absolute;
-
-                inset:
-                  0;
-
-                border:
-                  0;
-
-                background:
-                  #000000;
-
-              }
-
-
-              .player-live-badge {
-
-                position:
-                  absolute;
-
-                left:
-                  14px;
-
-                top:
-                  14px;
-
-                z-index:
-                  5;
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                gap:
-                  6px;
-
-                padding:
-                  7px 9px;
-
-                border-radius:
-                  8px;
-
-                background:
-                  rgba(5,8,18,.78);
-
-                border:
-                  1px solid
-                  rgba(255,255,255,.09);
-
-                backdrop-filter:
-                  blur(10px);
-
-                color:
-                  var(--green);
-
-                font-size:
-                  9px;
-
-                font-weight:
-                  800;
-
-                letter-spacing:
-                  .7px;
-
-              }
-
-
-              .player-live-badge::before {
-
-                content:
-                  "";
-
-                width:
-                  6px;
-
-                height:
-                  6px;
-
-                border-radius:
-                  50%;
-
-                background:
-                  var(--green);
-
-              }
-
-
-              .video-info {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                justify-content:
-                  space-between;
-
-                gap:
-                  15px;
-
-                margin-top:
-                  12px;
-
-                padding:
-                  0 3px;
-
-              }
-
-
-              .video-info-left {
-
-                display:
-                  flex;
-
-                align-items:
-                  center;
-
-                gap:
-                  10px;
-
-                min-width:
-                  0;
-
-              }
-
-
-              .video-info-icon {
-
-                width:
-                  36px;
-
-                height:
-                  36px;
-
-                flex-shrink:
-                  0;
-
-                display:
-                  grid;
-
-                place-items:
-                  center;
-
-                border-radius:
-                  10px;
-
-                background:
-                  rgba(75,130,255,.09);
-
-                font-size:
-                  15px;
-
-              }
-
-
-              .video-info-text {
-
-                min-width:
-                  0;
-
-              }
-
-
-              .video-info-title {
-
-                font-size:
-                  11px;
-
-                font-weight:
-                  800;
-
-                white-space:
-                  nowrap;
-
-                overflow:
-                  hidden;
-
-                text-overflow:
-                  ellipsis;
-
-              }
-
-
-              .video-info-sub {
-
-                color:
-                  #68768b;
-
-                font-size:
-                  9px;
-
-                margin-top:
-                  3px;
-
-              }
-
-
-              .hidden {
-
-                display:
-                  none !important;
-
-              }
-
-
-              /* =================================================
-                 LOADING
-              ================================================= */
-
-              .loading {
-
-                min-height:
-                  240px;
-
-                grid-column:
-                  1 / -1;
-
-                display:
-                  flex;
-
-                flex-direction:
-                  column;
-
-                align-items:
-                  center;
-
-                justify-content:
-                  center;
-
-                gap:
-                  10px;
-
-                color:
-                  var(--muted);
-
-                font-size:
-                  12px;
-
-              }
-
-
-              .loading-spinner {
-
-                width:
-                  28px;
-
-                height:
-                  28px;
-
-                border:
-                  3px solid
-                  rgba(255,255,255,.08);
-
-                border-top-color:
-                  var(--blue);
-
-                border-radius:
-                  50%;
-
-                animation:
-                  spin .8s linear infinite;
-
-              }
-
-
-              @keyframes spin {
-
-                to {
-
-                  transform:
-                    rotate(360deg);
-
-                }
-
-              }
-
-
-              /* =================================================
-                 TELEGRAM
-              ================================================= */
-
-              .telegram-float {
-
-                position:
-                  fixed;
-
-                right:
-                  20px;
-
-                bottom:
-                  20px;
-
-                z-index:
-                  20;
-
-                width:
-                  48px;
-
-                height:
-                  48px;
-
-                border:
-                  0;
-
-                border-radius:
-                  50%;
-
-                background:
-                  #229ed9;
-
-                color:
-                  white;
-
-                display:
-                  grid;
-
-                place-items:
-                  center;
-
-                font-size:
-                  19px;
-
-                box-shadow:
-                  0 15px 35px
-                  rgba(34,158,217,.28);
-
-                transition:
-                  .25s ease;
-
-              }
-
-
-              .telegram-float:hover {
-
-                transform:
-                  translateY(-4px);
-
-              }
-
-
-              .telegram-modal {
-
-                position:
-                  fixed;
-
-                inset:
-                  0;
-
-                z-index:
-                  100;
-
-                display:
-                  none;
-
-                align-items:
-                  center;
-
-                justify-content:
-                  center;
-
-                padding:
-                  20px;
-
-                background:
-                  rgba(0,0,0,.65);
-
-                backdrop-filter:
-                  blur(10px);
-
-              }
-
-
-              .telegram-modal.show {
-
-                display:
-                  flex;
-
-              }
-
-
-              .telegram-box {
-
-                width:
-                  min(
-                    420px,
-                    100%
-                  );
-
-                padding:
-                  28px;
-
-                border-radius:
-                  20px;
-
-                border:
-                  1px solid
-                  var(--border);
-
-                background:
-                  #0a1020;
-
-                box-shadow:
-                  0 30px 90px
-                  rgba(0,0,0,.5);
-
-                text-align:
-                  center;
-
-              }
-
-
-              .telegram-box-icon {
-
-                font-size:
-                  36px;
-
-                margin-bottom:
-                  12px;
-
-              }
-
-
-              .telegram-box h3 {
-
-                font-size:
-                  20px;
-
-                font-weight:
-                  800;
-
-              }
-
-
-              .telegram-box p {
-
-                color:
-                  var(--muted);
-
-                font-size:
-                  12px;
-
-                line-height:
-                  1.6;
-
-                margin:
-                  10px 0 20px;
-
-              }
-
-
-              .telegram-actions {
-
-                display:
-                  flex;
-
-                gap:
-                  8px;
-
-              }
-
-
-              .telegram-actions button {
-
-                flex:
-                  1;
-
-                height:
-                  42px;
-
-                border:
-                  0;
-
-                border-radius:
-                  11px;
-
-                font-size:
-                  11px;
-
-                font-weight:
-                  800;
-
-              }
-
-
-              #modalJoin {
-
-                background:
-                  var(--blue);
-
-                color:
-                  white;
-
-              }
-
-
-              #modalClose {
-
-                background:
-                  rgba(255,255,255,.06);
-
-                color:
-                  white;
-
-              }
-
-
-              /* =================================================
-                 TOAST
-              ================================================= */
-
-              .toast {
-
-                position:
-                  fixed;
-
-                left:
-                  50%;
-
-                bottom:
-                  25px;
-
-                transform:
-                  translate(-50%,20px);
-
-                opacity:
-                  0;
-
-                pointer-events:
-                  none;
-
-                z-index:
-                  200;
-
-                padding:
-                  11px 16px;
-
-                border-radius:
-                  10px;
-
-                background:
-                  #151d2e;
-
-                border:
-                  1px solid
-                  rgba(255,255,255,.1);
-
-                color:
-                  white;
-
-                font-size:
-                  11px;
-
-                box-shadow:
-                  0 15px 40px
-                  rgba(0,0,0,.3);
-
-                transition:
-                  .25s ease;
-
-              }
-
-
-              .toast.show {
-
-                opacity:
-                  1;
-
-                transform:
-                  translate(-50%,0);
-
-              }
-
-
-              /* =================================================
-                 FOOTER
-              ================================================= */
-
-              .footer {
-
-                border-top:
-                  1px solid
-                  rgba(255,255,255,.05);
-
-                padding:
-                  25px 0;
-
-                color:
-                  #59667a;
-
-                font-size:
-                  9px;
-
-                text-align:
-                  center;
-
-              }
-
-
-              /* =================================================
-                 MOBILE
-              ================================================= */
-
-              @media (
-                max-width: 700px
-              ) {
-
-                .container {
-
-                  width:
-                    min(
-                      100% - 24px,
-                      1240px
-                    );
-
-                }
-
-
-                .header {
-
-                  height:
-                    68px;
-
-                }
-
-
-                .brand-logo {
-
-                  width:
-                    38px;
-
-                  height:
-                    38px;
-
-                  border-radius:
-                    11px;
-
-                }
-
-
-                .brand-name {
-
-                  font-size:
-                    16px;
-
-                }
-
-
-                .live-badge {
-
-                  padding:
-                    7px 9px;
-
-                  font-size:
-                    8px;
-
-                }
-
-
-                .hero {
-
-                  padding:
-                    42px 0 30px;
-
-                }
-
-
-                .hero h1 {
-
-                  font-size:
-                    39px;
-
-                  letter-spacing:
-                    -2px;
-
-                }
-
-
-                .hero p {
-
-                  font-size:
-                    12px;
-
-                }
-
-
-                .toolbar {
-
-                  align-items:
-                    stretch;
-
-                  flex-direction:
-                    column;
-
-                }
-
-
-                .search {
-
-                  width:
-                    100%;
-
-                }
-
-
-                .channels-grid {
-
-                  grid-template-columns:
-                    repeat(
-                      2,
-                      minmax(0,1fr)
-                    );
-
-                  gap:
-                    9px;
-
-                }
-
-
-                .channel-card {
-
-                  min-height:
-                    135px;
-
-                  padding:
-                    13px;
-
-                  border-radius:
-                    15px;
-
-                }
-
-
-                .channel-icon {
-
-                  width:
-                    37px;
-
-                  height:
-                    37px;
-
-                  border-radius:
-                    11px;
-
-                  font-size:
-                    16px;
-
-                }
-
-
-                .channel-name {
-
-                  font-size:
-                    11px;
-
-                }
-
-
-                .watch-arrow {
-
-                  width:
-                    27px;
-
-                  height:
-                    27px;
-
-                  font-size:
-                    13px;
-
-                }
-
-
-                .player-header {
-
-                  align-items:
-                    flex-start;
-
-                }
-
-
-                .player-actions {
-
-                  flex-shrink:
-                    0;
-
-                }
-
-
-                .action-btn {
-
-                  width:
-                    38px;
-
-                  padding:
-                    0;
-
-                  font-size:
-                    0;
-
-                }
-
-
-                .action-btn::before {
-
-                  font-size:
-                    14px;
-
-                }
-
-
-                .action-btn:first-child::before {
-
-                  content:
-                    "↗";
-
-                }
-
-
-                .video-shell {
-
-                  min-height:
-                    210px;
-
-                  border-radius:
-                    12px;
-
-                }
-
-
-                .video-info {
-
-                  align-items:
-                    flex-start;
-
-                  flex-direction:
-                    column;
-
-                }
-
-
-                .live-watching {
-
-                  margin-left:
-                    0;
-
-                }
-
-
-                .telegram-float {
-
-                  width:
-                    44px;
-
-                  height:
-                    44px;
-
-                  right:
-                    14px;
-
-                  bottom:
-                    14px;
-
-                }
-
-              }
-
-            </style>
-
-
-            <div class="app">
-
-              <div class="background-glow glow-one"></div>
-              <div class="background-glow glow-two"></div>
-
-
-              <div class="container">
-
-                <!-- =================================================
-                     HEADER
-                ================================================= -->
-
-                <header class="header">
-
-                  <div class="brand">
-
-                    <div class="brand-logo">
-                      🏏
-                    </div>
-
-                    <div>
-
-                      <div class="brand-name">
-                        Criczone
-                      </div>
-
-                      <div class="brand-sub">
-                        LIVE CRICKET HUB
-                      </div>
-
-                    </div>
-
+                  <div class="brand-name">
+                    Criczone
                   </div>
 
-
-                  <div class="live-badge">
-
-                    <span class="live-dot"></span>
-
-                    LIVE NOW
-
+                  <div class="brand-sub">
+                    PREMIUM CRICKET HUB
                   </div>
 
-                </header>
+                </div>
+
+              </div>
 
 
-                <!-- =================================================
-                     HUB
-                ================================================= -->
+              <div class="live-badge">
 
-                <main id="hubView">
+                <span class="live-dot"></span>
 
-                  <section class="hero">
+                LIVE NOW
 
-                    <div class="hero-small">
+              </div>
 
-                      <span class="hero-small-line"></span>
+            </header>
 
-                      CRICKET • STREAM • LIVE
 
+            <!-- HUB -->
+
+            <main
+              class="hub-view"
+              id="hubView"
+            >
+
+              <section class="hero">
+
+                <div class="hero-small">
+
+                  <span class="hero-small-line"></span>
+
+                  LIVE CRICKET STREAMING
+
+                </div>
+
+
+                <h1>
+
+                  Your home for
+
+                  <span class="gradient-text">
+                    live cricket.
+                  </span>
+
+                </h1>
+
+
+                <p>
+
+                  Watch live cricket channels
+                  in one clean, fast and
+                  premium streaming hub.
+
+                </p>
+
+              </section>
+
+
+              <section>
+
+                <div class="toolbar">
+
+                  <div>
+
+                    <div class="section-title">
+                      Live Channels
                     </div>
-
-
-                    <h1>
-
-                      Watch your favourite
-
-                      <span class="gradient-text">
-                        cricket channels
-                      </span>
-
-                      live.
-
-                    </h1>
-
-
-                    <p>
-
-                      One premium place for live
-                      cricket channels, fast access,
-                      and a clean viewing experience.
-
-                    </p>
-
-                  </section>
-
-
-                  <section>
-
-                    <div class="toolbar">
-
-                      <div>
-
-                        <div class="section-title">
-                          Live Channels
-                        </div>
-
-                        <div
-                          class="section-count"
-                          id="channelCount"
-                        >
-                          Loading channels...
-                        </div>
-
-                      </div>
-
-
-                      <div class="search">
-
-                        <span class="search-icon">
-                          🔎
-                        </span>
-
-                        <input
-                          id="searchInput"
-                          type="text"
-                          placeholder="Search channel..."
-                          autocomplete="off"
-                        >
-
-                      </div>
-
-                    </div>
-
 
                     <div
-                      class="channels-grid"
-                      id="channelsGrid"
+                      class="section-count"
+                      id="channelCount"
                     >
-
-                      <div class="loading">
-
-                        <div
-                          class="loading-spinner"
-                        ></div>
-
-                        <span>
-                          Loading live channels...
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </section>
-
-                </main>
-
-
-                <!-- =================================================
-                     PLAYER
-                ================================================= -->
-
-                <section
-                  class="player-view"
-                  id="playerView"
-                >
-
-                  <div class="player-header">
-
-                    <div class="player-header-left">
-
-                      <button
-                        class="back-btn"
-                        id="backBtn"
-                        type="button"
-                        aria-label="Back"
-                      >
-                        ←
-                      </button>
-
-
-                      <div>
-
-                        <div
-                          class="player-channel-name"
-                          id="playerChannelName"
-                        >
-                          Criczone Live
-                        </div>
-
-                        <div class="player-channel-live">
-                          LIVE STREAM
-                        </div>
-
-                      </div>
-
-                    </div>
-
-
-                    <div class="player-actions">
-
-                      <button
-                        class="action-btn"
-                        id="shareBtn"
-                        type="button"
-                      >
-                        SHARE
-                      </button>
-
+                      Loading channels...
                     </div>
 
                   </div>
 
 
-                  <div class="video-shell">
+                  <div class="search">
 
-                    <div class="player-live-badge">
-                      LIVE
+                    <span class="search-icon">
+                      🔎
+                    </span>
+
+                    <input
+                      id="searchInput"
+                      type="text"
+                      placeholder="Search channels..."
+                      autocomplete="off"
+                    >
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  class="channels-grid"
+                  id="channelsGrid"
+                >
+
+                  <div class="loading">
+
+                    <div class="loader"></div>
+
+                    <span>
+                      Loading live channels...
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </section>
+
+
+              <!-- COMMUNITY -->
+
+              <section class="community">
+
+                <div class="community-head">
+
+                  <div class="community-mini">
+                    STAY CONNECTED
+                  </div>
+
+                  <h2>
+                    Join the Criczone community
+                  </h2>
+
+                  <p>
+                    Get live updates,
+                    channel updates and
+                    cricket information.
+                  </p>
+
+                </div>
+
+
+                <div class="community-grid">
+
+                  <div class="community-card">
+
+                    <div class="community-left">
+
+                      <div class="community-icon">
+                        ✈️
+                      </div>
+
+                      <div>
+
+                        <h3>
+                          Criczone Telegram
+                        </h3>
+
+                        <p>
+                          Join our Telegram
+                          community for updates.
+                        </p>
+
+                      </div>
+
                     </div>
 
+
+                    <button
+                      class="telegram-btn"
+                      id="telegramBtn1"
+                      type="button"
+                    >
+                      JOIN
+                    </button>
+
+                  </div>
+
+
+                  <div class="community-card">
+
+                    <div class="community-left">
+
+                      <div class="community-icon">
+                        🏏
+                      </div>
+
+                      <div>
+
+                        <h3>
+                          Live Cricket
+                        </h3>
+
+                        <p>
+                          Select a channel above
+                          and start watching live.
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    <button
+                      class="telegram-btn"
+                      id="telegramBtn2"
+                      type="button"
+                    >
+                      JOIN
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </section>
+
+            </main>
+
+
+            <!-- PLAYER -->
+
+            <section
+              class="player-view"
+              id="playerView"
+            >
+
+              <div class="player-header">
+
+                <div class="player-title">
+
+                  <button
+                    class="action-btn"
+                    id="backBtn"
+                    type="button"
+                  >
+                    ← BACK
+                  </button>
+
+
+                  <div class="player-icon">
+                    📺
+                  </div>
+
+
+                  <div>
+
+                    <h2 id="playerChannelName">
+                      Criczone Live
+                    </h2>
+
+                    <p>
+                      LIVE STREAM
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="player-actions">
+
+                  <button
+                    class="action-btn"
+                    id="shareBtn"
+                    type="button"
+                  >
+                    SHARE
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="video-shell">
+
+                <div class="video-card">
+
+                  <div class="video-container">
 
                     <iframe
                       id="streamIframe"
@@ -2525,24 +1778,19 @@
 
                   <div class="video-info">
 
-                    <div class="video-info-left">
+                    <div class="now-playing">
 
-                      <div class="video-info-icon">
-                        📺
-                      </div>
+                      <span class="now-dot"></span>
 
-                      <div class="video-info-text">
+                      <div>
 
-                        <div
-                          class="video-info-title"
-                          id="channelNameDisplay"
-                        >
+                        <strong id="channelNameDisplay">
                           Criczone Live
-                        </div>
+                        </strong>
 
-                        <div class="video-info-sub">
+                        <span>
                           Live cricket streaming
-                        </div>
+                        </span>
 
                       </div>
 
@@ -2554,15 +1802,11 @@
                       id="liveWatching"
                     >
 
-                      <span
-                        class="live-watching-dot"
-                      ></span>
+                      <span class="live-watching-dot"></span>
 
                       <span>
 
-                        <strong
-                          id="liveWatchingCount"
-                        >
+                        <strong id="liveWatchingCount">
                           345
                         </strong>
 
@@ -2574,2670 +1818,1456 @@
 
                   </div>
 
-                </section>
-
-
-                <!-- =================================================
-                     FOOTER
-                ================================================= -->
-
-                <footer class="footer">
-
-                  © 2026 Criczone Live.
-                  All rights reserved.
-
-                </footer>
-
-              </div>
-
-
-              <!-- =================================================
-                   TELEGRAM FLOAT
-              ================================================= -->
-
-              <button
-                class="telegram-float"
-                id="floatTelegram"
-                type="button"
-                aria-label="Telegram"
-              >
-                ✈
-              </button>
-
-
-              <!-- =================================================
-                   TELEGRAM MODAL
-              ================================================= -->
-
-              <div
-                class="telegram-modal"
-                id="telegramModal"
-              >
-
-                <div class="telegram-box">
-
-                  <div class="telegram-box-icon">
-                    ✈️
-                  </div>
-
-                  <h3>
-                    Join Criczone
-                  </h3>
-
-                  <p>
-                    Join our Telegram channel
-                    for live updates and
-                    cricket information.
-                  </p>
-
-                  <div class="telegram-actions">
-
-                    <button
-                      id="modalJoin"
-                      type="button"
-                    >
-                      JOIN TELEGRAM
-                    </button>
-
-                    <button
-                      id="modalClose"
-                      type="button"
-                    >
-                      CLOSE
-                    </button>
-
-                  </div>
-
                 </div>
 
               </div>
 
+            </section>
 
-              <!-- =================================================
-                   TOAST
-              ================================================= -->
 
-              <div
-                class="toast"
-                id="toast"
-              ></div>
+            <!-- FOOTER -->
+
+            <footer class="footer">
+
+              © 2026 Criczone Live
+              • Premium Cricket Hub
+
+            </footer>
+
+          </div>
+
+
+          <!-- FLOATING TELEGRAM -->
+
+          <button
+            class="floating-telegram"
+            id="floatTelegram"
+            type="button"
+            aria-label="Join Telegram"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+
+              <path
+                d="M21.8 3.1c.3-1.3-.5-1.8-1.6-1.4L2.3 8.6C1 9.1 1 9.9 2.1 10.3l4.6 1.4 1.8 5.7c.2.7.4.9.9.9.4 0 .6-.2.8-.4l2.2-2.1 4.6 3.4c.8.4 1.4.2 1.6-.8l3.2-15.3ZM8.1 11.3l9.9-6.2c.5-.3.9-.1.5.2l-8.1 7.4-.3 3.5-1.4-4.5-4.2-1.3c-.3-.1-.3-.3.1-.4l3.5-1.4Z"
+              ></path>
+
+            </svg>
+
+          </button>
+
+
+          <!-- TELEGRAM MODAL -->
+
+          <div
+            class="modal"
+            id="telegramModal"
+          >
+
+            <div class="modal-card">
+
+              <div class="modal-icon">
+                ✈️
+              </div>
+
+              <h3>
+                Join Criczone
+              </h3>
+
+              <p>
+                Join our Telegram channel
+                to get live cricket updates,
+                channel updates and more.
+              </p>
+
+
+              <div class="modal-buttons">
+
+                <button
+                  class="modal-join"
+                  id="modalJoin"
+                  type="button"
+                >
+                  JOIN TELEGRAM
+                </button>
+
+                <button
+                  class="modal-close"
+                  id="modalClose"
+                  type="button"
+                >
+                  CLOSE
+                </button>
+
+              </div>
 
             </div>
 
-          `;
+          </div>
 
-        }
 
+          <!-- TOAST -->
 
-        /* =====================================================
-           FIREBASE LIVE WATCHING
-        ===================================================== */
+          <div
+            class="toast"
+            id="toast"
+          ></div>
 
-        async initFirebaseViewers() {
+        </div>
+      `;
+    }
 
-          try {
 
-            const {
-              initializeApp
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
-            );
+    /* =========================================
+       FIREBASE INITIALIZATION
+    ========================================= */
 
+    async initFirebaseViewers() {
 
-            const {
-              getDatabase
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-            );
+      try {
 
+        const {
+          initializeApp,
+          getApps,
+          getApp
+        } = await import(
+          "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+        );
 
-            const firebaseConfig = {
 
-              apiKey:
-                "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+        const {
+          getDatabase,
+          ref,
+          push,
+          set,
+          remove,
+          onDisconnect,
+          onValue
+        } = await import(
+          "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+        );
 
-              authDomain:
-                "cricket-live-39106.firebaseapp.com",
 
-              databaseURL:
-                "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+        const firebaseConfig = {
 
-              projectId:
-                "cricket-live-39106",
+          apiKey:
+            "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
 
-              storageBucket:
-                "cricket-live-39106.firebasestorage.app",
+          authDomain:
+            "cricket-live-39106.firebaseapp.com",
 
-              messagingSenderId:
-                "841890143",
+          databaseURL:
+            "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
 
-              appId:
-                "1:841890143:web:ca5b87c9395bdc19145eea",
+          projectId:
+            "cricket-live-39106",
 
-              measurementId:
-                "G-ZNEZC8YVMX"
+          storageBucket:
+            "cricket-live-39106.firebasestorage.app",
 
-            };
+          messagingSenderId:
+            "841890143",
 
+          appId:
+            "1:841890143:web:ca5b87c9395bdc19145eea",
 
-            this.firebaseApp =
-              initializeApp(
-                firebaseConfig
-              );
+          measurementId:
+            "G-ZNEZC8YVMX"
 
+        };
 
-            this.firebaseDB =
-              getDatabase(
-                this.firebaseApp
-              );
 
+        /*
+          Prevent duplicate Firebase app
+          initialization.
+        */
 
-            this.firebaseReady =
-              true;
+        this.firebaseApp =
+          getApps().length
+            ? getApp()
+            : initializeApp(firebaseConfig);
 
-          } catch (error) {
 
-            console.warn(
-              "Firebase initialization failed:",
-              error
-            );
+        this.firebaseDB =
+          getDatabase(this.firebaseApp);
 
-            this.firebaseReady =
-              false;
 
-          }
+        this.firebaseRef = ref;
+        this.firebasePush = push;
+        this.firebaseSet = set;
+        this.firebaseRemove = remove;
+        this.firebaseOnDisconnect = onDisconnect;
+        this.firebaseOnValue = onValue;
 
-        }
 
+        this.firebaseReady = true;
 
-        /* =====================================================
-           EVENTS
-        ===================================================== */
+        console.log(
+          "Firebase viewer system ready."
+        );
 
-        initEvents() {
 
-          const root =
-            this.shadow;
+        /*
+          If user opened player before
+          Firebase finished loading,
+          start presence now.
+        */
 
-
-          root
-            .getElementById("backBtn")
-            .addEventListener(
-              "click",
-              () => this.showHub()
-            );
-
-
-          root
-            .getElementById("shareBtn")
-            .addEventListener(
-              "click",
-              () => this.shareChannel()
-            );
-
-
-          root
-            .getElementById("searchInput")
-            .addEventListener(
-              "input",
-              event =>
-                this.filterChannels(
-                  event.target.value
-                )
-            );
-
-
-          root
-            .getElementById("floatTelegram")
-            .addEventListener(
-              "click",
-              () => this.openTelegram()
-            );
-
-
-          root
-            .getElementById("modalClose")
-            .addEventListener(
-              "click",
-              () => this.closeModal()
-            );
-
-
-          root
-            .getElementById("modalJoin")
-            .addEventListener(
-              "click",
-              () => this.openTelegram()
-            );
-
-
-          root
-            .getElementById("telegramModal")
-            .addEventListener(
-              "click",
-              event => {
-
-                if (
-                  event.target.id ===
-                  "telegramModal"
-                ) {
-
-                  this.closeModal();
-
-                }
-
-              }
-            );
-
-              .modal-buttons button {
-
-                flex:
-                  1;
-
-                height:
-                  42px;
-
-                border:
-                  none;
-
-                border-radius:
-                  11px;
-
-                font-size:
-                  10px;
-
-                font-weight:
-                  800;
-
-              }
-
-
-              .modal-join {
-
-                color:
-                  white;
-
-                background:
-                  linear-gradient(
-                    135deg,
-                    #0088cc,
-                    #006db1
-                  );
-
-              }
-
-
-              .modal-close {
-
-                color:
-                  #b6c0d0;
-
-                background:
-                  rgba(255,255,255,.06);
-
-                border:
-                  1px solid
-                  rgba(255,255,255,.07) !important;
-
-              }
-
-
-              /* =================================================
-                 TOAST
-              ================================================= */
-
-              .toast {
-
-                position:
-                  fixed;
-
-                left:
-                  50%;
-
-                bottom:
-                  26px;
-
-                z-index:
-                  10000;
-
-                transform:
-                  translate(
-                    -50%,
-                    20px
-                  );
-
-                opacity:
-                  0;
-
-                pointer-events:
-                  none;
-
-                padding:
-                  11px 16px;
-
-                border-radius:
-                  11px;
-
-                color:
-                  #ffffff;
-
-                background:
-                  #141d2b;
-
-                border:
-                  1px solid
-                  rgba(255,255,255,.08);
-
-                box-shadow:
-                  0 15px 40px
-                  rgba(0,0,0,.35);
-
-                font-size:
-                  11px;
-
-                transition:
-                  .25s ease;
-
-              }
-
-
-              .toast.show {
-
-                opacity:
-                  1;
-
-                transform:
-                  translate(
-                    -50%,
-                    0
-                  );
-
-              }
-
-
-              /* =================================================
-                 FOOTER
-              ================================================= */
-
-              .footer {
-
-                padding:
-                  0 0 35px;
-
-                color:
-                  #566277;
-
-                text-align:
-                  center;
-
-                font-size:
-                  9px;
-
-                letter-spacing:
-                  .2px;
-
-              }
-
-
-              /* =================================================
-                 MOBILE
-              ================================================= */
-
-              @media (
-                max-width: 760px
-              ) {
-
-                .container {
-
-                  width:
-                    calc(100% - 24px);
-
-                }
-
-
-                .header {
-
-                  height:
-                    68px;
-
-                }
-
-
-                .brand-logo {
-
-                  width:
-                    38px;
-
-                  height:
-                    38px;
-
-                  border-radius:
-                    11px;
-
-                  font-size:
-                    18px;
-
-                }
-
-
-                .brand-name {
-
-                  font-size:
-                    16px;
-
-                }
-
-
-                .brand-sub {
-
-                  font-size:
-                    7px;
-
-                }
-
-
-                .live-badge {
-
-                  padding:
-                    7px 9px;
-
-                  font-size:
-                    8px;
-
-                }
-
-
-                .hero {
-
-                  padding:
-                    43px 0 32px;
-
-                }
-
-
-                .hero h1 {
-
-                  font-size:
-                    39px;
-
-                  letter-spacing:
-                    -2.1px;
-
-                }
-
-
-                .hero p {
-
-                  font-size:
-                    12px;
-
-                  line-height:
-                    1.65;
-
-                }
-
-
-                .toolbar {
-
-                  flex-direction:
-                    column;
-
-                  align-items:
-                    stretch;
-
-                  gap:
-                    13px;
-
-                }
-
-
-                .search {
-
-                  width:
-                    100%;
-
-                }
-
-
-                .channels-grid {
-
-                  grid-template-columns:
-                    repeat(
-                      2,
-                      minmax(0,1fr)
-                    );
-
-                  gap:
-                    9px;
-
-                }
-
-
-                .channel-card {
-
-                  min-height:
-                    142px;
-
-                  padding:
-                    13px;
-
-                  border-radius:
-                    15px;
-
-                }
-
-
-                .channel-icon {
-
-                  width:
-                    37px;
-
-                  height:
-                    37px;
-
-                  border-radius:
-                    11px;
-
-                  font-size:
-                    16px;
-
-                }
-
-
-                .channel-name {
-
-                  font-size:
-                    11px;
-
-                }
-
-
-                .watch-arrow {
-
-                  width:
-                    27px;
-
-                  height:
-                    27px;
-
-                }
-
-
-                .community {
-
-                  padding:
-                    45px 0 70px;
-
-                }
-
-
-                .community-grid {
-
-                  grid-template-columns:
-                    1fr;
-
-                }
-
-
-                .community-card {
-
-                  padding:
-                    16px;
-
-                }
-
-
-                .player-header {
-
-                  padding:
-                    20px 0 13px;
-
-                }
-
-
-                .player-title {
-
-                  min-width:
-                    0;
-
-                }
-
-
-                .player-title h2 {
-
-                  max-width:
-                    170px;
-
-                  font-size:
-                    14px;
-
-                }
-
-
-                .player-icon {
-
-                  width:
-                    38px;
-
-                  height:
-                    38px;
-
-                  border-radius:
-                    11px;
-
-                }
-
-
-                .action-btn {
-
-                  padding:
-                    0 10px;
-
-                  font-size:
-                    9px;
-
-                }
-
-
-                .video-shell {
-
-                  border-radius:
-                    15px;
-
-                }
-
-
-                .video-card {
-
-                  border-radius:
-                    14px;
-
-                }
-
-
-                .video-info {
-
-                  min-height:
-                    64px;
-
-                  padding:
-                    12px 13px;
-
-                  align-items:
-                    flex-start;
-
-                  flex-direction:
-                    column;
-
-                }
-
-
-                .live-watching {
-
-                  align-self:
-                    flex-start;
-
-                }
-
-
-                .floating-telegram {
-
-                  width:
-                    48px;
-
-                  height:
-                    48px;
-
-                  right:
-                    14px;
-
-                  bottom:
-                    14px;
-
-                  border-radius:
-                    15px;
-
-                }
-
-              }
-
-
-              @media (
-                max-width: 430px
-              ) {
-
-                .hero h1 {
-
-                  font-size:
-                    35px;
-
-                }
-
-
-                .channels-grid {
-
-                  gap:
-                    8px;
-
-                }
-
-
-                .channel-card {
-
-                  min-height:
-                    133px;
-
-                  padding:
-                    11px;
-
-                }
-
-
-                .channel-name {
-
-                  font-size:
-                    10px;
-
-                }
-
-
-                .community-card {
-
-                  flex-direction:
-                    column;
-
-                  align-items:
-                    stretch;
-
-                }
-
-
-                .telegram-btn {
-
-                  width:
-                    100%;
-
-                }
-
-              }
-
-            </style>
-
-
-            <div class="app">
-
-              <div
-                class="background-glow glow-one"
-              ></div>
-
-              <div
-                class="background-glow glow-two"
-              ></div>
-
-
-              <div class="container">
-
-                <!-- =================================================
-                     HEADER
-                ================================================= -->
-
-                <header class="header">
-
-                  <div class="brand">
-
-                    <div class="brand-logo">
-                      🏏
-                    </div>
-
-                    <div>
-
-                      <div class="brand-name">
-                        Criczone
-                      </div>
-
-                      <div class="brand-sub">
-                        PREMIUM CRICKET HUB
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <div class="live-badge">
-
-                    <span
-                      class="live-dot"
-                    ></span>
-
-                    LIVE NOW
-
-                  </div>
-
-                </header>
-
-
-                <!-- =================================================
-                     HUB VIEW
-                ================================================= -->
-
-                <main
-                  class="hub-view"
-                  id="hubView"
-                >
-
-                  <section class="hero">
-
-                    <div class="hero-small">
-
-                      <span
-                        class="hero-small-line"
-                      ></span>
-
-                      LIVE CRICKET STREAMING
-
-                    </div>
-
-
-                    <h1>
-
-                      Your home for
-
-                      <span
-                        class="gradient-text"
-                      >
-                        live cricket.
-                      </span>
-
-                    </h1>
-
-
-                    <p>
-
-                      Watch live cricket channels
-                      in one clean, fast and
-                      premium streaming hub.
-
-                    </p>
-
-                  </section>
-
-
-                  <section>
-
-                    <div class="toolbar">
-
-                      <div>
-
-                        <div class="section-title">
-                          Live Channels
-                        </div>
-
-                        <div
-                          class="section-count"
-                          id="channelCount"
-                        >
-                          Loading channels...
-                        </div>
-
-                      </div>
-
-
-                      <div class="search">
-
-                        <span
-                          class="search-icon"
-                        >
-                          🔎
-                        </span>
-
-                        <input
-                          id="searchInput"
-                          type="text"
-                          placeholder="Search channels..."
-                          autocomplete="off"
-                        >
-
-                      </div>
-
-                    </div>
-
-
-                    <div
-                      class="channels-grid"
-                      id="channelsGrid"
-                    >
-
-                      <div class="loading">
-
-                        <div
-                          class="loader"
-                        ></div>
-
-                        <span>
-                          Loading live channels...
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </section>
-
-
-                  <!-- =================================================
-                       COMMUNITY
-                  ================================================= -->
-
-                  <section class="community">
-
-                    <div
-                      class="community-head"
-                    >
-
-                      <div
-                        class="community-mini"
-                      >
-                        STAY CONNECTED
-                      </div>
-
-                      <h2>
-                        Join the Criczone community
-                      </h2>
-
-                      <p>
-                        Get live updates,
-                        channel updates and
-                        cricket information.
-                      </p>
-
-                    </div>
-
-
-                    <div
-                      class="community-grid"
-                    >
-
-                      <div
-                        class="community-card"
-                      >
-
-                        <div
-                          class="community-left"
-                        >
-
-                          <div
-                            class="community-icon"
-                          >
-                            ✈️
-                          </div>
-
-                          <div>
-
-                            <h3>
-                              Criczone Telegram
-                            </h3>
-
-                            <p>
-                              Join our Telegram
-                              community for
-                              updates.
-                            </p>
-
-                          </div>
-
-                        </div>
-
-
-                        <button
-                          class="telegram-btn"
-                          id="telegramBtn1"
-                          type="button"
-                        >
-                          JOIN
-                        </button>
-
-                      </div>
-
-
-                      <div
-                        class="community-card"
-                      >
-
-                        <div
-                          class="community-left"
-                        >
-
-                          <div
-                            class="community-icon"
-                          >
-                            🏏
-                          </div>
-
-                          <div>
-
-                            <h3>
-                              Live Cricket
-                            </h3>
-
-                            <p>
-                              Select a channel
-                              above and start
-                              watching live.
-                            </p>
-
-                          </div>
-
-                        </div>
-
-
-                        <button
-                          class="telegram-btn"
-                          id="telegramBtn2"
-                          type="button"
-                        >
-                          JOIN
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  </section>
-
-                </main>
-
-
-                <!-- =================================================
-                     PLAYER VIEW
-                ================================================= -->
-
-                <section
-                  class="player-view"
-                  id="playerView"
-                >
-
-                  <div
-                    class="player-header"
-                  >
-
-                    <div
-                      class="player-title"
-                    >
-
-                      <button
-                        class="action-btn"
-                        id="backBtn"
-                        type="button"
-                      >
-                        ← BACK
-                      </button>
-
-
-                      <div
-                        class="player-icon"
-                      >
-                        📺
-                      </div>
-
-
-                      <div>
-
-                        <h2
-                          id="playerChannelName"
-                        >
-                          Criczone Live
-                        </h2>
-
-                        <p>
-                          LIVE STREAM
-                        </p>
-
-                      </div>
-
-                    </div>
-
-
-                    <div
-                      class="player-actions"
-                    >
-
-                      <button
-                        class="action-btn"
-                        id="shareBtn"
-                        type="button"
-                      >
-                        SHARE
-                      </button>
-
-                    </div>
-
-                  </div>
-
-
-                  <div
-                    class="video-shell"
-                  >
-
-                    <div
-                      class="video-card"
-                    >
-
-                      <div
-                        class="video-container"
-                      >
-
-                        <iframe
-                          id="streamIframe"
-                          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-                          allowfullscreen
-                          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                          referrerpolicy="no-referrer"
-                          loading="eager"
-                        ></iframe>
-
-                      </div>
-
-
-                      <div
-                        class="video-info"
-                      >
-
-                        <div
-                          class="now-playing"
-                        >
-
-                          <span
-                            class="now-dot"
-                          ></span>
-
-                          <div>
-
-                            <strong
-                              id="channelNameDisplay"
-                            >
-                              Criczone Live
-                            </strong>
-
-                            <span>
-                              Live cricket streaming
-                            </span>
-
-                          </div>
-
-                        </div>
-
-
-                        <!-- LIVE WATCHING -->
-
-                        <div
-                          class="live-watching"
-                          id="liveWatching"
-                        >
-
-                          <span
-                            class="live-watching-dot"
-                          ></span>
-
-                          <span>
-
-                            <strong
-                              id="liveWatchingCount"
-                            >
-                              345
-                            </strong>
-
-                            watching live
-
-                          </span>
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </section>
-
-
-                <!-- =================================================
-                     FOOTER
-                ================================================= -->
-
-                <footer class="footer">
-
-                  © 2026 Criczone Live
-                  • Premium Cricket Hub
-
-                </footer>
-
-              </div>
-
-
-              <!-- =================================================
-                   FLOATING TELEGRAM
-              ================================================= -->
-
-              <button
-                class="floating-telegram"
-                id="floatTelegram"
-                type="button"
-                aria-label="Join Telegram"
-              >
-
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-
-                  <path
-                    d="M21.8 3.1c.3-1.3-.5-1.8-1.6-1.4L2.3 8.6C1 9.1 1 9.9 2.1 10.3l4.6 1.4 1.8 5.7c.2.7.4.9.9.9.4 0 .6-.2.8-.4l2.2-2.1 4.6 3.4c.8.4 1.4.2 1.6-.8l3.2-15.3ZM8.1 11.3l9.9-6.2c.5-.3.9-.1.5.2l-8.1 7.4-.3 3.5-1.4-4.5-4.2-1.3c-.3-.1-.3-.3.1-.4l3.5-1.4Z"
-                  ></path>
-
-                </svg>
-
-              </button>
-
-
-              <!-- =================================================
-                   TELEGRAM MODAL
-              ================================================= -->
-
-              <div
-                class="modal"
-                id="telegramModal"
-              >
-
-                <div
-                  class="modal-card"
-                >
-
-                  <div
-                    class="modal-icon"
-                  >
-                    ✈️
-                  </div>
-
-
-                  <h3>
-                    Join Criczone
-                  </h3>
-
-
-                  <p>
-                    Join our Telegram channel
-                    to get live cricket updates,
-                    channel updates and more.
-                  </p>
-
-
-                  <div
-                    class="modal-buttons"
-                  >
-
-                    <button
-                      class="modal-join"
-                      id="modalJoin"
-                      type="button"
-                    >
-                      JOIN TELEGRAM
-                    </button>
-
-                    <button
-                      class="modal-close"
-                      id="modalClose"
-                      type="button"
-                    >
-                      CLOSE
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <!-- =================================================
-                   TOAST
-              ================================================= -->
-
-              <div
-                class="toast"
-                id="toast"
-              ></div>
-
-            </div>
-
-          `;
-
-        }
-
-
-        /* =====================================================
-           FIREBASE VIEWER PRESENCE
-        ===================================================== */
-
-        async initFirebaseViewers() {
-
-          try {
-
-            const {
-              initializeApp
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
-            );
-
-
-            const {
-              getDatabase,
-              ref,
-              push,
-              set,
-              remove,
-              onDisconnect,
-              onValue
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
-            );
-
-
-            const firebaseConfig = {
-
-              apiKey:
-                "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
-
-              authDomain:
-                "cricket-live-39106.firebaseapp.com",
-
-              databaseURL:
-                "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
-
-              projectId:
-                "cricket-live-39106",
-
-              storageBucket:
-                "cricket-live-39106.firebasestorage.app",
-
-              messagingSenderId:
-                "841890143",
-
-              appId:
-                "1:841890143:web:ca5b87c9395bdc19145eea",
-
-              measurementId:
-                "G-ZNEZC8YVMX"
-
-            };
-
-
-            this.firebaseApp =
-              initializeApp(
-                firebaseConfig
-              );
-
-
-            this.firebaseDB =
-              getDatabase(
-                this.firebaseApp
-              );
-
-
-            /*
-              Save Firebase functions
-              so other class methods
-              can use them.
-            */
-
-            this.firebaseRef =
-              ref;
-
-            this.firebasePush =
-              push;
-
-            this.firebaseSet =
-              set;
-
-            this.firebaseRemove =
-              remove;
-
-            this.firebaseOnDisconnect =
-              onDisconnect;
-
-            this.firebaseOnValue =
-              onValue;
-
-
-            this.firebaseReady =
-              true;
-
-
-          } catch (error) {
-
-            console.warn(
-              "Firebase initialization failed:",
-              error
-            );
-
-            this.firebaseReady =
-              false;
-
-          }
-
-        }
-
-
-        /* =====================================================
-           LOAD JSON
-        ===================================================== */
-
-        async loadChannelsData() {
-
-          let data = null;
-
-
-          try {
-
-            const response =
-              await fetch(
-                this.config.jsonUrl,
-                {
-                  cache:
-                    "no-store"
-                }
-              );
-
-
-            if (response.ok) {
-
-              data =
-                await response.json();
-
-            }
-
-          } catch (error) {
-
-            console.warn(
-              "Direct JSON fetch failed:",
-              error
-            );
-
-          }
-
-
-          /*
-             Fallback
-          */
-
-          if (!data) {
-
-            try {
-
-              const proxy =
-                "https://api.allorigins.win/raw?url=" +
-                encodeURIComponent(
-                  this.config.jsonUrl
-                );
-
-
-              const response =
-                await fetch(
-                  proxy,
-                  {
-                    cache:
-                      "no-store"
-                  }
-                );
-
-
-              if (response.ok) {
-
-                data =
-                  await response.json();
-
-              }
-
-            } catch (error) {
-
-              console.warn(
-                "Fallback fetch failed:",
-                error
-              );
-
-            }
-
-          }
-
-
-          if (!data) {
-
-            this.showError(
-              "Failed to load channels."
-            );
-
-            return;
-
-          }
-
-
-          /*
-             Supports:
-
-             [
-               {...}
-             ]
-
-             OR
-
-             {
-               "channels": [...]
-             }
-
-             OR
-
-             {
-               "streams": [...]
-             }
-
-             OR
-
-             {
-               "iframes": [...]
-             }
-          */
-
-          const channels =
-            Array.isArray(data)
-              ? data
-              : (
-                  data.channels ||
-                  data.streams ||
-                  data.iframes ||
-                  []
-                );
-
-
-          this.state.channels =
-            channels;
-
-
-          this.state.filteredChannels =
-            channels;
-
-
-          this.renderChannels(
-            channels
-          );
-
-
-          /*
-             Deep link:
-
-             ?id=eng
-
-             ?id=143
-          */
-
-          const params =
-            new URLSearchParams(
-              window.location.search
-            );
-
-
-          const targetId =
-            params.get("id");
-
-
-          if (targetId) {
-
-            const matched =
-              this.state.channels.find(
-                channel =>
-                  String(channel.id) ===
-                  String(targetId)
-              );
-
-
-            if (matched) {
-
-              this.playChannel(
-                matched
-              );
-
-            }
-
-          }
-
-        }
-
-                /* =====================================================
-           RENDER CHANNELS
-        ===================================================== */
-
-        renderChannels(channels) {
-
-          const grid =
-            this.shadow.getElementById(
-              "channelsGrid"
-            );
-
-
-          const count =
-            this.shadow.getElementById(
-              "channelCount"
-            );
-
-
-          count.textContent =
-            `${channels.length} channel${channels.length === 1 ? "" : "s"} available`;
-
-
-          if (!channels.length) {
-
-            grid.innerHTML = `
-
-              <div class="loading">
-
-                <div style="
-                  font-size:28px;
-                ">
-                  🔎
-                </div>
-
-                <span>
-                  No channels found.
-                </span>
-
-              </div>
-
-            `;
-
-            return;
-
-          }
-
-
-          grid.innerHTML =
-            channels
-              .map(
-                (channel, index) => {
-
-                  const name =
-                    this.escapeHTML(
-                      channel.name ||
-                      `Channel ${channel.id || index + 1}`
-                    );
-
-
-                  const id =
-                    this.escapeAttr(
-                      channel.id ??
-                      index
-                    );
-
-
-                  return `
-
-                    <div
-                      class="channel-card"
-                      data-channel-id="${id}"
-                      style="
-                        animation-delay:
-                        ${Math.min(
-                          index * 25,
-                          450
-                        )}ms
-                      "
-                    >
-
-                      <div class="channel-top">
-
-                        <div class="channel-icon">
-                          📺
-                        </div>
-
-                        <div class="channel-live">
-                          LIVE
-                        </div>
-
-                      </div>
-
-
-                      <div class="channel-bottom">
-
-                        <div class="channel-name">
-                          ${name}
-                        </div>
-
-                        <div class="watch-arrow">
-                          →
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  `;
-
-                }
-              )
-              .join("");
-
-
-          /*
-             Click handling
-          */
-
-          grid.onclick =
-            event => {
-
-              const card =
-                event.target.closest(
-                  "[data-channel-id]"
-                );
-
-
-              if (!card) return;
-
-
-              const id =
-                card.dataset.channelId;
-
-
-              const channel =
-                this.state.channels.find(
-                  item =>
-                    String(item.id) ===
-                    String(id)
-                );
-
-
-              if (channel) {
-
-                this.playChannel(
-                  channel
-                );
-
-              }
-
-            };
-
-        }
-
-
-        /* =====================================================
-           SEARCH
-        ===================================================== */
-
-        filterChannels(query) {
-
-          const value =
-            query
-              .trim()
-              .toLowerCase();
-
-
-          const filtered =
-            this.state.channels.filter(
-              channel => {
-
-                const name =
-                  String(
-                    channel.name || ""
-                  ).toLowerCase();
-
-
-                return name.includes(
-                  value
-                );
-
-              }
-            );
-
-
-          this.state.filteredChannels =
-            filtered;
-
-
-          this.renderChannels(
-            filtered
-          );
-
-        }
-
-
-        /* =====================================================
-           LIVE VIEWER PRESENCE
-        ===================================================== */
-
-        async startViewerPresence(channel) {
-
-          /*
-             Firebase may still be loading
-             when a channel is opened.
-          */
-
-          if (!this.firebaseReady) {
-
-            this.updateLiveWatching(0);
-
-            /*
-              Give Firebase a little time to initialize.
-            */
-
-            for (
-              let i = 0;
-              i < 20 &&
-              !this.firebaseReady;
-              i++
-            ) {
-
-              await new Promise(
-                resolve =>
-                  setTimeout(
-                    resolve,
-                    250
-                  )
-              );
-
-            }
-
-          }
-
-
-          if (!this.firebaseReady) {
-
-            this.updateLiveWatching(0);
-
-            return;
-
-          }
-
-
-          /*
-             Remove previous viewer presence
-             before creating a new one.
-          */
-
-          this.stopViewerPresence();
-
-
-          if (!channel) {
-
-            return;
-
-          }
-
-
-          const channelId =
-            String(
-              channel.id ??
-              channel.name ??
-              "unknown"
-            );
-
-
-          this.viewerChannelId =
-            channelId;
-
-
-          try {
-
-            const viewersRef =
-              this.firebaseRef(
-                this.firebaseDB,
-                "liveViewers/" +
-                this.safeFirebaseKey(
-                  channelId
-                )
-              );
-
-
-            const viewerRef =
-              this.firebasePush(
-                viewersRef
-              );
-
-
-            this.viewerRef =
-              viewerRef;
-
-
-            /*
-               Add this viewer.
-            */
-
-            await this.firebaseSet(
-              viewerRef,
-              {
-                joinedAt:
-                  Date.now()
-              }
-            );
-
-
-            /*
-               Automatically remove this viewer
-               when browser/tab disconnects.
-            */
-
-            await this.firebaseOnDisconnect(
-              viewerRef
-            ).remove();
-
-
-            /*
-               Listen for all viewers
-               watching the same channel.
-            */
-
-            this.viewerListener =
-              this.firebaseOnValue(
-                viewersRef,
-                snapshot => {
-
-                  const data =
-                    snapshot.val() || {};
-
-
-                  const realViewers =
-                    Object.keys(
-                      data
-                    ).length;
-
-
-                  this.updateLiveWatching(
-                    realViewers
-                  );
-
-                },
-                error => {
-
-                  console.warn(
-                    "Viewer listener error:",
-                    error
-                  );
-
-                  this.updateLiveWatching(
-                    0
-                  );
-
-                }
-              );
-
-
-          } catch (error) {
-
-            console.warn(
-              "Viewer presence error:",
-              error
-            );
-
-
-            this.updateLiveWatching(
-              0
-            );
-
-          }
-
-        }
-
-
-        /* =====================================================
-           STOP VIEWER PRESENCE
-        ===================================================== */
-
-        stopViewerPresence() {
-
-          try {
-
-            /*
-               Stop Firebase listener.
-            */
-
-            if (
-              this.viewerListener
-            ) {
-
-              this.viewerListener();
-
-              this.viewerListener =
-                null;
-
-            }
-
-
-            /*
-               Remove current viewer node.
-            */
-
-            if (
-              this.viewerRef &&
-              this.firebaseRemove
-            ) {
-
-              this.firebaseRemove(
-                this.viewerRef
-              ).catch(
-                () => {}
-              );
-
-            }
-
-
-          } catch (error) {
-
-            console.warn(
-              "Viewer cleanup error:",
-              error
-            );
-
-          }
-
-
-          this.viewerRef =
-            null;
-
-          this.viewerChannelId =
-            null;
-
-
-          /*
-             Reset UI back to base count.
-          */
-
-          this.updateLiveWatching(
-            0
-          );
-
-        }
-
-
-        /* =====================================================
-           UPDATE LIVE WATCHING COUNT
-        ===================================================== */
-
-        updateLiveWatching(
-          realViewers = 0
-        ) {
-
-          const counter =
-            this.shadow.getElementById(
-              "liveWatchingCount"
-            );
-
-
-          if (!counter) {
-
-            return;
-
-          }
-
-
-          const total =
-            this.BASE_WATCHING +
-            Number(
-              realViewers || 0
-            );
-
-
-          counter.textContent =
-            total.toLocaleString(
-              "en-IN"
-            );
-
-        }
-
-
-        /* =====================================================
-           FIREBASE SAFE KEY
-        ===================================================== */
-
-        safeFirebaseKey(value) {
-
-          return String(value)
-            .replace(
-              /[.#$[\]/]/g,
-              "_"
-            );
-
-        }
-
-
-        /* =====================================================
-           PLAY CHANNEL
-        ===================================================== */
-
-        playChannel(channel) {
-
-          /*
-             Start viewer presence
-             for selected channel.
-          */
+        if (this.state.currentChannel) {
 
           this.startViewerPresence(
-            channel
+            this.state.currentChannel
           );
 
-
-          this.state.currentChannel =
-            channel;
-
-
-          const name =
-            channel.name ||
-            "Criczone Live";
-
-
-          this.shadow
-            .getElementById(
-              "channelNameDisplay"
-            )
-            .textContent =
-            name;
-
-
-          this.shadow
-            .getElementById(
-              "playerChannelName"
-            )
-            .textContent =
-            name;
-
-
-          /*
-             Supports:
-
-             iframeSrc
-             stream_url
-             url
-          */
-
-          const source =
-            channel.iframeSrc ||
-            channel.stream_url ||
-            channel.url ||
-            "";
-
-
-          const iframe =
-            this.shadow
-              .getElementById(
-                "streamIframe"
-              );
-
-
-          iframe.src =
-            source;
-
-
-          /*
-             Hide hub
-          */
-
-          this.shadow
-            .getElementById(
-              "hubView"
-            )
-            .classList.add(
-              "hidden"
-            );
-
-
-          /*
-             Show player
-          */
-
-          this.shadow
-            .getElementById(
-              "playerView"
-            )
-            .classList.add(
-              "active"
-            );
-
-
-          /*
-             Update URL
-
-             /CRICZONE/?id=eng
-          */
-
-          try {
-
-            const url =
-              new URL(
-                window.location.href
-              );
-
-
-            url.searchParams.set(
-              "id",
-              channel.id
-            );
-
-
-            window.history.replaceState(
-              {},
-              "",
-              url
-            );
-
-          } catch (error) {}
-
-
-          window.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-          });
-
         }
 
+      } catch (error) {
 
-        /* =====================================================
-           SHOW HUB
-        ===================================================== */
+        console.warn(
+          "Firebase initialization failed:",
+          error
+        );
 
-        showHub() {
+        this.firebaseReady = false;
 
-          /*
-             Stop counting this viewer
-             when leaving player.
-          */
+      }
 
-          this.stopViewerPresence();
-
-
-          const iframe =
-            this.shadow
-              .getElementById(
-                "streamIframe"
-              );
+    }
 
 
-          if (iframe) {
+    /* =========================================
+       EVENTS
+    ========================================= */
 
-            iframe.src =
-              "";
+    initEvents() {
 
-          }
-
-
-          this.state.currentChannel =
-            null;
+      const root = this.shadow;
 
 
-          this.shadow
-            .getElementById(
-              "playerView"
+      root
+        .getElementById("backBtn")
+        .addEventListener(
+          "click",
+          () => this.showHub()
+        );
+
+
+      root
+        .getElementById("shareBtn")
+        .addEventListener(
+          "click",
+          () => this.shareChannel()
+        );
+
+
+      root
+        .getElementById("searchInput")
+        .addEventListener(
+          "input",
+          event =>
+            this.filterChannels(
+              event.target.value
             )
-            .classList.remove(
-              "active"
-            );
+        );
 
 
-          this.shadow
-            .getElementById(
-              "hubView"
-            )
-            .classList.remove(
-              "hidden"
-            );
+      root
+        .getElementById("telegramBtn1")
+        .addEventListener(
+          "click",
+          () => this.openTelegram()
+        );
 
 
-          /*
-             Remove ?id
-          */
-
-          try {
-
-            const url =
-              new URL(
-                window.location.href
-              );
+      root
+        .getElementById("telegramBtn2")
+        .addEventListener(
+          "click",
+          () => this.openTelegram()
+        );
 
 
-            url.searchParams.delete(
-              "id"
-            );
+      root
+        .getElementById("floatTelegram")
+        .addEventListener(
+          "click",
+          () => this.openTelegram()
+        );
 
 
-            window.history.replaceState(
-              {},
-              "",
-              url
-            );
-
-          } catch (error) {}
-
-
-          window.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-          });
-
-        }
+      root
+        .getElementById("modalClose")
+        .addEventListener(
+          "click",
+          () => this.closeModal()
+        );
 
 
-        /* =====================================================
-           SHARE
-        ===================================================== */
-
-        async shareChannel() {
-
-          const channel =
-            this.state.currentChannel;
+      root
+        .getElementById("modalJoin")
+        .addEventListener(
+          "click",
+          () => this.openTelegram()
+        );
 
 
-          if (!channel) {
+      root
+        .getElementById("telegramModal")
+        .addEventListener(
+          "click",
+          event => {
 
-            return;
-
-          }
-
-
-          const url =
-            new URL(
-              window.location.href
-            );
-
-
-          url.searchParams.set(
-            "id",
-            channel.id
-          );
-
-
-          const shareUrl =
-            url.toString();
-
-
-          if (
-            navigator.share
-          ) {
-
-            try {
-
-              await navigator.share({
-
-                title:
-                  `Criczone Live — ${channel.name || "Live Channel"}`,
-
-                url:
-                  shareUrl
-
-              });
-
-            } catch (error) {}
-
-            return;
-
-          }
-
-
-          try {
-
-            await navigator.clipboard.writeText(
-              shareUrl
-            );
-
-
-            this.showToast(
-              "Stream link copied!"
-            );
-
-          } catch (error) {
-
-            this.showToast(
-              shareUrl
-            );
-
-          }
-
-        }
-
-
-        /* =====================================================
-           TELEGRAM
-        ===================================================== */
-
-        openTelegram() {
-
-          window.open(
-            this.config.telegramLink,
-            "_blank",
-            "noopener,noreferrer"
-          );
-
-
-          this.closeModal();
-
-        }
-
-
-        openModal() {
-
-          this.shadow
-            .getElementById(
+            if (
+              event.target.id ===
               "telegramModal"
-            )
-            .classList.add(
-              "show"
-            );
+            ) {
 
-        }
+              this.closeModal();
 
+            }
 
-        closeModal() {
+          }
+        );
 
-          this.shadow
-            .getElementById(
-              "telegramModal"
-            )
-            .classList.remove(
-              "show"
-            );
-
-        }
+    }
 
 
-        /* =====================================================
-           TOAST
-        ===================================================== */
+    /* =========================================
+       LOAD CHANNEL JSON
+    ========================================= */
 
-        showToast(message) {
+    async loadChannelsData() {
 
-          const toast =
-            this.shadow
-              .getElementById(
-                "toast"
-              );
+      let data = null;
 
 
-          toast.textContent =
-            message;
+      /*
+        Direct request
+      */
 
+      try {
 
-          toast.classList.add(
-            "show"
+        const response =
+          await fetch(
+            this.config.jsonUrl,
+            {
+              cache: "no-store"
+            }
           );
 
 
-          clearTimeout(
-            this.toastTimer
-          );
+        if (response.ok) {
 
-
-          this.toastTimer =
-            setTimeout(
-              () => {
-
-                toast.classList.remove(
-                  "show"
-                );
-
-              },
-              2500
-            );
+          data =
+            await response.json();
 
         }
 
+      } catch (error) {
 
-        /* =====================================================
-           ERROR
-        ===================================================== */
+        console.warn(
+          "Direct JSON fetch failed:",
+          error
+        );
 
-        showError(message) {
-
-          const grid =
-            this.shadow
-              .getElementById(
-                "channelsGrid"
-              );
+      }
 
 
-          grid.innerHTML = `
+      /*
+        Fallback proxy
+      */
 
-            <div class="loading">
+      if (!data) {
 
-              <div style="
-                font-size:32px;
-              ">
-                ⚠️
-              </div>
+        try {
 
-              <span>
-                ${this.escapeHTML(message)}
-              </span>
-
-              <button
-                id="retryButton"
-                style="
-                  margin-top:5px;
-                  padding:10px 16px;
-                  border:0;
-                  border-radius:10px;
-                  background:#3e72e8;
-                  color:white;
-                  font-size:11px;
-                  font-weight:700;
-                  cursor:pointer;
-                "
-              >
-                RETRY
-              </button>
-
-            </div>
-
-          `;
+          const proxy =
+            "https://api.allorigins.win/raw?url=" +
+            encodeURIComponent(
+              this.config.jsonUrl
+            );
 
 
-          const retry =
-            this.shadow
-              .getElementById(
-                "retryButton"
-              );
+          const response =
+            await fetch(
+              proxy,
+              {
+                cache: "no-store"
+              }
+            );
 
 
-          if (retry) {
+          if (response.ok) {
 
-            retry.onclick =
-              () =>
-                this.loadChannelsData();
+            data =
+              await response.json();
 
           }
 
-        }
+        } catch (error) {
 
-                /* =====================================================
-           ESCAPE HTML
-        ===================================================== */
-
-        escapeHTML(value) {
-
-          return String(value)
-
-            .replaceAll(
-              "&",
-              "&amp;"
-            )
-
-            .replaceAll(
-              "<",
-              "&lt;"
-            )
-
-            .replaceAll(
-              ">",
-              "&gt;"
-            )
-
-            .replaceAll(
-              '"',
-              "&quot;"
-            )
-
-            .replaceAll(
-              "'",
-              "&#039;"
-            );
-
-        }
-
-
-        /* =====================================================
-           ESCAPE ATTRIBUTE
-        ===================================================== */
-
-        escapeAttr(value) {
-
-          return this.escapeHTML(
-            value ?? ""
+          console.warn(
+            "Fallback fetch failed:",
+            error
           );
-
-        }
-
-
-        /* =====================================================
-           DISCONNECTED
-        ===================================================== */
-
-        disconnectedCallback() {
-
-          /*
-             Remove this viewer from
-             Firebase when the component
-             is removed from the page.
-          */
-
-          this.stopViewerPresence();
 
         }
 
       }
 
 
-      /* =====================================================
-         CUSTOM ELEMENT
-      ===================================================== */
+      if (!data) {
 
-      customElements.define(
-        "criczone-ui",
-        CriczoneUI
+        this.showError(
+          "Failed to load channels."
+        );
+
+        return;
+
+      }
+
+
+      /*
+        Support all existing formats.
+      */
+
+      const channels =
+        Array.isArray(data)
+          ? data
+          : (
+              data.channels ||
+              data.streams ||
+              data.iframes ||
+              []
+            );
+
+
+      this.state.channels =
+        channels;
+
+
+      this.state.filteredChannels =
+        channels;
+
+
+      this.renderChannels(
+        channels
       );
 
 
-    })();
+      /*
+        Deep link:
+        ?id=143
+      */
 
-  </script>
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const targetId =
+        params.get("id");
+
+
+      if (targetId) {
+
+        const matched =
+          this.state.channels.find(
+            channel =>
+              String(channel.id) ===
+              String(targetId)
+          );
+
+
+        if (matched) {
+
+          this.playChannel(
+            matched
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /* =========================================
+       RENDER CHANNELS
+    ========================================= */
+
+    renderChannels(channels) {
+
+      const grid =
+        this.shadow.getElementById(
+          "channelsGrid"
+        );
+
+
+      const count =
+        this.shadow.getElementById(
+          "channelCount"
+        );
+
+
+      count.textContent =
+        `${channels.length} channel${channels.length === 1 ? "" : "s"} available`;
+
+
+      if (!channels.length) {
+
+        grid.innerHTML = `
+
+          <div class="loading">
+
+            <div style="font-size:28px">
+              🔎
+            </div>
+
+            <span>
+              No channels found.
+            </span>
+
+          </div>
+
+        `;
+
+        return;
+
+      }
+
+
+      grid.innerHTML =
+        channels
+          .map(
+            (channel,index) => {
+
+              const name =
+                this.escapeHTML(
+                  channel.name ||
+                  `Channel ${channel.id || index + 1}`
+                );
+
+
+              const id =
+                this.escapeAttr(
+                  channel.id ??
+                  index
+                );
+
+
+              return `
+
+                <div
+                  class="channel-card"
+                  data-channel-id="${id}"
+                  style="
+                    animation-delay:${Math.min(
+                      index * 25,
+                      450
+                    )}ms
+                  "
+                >
+
+                  <div class="channel-top">
+
+                    <div class="channel-icon">
+                      📺
+                    </div>
+
+                    <div class="channel-live">
+                      LIVE
+                    </div>
+
+                  </div>
+
+
+                  <div class="channel-bottom">
+
+                    <div class="channel-name">
+                      ${name}
+                    </div>
+
+                    <div class="watch-arrow">
+                      →
+                    </div>
+
+                  </div>
+
+                </div>
+
+              `;
+
+            }
+          )
+          .join("");
+
+
+      grid.onclick =
+        event => {
+
+          const card =
+            event.target.closest(
+              "[data-channel-id]"
+            );
+
+
+          if (!card) return;
+
+
+          const id =
+            card.dataset.channelId;
+
+
+          const channel =
+            this.state.channels.find(
+              item =>
+                String(item.id) ===
+                String(id)
+            );
+
+
+          if (channel) {
+
+            this.playChannel(
+              channel
+            );
+
+          }
+
+        };
+
+    }
+
+
+    /* =========================================
+       SEARCH
+    ========================================= */
+
+    filterChannels(query) {
+
+      const value =
+        query
+          .trim()
+          .toLowerCase();
+
+
+      const filtered =
+        this.state.channels.filter(
+          channel => {
+
+            const name =
+              String(
+                channel.name || ""
+              ).toLowerCase();
+
+
+            return name.includes(
+              value
+            );
+
+          }
+        );
+
+
+      this.state.filteredChannels =
+        filtered;
+
+
+      this.renderChannels(
+        filtered
+      );
+
+    }
+
+
+    /* =========================================
+       START VIEWER PRESENCE
+    ========================================= */
+
+    async startViewerPresence(channel) {
+
+      /*
+        Firebase may still be initializing.
+      */
+
+      if (!this.firebaseReady) {
+
+        for (
+          let i = 0;
+          i < 20 &&
+          !this.firebaseReady;
+          i++
+        ) {
+
+          await new Promise(
+            resolve =>
+              setTimeout(
+                resolve,
+                250
+              )
+          );
+
+        }
+
+      }
+
+
+      if (!this.firebaseReady) {
+
+        this.updateLiveWatching(0);
+
+        return;
+
+      }
+
+
+      /*
+        Remove old channel presence.
+      */
+
+      this.stopViewerPresence();
+
+
+      if (!channel) {
+        return;
+      }
+
+
+      const channelId =
+        String(
+          channel.id ??
+          channel.name ??
+          "unknown"
+        );
+
+
+      this.viewerChannelId =
+        channelId;
+
+
+      try {
+
+        const viewersRef =
+          this.firebaseRef(
+            this.firebaseDB,
+            "liveViewers/" +
+            this.safeFirebaseKey(
+              channelId
+            )
+          );
+
+
+        /*
+          Create unique viewer node.
+        */
+
+        const viewerRef =
+          this.firebasePush(
+            viewersRef
+          );
+
+
+        this.viewerRef =
+          viewerRef;
+
+
+        /*
+          Add viewer.
+        */
+
+        await this.firebaseSet(
+          viewerRef,
+          {
+            joinedAt: Date.now()
+          }
+        );
+
+
+        /*
+          Remove automatically
+          when connection closes.
+        */
+
+        await this.firebaseOnDisconnect(
+          viewerRef
+        ).remove();
+
+
+        /*
+          Listen to channel viewers.
+        */
+
+        this.viewerListener =
+          this.firebaseOnValue(
+            viewersRef,
+            snapshot => {
+
+              const data =
+                snapshot.val() || {};
+
+
+              const realViewers =
+                Object.keys(
+                  data
+                ).length;
+
+
+              this.updateLiveWatching(
+                realViewers
+              );
+
+            },
+            error => {
+
+              console.warn(
+                "Viewer listener error:",
+                error
+              );
+
+              this.updateLiveWatching(
+                0
+              );
+
+            }
+          );
+
+
+      } catch (error) {
+
+        console.warn(
+          "Viewer presence error:",
+          error
+        );
+
+        this.updateLiveWatching(
+          0
+        );
+
+      }
+
+    }
+
+
+    /* =========================================
+       STOP VIEWER PRESENCE
+    ========================================= */
+
+    stopViewerPresence() {
+
+      try {
+
+        /*
+          Stop listener.
+        */
+
+        if (
+          this.viewerListener
+        ) {
+
+          this.viewerListener();
+
+          this.viewerListener =
+            null;
+
+        }
+
+
+        /*
+          Remove current viewer.
+        */
+
+        if (
+          this.viewerRef &&
+          this.firebaseRemove
+        ) {
+
+          this.firebaseRemove(
+            this.viewerRef
+          ).catch(
+            () => {}
+          );
+
+        }
+
+      } catch (error) {
+
+        console.warn(
+          "Viewer cleanup error:",
+          error
+        );
+
+      }
+
+
+      this.viewerRef = null;
+      this.viewerChannelId = null;
+
+
+      this.updateLiveWatching(
+        0
+      );
+
+    }
+
+
+    /* =========================================
+       UPDATE WATCHING COUNT
+    ========================================= */
+
+    updateLiveWatching(
+      realViewers = 0
+    ) {
+
+      const counter =
+        this.shadow.getElementById(
+          "liveWatchingCount"
+        );
+
+
+      if (!counter) {
+        return;
+      }
+
+
+      const total =
+        this.BASE_WATCHING +
+        Number(
+          realViewers || 0
+        );
+
+
+      counter.textContent =
+        total.toLocaleString(
+          "en-IN"
+        );
+
+    }
+
+
+    /* =========================================
+       FIREBASE SAFE KEY
+    ========================================= */
+
+    safeFirebaseKey(value) {
+
+      return String(value)
+        .replace(
+          /[.#$[\]\/]/g,
+          "_"
+        );
+
+    }
+
+
+    /* =========================================
+       PLAY CHANNEL
+    ========================================= */
+
+    playChannel(channel) {
+
+      this.state.currentChannel =
+        channel;
+
+
+      /*
+        Start viewer tracking.
+      */
+
+      this.startViewerPresence(
+        channel
+      );
+
+
+      const name =
+        channel.name ||
+        "Criczone Live";
+
+
+      const channelNameDisplay =
+        this.shadow.getElementById(
+          "channelNameDisplay"
+        );
+
+
+      const playerChannelName =
+        this.shadow.getElementById(
+          "playerChannelName"
+        );
+
+
+      if (channelNameDisplay) {
+        channelNameDisplay.textContent =
+          name;
+      }
+
+
+      if (playerChannelName) {
+        playerChannelName.textContent =
+          name;
+      }
+
+
+      /*
+        IMPORTANT:
+        Existing stream links are preserved.
+      */
+
+      const source =
+        channel.iframeSrc ||
+        channel.stream_url ||
+        channel.url ||
+        "";
+
+
+      const iframe =
+        this.shadow.getElementById(
+          "streamIframe"
+        );
+
+
+      if (iframe) {
+        iframe.src =
+          source;
+      }
+
+
+      /*
+        Hide hub.
+      */
+
+      this.shadow
+        .getElementById("hubView")
+        .classList.add("hidden");
+
+
+      /*
+        Show player.
+      */
+
+      this.shadow
+        .getElementById("playerView")
+        .classList.add("active");
+
+
+      /*
+        Update URL.
+      */
+
+      try {
+
+        const url =
+          new URL(
+            window.location.href
+          );
+
+
+        url.searchParams.set(
+          "id",
+          channel.id
+        );
+
+
+        window.history.replaceState(
+          {},
+          "",
+          url
+        );
+
+      } catch (error) {}
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    /* =========================================
+       SHOW HUB
+    ========================================= */
+
+    showHub() {
+
+      /*
+        Stop viewer count.
+      */
+
+      this.stopViewerPresence();
+
+
+      const iframe =
+        this.shadow.getElementById(
+          "streamIframe"
+        );
+
+
+      if (iframe) {
+        iframe.src = "";
+      }
+
+
+      this.state.currentChannel =
+        null;
+
+
+      this.shadow
+        .getElementById("playerView")
+        .classList.remove("active");
+
+
+      this.shadow
+        .getElementById("hubView")
+        .classList.remove("hidden");
+
+
+      try {
+
+        const url =
+          new URL(
+            window.location.href
+          );
+
+
+        url.searchParams.delete(
+          "id"
+        );
+
+
+        window.history.replaceState(
+          {},
+          "",
+          url
+        );
+
+      } catch (error) {}
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    /* =========================================
+       SHARE
+    ========================================= */
+
+    async shareChannel() {
+
+      const channel =
+        this.state.currentChannel;
+
+
+      if (!channel) {
+        return;
+      }
+
+
+      const url =
+        new URL(
+          window.location.href
+        );
+
+
+      url.searchParams.set(
+        "id",
+        channel.id
+      );
+
+
+      const shareUrl =
+        url.toString();
+
+
+      if (navigator.share) {
+
+        try {
+
+          await navigator.share({
+
+            title:
+              `Criczone Live — ${
+                channel.name ||
+                "Live Channel"
+              }`,
+
+            url:
+              shareUrl
+
+          });
+
+        } catch (error) {}
+
+        return;
+
+      }
+
+
+      try {
+
+        await navigator.clipboard.writeText(
+          shareUrl
+        );
+
+
+        this.showToast(
+          "Stream link copied!"
+        );
+
+      } catch (error) {
+
+        this.showToast(
+          shareUrl
+        );
+
+      }
+
+    }
+
+
+    /* =========================================
+       TELEGRAM
+    ========================================= */
+
+    openTelegram() {
+
+      window.open(
+        this.config.telegramLink,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      this.closeModal();
+
+    }
+
+
+    openModal() {
+
+      const modal =
+        this.shadow.getElementById(
+          "telegramModal"
+        );
+
+
+      if (modal) {
+        modal.classList.add("show");
+      }
+
+    }
+
+
+    closeModal() {
+
+      const modal =
+        this.shadow.getElementById(
+          "telegramModal"
+        );
+
+
+      if (modal) {
+        modal.classList.remove("show");
+      }
+
+    }
+
+
+    /* =========================================
+       TOAST
+    ========================================= */
+
+    showToast(message) {
+
+      const toast =
+        this.shadow.getElementById(
+          "toast"
+        );
+
+
+      if (!toast) {
+        return;
+      }
+
+
+      toast.textContent =
+        message;
+
+
+      toast.classList.add(
+        "show"
+      );
+
+
+      clearTimeout(
+        this.toastTimer
+      );
+
+
+      this.toastTimer =
+        setTimeout(
+          () => {
+
+            toast.classList.remove(
+              "show"
+            );
+
+          },
+          2500
+        );
+
+    }
+
+
+    /* =========================================
+       ERROR
+    ========================================= */
+
+    showError(message) {
+
+      const grid =
+        this.shadow.getElementById(
+          "channelsGrid"
+        );
+
+
+      if (!grid) {
+        return;
+      }
+
+
+      grid.innerHTML = `
+
+        <div class="loading">
+
+          <div style="font-size:32px">
+            ⚠️
+          </div>
+
+          <span>
+            ${this.escapeHTML(message)}
+          </span>
+
+          <button
+            id="retryButton"
+            style="
+              margin-top:5px;
+              padding:10px 16px;
+              border:0;
+              border-radius:10px;
+              background:#3e72e8;
+              color:white;
+              font-size:11px;
+              font-weight:700;
+              cursor:pointer;
+            "
+          >
+            RETRY
+          </button>
+
+        </div>
+
+      `;
+
+
+      const retry =
+        this.shadow.getElementById(
+          "retryButton"
+        );
+
+
+      if (retry) {
+
+        retry.onclick =
+          () =>
+            this.loadChannelsData();
+
+      }
+
+    }
+
+
+    /* =========================================
+       ESCAPE HTML
+    ========================================= */
+
+    escapeHTML(value) {
+
+      return String(value)
+
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
+
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
+
+    }
+
+
+    /* =========================================
+       ESCAPE ATTRIBUTE
+    ========================================= */
+
+    escapeAttr(value) {
+
+      return this.escapeHTML(
+        value ?? ""
+      );
+
+    }
+
+
+    /* =========================================
+       DISCONNECTED
+    ========================================= */
+
+    disconnectedCallback() {
+
+      this.stopViewerPresence();
+
+    }
+
+  }
+
+
+  /* =========================================
+     CUSTOM ELEMENT
+  ========================================= */
+
+  customElements.define(
+    "criczone-ui",
+    CriczoneUI
+  );
+
+})();
+</script>
 
 </body>
 </html>
