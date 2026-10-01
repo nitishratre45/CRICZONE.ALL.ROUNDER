@@ -524,7 +524,7 @@
         const toast = document.getElementById("toast");
 
         /* =========================================================
-           FETCH FUNCTION (FIXED CORS & PROXY FALLBACK)
+           FETCH FUNCTION (MULTI-PROXY FAILOVER)
         ========================================================= */
         async function fetchStreamData() {
             // 1. Session Storage Cache Check
@@ -540,7 +540,14 @@
 
             const targetUrl = "https://cineiframe.cinearena08.workers.dev/";
 
-            // 2. Direct Worker Fetch Try
+            // CORS Proxy Endpoints
+            const proxies = [
+                "https://corsproxy.io/?" + encodeURIComponent(targetUrl),
+                "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(targetUrl),
+                "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl)
+            ];
+
+            // Direct Try First
             try {
                 const directRes = await fetch(targetUrl);
                 if (directRes.ok) {
@@ -550,24 +557,25 @@
                     return result;
                 }
             } catch (e) {
-                console.warn("Direct fetch blocked or failed (CORS), trying CORS proxy...");
+                console.warn("Direct worker request blocked by CORS. Switching to Proxy fallback chain...");
             }
 
-            // 3. Fallback CORS Proxy Fetch
-            try {
-                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
-                const proxyRes = await fetch(proxyUrl);
-                if (proxyRes.ok) {
-                    const proxyData = await proxyRes.json();
-                    const result = proxyData.iframes ? proxyData : { iframes: proxyData };
-                    sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
-                    return result;
+            // Loop through proxies
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const res = await fetch(proxies[i]);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const result = data.iframes ? data : { iframes: data };
+                        sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
+                        return result;
+                    }
+                } catch (err) {
+                    console.warn(`Proxy ${i+1} failed, trying next...`);
                 }
-            } catch (e) {
-                console.error("Proxy fetch failed:", e);
             }
 
-            throw new Error("Unable to fetch channel data.");
+            throw new Error("Unable to fetch channel data from all available sources.");
         }
 
         async function initializeApp() {
