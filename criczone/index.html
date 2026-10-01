@@ -2,20 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#050a0f">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CRICZONE LIVE — Sports Hub</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<link
+  href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap"
+  rel="stylesheet"
+>
+
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: #050a0f;
+}
+</style>
 </head>
 
 <body>
 
 <script>
+
 /* =========================================================
    CRICZONE CONFIG
    ========================================================= */
@@ -30,7 +43,6 @@ window.CricConfig = {
 
     previewDuration:
         10000
-
 };
 
 
@@ -44,7 +56,8 @@ class CriczoneUI extends HTMLElement {
 
         super();
 
-        this.attachShadow({
+        /* IMPORTANT FIX */
+        this.shadow = this.attachShadow({
             mode: "closed"
         });
 
@@ -60,11 +73,12 @@ class CriczoneUI extends HTMLElement {
 
         this.stars = [];
 
+        this.currentFilter = "all";
+
         this.initialPendingId =
             new URLSearchParams(
                 window.location.search
             ).get("id");
-
     }
 
 
@@ -79,73 +93,57 @@ class CriczoneUI extends HTMLElement {
 <style>
 
 /* =========================================================
-   ROOT
+   VARIABLES
    ========================================================= */
 
 :host {
 
     --accent: #00ffcc;
+
     --accent2: #0096ff;
 
     --bg: #050a0f;
 
-    --card:
-        rgba(8, 17, 27, .82);
+    --card: rgba(8,17,27,.88);
 
-    --border:
-        rgba(0, 255, 204, .20);
+    --border: rgba(0,255,204,.18);
 
-    --border-hover:
-        rgba(0, 255, 204, .70);
+    --border-hover: rgba(0,255,204,.65);
 
-    --text:
-        #f5f7fa;
+    --text: #f5f7fa;
 
-    --muted:
-        #8a9aa8;
+    --muted: #8293a0;
 
     display: block;
 
     min-height: 100vh;
 
-    background:
-        var(--bg);
+    color: var(--text);
 
-    color:
-        var(--text);
+    background: var(--bg);
 
     font-family:
         Manrope,
+        Arial,
         sans-serif;
-
-    overflow-x: hidden;
 }
 
 
 /* =========================================================
-   GLOBAL
+   RESET
    ========================================================= */
 
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
-
 
 button,
 input {
     font: inherit;
 }
 
-
 button {
     cursor: pointer;
-}
-
-
-a {
-    text-decoration: none;
 }
 
 
@@ -159,13 +157,13 @@ a {
 
     inset: 0;
 
-    width: 100%;
+    width: 100vw;
 
-    height: 100%;
-
-    z-index: 0;
+    height: 100vh;
 
     pointer-events: none;
+
+    z-index: 0;
 
     opacity: .75;
 }
@@ -177,19 +175,16 @@ a {
 
     z-index: 2;
 
-    width:
-        min(1500px, 92vw);
+    width: min(1500px, 92vw);
 
-    margin:
-        auto;
+    margin: auto;
 
-    padding:
-        0 0 70px;
+    padding-bottom: 70px;
 }
 
 
 /* =========================================================
-   NAVIGATION
+   NAVBAR
    ========================================================= */
 
 .nav {
@@ -210,7 +205,9 @@ a {
 
 .brand {
 
-    color: white;
+    cursor: pointer;
+
+    user-select: none;
 
     font-family:
         Space Grotesk,
@@ -221,12 +218,9 @@ a {
 
     font-weight: 900;
 
-    letter-spacing:
-        -1.5px;
+    letter-spacing: -1.5px;
 
-    cursor: pointer;
-
-    user-select: none;
+    color: #fff;
 }
 
 
@@ -242,8 +236,7 @@ a {
 
     -webkit-background-clip: text;
 
-    -webkit-text-fill-color:
-        transparent;
+    -webkit-text-fill-color: transparent;
 }
 
 
@@ -261,8 +254,7 @@ a {
 
     height: 40px;
 
-    padding:
-        0 16px;
+    padding: 0 16px;
 
     display: flex;
 
@@ -272,29 +264,22 @@ a {
 
     border:
         1px solid
-        rgba(0,255,204,.35);
+        rgba(0,255,204,.30);
 
-    border-radius:
-        999px;
+    border-radius: 999px;
 
     background:
-        rgba(5,12,18,.75);
+        rgba(5,12,18,.80);
 
-    color:
-        #fff;
+    color: #fff;
 
     font-family:
         DM Mono,
         monospace;
 
-    font-size:
-        11px;
+    font-size: 11px;
 
-    letter-spacing:
-        1px;
-
-    backdrop-filter:
-        blur(15px);
+    letter-spacing: 1px;
 }
 
 
@@ -304,20 +289,19 @@ a {
 
     height: 7px;
 
-    background: #ff3030;
-
     border-radius: 50%;
 
+    background: #ff3030;
+
     box-shadow:
-        0 0 12px
-        #ff3030;
+        0 0 12px #ff3030;
 
     animation:
-        pulse 1.4s infinite;
+        livePulse 1.4s infinite;
 }
 
 
-@keyframes pulse {
+@keyframes livePulse {
 
     0%,100% {
         opacity: 1;
@@ -328,7 +312,6 @@ a {
         opacity: .35;
         transform: scale(.75);
     }
-
 }
 
 
@@ -336,8 +319,7 @@ a {
 
     height: 40px;
 
-    padding:
-        0 18px;
+    padding: 0 19px;
 
     display: flex;
 
@@ -345,8 +327,7 @@ a {
 
     justify-content: center;
 
-    border-radius:
-        999px;
+    border-radius: 999px;
 
     background:
         linear-gradient(
@@ -355,24 +336,21 @@ a {
             #0096ff
         );
 
-    color:
-        #001014;
+    color: #001014;
 
     font-family:
         Space Grotesk,
         sans-serif;
 
-    font-weight:
-        900;
+    font-size: 11px;
 
-    font-size:
-        11px;
+    font-weight: 900;
 
-    letter-spacing:
-        .7px;
+    letter-spacing: .7px;
 
-    transition:
-        .25s ease;
+    text-decoration: none;
+
+    transition: .25s ease;
 }
 
 
@@ -382,7 +360,7 @@ a {
         translateY(-2px);
 
     box-shadow:
-        0 0 30px
+        0 0 28px
         rgba(0,255,204,.30);
 }
 
@@ -394,7 +372,7 @@ a {
 .hero {
 
     padding:
-        clamp(50px, 7vw, 95px)
+        clamp(55px, 7vw, 95px)
         0
         35px;
 }
@@ -409,24 +387,19 @@ a {
         Space Grotesk,
         sans-serif;
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    font-weight:
-        800;
+    font-weight: 800;
 
-    letter-spacing:
-        3px;
+    letter-spacing: 3px;
 
-    text-transform:
-        uppercase;
-
-    margin-bottom:
-        12px;
+    margin-bottom: 12px;
 }
 
 
 .hero h1 {
+
+    margin: 0;
 
     font-family:
         Syne,
@@ -434,22 +407,18 @@ a {
 
     font-size:
         clamp(
-            65px,
+            70px,
             11vw,
             155px
         );
 
-    line-height:
-        .78;
+    line-height: .78;
 
-    letter-spacing:
-        -7px;
+    letter-spacing: -7px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
-    text-transform:
-        uppercase;
+    text-transform: uppercase;
 }
 
 
@@ -463,11 +432,9 @@ a {
             #007bff 100%
         );
 
-    -webkit-background-clip:
-        text;
+    -webkit-background-clip: text;
 
-    -webkit-text-fill-color:
-        transparent;
+    -webkit-text-fill-color: transparent;
 }
 
 
@@ -479,51 +446,43 @@ a {
 
     align-items: center;
 
-    gap: 12px;
+    gap: 11px;
 
-    margin-top:
-        22px;
+    margin-top: 22px;
 
-    color:
-        #aab7c2;
+    color: #9aaab5;
 
     font-family:
         DM Mono,
         monospace;
 
-    font-size:
-        10px;
+    font-size: 10px;
 
-    letter-spacing:
-        1.5px;
+    letter-spacing: 1.4px;
 
-    text-transform:
-        uppercase;
+    text-transform: uppercase;
 }
 
 
 .hero-info strong {
-
-    color:
-        #fff;
+    color: #fff;
 }
 
 
-.dot-separator {
+.separator-dot {
 
     width: 4px;
 
     height: 4px;
 
-    background:
-        #53636f;
-
     border-radius: 50%;
+
+    background: #52626e;
 }
 
 
 /* =========================================================
-   SEARCH + FILTER
+   SEARCH
    ========================================================= */
 
 .tools {
@@ -534,8 +493,7 @@ a {
 
     gap: 14px;
 
-    margin:
-        10px 0 25px;
+    margin-bottom: 24px;
 
     flex-wrap: wrap;
 }
@@ -545,29 +503,27 @@ a {
 
     flex: 1;
 
-    min-width: 240px;
+    min-width: 250px;
 
-    height: 48px;
+    height: 50px;
 
     display: flex;
 
     align-items: center;
 
+    padding: 0 16px;
+
     border:
         1px solid
-        rgba(0,255,204,.35);
+        rgba(0,255,204,.32);
 
-    border-radius:
-        14px;
+    border-radius: 14px;
 
     background:
-        rgba(4,14,22,.75);
+        rgba(4,14,22,.80);
 
     backdrop-filter:
         blur(15px);
-
-    padding:
-        0 16px;
 }
 
 
@@ -576,11 +532,9 @@ a {
     color:
         var(--accent);
 
-    font-size:
-        19px;
+    font-size: 23px;
 
-    margin-right:
-        10px;
+    margin-right: 10px;
 }
 
 
@@ -588,9 +542,9 @@ a {
 
     width: 100%;
 
-    border: 0;
+    outline: none;
 
-    outline: 0;
+    border: 0;
 
     background: transparent;
 
@@ -601,9 +555,13 @@ a {
 
 
 .search-box input::placeholder {
-    color: #657784;
+    color: #687985;
 }
 
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
 
 .filters {
 
@@ -619,34 +577,28 @@ a {
 
     height: 42px;
 
-    padding:
-        0 18px;
+    padding: 0 17px;
 
     border:
         1px solid
         rgba(100,130,160,.25);
 
-    border-radius:
-        12px;
+    border-radius: 12px;
 
     background:
-        rgba(8,17,27,.75);
+        rgba(8,17,27,.78);
 
-    color:
-        #c8d2d9;
+    color: #c7d0d7;
 
     font-family:
         Space Grotesk,
         sans-serif;
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
-    transition:
-        .2s ease;
+    transition: .2s ease;
 }
 
 
@@ -655,15 +607,15 @@ a {
     border-color:
         var(--accent);
 
-    color:
-        #fff;
+    color: #fff;
 }
 
 
 .filter-btn.active {
 
-    color:
-        #001014;
+    border-color: transparent;
+
+    color: #001014;
 
     background:
         linear-gradient(
@@ -672,34 +624,31 @@ a {
             #00bfff
         );
 
-    border-color:
-        transparent;
-
     box-shadow:
-        0 0 20px
+        0 0 22px
         rgba(0,255,204,.18);
 }
 
 
 /* =========================================================
-   SEPARATOR
+   LINE
    ========================================================= */
 
-.separator {
+.separator-line {
 
     height: 1px;
 
     width: 100%;
 
+    margin-bottom: 22px;
+
     background:
         linear-gradient(
             90deg,
-            var(--accent),
+            #00ffcc,
             rgba(0,255,204,.15),
             transparent
         );
-
-    margin-bottom: 20px;
 }
 
 
@@ -715,7 +664,7 @@ a {
         repeat(
             auto-fill,
             minmax(
-                250px,
+                245px,
                 1fr
             )
         );
@@ -725,17 +674,17 @@ a {
 
 
 /* =========================================================
-   TEXT ONLY CARD
+   CHANNEL CARD
+   NO LOGO / NO IMAGE
    ========================================================= */
 
 .channel-card {
 
+    position: relative;
+
     min-height: 112px;
 
-    padding:
-        22px;
-
-    position: relative;
+    padding: 21px;
 
     display: flex;
 
@@ -743,23 +692,22 @@ a {
 
     justify-content: center;
 
+    overflow: hidden;
+
+    cursor: pointer;
+
+    border:
+        1px solid
+        rgba(70,110,140,.30);
+
+    border-radius: 16px;
+
     background:
         linear-gradient(
             135deg,
             rgba(10,20,31,.94),
             rgba(4,11,18,.90)
         );
-
-    border:
-        1px solid
-        rgba(70,110,140,.30);
-
-    border-radius:
-        16px;
-
-    cursor: pointer;
-
-    overflow: hidden;
 
     backdrop-filter:
         blur(18px);
@@ -781,18 +729,16 @@ a {
 
     left: 0;
 
-    width: 35%;
+    width: 38%;
 
     height: 1px;
 
     background:
         linear-gradient(
             90deg,
-            var(--accent),
+            #00ffcc,
             transparent
         );
-
-    opacity: .8;
 }
 
 
@@ -806,17 +752,16 @@ a {
 
     bottom: -55px;
 
-    width: 130px;
+    width: 140px;
 
-    height: 130px;
+    height: 140px;
 
     border-radius: 50%;
 
     background:
         rgba(0,255,204,.04);
 
-    filter:
-        blur(20px);
+    filter: blur(20px);
 
     pointer-events: none;
 }
@@ -839,36 +784,31 @@ a {
 }
 
 
+/* ONLY TEXT */
+
 .card-title {
 
     position: relative;
 
     z-index: 2;
 
+    margin-bottom: 14px;
+
+    color: #f5f7fa;
+
     font-family:
         Space Grotesk,
         sans-serif;
 
-    font-size:
-        16px;
+    font-size: 16px;
 
-    font-weight:
-        800;
+    font-weight: 800;
 
-    color:
-        #f5f7fa;
+    white-space: nowrap;
 
-    white-space:
-        nowrap;
+    overflow: hidden;
 
-    overflow:
-        hidden;
-
-    text-overflow:
-        ellipsis;
-
-    margin-bottom:
-        14px;
+    text-overflow: ellipsis;
 }
 
 
@@ -878,29 +818,23 @@ a {
 
     z-index: 2;
 
-    display:
-        flex;
+    display: flex;
 
-    align-items:
-        center;
+    align-items: center;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     gap: 10px;
 
-    color:
-        #8495a2;
+    color: #8293a0;
 
     font-family:
         DM Mono,
         monospace;
 
-    font-size:
-        10px;
+    font-size: 10px;
 
-    letter-spacing:
-        1px;
+    letter-spacing: 1px;
 }
 
 
@@ -909,46 +843,39 @@ a {
     color:
         var(--accent);
 
-    font-weight:
-        700;
+    font-weight: 700;
 }
 
 
 /* =========================================================
-   EMPTY / LOADING
+   STATE
    ========================================================= */
 
 .state {
 
-    grid-column:
-        1 / -1;
+    grid-column: 1 / -1;
 
-    min-height:
-        220px;
+    min-height: 220px;
 
-    display:
-        flex;
+    display: flex;
 
-    flex-direction:
-        column;
+    flex-direction: column;
 
-    align-items:
-        center;
+    align-items: center;
 
-    justify-content:
-        center;
+    justify-content: center;
 
-    color:
-        var(--muted);
+    gap: 15px;
+
+    color: #8293a0;
 
     font-family:
         DM Mono,
         monospace;
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    gap: 15px;
+    text-align: center;
 }
 
 
@@ -973,11 +900,9 @@ a {
 
 
 @keyframes spin {
-
     to {
         transform: rotate(360deg);
     }
-
 }
 
 
@@ -989,85 +914,74 @@ a {
 
     display: none;
 
-    padding-top:
-        30px;
+    padding-top: 30px;
 }
 
 
 .player-view.active {
-
     display: block;
 }
 
 
 .home-view.hidden {
-
     display: none;
 }
 
 
 .back-btn {
 
-    height: 42px;
+    height: 43px;
 
-    padding:
-        0 17px;
+    padding: 0 17px;
+
+    margin-bottom: 18px;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        10px;
+    border-radius: 10px;
 
     background:
-        rgba(7,15,23,.8);
+        rgba(7,15,23,.85);
 
-    color:
-        #fff;
+    color: #fff;
 
     font-family:
         Space Grotesk,
         sans-serif;
 
-    font-weight:
-        700;
-
-    margin-bottom:
-        18px;
+    font-weight: 700;
 }
 
 
 .back-btn:hover {
 
-    border-color:
+    color:
         var(--accent);
 
-    color:
+    border-color:
         var(--accent);
 }
 
 
 .player-box {
 
-    width: 100%;
-
-    aspect-ratio:
-        16 / 9;
-
     position: relative;
 
-    overflow: hidden;
+    width: 100%;
 
-    background:
-        #000;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
 
     border:
         1px solid
         rgba(0,255,204,.22);
 
-    border-radius:
-        18px;
+    border-radius: 18px;
+
+    background: #000;
 
     box-shadow:
         0 30px 80px
@@ -1081,6 +995,8 @@ a {
 
     height: 100%;
 
+    display: block;
+
     border: 0;
 
     background: #000;
@@ -1091,9 +1007,9 @@ a {
 
     position: absolute;
 
-    right: 15px;
+    right: 14px;
 
-    bottom: 15px;
+    bottom: 14px;
 
     width: 44px;
 
@@ -1108,12 +1024,9 @@ a {
 
     color: #fff;
 
-    z-index: 10;
+    font-size: 20px;
 
-    font-size: 19px;
-
-    backdrop-filter:
-        blur(10px);
+    z-index: 5;
 }
 
 
@@ -1122,39 +1035,32 @@ a {
     background:
         var(--accent);
 
-    color:
-        #000;
+    color: #000;
 }
 
 
 .player-info {
 
-    margin-top:
-        15px;
+    display: flex;
 
-    padding:
-        17px 20px;
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 15px;
+
+    padding: 17px 20px;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        14px;
+    border-radius: 14px;
 
     background:
         rgba(7,15,23,.78);
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-    gap: 15px;
 }
 
 
@@ -1164,58 +1070,47 @@ a {
         Space Grotesk,
         sans-serif;
 
-    font-size:
-        18px;
+    font-size: 18px;
 
-    font-weight:
-        800;
+    font-weight: 800;
 }
 
 
 .player-subtitle {
 
-    color:
-        #718390;
+    margin-top: 5px;
+
+    color: #718390;
 
     font-family:
         DM Mono,
         monospace;
 
-    font-size:
-        10px;
-
-    margin-top:
-        5px;
+    font-size: 10px;
 }
 
 
 .share-btn {
 
-    height:
-        40px;
+    height: 40px;
 
-    padding:
-        0 16px;
+    padding: 0 16px;
 
     border:
         1px solid
         var(--border);
 
-    border-radius:
-        9px;
+    border-radius: 9px;
 
-    background:
-        transparent;
+    background: transparent;
 
-    color:
-        #fff;
-
-    font-size:
-        11px;
+    color: #fff;
 
     font-family:
         DM Mono,
         monospace;
+
+    font-size: 10px;
 }
 
 
@@ -1224,13 +1119,12 @@ a {
     background:
         var(--accent);
 
-    color:
-        #000;
+    color: #000;
 }
 
 
 /* =========================================================
-   TELEGRAM MODAL
+   MODAL
    ========================================================= */
 
 .modal {
@@ -1258,7 +1152,6 @@ a {
 
 
 .modal.show {
-
     display: flex;
 }
 
@@ -1268,15 +1161,15 @@ a {
     width:
         min(430px, 100%);
 
-    padding:
-        30px;
+    padding: 30px;
+
+    text-align: center;
 
     border:
         1px solid
         rgba(0,255,204,.28);
 
-    border-radius:
-        22px;
+    border-radius: 22px;
 
     background:
         linear-gradient(
@@ -1288,23 +1181,20 @@ a {
     box-shadow:
         0 30px 90px
         rgba(0,0,0,.65);
-
-    text-align:
-        center;
 }
 
 
 .modal-title {
 
+    margin-bottom: 10px;
+
     font-family:
         Space Grotesk,
         sans-serif;
 
-    font-size:
-        25px;
+    font-size: 26px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
     background:
         linear-gradient(
@@ -1313,40 +1203,29 @@ a {
             #00ffcc
         );
 
-    -webkit-background-clip:
-        text;
+    -webkit-background-clip: text;
 
-    -webkit-text-fill-color:
-        transparent;
-
-    margin-bottom:
-        10px;
+    -webkit-text-fill-color: transparent;
 }
 
 
 .modal-text {
 
-    color:
-        #8ea0ad;
+    margin-bottom: 22px;
 
-    font-size:
-        13px;
+    color: #8ea0ad;
 
-    line-height:
-        1.6;
+    font-size: 13px;
 
-    margin-bottom:
-        22px;
+    line-height: 1.6;
 }
 
 
 .modal-actions {
 
-    display:
-        flex;
+    display: flex;
 
-    gap:
-        10px;
+    gap: 10px;
 }
 
 
@@ -1354,28 +1233,28 @@ a {
 
     flex: 1;
 
-    height:
-        45px;
-
-    border-radius:
-        10px;
+    height: 45px;
 
     border:
         1px solid
         rgba(255,255,255,.12);
 
+    border-radius: 10px;
+
     background:
         rgba(255,255,255,.04);
 
-    color:
-        #fff;
+    color: #fff;
 
-    font-weight:
-        800;
+    font-weight: 800;
 }
 
 
 .modal-actions .join {
+
+    border: 0;
+
+    color: #001014;
 
     background:
         linear-gradient(
@@ -1383,11 +1262,6 @@ a {
             #00ffcc,
             #0096ff
         );
-
-    color:
-        #001014;
-
-    border: 0;
 }
 
 
@@ -1395,127 +1269,77 @@ a {
    MOBILE
    ========================================================= */
 
-@media (max-width: 700px) {
+@media(max-width:700px) {
 
     .page {
-
-        width:
-            92vw;
+        width: 92vw;
     }
 
-
     .nav {
-
         height: 70px;
     }
 
-
     .brand {
-
         font-size: 25px;
     }
 
-
     .live-pill {
-
         display: none;
     }
 
-
     .telegram-btn {
-
-        padding:
-            0 13px;
-
-        font-size:
-            10px;
+        padding: 0 13px;
+        font-size: 10px;
     }
-
 
     .hero {
-
-        padding-top:
-            55px;
+        padding-top: 55px;
     }
-
 
     .hero h1 {
-
-        font-size:
-            70px;
-
-        letter-spacing:
-            -4px;
+        font-size: 70px;
+        letter-spacing: -4px;
     }
 
-
     .channels-grid {
-
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+            repeat(2, minmax(0,1fr));
 
         gap: 11px;
     }
 
-
     .channel-card {
-
-        min-height:
-            105px;
-
-        padding:
-            15px;
+        min-height: 105px;
+        padding: 15px;
     }
-
 
     .card-title {
-
-        font-size:
-            13px;
-
-        margin-bottom:
-            12px;
+        font-size: 13px;
     }
-
 
     .card-meta {
-
-        font-size:
-            8px;
+        font-size: 8px;
     }
-
 
     .player-info {
-
-        flex-direction:
-            column;
-
-        align-items:
-            stretch;
+        flex-direction: column;
+        align-items: stretch;
     }
-
 
     .share-btn {
-
         width: 100%;
     }
-
 }
 
 
-@media (max-width: 430px) {
+@media(max-width:430px) {
 
     .channels-grid {
-
-        grid-template-columns:
-            1fr;
+        grid-template-columns: 1fr;
     }
 
-
     .hero h1 {
-
-        font-size:
-            60px;
+        font-size: 58px;
     }
 
 }
@@ -1530,280 +1354,272 @@ a {
 <canvas id="bgCanvas"></canvas>
 
 
-<!-- =====================================================
-     PAGE
-     ===================================================== -->
-
 <div class="page">
 
 
-    <!-- =================================================
-         NAV
-         ================================================= -->
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
 
-    <header class="nav">
+<header class="nav">
 
-        <div
-            class="brand"
-            id="brandHome"
-        >
-            CRIC<span>ZONE</span>
-        </div>
-
-
-        <div class="nav-actions">
-
-            <div class="live-pill">
-
-                <i class="live-dot"></i>
-
-                LIVE
-
-            </div>
-
-
-            <a
-                class="telegram-btn"
-                id="telegramTop"
-                href="${window.CricConfig.telegramLink}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                JOIN TELEGRAM
-            </a>
-
-        </div>
-
-    </header>
-
-
-    <!-- =================================================
-         HOME
-         ================================================= -->
-
-    <main
-        class="home-view"
-        id="homeView"
+    <div
+        class="brand"
+        id="brandHome"
     >
-
-        <section class="hero">
-
-            <div class="hero-label">
-                CRICZONE LIVE
-            </div>
+        CRIC<span>ZONE</span>
+    </div>
 
 
-            <h1>
+    <div class="nav-actions">
 
-                LIVE
+        <div class="live-pill">
 
-                <br>
+            <span class="live-dot"></span>
 
-                <span class="gradient">
-                    SPORTS.
-                </span>
-
-            </h1>
-
-
-            <div class="hero-info">
-
-                <strong>
-                    CRICKET
-                </strong>
-
-                <span class="dot-separator"></span>
-
-                SPORTS
-
-                <span class="dot-separator"></span>
-
-                LIVE
-
-                <span class="dot-separator"></span>
-
-                HD CHANNELS
-
-                <span class="dot-separator"></span>
-
-                WATCH NOW
-
-            </div>
-
-        </section>
-
-
-        <!-- =============================================
-             SEARCH
-             ============================================= -->
-
-        <div class="tools">
-
-            <div class="search-box">
-
-                <span class="search-icon">
-                    ⌕
-                </span>
-
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="Search channels..."
-                    autocomplete="off"
-                >
-
-            </div>
-
-
-            <div class="filters">
-
-                <button
-                    class="filter-btn active"
-                    data-filter="all"
-                >
-                    All
-                </button>
-
-                <button
-                    class="filter-btn"
-                    data-filter="star"
-                >
-                    Star
-                </button>
-
-                <button
-                    class="filter-btn"
-                    data-filter="sony"
-                >
-                    Sony
-                </button>
-
-                <button
-                    class="filter-btn"
-                    data-filter="sports"
-                >
-                    Sports
-                </button>
-
-                <button
-                    class="filter-btn"
-                    data-filter="cricket"
-                >
-                    Cricket
-                </button>
-
-                <button
-                    class="filter-btn"
-                    data-filter="hd"
-                >
-                    HD
-                </button>
-
-            </div>
+            LIVE
 
         </div>
 
 
-        <div class="separator"></div>
+        <a
+            class="telegram-btn"
+            href="${window.CricConfig.telegramLink}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            JOIN TELEGRAM
+        </a>
+
+    </div>
+
+</header>
 
 
-        <!-- =============================================
-             CHANNELS
-             ============================================= -->
+<!-- =====================================================
+     HOME
+     ===================================================== -->
 
-        <div
-            class="channels-grid"
-            id="channelsGrid"
+<main
+    class="home-view"
+    id="homeView"
+>
+
+<section class="hero">
+
+    <div class="hero-label">
+        CRICZONE LIVE
+    </div>
+
+
+    <h1>
+
+        LIVE
+
+        <br>
+
+        <span class="gradient">
+            SPORTS.
+        </span>
+
+    </h1>
+
+
+    <div class="hero-info">
+
+        <strong>CRICKET</strong>
+
+        <span class="separator-dot"></span>
+
+        SPORTS
+
+        <span class="separator-dot"></span>
+
+        LIVE
+
+        <span class="separator-dot"></span>
+
+        HD CHANNELS
+
+        <span class="separator-dot"></span>
+
+        WATCH NOW
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH / FILTER
+     ===================================================== -->
+
+<div class="tools">
+
+    <div class="search-box">
+
+        <span class="search-icon">
+            ⌕
+        </span>
+
+        <input
+            id="searchInput"
+            type="search"
+            placeholder="Search channels..."
+            autocomplete="off"
         >
 
-            <div class="state">
-
-                <div class="spinner"></div>
-
-                Loading channels...
-
-            </div>
-
-        </div>
-
-    </main>
+    </div>
 
 
-    <!-- =================================================
-         PLAYER
-         ================================================= -->
-
-    <section
-        class="player-view"
-        id="playerView"
-    >
+    <div class="filters">
 
         <button
-            class="back-btn"
-            id="backBtn"
+            class="filter-btn active"
+            data-filter="all"
         >
-            ← Back to Channels
+            All
         </button>
 
-
-        <div
-            class="player-box"
-            id="playerBox"
+        <button
+            class="filter-btn"
+            data-filter="star"
         >
+            Star
+        </button>
 
-            <iframe
-                id="player"
-                allow="
-                    autoplay;
-                    fullscreen;
-                    encrypted-media;
-                    picture-in-picture
-                "
-                allowfullscreen
-                referrerpolicy="no-referrer"
-                loading="eager"
-            ></iframe>
+        <button
+            class="filter-btn"
+            data-filter="sony"
+        >
+            Sony
+        </button>
+
+        <button
+            class="filter-btn"
+            data-filter="sports"
+        >
+            Sports
+        </button>
+
+        <button
+            class="filter-btn"
+            data-filter="cricket"
+        >
+            Cricket
+        </button>
+
+        <button
+            class="filter-btn"
+            data-filter="hd"
+        >
+            HD
+        </button>
+
+    </div>
+
+</div>
 
 
-            <button
-                class="fullscreen-btn"
-                id="fullscreenBtn"
-                title="Fullscreen"
+<div class="separator-line"></div>
+
+
+<!-- CHANNELS -->
+
+<div
+    class="channels-grid"
+    id="channelsGrid"
+>
+
+    <div class="state">
+
+        <div class="spinner"></div>
+
+        Loading channels...
+
+    </div>
+
+</div>
+
+</main>
+
+
+<!-- =====================================================
+     PLAYER
+     ===================================================== -->
+
+<section
+    class="player-view"
+    id="playerView"
+>
+
+    <button
+        class="back-btn"
+        id="backBtn"
+    >
+        ← Back to Channels
+    </button>
+
+
+    <div
+        class="player-box"
+        id="playerBox"
+    >
+
+        <iframe
+            id="player"
+            allow="
+                autoplay;
+                fullscreen;
+                encrypted-media;
+                picture-in-picture
+            "
+            allowfullscreen
+            referrerpolicy="no-referrer"
+            loading="eager"
+        ></iframe>
+
+
+        <button
+            class="fullscreen-btn"
+            id="fullscreenBtn"
+            title="Fullscreen"
+        >
+            ⛶
+        </button>
+
+    </div>
+
+
+    <div class="player-info">
+
+        <div>
+
+            <div
+                class="player-title"
+                id="playerTitle"
             >
-                ⛶
-            </button>
-
-        </div>
-
-
-        <div class="player-info">
-
-            <div>
-
-                <div
-                    class="player-title"
-                    id="playerTitle"
-                >
-                    Live Stream
-                </div>
-
-                <div class="player-subtitle">
-                    CRICZONE • HIGH-DEFINITION LIVE STREAM
-                </div>
-
+                Live Stream
             </div>
 
 
-            <button
-                class="share-btn"
-                id="shareBtn"
-            >
-                SHARE STREAM
-            </button>
+            <div class="player-subtitle">
+                CRICZONE • HIGH-DEFINITION LIVE STREAM
+            </div>
 
         </div>
 
-    </section>
+
+        <button
+            class="share-btn"
+            id="shareBtn"
+        >
+            SHARE STREAM
+        </button>
+
+    </div>
+
+</section>
 
 </div>
 
@@ -1826,17 +1642,15 @@ a {
 
         <div class="modal-text">
 
-            Join our Telegram channel for
-            stream links and updates.
+            Join our Telegram channel
+            for stream updates.
 
         </div>
 
 
         <div class="modal-actions">
 
-            <button
-                id="laterBtn"
-            >
+            <button id="laterBtn">
                 LATER
             </button>
 
@@ -1869,17 +1683,11 @@ a {
 
         this.handleUrl();
 
-
-        window.addEventListener(
-            "popstate",
-            () => this.handleUrl()
-        );
-
     }
 
 
     /* =====================================================
-       ELEMENT CACHE
+       CACHE ELEMENTS
        ===================================================== */
 
     cacheElements() {
@@ -1924,6 +1732,16 @@ a {
             modal:
                 this.shadow.querySelector(
                     "#telegramModal"
+                ),
+
+            fullscreen:
+                this.shadow.querySelector(
+                    "#fullscreenBtn"
+                ),
+
+            share:
+                this.shadow.querySelector(
+                    "#shareBtn"
                 )
 
         };
@@ -1937,73 +1755,54 @@ a {
 
     setupEvents() {
 
-        this.shadow.querySelector(
-            "#brandHome"
-        ).onclick = () => {
-
-            this.closePlayer();
-
-        };
+        this.shadow
+            .querySelector("#brandHome")
+            .onclick = () =>
+                this.closePlayer();
 
 
-        this.shadow.querySelector(
-            "#backBtn"
-        ).onclick = () => {
-
-            this.closePlayer();
-
-        };
+        this.shadow
+            .querySelector("#backBtn")
+            .onclick = () =>
+                this.closePlayer();
 
 
-        this.shadow.querySelector(
-            "#joinBtn"
-        ).onclick = () => {
-
-            this.joinTelegram();
-
-        };
+        this.shadow
+            .querySelector("#joinBtn")
+            .onclick = () =>
+                this.joinTelegram();
 
 
-        this.shadow.querySelector(
-            "#laterBtn"
-        ).onclick = () => {
-
-            this.closeModal();
-
-        };
+        this.shadow
+            .querySelector("#laterBtn")
+            .onclick = () =>
+                this.closeModal();
 
 
-        this.shadow.querySelector(
-            "#fullscreenBtn"
-        ).onclick = () => {
-
-            this.toggleFullscreen();
-
-        };
+        this.shadow
+            .querySelector("#fullscreenBtn")
+            .onclick = () =>
+                this.toggleFullscreen();
 
 
-        this.shadow.querySelector(
-            "#shareBtn"
-        ).onclick = () => {
-
-            this.shareStream();
-
-        };
+        this.shadow
+            .querySelector("#shareBtn")
+            .onclick = () =>
+                this.shareStream();
 
 
         this.$.search.addEventListener(
             "input",
-            () => this.applyFilters()
+            () =>
+                this.applyFilters()
         );
 
 
         this.shadow
-            .querySelectorAll(
-                ".filter-btn"
-            )
-            .forEach(btn => {
+            .querySelectorAll(".filter-btn")
+            .forEach(button => {
 
-                btn.addEventListener(
+                button.addEventListener(
                     "click",
                     () => {
 
@@ -2011,19 +1810,21 @@ a {
                             .querySelectorAll(
                                 ".filter-btn"
                             )
-                            .forEach(
-                                b =>
-                                    b.classList.remove(
-                                        "active"
-                                    )
+                            .forEach(btn =>
+                                btn.classList.remove(
+                                    "active"
+                                )
                             );
 
-                        btn.classList.add(
+
+                        button.classList.add(
                             "active"
                         );
 
+
                         this.currentFilter =
-                            btn.dataset.filter;
+                            button.dataset.filter;
+
 
                         this.applyFilters();
 
@@ -2033,8 +1834,11 @@ a {
             });
 
 
-        this.currentFilter =
-            "all";
+        window.addEventListener(
+            "popstate",
+            () =>
+                this.handleUrl()
+        );
 
     }
 
@@ -2059,7 +1863,8 @@ a {
             if (!response.ok) {
 
                 throw new Error(
-                    "Feed request failed"
+                    "HTTP " +
+                    response.status
                 );
 
             }
@@ -2069,16 +1874,14 @@ a {
                 await response.json();
 
 
-            let channels = [];
-
-
             if (Array.isArray(data)) {
 
-                channels = data;
+                this.masterChannels =
+                    data;
 
             } else {
 
-                channels =
+                this.masterChannels =
                     data.iframes ||
                     data.channels ||
                     data.streams ||
@@ -2088,25 +1891,22 @@ a {
             }
 
 
-            if (!Array.isArray(channels)) {
+            if (
+                !Array.isArray(
+                    this.masterChannels
+                )
+            ) {
 
-                channels = [];
+                this.masterChannels = [];
 
             }
 
 
-            this.masterChannels =
-                channels;
-
-
-            this.renderGrid();
-
+            this.renderChannels();
 
             this.applyFilters();
 
-
             this.handleUrl();
-
 
         } catch (error) {
 
@@ -2121,6 +1921,8 @@ a {
                 <div class="state">
 
                     Unable to load channels.
+
+                    <br>
 
                     <small>
                         Please refresh the page.
@@ -2139,9 +1941,26 @@ a {
        RENDER CHANNELS
        ===================================================== */
 
-    renderGrid() {
+    renderChannels() {
 
         this.$.grid.innerHTML = "";
+
+
+        if (
+            !this.masterChannels.length
+        ) {
+
+            this.$.grid.innerHTML = `
+
+                <div class="state">
+                    No channels found.
+                </div>
+
+            `;
+
+            return;
+
+        }
 
 
         this.masterChannels.forEach(
@@ -2160,10 +1979,6 @@ a {
                     `Channel ${index + 1}`;
 
 
-                const lower =
-                    title.toLowerCase();
-
-
                 const card =
                     document.createElement(
                         "div"
@@ -2174,13 +1989,21 @@ a {
                     "channel-card";
 
 
-                card.dataset.title =
-                    lower;
-
-
                 card.dataset.id =
                     String(id);
 
+
+                card.dataset.title =
+                    String(title)
+                        .toLowerCase();
+
+
+                /*
+                   IMPORTANT:
+                   NO IMAGE
+                   NO LOGO
+                   NO IMG TAG
+                */
 
                 card.innerHTML = `
 
@@ -2208,11 +2031,8 @@ a {
                 `;
 
 
-                card.onclick = () => {
-
+                card.onclick = () =>
                     this.openPlayer(id);
-
-                };
 
 
                 this.$.grid.appendChild(
@@ -2226,7 +2046,7 @@ a {
 
 
     /* =====================================================
-       SEARCH / FILTER
+       SEARCH + FILTER
        ===================================================== */
 
     applyFilters() {
@@ -2236,8 +2056,8 @@ a {
                 this.$.search.value ||
                 ""
             )
-            .trim()
-            .toLowerCase();
+            .toLowerCase()
+            .trim();
 
 
         const filter =
@@ -2256,80 +2076,74 @@ a {
                     "";
 
 
-                const matchesSearch =
+                const searchMatch =
                     !query ||
                     title.includes(
                         query
                     );
 
 
-                let matchesFilter =
+                let filterMatch =
                     true;
 
 
-                if (
-                    filter === "sony"
-                ) {
+                switch(filter) {
 
-                    matchesFilter =
-                        title.includes(
-                            "sony"
-                        );
+                    case "sony":
 
-                }
+                        filterMatch =
+                            title.includes(
+                                "sony"
+                            );
 
-
-                if (
-                    filter === "star"
-                ) {
-
-                    matchesFilter =
-                        title.includes(
-                            "star"
-                        );
-
-                }
+                        break;
 
 
-                if (
-                    filter === "sports"
-                ) {
+                    case "star":
 
-                    matchesFilter =
-                        title.includes(
-                            "sports"
-                        );
+                        filterMatch =
+                            title.includes(
+                                "star"
+                            );
 
-                }
+                        break;
 
 
-                if (
-                    filter === "cricket"
-                ) {
+                    case "sports":
 
-                    matchesFilter =
-                        title.includes(
-                            "cricket"
-                        );
+                        filterMatch =
+                            title.includes(
+                                "sports"
+                            );
 
-                }
+                        break;
 
 
-                if (
-                    filter === "hd"
-                ) {
+                    case "cricket":
 
-                    matchesFilter =
-                        title.includes(
-                            "hd"
-                        );
+                        filterMatch =
+                            title.includes(
+                                "cricket"
+                            );
+
+                        break;
+
+
+                    case "hd":
+
+                        filterMatch =
+                            title.includes(
+                                "hd"
+                            );
+
+                        break;
 
                 }
 
 
                 card.style.display =
-                    matchesSearch &&
-                    matchesFilter
+                    searchMatch &&
+                    filterMatch
                         ? ""
                         : "none";
 
@@ -2346,17 +2160,26 @@ a {
 
         const target =
             this.masterChannels.find(
-                (channel, index) =>
-                    String(
+                (channel, index) => {
+
+                    const id =
                         channel.id !== undefined
                             ? channel.id
-                            : index
-                    ) ===
-                    String(identifier)
+                            : index;
+
+                    return String(id) ===
+                        String(identifier);
+
+                }
             );
 
 
         if (!target) {
+
+            console.warn(
+                "Channel not found:",
+                identifier
+            );
 
             return;
 
@@ -2380,14 +2203,19 @@ a {
             target.src;
 
 
+        /*
+         * Fallback used by your existing feed
+         */
+
         if (!streamUrl) {
 
             streamUrl =
-                `https://sonucdn-v2.pages.dev/star.html?id=${encodeURIComponent(
+                "https://sonucdn-v2.pages.dev/star.html?id=" +
+                encodeURIComponent(
                     target.id !== undefined
                         ? target.id
                         : identifier
-                )}`;
+                );
 
         }
 
@@ -2429,9 +2257,10 @@ a {
                     this.currentStreamId
             },
             "",
-            `?id=${encodeURIComponent(
+            "?id=" +
+            encodeURIComponent(
                 this.currentStreamId
-            )}`
+            )
         );
 
 
@@ -2478,19 +2307,6 @@ a {
             );
 
         }
-
-
-        try {
-
-            if (
-                document.fullscreenElement
-            ) {
-
-                document.exitFullscreen();
-
-            }
-
-        } catch (e) {}
 
     }
 
@@ -2548,7 +2364,6 @@ a {
                     this.showTelegramModal();
 
                 },
-
                 window.CricConfig
                     .previewDuration
             );
@@ -2580,9 +2395,7 @@ a {
 
     showTelegramModal() {
 
-        if (
-            this.isUnlocked
-        ) {
+        if (this.isUnlocked) {
 
             return;
 
@@ -2596,12 +2409,19 @@ a {
 
         try {
 
-            this.$.player.contentWindow.postMessage(
-                "criczone-force-pause",
-                "*"
-            );
+            if (
+                this.$.player.contentWindow
+            ) {
 
-        } catch (e) {}
+                this.$.player.contentWindow
+                    .postMessage(
+                        "criczone-force-pause",
+                        "*"
+                    );
+
+            }
+
+        } catch (error) {}
 
     }
 
@@ -2619,7 +2439,7 @@ a {
 
         localStorage.setItem(
             "criczone_unlocked_time",
-            Date.now().toString()
+            String(Date.now())
         );
 
 
@@ -2639,41 +2459,48 @@ a {
 
         try {
 
-            this.$.player.contentWindow.postMessage(
-                "criczone-force-play",
-                "*"
-            );
+            if (
+                this.$.player.contentWindow
+            ) {
 
-        } catch (e) {}
+                this.$.player.contentWindow
+                    .postMessage(
+                        "criczone-force-play",
+                        "*"
+                    );
+
+            }
+
+        } catch (error) {}
 
     }
 
 
     /* =====================================================
-       UNLOCK STATUS
+       UNLOCK CHECK
        ===================================================== */
 
     checkUnlock() {
 
-        const value =
+        const saved =
             localStorage.getItem(
                 "criczone_unlocked_time"
             );
 
 
-        if (!value) {
+        if (!saved) {
 
             return;
 
         }
 
 
-        const time =
-            Number(value);
+        const timestamp =
+            Number(saved);
 
 
         if (
-            Date.now() - time <
+            Date.now() - timestamp <
             24 * 60 * 60 * 1000
         ) {
 
@@ -2697,21 +2524,19 @@ a {
 
     async toggleFullscreen() {
 
-        const box =
-            this.$.playerBox;
-
-
         try {
 
             if (
                 !document.fullscreenElement
             ) {
 
-                await box.requestFullscreen();
+                await this.$.playerBox
+                    .requestFullscreen();
 
             } else {
 
-                await document.exitFullscreen();
+                await document
+                    .exitFullscreen();
 
             }
 
@@ -2753,38 +2578,38 @@ a {
 
                 });
 
-            } else {
-
-                await navigator.clipboard
-                    .writeText(
-                        window.location.href
-                    );
-
-                const btn =
-                    this.shadow.querySelector(
-                        "#shareBtn"
-                    );
-
-
-                const oldText =
-                    btn.textContent;
-
-
-                btn.textContent =
-                    "COPIED!";
-
-
-                setTimeout(
-                    () => {
-
-                        btn.textContent =
-                            oldText;
-
-                    },
-                    1800
-                );
+                return;
 
             }
+
+
+            await navigator.clipboard
+                .writeText(
+                    window.location.href
+                );
+
+
+            const button =
+                this.$.share;
+
+
+            const oldText =
+                button.textContent;
+
+
+            button.textContent =
+                "COPIED!";
+
+
+            setTimeout(
+                () => {
+
+                    button.textContent =
+                        oldText;
+
+                },
+                1800
+            );
 
         } catch (error) {}
 
@@ -2792,7 +2617,7 @@ a {
 
 
     /* =====================================================
-       BACKGROUND
+       BACKGROUND ANIMATION
        ===================================================== */
 
     setupBackground() {
@@ -2804,21 +2629,18 @@ a {
 
 
         const ctx =
-            canvas.getContext(
-                "2d"
-            );
+            canvas.getContext("2d");
 
 
-        const resize =
-            () => {
+        const resize = () => {
 
-                canvas.width =
-                    window.innerWidth;
+            canvas.width =
+                window.innerWidth;
 
-                canvas.height =
-                    window.innerHeight;
+            canvas.height =
+                window.innerHeight;
 
-            };
+        };
 
 
         resize();
@@ -2851,39 +2673,33 @@ a {
 
                 length:
                     10 +
-                    Math.random() *
-                    35,
+                    Math.random() * 35,
 
                 speed:
                     .4 +
-                    Math.random() *
-                    1.4,
+                    Math.random() * 1.3,
 
                 alpha:
                     .08 +
-                    Math.random() *
-                    .30
+                    Math.random() * .28
 
             });
 
         }
 
 
-        const draw =
-            () => {
+        const draw = () => {
 
-                ctx.clearRect(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
 
 
-                for (
-                    const star
-                    of this.stars
-                ) {
+            this.stars.forEach(
+                star => {
 
                     ctx.strokeStyle =
                         `rgba(
@@ -2894,8 +2710,7 @@ a {
                         )`;
 
 
-                    ctx.lineWidth =
-                        1;
+                    ctx.lineWidth = 1;
 
 
                     ctx.beginPath();
@@ -2936,14 +2751,15 @@ a {
                     }
 
                 }
+            );
 
 
-                this.animationFrameId =
-                    requestAnimationFrame(
-                        draw
-                    );
+            this.animationFrameId =
+                requestAnimationFrame(
+                    draw
+                );
 
-            };
+        };
 
 
         draw();
@@ -2990,7 +2806,7 @@ a {
 
 
 /* =========================================================
-   REGISTER
+   IMPORTANT FIX
    ========================================================= */
 
 customElements.define(
