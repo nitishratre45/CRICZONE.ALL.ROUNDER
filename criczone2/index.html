@@ -923,59 +923,73 @@
         const popupClose = document.getElementById("popupClose");
         const toast = document.getElementById("toast");
 
-   /* =========================================
-           FETCH STREAM DATA WITH SESSION CACHE
+        /* =========================================
+           FETCH STREAM DATA WITH CORS & CACHE FIX
         ========================================= */
         async function fetchStreamData() {
-            // 1. Check if data is already cached in session
-            const cached = sessionStorage.getItem("criczone_channels");
+            // 1. Session Storage Check (Prevents multiple calls & CORS blocks)
+            const cached = sessionStorage.getItem("criczone_channels_v2");
             if (cached) {
                 try {
-                    return JSON.parse(cached);
+                    const parsed = JSON.parse(cached);
+                    if (parsed && parsed.iframes) return parsed;
                 } catch(e) {}
             }
 
-            // 2. Direct API try
-            try {
-                const response = await fetch(STREAM_API, { method: "GET", cache: "no-store" });
-                if (response.ok) {
-                    const data = await response.json();
-                    sessionStorage.setItem("criczone_channels", JSON.stringify(data));
-                    return data;
-                }
-            } catch (e) {
-                console.log("Direct API failed, trying CORS proxies...");
-            }
-
-            // 3. Reliable Proxy List
-            const proxyUrls = [
-                "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(STREAM_API),
-                "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API),
-                "https://corsproxy.io/?" + encodeURIComponent(STREAM_API)
+            // 2. Multi-Proxy List
+            const proxies = [
+                "https://api.allorigins.win/raw?url=" + encodeURIComponent(STREAM_API),
+                "https://corsproxy.org/?" + encodeURIComponent(STREAM_API),
+                "https://cors-anywhere.herokuapp.com/" + STREAM_API
             ];
 
-            for (const url of proxyUrls) {
-                try {
-                    const response = await fetch(url, { cache: "no-store" });
-                    if (response.ok) {
-                        let data = await response.json();
-                        
-                        // Handle stringified wrappers
-                        if (data && data.contents) {
-                            data = typeof data.contents === "string" ? JSON.parse(data.contents) : data.contents;
-                        }
+            // Direct fetch try
+            try {
+                const response = await fetch(STREAM_API, { method: "GET" });
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem("criczone_channels_v2", JSON.stringify(data));
+                    return data;
+                }
+            } catch(e) {}
 
+            // Try proxies sequentially
+            for (const proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const data = await response.json();
                         if (data && (data.iframes || Array.isArray(data))) {
-                            sessionStorage.setItem("criczone_channels", JSON.stringify(data));
-                            return data;
+                            const result = data.iframes ? data : { iframes: data };
+                            sessionStorage.setItem("criczone_channels_v2", JSON.stringify(result));
+                            return result;
                         }
                     }
-                } catch (err) {
-                    console.warn("Proxy failed:", url);
-                }
+                } catch(e) {}
             }
 
-            throw new Error("All proxies failed to fetch channel list.");
+            // 3. Script Injection Fallback (For strict CORS bypass)
+            return new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                const callbackName = "criczone_cb_" + Math.random().toString(36).substring(7);
+                
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    const result = data.iframes ? data : { iframes: data };
+                    sessionStorage.setItem("criczone_channels_v2", JSON.stringify(result));
+                    resolve(result);
+                };
+
+                script.src = "https://api.allorigins.win/get?url=" + encodeURIComponent(STREAM_API) + "&callback=" + callbackName;
+                script.onerror = () => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error("Unable to fetch channel data."));
+                };
+                
+                document.body.appendChild(script);
+            });
         }
 
         /* =========================================
@@ -1005,7 +1019,7 @@
                 }
 
             } catch (error) {
-                renderError("Connection Failed", "Could not fetch channel list. Please try again.");
+                renderError("Connection Failed", "Could not fetch channel list. Please refresh or try again later.");
             }
         }
 
