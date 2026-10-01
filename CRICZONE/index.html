@@ -3,37 +3,1263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Criczone live — Live Stream & Hub</title>
+
+  <title>Criczone Live — Premium Cricket Hub</title>
+
+  <meta name="theme-color" content="#070b14">
   <meta name="referrer" content="no-referrer">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
   <style>
     :root {
-      --bg-cream: #FBF2DA;
-      --bg-olive: #6A7357;
-      --card-white: #FFFFFF;
-      --text-main: #1A1A1A;
-      --text-muted: #555555;
-      --accent-yellow: #FFD232;
-      --accent-red: #E63E3E;
-      --accent-teal: #4AC9C2;
-      --border-color: #E0E0E0;
+      --bg: #050810;
+      --bg-2: #080d18;
+      --surface: #0d1422;
+      --surface-2: #111a2b;
+      --surface-3: #151f32;
+
+      --text: #f7f9fc;
+      --muted: #8d98aa;
+
+      --green: #27e58a;
+      --green-2: #12b96b;
+
+      --blue: #4d8dff;
+      --cyan: #25d9ff;
+
+      --red: #ff4d67;
+
+      --border: rgba(255,255,255,.08);
+      --border-hover: rgba(77,141,255,.42);
+
+      --shadow:
+        0 20px 60px rgba(0,0,0,.35);
+
+      --radius: 20px;
     }
-    body { margin: 0; padding: 0; background: var(--bg-cream); width: 100%; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 15% 0%,
+          rgba(44,100,255,.14),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 85% 10%,
+          rgba(0,220,180,.08),
+          transparent 28%
+        ),
+        var(--bg);
+
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    criczone-ui {
+      display: block;
+      min-height: 100vh;
+    }
+
+    .app {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .background-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: rgba(42,103,255,.06);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-one {
+      top: -250px;
+      left: -150px;
+    }
+
+    .glow-two {
+      right: -250px;
+      bottom: 0;
+      background: rgba(0,220,160,.045);
+    }
+
+    .container {
+      width: min(1240px, calc(100% - 36px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,.055);
+      position: relative;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #4d8dff,
+          #2855db
+        );
+
+      display: grid;
+      place-items: center;
+
+      box-shadow:
+        0 8px 25px rgba(52,101,255,.32),
+        inset 0 1px rgba(255,255,255,.25);
+
+      font-size: 19px;
+    }
+
+    .brand-text {
+      line-height: 1;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .brand-subtitle {
+      color: #718097;
+      font-size: 9px;
+      letter-spacing: 1.8px;
+      margin-top: 5px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      padding: 8px 12px;
+      border-radius: 999px;
+
+      background: rgba(39,229,138,.08);
+      border: 1px solid rgba(39,229,138,.18);
+
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+
+      box-shadow: 0 0 0 0 rgba(39,229,138,.7);
+
+      animation: livePulse 1.8s infinite;
+    }
+
+    @keyframes livePulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(39,229,138,.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 7px rgba(39,229,138,0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(39,229,138,0);
+      }
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      padding: 58px 0 38px;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      color: #7793c8;
+      font-size: 11px;
+      font-weight: 700;
+
+      text-transform: uppercase;
+      letter-spacing: 1.7px;
+
+      margin-bottom: 16px;
+    }
+
+    .hero-label span {
+      width: 28px;
+      height: 1px;
+      background: #416bc5;
+    }
+
+    .hero h1 {
+      max-width: 760px;
+
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.02;
+      letter-spacing: -2.8px;
+      font-weight: 800;
+    }
+
+    .hero h1 .gradient {
+      background:
+        linear-gradient(
+          100deg,
+          #ffffff 20%,
+          #72a2ff 75%,
+          #37d9c4
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 610px;
+      margin-top: 18px;
+
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .section-count {
+      color: #69778c;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .search-box {
+      width: min(280px, 100%);
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 44px;
+
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+
+      color: white;
+      outline: none;
+
+      padding: 0 15px 0 40px;
+      font-size: 13px;
+
+      transition: .25s ease;
+    }
+
+    .search-box input:focus {
+      border-color: rgba(77,141,255,.5);
+      background: rgba(255,255,255,.055);
+      box-shadow: 0 0 0 4px rgba(77,141,255,.07);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #68778e;
+      font-size: 15px;
+    }
+
+    /* =========================
+       CHANNEL GRID
+    ========================= */
+
+    .channels-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fill, minmax(245px, 1fr));
+
+      gap: 14px;
+      padding-bottom: 65px;
+    }
+
+    .channel-card {
+      position: relative;
+      overflow: hidden;
+
+      min-height: 142px;
+      padding: 19px;
+
+      border-radius: var(--radius);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.055),
+          rgba(255,255,255,.018)
+        );
+
+      border: 1px solid var(--border);
+
+      cursor: pointer;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      transition:
+        transform .25s ease,
+        border-color .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+
+      animation: cardIn .45s ease both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .channel-card::before {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+
+      right: -60px;
+      top: -70px;
+
+      border-radius: 50%;
+      background: rgba(77,141,255,.08);
+
+      filter: blur(5px);
+    }
+
+    .channel-card:hover {
+      transform: translateY(-4px);
+
+      border-color: var(--border-hover);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(77,141,255,.09),
+          rgba(255,255,255,.025)
+        );
+
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.25);
+    }
+
+    .channel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .channel-icon {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 13px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(77,141,255,.2),
+          rgba(37,217,255,.06)
+        );
+
+      border: 1px solid rgba(77,141,255,.16);
+
+      font-size: 19px;
+    }
+
+    .channel-live {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      padding: 5px 8px;
+      border-radius: 7px;
+
+      background: rgba(39,229,138,.07);
+      color: var(--green);
+
+      font-size: 9px;
+      font-weight: 800;
+
+      letter-spacing: .8px;
+    }
+
+    .channel-live::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    .channel-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .channel-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f1f4f9;
+      line-height: 1.35;
+    }
+
+    .watch-arrow {
+      width: 31px;
+      height: 31px;
+
+      border-radius: 10px;
+
+      display: grid;
+      place-items: center;
+
+      background: rgba(255,255,255,.055);
+      color: #91a6ca;
+
+      font-size: 15px;
+
+      flex-shrink: 0;
+
+      transition: .2s ease;
+    }
+
+    .channel-card:hover .watch-arrow {
+      background: var(--blue);
+      color: white;
+      transform: translateX(2px);
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading-state {
+      grid-column: 1 / -1;
+
+      min-height: 180px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      gap: 14px;
+
+      color: #758298;
+    }
+
+    .loader {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 50%;
+
+      border: 3px solid rgba(255,255,255,.08);
+      border-top-color: var(--blue);
+
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* =========================
+       PLAYER VIEW
+    ========================= */
+
+    .player-view {
+      display: none;
+      padding-bottom: 80px;
+    }
+
+    .player-view.active {
+      display: block;
+    }
+
+    .hub-view.hidden {
+      display: none;
+    }
+
+    .player-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+
+      padding: 28px 0 18px;
+    }
+
+    .back-btn,
+    .share-btn {
+      height: 42px;
+
+      padding: 0 14px;
+
+      border-radius: 12px;
+
+      background: rgba(255,255,255,.045);
+      border: 1px solid var(--border);
+
+      color: #dbe2ed;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: .2s ease;
+    }
+
+    .back-btn:hover,
+    .share-btn:hover {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.15);
+    }
+
+    .player-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-title-icon {
+      width: 43px;
+      height: 43px;
+
+      border-radius: 13px;
+
+      display: grid;
+      place-items: center;
+
+      background: rgba(77,141,255,.12);
+      border: 1px solid rgba(77,141,255,.2);
+    }
+
+    .player-title h2 {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .player-title p {
+      color: #728096;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* =========================
+       VIDEO
+    ========================= */
+
+    .video-shell {
+      border-radius: 23px;
+      padding: 1px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(77,141,255,.35),
+          rgba(255,255,255,.05),
+          rgba(37,217,255,.15)
+        );
+
+      box-shadow:
+        0 30px 80px rgba(0,0,0,.42);
+    }
+
+    .video-card {
+      overflow: hidden;
+      border-radius: 22px;
+      background: #000;
+    }
+
+    .video-container {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+
+      position: relative;
+      background: #000;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      border: 0;
+      display: block;
+    }
+
+    .video-info {
+      min-height: 76px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding: 17px 20px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #101722,
+          #0c121d
+        );
+
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    .now-playing {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .now-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+      background: var(--green);
+
+      box-shadow: 0 0 12px rgba(39,229,138,.55);
+    }
+
+    .now-playing strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .now-playing span {
+      display: block;
+      color: #68768a;
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    /* =========================
+       COMMUNITY
+    ========================= */
+
+    .community {
+      margin-top: 20px;
+      padding: 55px 0 75px;
+
+      border-top: 1px solid rgba(255,255,255,.05);
+
+      background:
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(44,100,255,.08),
+          transparent 42%
+        );
+    }
+
+    .community-header {
+      text-align: center;
+      max-width: 620px;
+      margin: 0 auto 30px;
+    }
+
+    .community-header .mini {
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+
+    .community-header h2 {
+      font-size: 27px;
+      letter-spacing: -1px;
+      margin-top: 9px;
+    }
+
+    .community-header p {
+      color: #758196;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .community-card {
+      padding: 22px;
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.045),
+          rgba(255,255,255,.018)
+        );
+
+      border: 1px solid var(--border);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .community-card-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .community-icon {
+      width: 47px;
+      height: 47px;
+
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      font-size: 20px;
+
+      background: rgba(0,136,204,.12);
+      border: 1px solid rgba(0,136,204,.2);
+    }
+
+    .community-card h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .community-card p {
+      color: #718096;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .telegram-btn {
+      padding: 10px 14px;
+
+      border-radius: 11px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0088cc,
+          #006db1
+        );
+
+      color: white;
+
+      font-size: 11px;
+      font-weight: 800;
+
+      cursor: pointer;
+      white-space: nowrap;
+
+      box-shadow:
+        0 8px 25px rgba(0,136,204,.2);
+    }
+
+    /* =========================
+       FLOATING TELEGRAM
+    ========================= */
+
+    .float-telegram {
+      position: fixed;
+
+      right: 22px;
+      bottom: 22px;
+
+      width: 53px;
+      height: 53px;
+
+      border-radius: 17px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0088cc,
+          #006db1
+        );
+
+      color: white;
+
+      cursor: pointer;
+
+      z-index: 500;
+
+      box-shadow:
+        0 12px 35px rgba(0,136,204,.3);
+
+      transition: .25s ease;
+    }
+
+    .float-telegram:hover {
+      transform: translateY(-4px);
+    }
+
+    .float-telegram svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+
+      z-index: 9999;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(12px);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition: .3s ease;
+    }
+
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      width: min(390px, 100%);
+
+      padding: 30px 25px;
+
+      border-radius: 24px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #121b2b,
+          #0b111c
+        );
+
+      border: 1px solid rgba(255,255,255,.1);
+
+      box-shadow:
+        0 30px 90px rgba(0,0,0,.6);
+
+      text-align: center;
+
+      transform: scale(.94) translateY(10px);
+      transition: .3s ease;
+    }
+
+    .modal.show .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-icon {
+      width: 58px;
+      height: 58px;
+
+      margin: 0 auto 17px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 18px;
+
+      background: rgba(0,136,204,.12);
+      border: 1px solid rgba(0,136,204,.2);
+
+      font-size: 25px;
+    }
+
+    .modal-card h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .modal-card p {
+      color: #77849a;
+      font-size: 12px;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 9px;
+    }
+
+    .modal-close,
+    .modal-join {
+      height: 44px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      flex: 1;
+      background: rgba(255,255,255,.05);
+      color: #8e9aae;
+      border: 1px solid var(--border);
+    }
+
+    .modal-join {
+      flex: 2;
+      color: white;
+      background:
+        linear-gradient(
+          135deg,
+          #0088cc,
+          #006db1
+        );
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position: fixed;
+
+      left: 50%;
+      bottom: 28px;
+
+      transform: translate(-50%, 20px);
+
+      z-index: 10000;
+
+      padding: 11px 16px;
+
+      border-radius: 11px;
+
+      background: #151e2d;
+      border: 1px solid rgba(255,255,255,.1);
+
+      color: #eaf0f8;
+
+      font-size: 11px;
+      font-weight: 600;
+
+      opacity: 0;
+      pointer-events: none;
+
+      transition: .3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      .container {
+        width: min(100% - 24px, 1240px);
+      }
+
+      .header {
+        height: 68px;
+      }
+
+      .brand-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+      }
+
+      .brand-title {
+        font-size: 16px;
+      }
+
+      .live-pill {
+        padding: 7px 9px;
+        font-size: 9px;
+      }
+
+      .hero {
+        padding: 42px 0 30px;
+      }
+
+      .hero h1 {
+        font-size: 37px;
+        letter-spacing: -1.8px;
+      }
+
+      .hero p {
+        font-size: 12px;
+      }
+
+      .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .channels-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .channel-card {
+        min-height: 138px;
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .channel-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        font-size: 16px;
+      }
+
+      .channel-live {
+        padding: 4px 6px;
+        font-size: 7px;
+      }
+
+      .channel-name {
+        font-size: 12px;
+      }
+
+      .watch-arrow {
+        width: 27px;
+        height: 27px;
+      }
+
+      .player-header {
+        padding: 20px 0 15px;
+      }
+
+      .player-title h2 {
+        font-size: 15px;
+      }
+
+      .player-title p {
+        font-size: 9px;
+      }
+
+      .back-btn,
+      .share-btn {
+        height: 38px;
+        padding: 0 10px;
+        font-size: 10px;
+      }
+
+      .video-shell {
+        border-radius: 17px;
+      }
+
+      .video-card {
+        border-radius: 16px;
+      }
+
+      .video-info {
+        padding: 13px;
+      }
+
+      .community-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .community-card {
+        padding: 17px;
+      }
+
+      .community-card p {
+        max-width: 200px;
+      }
+
+      .float-telegram {
+        right: 15px;
+        bottom: 15px;
+
+        width: 48px;
+        height: 48px;
+
+        border-radius: 15px;
+      }
+    }
+
+    @media (max-width: 390px) {
+
+      .channels-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .channel-card {
+        min-height: 125px;
+      }
+    }
   </style>
 </head>
+
 <body>
+
   <criczone-ui></criczone-ui>
 
   <script>
-    (function() {
-      class criczoneUI extends HTMLElement {
+    (() => {
+
+      class CriczoneUI extends HTMLElement {
+
         constructor() {
           super();
-          this.shadow = this.attachShadow({ mode: 'closed' });
-          
+
+          this.attachShadow({ mode: "open" });
+
           this.config = {
-            telegramLink: "https://t.me/+RxKUIsmJLx8yM2Rl",
-            jsonUrl: "https://allrounderid2.pages.dev/id.json"
+            telegramLink:
+              "https://t.me/+RxKUIsmJLx8yM2Rl",
+
+            jsonUrl:
+              "https://allrounderid2.pages.dev/id.json"
           };
 
           this.state = {
@@ -42,332 +1268,1196 @@
           };
         }
 
+
         connectedCallback() {
           this.render();
-          this.initLogic();
+          this.bindEvents();
           this.loadChannelsData();
         }
+
+
         render() {
-          const style = document.createElement('style');
-          style.textContent = `
-            :host { display: flex; flex-direction: column; min-height: 100vh; color: var(--text-main); font-family: 'Inter', sans-serif; background: var(--bg-cream); }
-            * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-            button, .tg-card-btn, .float-tg, .btn-action { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, opacity 0.2s ease; }
-            button:active, .tg-card-btn:active, .float-tg:active, .btn-action:active { transform: scale(0.95); }
 
-            .view { display: none; width: 100%; }
-            .view.active { display: flex; flex-direction: column; }
+          this.shadowRoot.innerHTML = `
 
-            .hero-section { background-color: var(--bg-cream); padding: 30px 6%; display: flex; flex-direction: column; gap: 10px; }
-            .top-bar { display: flex; justify-content: space-between; align-items: center; }
-            .brand { font-size: 20px; font-weight: 700; color: var(--text-main); }
-            .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(230, 62, 62, 0.1); color: var(--accent-red); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(230, 62, 62, 0.2); }
-            .live-dot { width: 6px; height: 6px; background-color: var(--accent-red); border-radius: 50%; animation: pulse 1.5s infinite; }
-            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+            <div class="app">
 
-            .hub-container { padding: 0 6% 40px 6%; display: flex; flex-direction: column; gap: 20px; }
-            .channels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-            .channel-card { background: var(--card-white); border-radius: 16px; padding: 20px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
-            .channel-card:hover { border-color: var(--accent-teal); }
-            .channel-name { font-size: 16px; font-weight: 700; color: var(--text-main); }
-            .channel-status { font-size: 11px; font-weight: 600; color: var(--accent-red); background: rgba(230,62,62,0.1); padding: 3px 8px; border-radius: 6px; width: fit-content; }
+              <div class="background-glow glow-one"></div>
+              <div class="background-glow glow-two"></div>
 
-            .player-section-wrap { padding: 0 6% 30px 6%; }
-            .video-card { background: var(--card-white); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-            .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
-            iframe { width: 100%; height: 100%; border: none; display: block; }
 
-            .video-details { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-            .video-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-            
-            .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-            .btn-action, .server-btn { background: #F4F4F4; border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+              <!-- ================= HEADER ================= -->
 
-            .content-board-section { background-color: var(--bg-olive); padding: 60px 6%; flex: 1; border-top-left-radius: 30px; border-top-right-radius: 30px; margin-top: 20px; }
-            .section-header { text-align: center; margin-bottom: 40px; }
-            .section-header h2 { font-size: 28px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
-            .section-header p { font-size: 14px; color: rgba(255,255,255,0.8); }
-            .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
-            .info-card { background-color: var(--card-white); padding: 24px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-            .info-card h3 { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-            .info-card p { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px; }
-            .card-footer { border-top: 1px solid var(--border-color); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; }
-            .card-meta { font-size: 12px; color: #888; }
-            .tg-card-btn { background: linear-gradient(135deg, #0088cc, #006aab); color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+              <header class="header container">
 
-            .float-tg { position: fixed; bottom: 25px; right: 25px; z-index: 8000; width: 54px; height: 54px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4); cursor: pointer; }
-            .float-tg svg { width: 26px; height: 26px; fill: #fff; }
+                <div class="brand">
 
-            .overlay, .overlay-2, .overlay-3 { display: flex; visibility: hidden; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9000; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.5s ease; }
-            .overlay.show, .overlay-2.show, .overlay-3.show { visibility: visible; opacity: 1; }
-            .popup, .popup-large, .popup-unlock { background: var(--card-white); border-radius: 24px; padding: 30px 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15); transform: scale(0.9); transition: transform 0.5s ease; }
-            .overlay.show .popup, .overlay-2.show .popup-large, .overlay-3.show .popup-unlock { transform: scale(1); }
-            .popup h3, .popup-large h3, .popup-unlock h3 { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
-            .popup p, .popup-large p, .popup-unlock p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
-            .popup-actions { display: flex; gap: 10px; }
-            .btn-cancel { flex: 1; padding: 12px; background: #F4F4F4; border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 12px; font-weight: 600; cursor: pointer; }
-            .btn-join { flex: 2; padding: 12px; background: #0088cc; border: none; color: #fff; border-radius: 12px; font-weight: 600; cursor: pointer; }
-
-            .overlay-2 { z-index: 9500; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); }
-            .popup-large { max-width: 500px; padding: 40px 30px; position: relative; border-radius: 28px; }
-            .popup-close-btn { position: absolute; top: 18px; right: 18px; background: #F4F4F4; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; font-weight: 700; color: var(--text-main); }
-            .btn-join-large, .btn-unlock { width: 100%; padding: 14px; background: #0088cc; border: none; color: #fff; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; }
-            
-            .overlay-3 { z-index: 99999; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); }
-            .popup-unlock { max-width: 320px; border-radius: 20px; padding: 22px 18px; }
-            .popup-unlock h3 { font-size: 18px; margin-bottom: 6px; }
-            .popup-unlock p { font-size: 13px; margin-bottom: 16px; }
-          `;
-          const wrapper = document.createElement('div');
-          wrapper.innerHTML = `
-            <div id="hubView" class="view active">
-              <div class="hero-section">
-                <div class="top-bar">
-                  <div class="brand">Criczone live</div>
-                  <div class="live-badge"><div class="live-dot"></div> LIVE</div>
-                </div>
-              </div>
-
-              <div class="hub-container">
-                <div class="channels-grid" id="channelsGrid">
-                  <p style="color: var(--text-muted);">Loading channels...</p>
-                </div>
-              </div>
-            </div>
-
-            <div id="playerView" class="view">
-              <div class="hero-section" style="padding-bottom: 20px;">
-                <div class="top-bar">
-                  <div class="brand">criczone live</div>
-                  <button class="server-btn" id="backHubBtn">← Back to Hub</button>
-                </div>
-              </div>
-
-              <div class="player-section-wrap">
-                <div class="video-card">
-                  <div class="video-container" id="videoContainer">
-                    <iframe id="streamIframe" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen allow="encrypted-media; picture-in-picture"></iframe>
+                  <div class="brand-logo">
+                    🏏
                   </div>
 
-                  <div class="video-details">
-                    <div class="video-meta-row">
-                      <div class="video-title-block">
-                        <h3 id="channelNameDisplay" style="font-size: 18px;">criczone live</h3>
-                      </div>
-                      <div class="action-buttons">
-                        <button class="btn-action" id="btn-share">Share</button>
-                      </div>
+                  <div class="brand-text">
+                    <div class="brand-title">
+                      CRICZONE
+                    </div>
+
+                    <div class="brand-subtitle">
+                      LIVE CRICKET HUB
                     </div>
                   </div>
+
                 </div>
-              </div>
-            </div>
 
-            <div class="content-board-section">
-              <div class="section-header">
-                <h2>Community Hub</h2>
-                <p>Explore official channels, backup links, and content requests</p>
-              </div>
-              <div class="cards-grid">
-                <div class="info-card">
-                  <div>
-                    <h3>Official Telegram Channel</h3>
-                    <p>Never miss an update. Get direct notifications and reliable links instantly.</p>
+
+                <div class="header-actions">
+
+                  <div class="live-pill">
+                    <span class="live-dot"></span>
+                    LIVE NOW
                   </div>
-                  <div class="card-footer">
-                    <span class="card-meta">Active Community</span>
-                    <button class="tg-card-btn" id="btn-banner-tg">Join Now</button>
-                  </div>
+
                 </div>
-                <div class="info-card">
-                  <div>
-                    <h3>Request Content</h3>
-                    <p>Can't find a specific match or show? Drop your requests and we'll upload it for you.</p>
+
+              </header>
+
+
+
+              <!-- ================= HUB ================= -->
+
+              <main id="hubView" class="hub-view">
+
+                <section class="hero container">
+
+                  <div class="hero-label">
+                    <span></span>
+                    Premium Live Experience
                   </div>
-                  <div class="card-footer">
-                    <span class="card-meta">24/7 Support</span>
-                    <button class="tg-card-btn" id="btn-req-tg">Request ➔</button>
+
+                  <h1>
+                    Watch cricket
+                    <span class="gradient">
+                      live & uninterrupted.
+                    </span>
+                  </h1>
+
+                  <p>
+                    Choose a channel below and start watching.
+                    Criczone brings your live cricket experience
+                    together in one clean, fast and premium hub.
+                  </p>
+
+                </section>
+
+
+                <section class="container">
+
+                  <div class="toolbar">
+
+                    <div>
+                      <div class="section-title">
+                        Live Channels
+                      </div>
+
+                      <div
+                        class="section-count"
+                        id="channelCount"
+                      >
+                        Loading channels...
+                      </div>
+                    </div>
+
+
+                    <div class="search-box">
+
+                      <span class="search-icon">
+                        ⌕
+                      </span>
+
+                      <input
+                        id="searchInput"
+                        type="text"
+                        placeholder="Search channels..."
+                        autocomplete="off"
+                      >
+
+                    </div>
+
                   </div>
+
+
+                  <div
+                    class="channels-grid"
+                    id="channelsGrid"
+                  >
+
+                    <div class="loading-state">
+
+                      <div class="loader"></div>
+
+                      <span>
+                        Loading live channels...
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+
+                <!-- ================= COMMUNITY ================= -->
+
+                <section class="community">
+
+                  <div class="container">
+
+                    <div class="community-header">
+
+                      <div class="mini">
+                        Stay connected
+                      </div>
+
+                      <h2>
+                        Join the Criczone Community
+                      </h2>
+
+                      <p>
+                        Get updates, announcements and community
+                        information through our Telegram channel.
+                      </p>
+
+                    </div>
+
+
+                    <div class="community-grid">
+
+
+                      <div class="community-card">
+
+                        <div class="community-card-left">
+
+                          <div class="community-icon">
+                            ✈️
+                          </div>
+
+                          <div>
+
+                            <h3>
+                              Official Telegram
+                            </h3>
+
+                            <p>
+                              Get the latest updates and announcements.
+                            </p>
+
+                          </div>
+
+                        </div>
+
+
+                        <button
+                          class="telegram-btn"
+                          id="telegramBtn1"
+                        >
+                          Join
+                        </button>
+
+                      </div>
+
+
+
+                      <div class="community-card">
+
+                        <div class="community-card-left">
+
+                          <div class="community-icon">
+                            💬
+                          </div>
+
+                          <div>
+
+                            <h3>
+                              Community
+                            </h3>
+
+                            <p>
+                              Stay connected with the Criczone community.
+                            </p>
+
+                          </div>
+
+                        </div>
+
+
+                        <button
+                          class="telegram-btn"
+                          id="telegramBtn2"
+                        >
+                          Open
+                        </button>
+
+                      </div>
+
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+              </main>
+
+
+
+              <!-- ================= PLAYER ================= -->
+
+              <section
+                id="playerView"
+                class="player-view"
+              >
+
+                <div class="container">
+
+
+                  <div class="player-header">
+
+                    <div class="player-title">
+
+                      <div class="player-title-icon">
+                        🏏
+                      </div>
+
+                      <div>
+
+                        <h2 id="channelNameDisplay">
+                          Criczone Live
+                        </h2>
+
+                        <p>
+                          LIVE STREAM
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    <div style="
+                      display:flex;
+                      gap:8px;
+                    ">
+
+                      <button
+                        class="share-btn"
+                        id="shareBtn"
+                      >
+                        ↗ Share
+                      </button>
+
+                      <button
+                        class="back-btn"
+                        id="backBtn"
+                      >
+                        ← Back
+                      </button>
+
+                    </div>
+
+                  </div>
+
+
+
+                  <div class="video-shell">
+
+                    <div class="video-card">
+
+                      <div
+                        class="video-container"
+                        id="videoContainer"
+                      >
+
+                        <iframe
+                          id="streamIframe"
+                          allowfullscreen
+                          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                          referrerpolicy="no-referrer"
+                        ></iframe>
+
+                      </div>
+
+
+                      <div class="video-info">
+
+                        <div class="now-playing">
+
+                          <span class="now-dot"></span>
+
+                          <div>
+
+                            <strong id="playerChannelName">
+                              Criczone Live
+                            </strong>
+
+                            <span>
+                              Live stream is playing
+                            </span>
+
+                          </div>
+
+                        </div>
+
+
+                        <div class="live-pill">
+                          <span class="live-dot"></span>
+                          LIVE
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
                 </div>
-              </div>
-            </div>
 
-            <div class="float-tg" id="btn-float-tg">
-              <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
-            </div>
+              </section>
 
-            <div class="overlay" id="overlay">
-              <div class="popup">
-                <h3>Join Our Telegram</h3>
-                <p>Get instant access to free streams, match updates, and exclusive backup links.</p>
-                <div class="popup-actions">
-                  <button class="btn-cancel" id="btn-cancel">Later</button>
-                  <button class="btn-join" id="btn-join">Join Channel →</button>
+
+
+              <!-- ================= FLOATING TG ================= -->
+
+              <button
+                class="float-telegram"
+                id="floatTelegram"
+                aria-label="Telegram"
+              >
+
+                <svg viewBox="0 0 24 24">
+                  <path d="
+                    M21.9 3.2
+                    18.7 20
+                    c-.24 1.18-.86 1.47-1.74.91
+                    l-4.78-3.52
+                    -2.31 2.22
+                    c-.26.26-.48.48-.98.48
+                    l.35-4.87
+                    8.86-8
+                    c.39-.35-.09-.55-.61-.2
+                    L6.53 13.72
+                    1.8 12.24
+                    c-1.03-.32-1.05-1.03.21-1.52
+                    L20.49 3.5
+                    c.87-.32 1.63.2 1.41-.3Z
+                  "/>
+                </svg>
+
+              </button>
+
+
+
+              <!-- ================= MODAL ================= -->
+
+              <div
+                class="modal"
+                id="telegramModal"
+              >
+
+                <div class="modal-card">
+
+                  <div class="modal-icon">
+                    ✈️
+                  </div>
+
+                  <h3>
+                    Join Criczone
+                  </h3>
+
+                  <p>
+                    Stay updated with the latest Criczone
+                    announcements and community updates.
+                  </p>
+
+
+                  <div class="modal-buttons">
+
+                    <button
+                      class="modal-close"
+                      id="modalClose"
+                    >
+                      Later
+                    </button>
+
+                    <button
+                      class="modal-join"
+                      id="modalJoin"
+                    >
+                      Join Telegram →
+                    </button>
+
+                  </div>
+
                 </div>
-              </div>
-            </div>
 
-            <div class="overlay-2" id="overlay-2">
-              <div class="popup-large">
-                <button class="popup-close-btn" id="btn-close-2">✕</button>
-                <h3>Don't Miss Out!</h3>
-                <p>Join our exclusive VIP Telegram network right now to unlock ultra-fast servers and special community requests.</p>
-                <button class="btn-join-large" id="btn-join-2">Join VIP Channel Now →</button>
               </div>
-            </div>
 
-            <div class="overlay-3" id="overlay-3">
-              <div class="popup-unlock">
-                <h3>Stream Locked</h3>
-                <p>Join our official Telegram channel to instantly unlock and continue watching!</p>
-                <button class="btn-unlock" id="btn-unlock-tg">Join Channel & Unlock →</button>
+
+
+              <div
+                class="toast"
+                id="toast"
+              >
+                Link copied!
               </div>
+
             </div>
           `;
-
-          this.shadow.innerHTML = '';
-          this.shadow.appendChild(style);
-          this.shadow.appendChild(wrapper);
         }
+
+
+        /* =========================
+           EVENTS
+        ========================= */
+
+        bindEvents() {
+
+          const root = this.shadowRoot;
+
+
+          root
+            .getElementById("backBtn")
+            .addEventListener("click", () => {
+              this.showHub();
+            });
+
+
+          root
+            .getElementById("shareBtn")
+            .addEventListener("click", () => {
+              this.shareChannel();
+            });
+
+
+          root
+            .getElementById("searchInput")
+            .addEventListener("input", (e) => {
+              this.filterChannels(e.target.value);
+            });
+
+
+          root
+            .getElementById("telegramBtn1")
+            .addEventListener("click", () => {
+              this.openTelegram();
+            });
+
+
+          root
+            .getElementById("telegramBtn2")
+            .addEventListener("click", () => {
+              this.openTelegram();
+            });
+
+
+          root
+            .getElementById("floatTelegram")
+            .addEventListener("click", () => {
+              this.openTelegram();
+            });
+
+
+          root
+            .getElementById("modalClose")
+            .addEventListener("click", () => {
+              this.closeModal();
+            });
+
+
+          root
+            .getElementById("modalJoin")
+            .addEventListener("click", () => {
+              this.openTelegram();
+            });
+
+
+          root
+            .getElementById("telegramModal")
+            .addEventListener("click", (e) => {
+
+              if (e.target.id === "telegramModal") {
+                this.closeModal();
+              }
+
+            });
+
+        }
+
+
+        /* =========================
+           LOAD JSON
+        ========================= */
+
         async loadChannelsData() {
+
           let data = null;
-          // Direct fetch for instant response without proxy wait time
+
+
           try {
-            const res = await fetch(this.config.jsonUrl, { cache: "no-store" });
-            if (res.ok) data = await res.json();
-          } catch(e) {
-            console.warn("Direct fetch error, trying fallback proxy.");
+
+            const response = await fetch(
+              this.config.jsonUrl,
+              {
+                cache: "no-store"
+              }
+            );
+
+
+            if (response.ok) {
+              data = await response.json();
+            }
+
+          } catch (error) {
+
+            console.warn(
+              "Direct JSON request failed.",
+              error
+            );
+
           }
+
+
+          /*
+            Optional fallback.
+          */
 
           if (!data) {
+
             try {
-              const res2 = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(this.config.jsonUrl), { cache: "no-store" });
-              if (res2.ok) data = await res2.json();
-            } catch(e) {
-              console.warn("Fallback failed.");
-            }
-          }
 
-          if (data) {
-            this.state.channels = Array.isArray(data) ? data : (data.iframes || data.channels || data.streams || []);
-            this.renderChannelsHub();
+              const proxyUrl =
+                "https://api.allorigins.win/raw?url=" +
+                encodeURIComponent(
+                  this.config.jsonUrl
+                );
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetId = urlParams.get("id");
-            if (targetId) {
-              const matched = this.state.channels.find(c => String(c.id) === String(targetId));
-              if (matched) {
-                this.playChannel(matched);
+
+              const response = await fetch(
+                proxyUrl,
+                {
+                  cache: "no-store"
+                }
+              );
+
+
+              if (response.ok) {
+                data = await response.json();
               }
-            }
-          } else {
-            this.shadow.getElementById("channelsGrid").innerHTML = `<p style="color:var(--accent-red);">Failed to load JSON data.</p>`;
-          }
-        }
 
-        renderChannelsHub() {
-          const grid = this.shadow.getElementById("channelsGrid");
-          if (this.state.channels.length === 0) {
-            grid.innerHTML = `<p style="color:var(--text-muted);">No channels available.</p>`;
+            } catch (error) {
+
+              console.warn(
+                "Fallback JSON request failed.",
+                error
+              );
+
+            }
+
+          }
+
+
+          if (!data) {
+
+            this.showError(
+              "Unable to load channels."
+            );
+
             return;
           }
 
-          grid.innerHTML = this.state.channels.map(c => `
-            <div class="channel-card" data-channel-id="${c.id}">
-              <div class="channel-name">${c.name || "Channel " + c.id}</div>
-              <div class="channel-status">🟢 criczone live</div>
-            </div>
-          `).join("");
-        }
-        playChannel(channel) {
-          this.state.currentChannel = channel;
-          const name = channel.name || "criczone live";
-          this.shadow.getElementById("channelNameDisplay").textContent = name;
-          this.showView('playerView');
 
-          const iframe = this.shadow.getElementById("streamIframe");
-          iframe.src = channel.iframeSrc || channel.stream_url || channel.url || "";
-        }
+          this.state.channels =
+            Array.isArray(data)
+              ? data
+              : (
+                  data.iframes ||
+                  data.channels ||
+                  data.streams ||
+                  []
+                );
 
-        stopPlayback() {
-          const iframe = this.shadow.getElementById("streamIframe");
-          if(iframe) { iframe.src = ""; }
-        }
 
-        showView(viewId) {
-          this.shadow.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-          this.shadow.getElementById(viewId).classList.add("active");
-          if(viewId === 'hubView') this.stopPlayback();
-          window.scrollTo(0,0);
-        }
-        initLogic() {
-          const shadow = this.shadow;
+          this.renderChannels(
+            this.state.channels
+          );
 
-          shadow.getElementById("channelsGrid").addEventListener("click", e => {
-            const card = e.target.closest("[data-channel-id]");
-            if (card) {
-              const channelId = card.dataset.channelId;
-              const found = this.state.channels.find(c => String(c.id) === String(channelId));
-              if (found) {
-                this.playChannel(found);
-              }
+
+          /*
+            Deep-link:
+            ?id=123
+          */
+
+          const params =
+            new URLSearchParams(
+              window.location.search
+            );
+
+
+          const targetId =
+            params.get("id");
+
+
+          if (targetId) {
+
+            const channel =
+              this.state.channels.find(
+                c =>
+                  String(c.id) ===
+                  String(targetId)
+              );
+
+
+            if (channel) {
+              this.playChannel(channel);
             }
-          });
 
-          shadow.getElementById("backHubBtn").addEventListener("click", () => this.showView('hubView'));
+          }
+
+
+          /*
+            Show Telegram popup after
+            a short delay.
+          */
 
           setTimeout(() => {
-            const lastShown = localStorage.getItem('criczone_popup3_time');
-            const now = new Date().getTime();
-            const oneDayMs = 24 * 60 * 60 * 1000;
-            if(!lastShown || (now - parseInt(lastShown)) > oneDayMs) {
-              shadow.getElementById('overlay-3').classList.add('show');
+
+            this.openModal();
+
+          }, 7000);
+
+        }
+
+
+        /* =========================
+           RENDER CHANNELS
+        ========================= */
+
+        renderChannels(channels) {
+
+          const grid =
+            this.shadowRoot.getElementById(
+              "channelsGrid"
+            );
+
+
+          const count =
+            this.shadowRoot.getElementById(
+              "channelCount"
+            );
+
+
+          count.textContent =
+            `${channels.length} channel${channels.length === 1 ? "" : "s"} available`;
+
+
+          if (!channels.length) {
+
+            grid.innerHTML = `
+              <div class="loading-state">
+                <span>
+                  No channels available.
+                </span>
+              </div>
+            `;
+
+            return;
+          }
+
+
+          grid.innerHTML =
+            channels.map((channel, index) => {
+
+              const name =
+                this.escapeHTML(
+                  channel.name ||
+                  `Channel ${channel.id || index + 1}`
+                );
+
+
+              return `
+
+                <article
+                  class="channel-card"
+                  data-channel-id="${this.escapeAttr(channel.id)}"
+                  style="animation-delay:${Math.min(index * 35, 500)}ms"
+                >
+
+                  <div class="channel-top">
+
+                    <div class="channel-icon">
+                      📺
+                    </div>
+
+                    <div class="channel-live">
+                      LIVE
+                    </div>
+
+                  </div>
+
+
+                  <div class="channel-bottom">
+
+                    <div class="channel-name">
+                      ${name}
+                    </div>
+
+                    <div class="watch-arrow">
+                      →
+                    </div>
+
+                  </div>
+
+                </article>
+
+              `;
+
+            }).join("");
+
+
+          /*
+            Event delegation.
+          */
+
+          grid.onclick = (event) => {
+
+            const card =
+              event.target.closest(
+                "[data-channel-id]"
+              );
+
+
+            if (!card) return;
+
+
+            const id =
+              card.dataset.channelId;
+
+
+            const channel =
+              this.state.channels.find(
+                c =>
+                  String(c.id) ===
+                  String(id)
+              );
+
+
+            if (channel) {
+              this.playChannel(channel);
             }
-          }, 300000);
 
-          shadow.getElementById('btn-unlock-tg').addEventListener('click', () => {
-            localStorage.setItem('criczone_popup3_time', new Date().getTime().toString());
-            this.goTelegram();
-            shadow.getElementById('overlay-3').classList.remove('show');
-          });
-
-          setTimeout(() => { shadow.getElementById("overlay").classList.add("show"); }, 4000);
-
-          const triggerSecondPopup = () => {
-            shadow.getElementById("overlay").classList.remove("show");
-            setTimeout(() => { shadow.getElementById('overlay-2').classList.add('show'); }, 50);
           };
 
-          shadow.getElementById('btn-cancel').addEventListener('click', triggerSecondPopup);
-          shadow.getElementById('btn-join').addEventListener('click', triggerSecondPopup);
-          shadow.getElementById('btn-close-2').addEventListener('click', () => { shadow.getElementById('overlay-2').classList.remove('show'); });
-          shadow.getElementById('btn-join-2').addEventListener('click', () => this.goTelegram());
+        }
 
-          shadow.getElementById('btn-banner-tg').addEventListener('click', () => this.goTelegram());
-          shadow.getElementById('btn-req-tg').addEventListener('click', () => this.goTelegram());
-          shadow.getElementById('btn-float-tg').addEventListener('click', () => this.goTelegram());
 
-          shadow.getElementById('btn-share').addEventListener('click', () => {
-            const cur = this.state.currentChannel;
-            const shareUrl = cur ? `${window.location.origin}${window.location.pathname}?id=${cur.id}` : window.location.href;
+        /* =========================
+           SEARCH
+        ========================= */
 
-            if (navigator.share) {
-              navigator.share({ title: "criczone live", url: shareUrl }).catch(()=>{});
-            } else {
-              navigator.clipboard.writeText(shareUrl);
-              alert("Stream share link copied to clipboard!");
-            }
+        filterChannels(query) {
+
+          const value =
+            query.trim().toLowerCase();
+
+
+          const filtered =
+            this.state.channels.filter(
+              channel => {
+
+                const name =
+                  String(
+                    channel.name || ""
+                  ).toLowerCase();
+
+
+                return name.includes(value);
+
+              }
+            );
+
+
+          this.renderChannels(
+            filtered
+          );
+
+        }
+
+
+        /* =========================
+           PLAYER
+        ========================= */
+
+        playChannel(channel) {
+
+          this.state.currentChannel =
+            channel;
+
+
+          const name =
+            channel.name ||
+            "Criczone Live";
+
+
+          this.shadowRoot
+            .getElementById(
+              "channelNameDisplay"
+            )
+            .textContent = name;
+
+
+          this.shadowRoot
+            .getElementById(
+              "playerChannelName"
+            )
+            .textContent = name;
+
+
+          const iframe =
+            this.shadowRoot
+              .getElementById(
+                "streamIframe"
+              );
+
+
+          /*
+            Supports your existing
+            JSON structures.
+          */
+
+          const source =
+            channel.iframeSrc ||
+            channel.stream_url ||
+            channel.url ||
+            "";
+
+
+          iframe.src = source;
+
+
+          this.shadowRoot
+            .getElementById(
+              "hubView"
+            )
+            .classList.add("hidden");
+
+
+          this.shadowRoot
+            .getElementById(
+              "playerView"
+            )
+            .classList.add("active");
+
+
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
           });
+
         }
 
-        goTelegram() { 
-          window.open(this.config.telegramLink, "_blank"); 
-          this.shadow.querySelectorAll('.overlay, .overlay-2, .overlay-3').forEach(o => o.classList.remove("show"));
+
+        /* =========================
+           BACK
+        ========================= */
+
+        showHub() {
+
+          const iframe =
+            this.shadowRoot
+              .getElementById(
+                "streamIframe"
+              );
+
+
+          if (iframe) {
+            iframe.src = "";
+          }
+
+
+          this.state.currentChannel =
+            null;
+
+
+          this.shadowRoot
+            .getElementById(
+              "playerView"
+            )
+            .classList.remove("active");
+
+
+          this.shadowRoot
+            .getElementById(
+              "hubView"
+            )
+            .classList.remove("hidden");
+
+
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+
+
+          /*
+            Remove ?id from URL
+            without reloading.
+          */
+
+          try {
+
+            const cleanUrl =
+              window.location.origin +
+              window.location.pathname;
+
+
+            window.history.replaceState(
+              {},
+              "",
+              cleanUrl
+            );
+
+          } catch (e) {}
+
         }
+
+
+        /* =========================
+           SHARE
+        ========================= */
+
+        async shareChannel() {
+
+          const channel =
+            this.state.currentChannel;
+
+
+          if (!channel) return;
+
+
+          const shareUrl =
+            `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(channel.id)}`;
+
+
+          if (
+            navigator.share
+          ) {
+
+            try {
+
+              await navigator.share({
+                title:
+                  `Criczone Live — ${channel.name || "Live Channel"}`,
+                url: shareUrl
+              });
+
+            } catch (e) {}
+
+            return;
+          }
+
+
+          try {
+
+            await navigator.clipboard.writeText(
+              shareUrl
+            );
+
+
+            this.showToast(
+              "Stream link copied!"
+            );
+
+          } catch (e) {
+
+            this.showToast(
+              shareUrl
+            );
+
+          }
+
+        }
+
+
+        /* =========================
+           TELEGRAM
+        ========================= */
+
+        openTelegram() {
+
+          window.open(
+            this.config.telegramLink,
+            "_blank",
+            "noopener,noreferrer"
+          );
+
+
+          this.closeModal();
+
+        }
+
+
+        openModal() {
+
+          this.shadowRoot
+            .getElementById(
+              "telegramModal"
+            )
+            .classList.add("show");
+
+        }
+
+
+        closeModal() {
+
+          this.shadowRoot
+            .getElementById(
+              "telegramModal"
+            )
+            .classList.remove("show");
+
+        }
+
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        showToast(message) {
+
+          const toast =
+            this.shadowRoot
+              .getElementById(
+                "toast"
+              );
+
+
+          toast.textContent =
+            message;
+
+
+          toast.classList.add(
+            "show"
+          );
+
+
+          clearTimeout(
+            this.toastTimer
+          );
+
+
+          this.toastTimer =
+            setTimeout(() => {
+
+              toast.classList.remove(
+                "show"
+              );
+
+            }, 2500);
+
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        showError(message) {
+
+          const grid =
+            this.shadowRoot
+              .getElementById(
+                "channelsGrid"
+              );
+
+
+          grid.innerHTML = `
+
+            <div class="loading-state">
+
+              <div style="
+                font-size:30px;
+              ">
+                ⚠️
+              </div>
+
+              <span>
+                ${this.escapeHTML(message)}
+              </span>
+
+              <button
+                id="retryBtn"
+                style="
+                  margin-top:5px;
+                  padding:10px 15px;
+                  border-radius:10px;
+                  background:#315fca;
+                  color:white;
+                  cursor:pointer;
+                  font-weight:700;
+                "
+              >
+                Retry
+              </button>
+
+            </div>
+
+          `;
+
+
+          this.shadowRoot
+            .getElementById(
+              "retryBtn"
+            )
+            ?.addEventListener(
+              "click",
+              () => this.loadChannelsData()
+            );
+
+        }
+
+
+        /* =========================
+           SECURITY HELPERS
+        ========================= */
+
+        escapeHTML(value) {
+
+          return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+        }
+
+
+        escapeAttr(value) {
+
+          return this.escapeHTML(
+            value ?? ""
+          );
+
+        }
+
       }
 
-      customElements.define('criczone-ui', criczoneUI);
+
+      customElements.define(
+        "criczone-ui",
+        CriczoneUI
+      );
+
     })();
   </script>
+
 </body>
 </html>
