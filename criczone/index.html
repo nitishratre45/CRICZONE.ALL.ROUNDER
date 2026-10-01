@@ -1,0 +1,4167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>CRICZONE LIVE — Sports Hub</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body style="background-color:#050a0f;color:#fff;margin:0;padding:0;overflow-x:hidden;">
+
+<script>
+
+window.CricConfig = {
+
+    sourceUrl:
+        "https://sonujson-v3.pages.dev/Data/sports.json",
+
+    telegramLink:
+        "https://t.me/+U_REj979FENlMTM9",
+
+    previewDuration:
+        10000,
+
+    starLogo:
+        "https://imgs.search.brave.com/wwDVnaXzqoCR-Bho0gu5YU3tfThVvzb-hpdYLapatZE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9sb2dvZGl4LmNvbS9sb2dvLzk0Nzc3Ni5qcGc",
+
+    sonyLogo:
+        "https://imgs.search.brave.com/bXKRGBbwSsMRgzwLUP1oIsYXAltL3qP5Zbfv8D5PsNY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlhLm9yZy93aWtpcGVkaWEvY29tbW9ucy8yLzIzL1NvbnlfU3BvcnRzX05ldHdvcmtfTG9nby5wbmc"
+
+};
+
+
+class CriczoneUI extends HTMLElement {
+
+    constructor() {
+
+        super();
+
+        this.shadow =
+            this.attachShadow({
+                mode: "closed"
+            });
+
+        this.masterChannels = [];
+
+        this.currentStreamId = null;
+
+        this.isUnlocked = false;
+
+        this.lockTimer = null;
+
+        this.stars = [];
+
+        this.animationFrameId = null;
+
+        this.laterCount = 0;
+
+        this.initialPendingId =
+            new URLSearchParams(
+                window.location.search
+            ).get("id");
+
+
+        this.shadow.innerHTML = `
+
+<style>
+
+:root {
+
+    --primary-rgb: 0, 255, 204;
+
+    --accent:
+        rgb(var(--primary-rgb));
+
+    --accent-glow:
+        rgba(var(--primary-rgb), 0.45);
+
+    --accent-glow-intense:
+        rgba(var(--primary-rgb), 0.85);
+
+    --bg-pure:
+        #050a0f;
+
+    --bg-card:
+        rgba(12, 18, 28, 0.88);
+
+    --border-glass:
+        rgba(0, 255, 204, 0.18);
+
+    --border-glass-bright:
+        rgba(0, 255, 204, 0.4);
+
+    --heading-dynamic:
+        #ffffff;
+
+    --text-main:
+        #e0f2f1;
+
+    --text-muted:
+        #78909c;
+
+    --text-dark:
+        #455a64;
+
+    --btn-main-bg:
+        #ffffff;
+
+    --btn-main-text:
+        #050a0f;
+
+    --player-shadow:
+        0 45px 120px -20px
+        rgba(0, 255, 204, 0.25);
+}
+
+
+:host([data-theme="light"]) {
+
+    --primary-rgb:
+        0, 200, 180;
+
+    --accent:
+        #00c8b4;
+
+    --accent-glow:
+        rgba(0, 200, 180, 0.35);
+
+    --bg-pure:
+        #f0f7f7;
+
+    --bg-card:
+        rgba(255, 255, 255, 0.95);
+
+    --border-glass:
+        rgba(0, 0, 0, 0.1);
+
+    --border-glass-bright:
+        rgba(0, 0, 0, 0.25);
+
+    --heading-dynamic:
+        #000000;
+
+    --text-main:
+        #0a0f12;
+
+    --text-muted:
+        #546e7a;
+
+    --text-dark:
+        #90a4ae;
+
+    --btn-main-bg:
+        #091015;
+
+    --btn-main-text:
+        #ffffff;
+}
+
+
+*,
+*::before,
+*::after {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+:host {
+
+    display: block;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    background:
+        var(--bg-pure);
+
+    color:
+        var(--text-main);
+
+    font-family:
+        "Manrope",
+        sans-serif;
+
+    position: relative;
+}
+
+
+canvas#warpGridCanvas {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    opacity: 0.85;
+}
+
+
+.container {
+
+    width:
+        min(1500px, 92vw);
+
+    margin:
+        0 auto;
+
+    padding:
+        0 0
+        clamp(40px, 6vw, 100px);
+
+    position: relative;
+
+    z-index: 10;
+}
+
+
+.nav {
+
+    height:
+        clamp(64px, 8.5vh, 96px);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    z-index: 50;
+}
+
+
+.brand {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.brand-title {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        clamp(20px, 2.2vw, 28px);
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    color:
+        var(--heading-dynamic);
+}
+
+
+.nav-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.live-pill-badge {
+
+    height: 38px;
+
+    padding:
+        0 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    background:
+        var(--bg-card);
+
+    border:
+        1px solid
+        var(--border-glass);
+
+    backdrop-filter:
+        blur(16px);
+
+    border-radius:
+        100px;
+
+    color:
+        var(--text-muted);
+
+    font-family:
+        "DM Mono",
+        monospace;
+
+    font-size: 9px;
+
+    letter-spacing: 1.2px;
+
+    text-transform: uppercase;
+}
+
+
+.pulsing-live-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+    background:
+        #ff2a2a;
+
+    border-radius:
+        50%;
+
+    box-shadow:
+        0 0 12px
+        #ff2a2a;
+
+    animation:
+        liveSignal 1.5s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes liveSignal {
+
+    0%,
+    100% {
+
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+
+    50% {
+
+        opacity: 0.35;
+
+        transform:
+            scale(0.8);
+    }
+}
+
+
+.nav-join-btn {
+
+    height: 38px;
+
+    padding:
+        0 20px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius:
+        100px;
+
+    background:
+        var(--btn-main-bg);
+
+    color:
+        var(--btn-main-text);
+
+    text-decoration: none;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    transition:
+        all 0.3s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+}
+
+
+.nav-join-btn:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+
+    box-shadow:
+        0 0 20px
+        var(--accent-glow);
+
+    transform:
+        translateY(-2px);
+}
+
+
+.hero {
+
+    position: relative;
+
+    padding:
+        clamp(20px, 3.5vw, 56px)
+        0
+        clamp(14px, 2.2vw, 36px);
+}
+
+
+.hero-tag {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    color:
+        var(--accent);
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.hero-tag::before {
+
+    content: "";
+
+    width: 28px;
+
+    height: 2px;
+
+    background:
+        var(--accent);
+
+    border-radius: 2px;
+}
+
+
+.hero-headline {
+
+    margin-top: 12px;
+
+    font-family:
+        "Syne",
+        sans-serif;
+
+    font-size:
+        clamp(
+            36px,
+            7.5vw,
+            92px
+        );
+
+    line-height: 0.88;
+
+    letter-spacing:
+        -0.06em;
+
+    font-weight: 900;
+
+    text-transform:
+        uppercase;
+}
+
+
+.hero-headline
+.accent-txt {
+
+    color:
+        var(--accent);
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffcc 0%,
+            #0096ff 100%
+        );
+
+    -webkit-background-clip:
+        text;
+
+    -webkit-text-fill-color:
+        transparent;
+}
+
+
+.hero-details {
+
+    margin-top: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    color:
+        var(--text-muted);
+
+    font-family:
+        "DM Mono",
+        monospace;
+
+    font-size: 9px;
+
+    letter-spacing: 1.4px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.hero-details b {
+
+    color:
+        var(--text-main);
+
+    font-weight: 600;
+}
+
+
+.meta-separator {
+
+    width: 3px;
+
+    height: 3px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--text-dark);
+}
+
+
+.track-separator-beam {
+
+    width: 100%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent) 0%,
+            var(--border-glass) 45%,
+            transparent 100%
+        );
+
+    margin-bottom: 24px;
+}
+
+
+.channels-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(
+                260px,
+                1fr
+            )
+        );
+
+    gap: 24px;
+
+    margin-top: 24px;
+}
+
+
+.channel-card {
+
+    background:
+        var(--bg-card);
+
+    border-radius:
+        18px;
+
+    overflow:
+        hidden;
+
+    cursor:
+        pointer;
+
+    border:
+        1px solid
+        var(--border-glass);
+
+    transition:
+        all 0.4s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+
+    position:
+        relative;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    backdrop-filter:
+        blur(20px);
+}
+
+
+.channel-card:hover {
+
+    transform:
+        translateY(-8px)
+        scale(1.02);
+
+    border-color:
+        var(--accent);
+
+    box-shadow:
+        0 25px 50px -12px
+        rgba(0, 0, 0, 0.7),
+
+        0 0 25px
+        var(--accent-glow);
+}
+
+
+.card-thumbnail {
+
+    width: 100%;
+
+    height: 155px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(
+                12,
+                22,
+                35,
+                0.9
+            ) 0%,
+
+            rgba(
+                3,
+                7,
+                12,
+                0.98
+            ) 100%
+        );
+
+    background-size:
+        cover;
+
+    background-position:
+        center;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    border-bottom:
+        1px solid
+        var(--border-glass);
+}
+
+
+.channel-logo-box {
+
+    width: 82px;
+
+    height: 82px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.25
+        );
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding: 10px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.5
+        );
+
+    z-index: 2;
+
+    transition:
+        transform 0.3s ease;
+}
+
+
+.channel-card:hover
+.channel-logo-box {
+
+    transform:
+        scale(1.1)
+        rotate(3deg);
+}
+
+
+.channel-logo {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+}
+
+
+.channel-badge-box {
+
+    width: 56px;
+
+    height: 56px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(
+            15,
+            25,
+            40,
+            0.9
+        );
+
+    border:
+        1px solid
+        var(--border-glass-bright);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    box-shadow:
+        0 8px 25px
+        rgba(
+            0,
+            0,
+            0,
+            0.5
+        );
+
+    z-index: 2;
+
+    transition:
+        transform 0.3s ease;
+}
+
+
+.channel-card:hover
+.channel-badge-box {
+
+    transform:
+        scale(1.1)
+        rotate(5deg);
+}
+
+
+.channel-badge-box svg {
+
+    width: 26px;
+
+    height: 26px;
+
+    fill:
+        var(--accent);
+}
+
+
+.card-network-tag {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color: #fff;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing: 2px;
+
+    margin-top: 10px;
+
+    z-index: 2;
+}
+
+
+.play-overlay-icon {
+
+    position: absolute;
+
+    width: 52px;
+
+    height: 52px;
+
+    background:
+        var(--accent);
+
+    border-radius:
+        50%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    opacity: 0;
+
+    transform:
+        scale(0.6);
+
+    transition:
+        all 0.35s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+
+    box-shadow:
+        0 10px 30px
+        var(--accent-glow-intense);
+
+    z-index: 5;
+}
+
+
+.channel-card:hover
+.play-overlay-icon {
+
+    opacity: 1;
+
+    transform:
+        scale(1);
+}
+
+
+.play-overlay-icon svg {
+
+    width: 22px;
+
+    height: 22px;
+
+    fill: #000;
+
+    margin-left: 3px;
+}
+
+
+.card-body {
+
+    padding: 18px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap: 8px;
+}
+
+
+.card-title {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color:
+        var(--text-main);
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+
+.card-meta {
+
+    font-size: 11px;
+
+    color:
+        var(--text-muted);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    font-family:
+        "DM Mono",
+        monospace;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing: 1px;
+}
+
+
+.view-section {
+
+    display:
+        none;
+}
+
+
+.view-section.active {
+
+    display:
+        block;
+
+    animation:
+        fadeInView
+        0.4s
+        ease
+        forwards;
+}
+
+
+@keyframes fadeInView {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(10px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+.player-top-nav {
+
+    margin-bottom:
+        16px;
+}
+
+
+.back-home-btn {
+
+    background:
+        var(--bg-card);
+
+    border:
+        1px solid
+        var(--border-glass-bright);
+
+    color:
+        var(--text-main);
+
+    padding:
+        10px 22px;
+
+    border-radius:
+        100px;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor:
+        pointer;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap: 8px;
+
+    backdrop-filter:
+        blur(16px);
+
+    transition:
+        all 0.3s ease;
+}
+
+
+.back-home-btn:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+
+    box-shadow:
+        0 0 25px
+        var(--accent-glow);
+
+    transform:
+        translateX(-4px);
+}
+
+
+.player-rig-box {
+
+    width: 100%;
+
+    aspect-ratio:
+        16 / 9;
+
+    position:
+        relative;
+
+    background:
+        #000;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        24px;
+
+    border:
+        1px solid
+        var(--border-glass-bright);
+
+    box-shadow:
+        var(--player-shadow);
+
+    isolation:
+        isolate;
+}
+
+
+.stream-loading-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 10;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 16px;
+
+    background: #000;
+
+    color: var(--text-muted);
+
+    font-family: "DM Mono", monospace;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+.stream-loading-overlay.hidden {
+
+    display: none;
+}
+
+
+iframe#player {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: none;
+
+    display: block;
+
+    position: relative;
+
+    z-index: 5;
+
+    object-fit: cover;
+}
+
+
+.player-rig-box.fs-active {
+
+    position:
+        fixed !important;
+
+    inset:
+        0 !important;
+
+    width:
+        100vw !important;
+
+    height:
+        100vh !important;
+
+    z-index:
+        9999999 !important;
+
+    border-radius:
+        0 !important;
+
+    border:
+        none !important;
+
+    background:
+        #000 !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        center !important;
+}
+
+
+.player-rig-box.fs-active
+iframe#player {
+
+    width:
+        100vw !important;
+
+    height:
+        100vh !important;
+
+    object-fit:
+        fill !important;
+}
+
+
+.blended-fs-btn {
+
+    position:
+        absolute;
+
+    bottom:
+        14px;
+
+    right:
+        14px;
+
+    z-index:
+        30;
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    background:
+        rgba(
+            20,
+            20,
+            20,
+            0.65
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.15
+        );
+
+    border-radius:
+        4px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    transition:
+        all 0.2s ease;
+
+    backdrop-filter:
+        blur(4px);
+}
+
+
+.blended-fs-btn:hover {
+
+    background:
+        var(--accent);
+
+    border-color:
+        var(--accent);
+
+    transform:
+        scale(1.08);
+}
+
+
+.blended-fs-btn svg {
+
+    width:
+        16px;
+
+    height:
+        16px;
+
+    fill:
+        #fff;
+}
+
+
+.player-meta-bar {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        14px;
+
+    padding-top:
+        20px;
+
+    flex-wrap:
+        wrap;
+}
+
+
+.stream-title-group strong {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        20px;
+
+    font-weight:
+        700;
+
+    display:
+        block;
+}
+
+
+.stream-title-group span {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    color:
+        var(--text-muted);
+
+    font-size:
+        10px;
+
+    letter-spacing:
+        1.2px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.share-action-btn {
+
+    height:
+        44px;
+
+    padding:
+        0 24px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    border-radius:
+        100px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(
+                0,
+                255,
+                204,
+                0.16
+            ) 100%
+        );
+
+    border:
+        1px solid
+        var(--accent);
+
+    color:
+        var(--text-main);
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1.5px;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    transition:
+        all 0.3s ease;
+}
+
+
+.share-action-btn:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+}
+
+
+.tg-modal-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(
+            3,
+            7,
+            12,
+            0.95
+        );
+
+    backdrop-filter:
+        blur(20px);
+
+    z-index:
+        999999;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity 1.5s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+}
+
+
+.tg-modal-overlay.show {
+
+    opacity:
+        1;
+
+    pointer-events:
+        all;
+}
+
+
+.tg-modal-box {
+
+    position:
+        relative;
+
+    background:
+        var(--bg-card);
+
+    border-radius:
+        22px;
+
+    padding:
+        32px 28px;
+
+    text-align:
+        center;
+
+    max-width:
+        390px;
+
+    width:
+        90%;
+
+    box-shadow:
+        0 40px 90px
+        rgba(
+            0,
+            0,
+            0,
+            0.9
+        ),
+
+        0 0 40px
+        var(--accent-glow);
+
+    transform:
+        scale(0.85);
+
+    transition:
+        transform 1.5s
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+
+    backdrop-filter:
+        blur(24px);
+
+    overflow:
+        hidden;
+}
+
+
+.tg-modal-box::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    inset:
+        -2px;
+
+    border-radius:
+        24px;
+
+    background:
+        conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0%,
+            transparent 70%,
+            var(--accent) 90%,
+            #ffffff 100%
+        );
+
+    animation:
+        borderSpin 3s
+        linear infinite;
+
+    z-index:
+        -1;
+}
+
+
+.tg-modal-box::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    inset:
+        1px;
+
+    border-radius:
+        21px;
+
+    background:
+        #0c121c;
+
+    z-index:
+        -1;
+}
+
+
+@keyframes borderSpin {
+
+    0% {
+
+        transform:
+            rotate(0deg);
+    }
+
+    100% {
+
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+.tg-modal-overlay.show
+.tg-modal-box {
+
+    transform:
+        scale(1);
+}
+
+
+.tg-modal-title {
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        22px;
+
+    font-weight:
+        900;
+
+    color:
+        var(--heading-dynamic);
+
+    margin-bottom:
+        8px;
+
+    letter-spacing:
+        0.5px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.tg-modal-desc {
+
+    font-size:
+        13.5px;
+
+    color:
+        var(--text-muted);
+
+    line-height:
+        1.6;
+
+    margin-bottom:
+        24px;
+
+    font-family:
+        "Manrope",
+        sans-serif;
+}
+
+
+.tg-modal-actions {
+
+    display:
+        flex;
+
+    gap:
+        12px;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+}
+
+
+.tg-modal-btn-later {
+
+    flex:
+        1;
+
+    height:
+        46px;
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.05
+        );
+
+    color:
+        var(--text-main);
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        13px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.5px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    transition:
+        all 0.3s ease;
+
+    border:
+        1px solid
+        var(--border-glass);
+}
+
+
+.tg-modal-btn-later:hover {
+
+    background:
+        var(--border-glass-bright);
+
+    color:
+        #fff;
+
+    transform:
+        translateY(-2px);
+}
+
+
+.tg-modal-btn-join {
+
+    flex:
+        1;
+
+    height:
+        46px;
+
+    border-radius:
+        12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffcc 0%,
+            #0096ff 100%
+        );
+
+    color:
+        #000;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        0.5px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    transition:
+        all 0.3s ease;
+
+    border:
+        none;
+
+    box-shadow:
+        0 8px 25px
+        var(--accent-glow);
+}
+
+
+.tg-modal-btn-join:hover {
+
+    filter:
+        brightness(1.1);
+
+    transform:
+        translateY(-2px);
+}
+
+
+.theme-switch-deck {
+
+    position:
+        fixed;
+
+    right:
+        20px;
+
+    bottom:
+        20px;
+
+    z-index:
+        900;
+
+    background:
+        var(--bg-card);
+
+    border:
+        1px solid
+        var(--border-glass-bright);
+
+    border-radius:
+        100px;
+
+    backdrop-filter:
+        blur(24px);
+
+    box-shadow:
+        0 20px 60px
+        rgba(
+            0,
+            0,
+            0,
+            0.45
+        );
+
+    padding:
+        5px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        4px;
+
+    transition:
+        transform 0.4s ease,
+        opacity 0.4s ease;
+}
+
+
+.theme-switch-deck.hidden {
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+
+    transform:
+        translateY(20px);
+}
+
+
+.mode-toggle-btn {
+
+    height:
+        32px;
+
+    padding:
+        0 12px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    border:
+        0;
+
+    background:
+        transparent;
+
+    color:
+        var(--text-muted);
+
+    font-family:
+        "DM Mono",
+        monospace;
+
+    font-size:
+        8px;
+
+    font-weight:
+        500;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+
+    border-radius:
+        100px;
+
+    cursor:
+        pointer;
+
+    transition:
+        all 0.3s ease;
+}
+
+
+.mode-toggle-btn i {
+
+    width:
+        4px;
+
+    height:
+        4px;
+
+    border-radius:
+        50%;
+
+    background:
+        currentColor;
+}
+
+
+.mode-toggle-btn.active {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+}
+
+
+.state-container {
+
+    grid-column:
+        1 / -1;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        100px 20px;
+
+    text-align:
+        center;
+
+    gap:
+        16px;
+
+    color:
+        var(--text-muted);
+}
+
+
+.spinner {
+
+    width:
+        50px;
+
+    height:
+        50px;
+
+    border:
+        4px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+    border-left-color:
+        var(--accent);
+
+    border-radius:
+        50%;
+
+    animation:
+        spin 0.9s
+        linear infinite;
+}
+
+
+@keyframes spin {
+
+    0% {
+
+        transform:
+            rotate(0deg);
+    }
+
+    100% {
+
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .container {
+
+        width:
+            92vw;
+    }
+
+
+    .live-pill-badge {
+
+        display:
+            none;
+    }
+
+
+    .nav-join-btn {
+
+        padding:
+            0 14px;
+
+        font-size:
+            10px;
+    }
+
+
+    .channels-grid {
+
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(
+                    150px,
+                    1fr
+                )
+            );
+
+        gap:
+            12px;
+    }
+
+
+    .card-thumbnail {
+
+        height:
+            120px;
+    }
+
+
+    .channel-logo-box {
+
+        width:
+            65px;
+
+        height:
+            65px;
+
+        padding:
+            8px;
+
+        border-radius:
+            14px;
+    }
+
+
+    .card-body {
+
+        padding:
+            12px;
+    }
+
+
+    .card-title {
+
+        font-size:
+            13px;
+    }
+
+
+    .card-meta {
+
+        font-size:
+            8px;
+    }
+
+
+    .player-rig-box {
+
+        border-radius:
+            14px;
+    }
+
+
+    .player-meta-bar {
+
+        align-items:
+            flex-start;
+    }
+
+
+    .share-action-btn {
+
+        width:
+            100%;
+
+        justify-content:
+            center;
+    }
+
+
+    .theme-switch-deck {
+
+        right:
+            10px;
+
+        bottom:
+            10px;
+    }
+
+}
+
+</style>
+
+
+<canvas id="warpGridCanvas"></canvas>
+
+
+<div
+    class="container"
+    id="mainContainer"
+>
+
+<header class="nav">
+
+    <a
+        class="brand"
+        id="brandHomeLink"
+    >
+
+        <div class="brand-title">
+            CRICZONE
+        </div>
+
+    </a>
+
+
+    <div class="nav-actions">
+
+        <div class="live-pill-badge">
+
+            <i class="pulsing-live-dot"></i>
+
+            ON AIR
+
+        </div>
+
+
+        <a
+            class="nav-join-btn"
+            id="navJoinBtn"
+            href="#"
+            target="_blank"
+            rel="noopener"
+        >
+            JOIN TG
+        </a>
+
+    </div>
+
+</header>
+
+
+<div
+    id="home-view"
+    class="view-section ${this.initialPendingId ? '' : 'active'}"
+>
+
+    <section class="hero">
+
+        <div class="hero-tag">
+            CRICZONE LIVE
+        </div>
+
+
+        <h1 class="hero-headline">
+
+            LIVE
+
+            <br>
+
+            <span class="accent-txt">
+                SPORTS.
+            </span>
+
+        </h1>
+
+
+        <div class="hero-details">
+
+            <b>
+                CRICKET • SPORTS • LIVE
+            </b>
+
+            <span class="meta-separator"></span>
+
+            HD CHANNELS
+
+            <span class="meta-separator"></span>
+
+            WATCH NOW
+
+        </div>
+
+    </section>
+
+
+    <div class="track-separator-beam"></div>
+
+
+    <div
+        id="channels-grid"
+        class="channels-grid"
+    >
+
+        <div class="state-container">
+
+            <div class="spinner"></div>
+
+            <p>
+                Fetching CRICZONE sports feed...
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="player-view"
+    class="view-section ${this.initialPendingId ? 'active' : ''}"
+>
+
+
+    <div class="player-top-nav">
+
+        <button
+            class="back-home-btn"
+            id="backHomeBtn"
+        >
+            &#8592; Back to Channels
+        </button>
+
+    </div>
+
+
+    <div
+        class="player-rig-box"
+        id="playerContainer"
+    >
+
+        <div
+            class="stream-loading-overlay ${this.initialPendingId ? '' : 'hidden'}"
+            id="streamLoadingOverlay"
+        >
+
+            <div class="spinner"></div>
+
+            <span>Connecting to CRICZONE stream...</span>
+
+        </div>
+
+
+        <iframe
+            id="player"
+            allow="
+                autoplay;
+                fullscreen;
+                encrypted-media;
+                picture-in-picture
+            "
+            allowfullscreen="true"
+        ></iframe>
+
+
+        <button
+            class="blended-fs-btn"
+            id="blendedFsBtn"
+            title="Toggle Fullscreen"
+        >
+
+            <svg
+                id="fsIconSvg"
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    d="
+                    M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
+                    7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
+                    "
+                />
+
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <div class="player-meta-bar">
+
+        <div class="stream-title-group">
+
+            <strong
+                id="activeStreamTitleDisplay"
+            >
+                Live Broadcast
+            </strong>
+
+            <span>
+                CRICZONE • HIGH-DEFINITION LIVE STREAM
+            </span>
+
+        </div>
+
+
+        <button
+            class="share-action-btn"
+            id="btnShare"
+        >
+
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+            >
+
+                <line
+                    x1="7"
+                    y1="17"
+                    x2="17"
+                    y2="7"
+                ></line>
+
+                <polyline
+                    points="
+                    7 7
+                    17 7
+                    17 17
+                    "
+                ></polyline>
+
+            </svg>
+
+
+            <span id="shareBtnText">
+                SHARE STREAM
+            </span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<div
+    class="tg-modal-overlay"
+    id="tgPremiumModal"
+>
+
+    <div class="tg-modal-box">
+
+        <h3 class="tg-modal-title">
+            CRICZONE
+        </h3>
+
+
+        <p
+            class="tg-modal-desc"
+            id="tgModalDesc"
+        >
+            Join our Telegram for more stream links and updates.
+        </p>
+
+
+        <div class="tg-modal-actions">
+
+            <div
+                class="tg-modal-btn-later"
+                id="tgLaterModalBtn"
+            >
+                Later
+            </div>
+
+
+            <div
+                class="tg-modal-btn-join"
+                id="tgJoinModalBtn"
+            >
+                Join Telegram
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<aside
+    class="theme-switch-deck"
+    id="themeSwitchDeck"
+>
+
+    <button
+        class="mode-toggle-btn active"
+        id="themeDarkBtn"
+    >
+
+        <i></i>
+
+        Obsidian
+
+    </button>
+
+
+    <button
+        class="mode-toggle-btn"
+        id="themeLightBtn"
+    >
+
+        <i></i>
+
+        Ceramic
+
+    </button>
+
+</aside>
+
+`;
+
+    }
+
+
+    connectedCallback() {
+
+        this.shadow.querySelector(
+            "#navJoinBtn"
+        ).href =
+            window.CricConfig.telegramLink;
+
+
+        this.checkUnlockStatus();
+
+        this.initWarpField();
+
+        this.initEventListeners();
+
+        this.setupMessageListener();
+
+        this.fetchChannels();
+
+        window.addEventListener(
+            "popstate",
+            () => this.handleUrlRouting()
+        );
+
+    }
+
+
+    disconnectedCallback() {
+
+        if (this.animationFrameId) {
+
+            cancelAnimationFrame(
+                this.animationFrameId
+            );
+
+        }
+
+
+        if (this.lockTimer) {
+
+            clearTimeout(
+                this.lockTimer
+            );
+
+        }
+
+    }
+
+
+    checkUnlockStatus() {
+
+        const saved =
+            localStorage.getItem(
+                "criczone_unlocked_time"
+            );
+
+
+        if (saved) {
+
+            if (
+
+                Date.now() -
+                parseInt(saved, 10)
+
+                <
+
+                24 *
+                60 *
+                60 *
+                1000
+
+            ) {
+
+                this.isUnlocked =
+                    true;
+
+            } else {
+
+                localStorage.removeItem(
+                    "criczone_unlocked_time"
+                );
+
+            }
+
+        }
+
+
+        if (!this.isUnlocked) {
+
+            setTimeout(() => {
+
+                const desc =
+                    this.shadow.querySelector(
+                        "#tgModalDesc"
+                    );
+
+
+                const modal =
+                    this.shadow.querySelector(
+                        "#tgPremiumModal"
+                    );
+
+
+                if (desc) {
+
+                    desc.innerText =
+                        "Join our CRICZONE Telegram channel for 24-hour full access to uninterrupted HD live streams and updates.";
+
+                }
+
+
+                if (modal) {
+
+                    modal.classList.add(
+                        "show"
+                    );
+
+                }
+
+            }, 200);
+
+        }
+
+    }
+
+
+    async fetchChannels() {
+
+        const grid =
+            this.shadow.querySelector(
+                "#channels-grid"
+            );
+
+
+        try {
+
+            const res =
+                await fetch(
+                    window.CricConfig.sourceUrl
+                );
+
+
+            if (!res.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    res.status
+                );
+
+            }
+
+
+            const data =
+                await res.json();
+
+
+            this.masterChannels =
+                Array.isArray(data)
+
+                    ? data
+
+                    : (
+                        data.iframes ||
+                        data.channels ||
+                        data.streams ||
+                        data.data ||
+                        []
+                    );
+
+
+            if (
+                this.masterChannels.length === 0
+            ) {
+
+                grid.innerHTML =
+                    `
+                    <div class="state-container">
+                        No channels found.
+                    </div>
+                    `;
+
+                return;
+            }
+
+
+            this.renderGrid();
+
+            this.handleUrlRouting();
+
+
+        } catch (err) {
+
+            console.error(
+                "Channel feed error:",
+                err
+            );
+
+
+            grid.innerHTML =
+                `
+                <div
+                    class="state-container"
+                    style="color:#ef4444;"
+                >
+                    Failed to load channels feed.
+                </div>
+                `;
+
+            if (this.initialPendingId) {
+
+                this.closePlayer();
+
+            }
+
+        }
+
+    }
+
+
+    renderGrid() {
+
+        const grid =
+            this.shadow.querySelector(
+                "#channels-grid"
+            );
+
+
+        grid.innerHTML =
+            "";
+
+
+        this.masterChannels.forEach(
+            (channel, index) => {
+
+                const channelId =
+                    channel.id !== undefined
+                        ? channel.id
+                        : index;
+
+
+                const title =
+                    channel.title ||
+                    channel.name ||
+                    channel.channel ||
+                    `Channel ${index + 1}`;
+
+
+                const poster =
+                    channel.poster ||
+                    channel.image ||
+                    channel.logo ||
+                    channel.img ||
+                    "";
+
+
+                const lowerTitle =
+                    title.toLowerCase();
+
+
+                const isSony =
+                    lowerTitle.includes(
+                        "sony"
+                    );
+
+
+                const isStar =
+                    lowerTitle.includes(
+                        "star"
+                    );
+
+
+                let tagText =
+                    title.split(" ")[0] ||
+                    "LIVE";
+
+
+                let thumbHtml =
+                    "";
+
+
+                if (isStar) {
+
+                    tagText =
+                        "STAR";
+
+
+                    thumbHtml =
+                        `
+                        <div
+                            class="card-thumbnail"
+                        >
+
+                            <div
+                                class="channel-logo-box"
+                            >
+
+                                <img
+                                    class="channel-logo"
+                                    src="${window.CricConfig.starLogo}"
+                                    alt="Star Sports"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer"
+                                >
+
+                            </div>
+
+
+                            <span
+                                class="card-network-tag"
+                            >
+                                STAR
+                            </span>
+
+
+                            <div
+                                class="play-overlay-icon"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        d="M8 5v14l11-7z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+                        `;
+
+
+                } else if (isSony) {
+
+                    tagText =
+                        "SONY";
+
+
+                    thumbHtml =
+                        `
+                        <div
+                            class="card-thumbnail"
+                        >
+
+                            <div
+                                class="channel-logo-box"
+                            >
+
+                                <img
+                                    class="channel-logo"
+                                    src="${window.CricConfig.sonyLogo}"
+                                    alt="Sony Sports"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer"
+                                >
+
+                            </div>
+
+
+                            <span
+                                class="card-network-tag"
+                            >
+                                SONY
+                            </span>
+
+
+                            <div
+                                class="play-overlay-icon"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        d="M8 5v14l11-7z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+                        `;
+
+
+                } else if (poster) {
+
+                    thumbHtml =
+                        `
+                        <div
+                            class="card-thumbnail"
+                            style="
+                                background-image:
+                                url('${poster.replace(
+                                    /'/g,
+                                    "%27"
+                                )}')
+                            "
+                        >
+
+                            <div
+                                class="play-overlay-icon"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        d="M8 5v14l11-7z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+                        `;
+
+
+                } else {
+
+                    const badgeIcon =
+                        `
+                        <svg
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="
+                                M12 2L2 7l10 5 10-5-10-5z
+                                M2 17l10 5 10-5
+                                M2 12l10 5 10-5
+                                "
+                            />
+
+                        </svg>
+                        `;
+
+
+                    thumbHtml =
+                        `
+                        <div
+                            class="card-thumbnail"
+                        >
+
+                            <div
+                                class="channel-badge-box"
+                            >
+                                ${badgeIcon}
+                            </div>
+
+
+                            <span
+                                class="card-network-tag"
+                            >
+                                ${this.escapeHtml(
+                                    tagText
+                                )}
+                            </span>
+
+
+                            <div
+                                class="play-overlay-icon"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        d="M8 5v14l11-7z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+                        `;
+
+                }
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "channel-card";
+
+
+                card.onclick =
+                    () =>
+                        this.openPlayer(
+                            channelId
+                        );
+
+
+                card.innerHTML =
+                    `
+
+                    ${thumbHtml}
+
+
+                    <div class="card-body">
+
+                        <div
+                            class="card-title"
+                        >
+                            ${this.escapeHtml(
+                                title
+                            )}
+                        </div>
+
+
+                        <div
+                            class="card-meta"
+                        >
+
+                            <span>
+                                HD FEED
+                            </span>
+
+
+                            <span
+                                style="
+                                    color:
+                                    var(--accent);
+                                "
+                            >
+                                WATCH NOW
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+
+                grid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    escapeHtml(value) {
+
+        return String(value)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    openPlayer(identifier) {
+
+        const target =
+            this.masterChannels.find(
+                (ch, idx) =>
+                    ch.id == identifier ||
+                    idx == identifier
+            );
+
+
+        if (!target) {
+            this.closePlayer();
+            return;
+        }
+
+
+        let streamUrl =
+
+            target.iframeSrc ||
+
+            target.url ||
+
+            target.link ||
+
+            target.stream ||
+
+            target.file ||
+
+            target.source ||
+
+            target.src;
+
+
+        if (!streamUrl) {
+
+            streamUrl =
+                `https://sonucdn-v2.pages.dev/star.html?id=${encodeURIComponent(
+                    target.id ||
+                    identifier
+                )}`;
+
+        }
+
+
+        const title =
+
+            target.title ||
+
+            target.name ||
+
+            target.channel ||
+
+            "Live Broadcast";
+
+
+        this.currentStreamId =
+            identifier;
+
+
+        this.shadow.querySelector(
+            "#activeStreamTitleDisplay"
+        ).innerText =
+            title;
+
+
+        this.shadow.querySelector(
+            "#player"
+        ).src =
+            streamUrl;
+
+
+        const loadingOverlay =
+            this.shadow.querySelector(
+                "#streamLoadingOverlay"
+            );
+
+
+        if (loadingOverlay) {
+
+            loadingOverlay.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        this.shadow.querySelector(
+            "#home-view"
+        ).classList.remove(
+            "active"
+        );
+
+
+        this.shadow.querySelector(
+            "#player-view"
+        ).classList.add(
+            "active"
+        );
+
+
+        if (!this.isUnlocked) {
+
+            if (this.lockTimer) {
+
+                clearTimeout(
+                    this.lockTimer
+                );
+
+            }
+
+
+            this.lockTimer =
+                setTimeout(
+                    () =>
+                        this.triggerLock(),
+
+                    window.CricConfig
+                        .previewDuration
+                );
+
+        }
+
+
+        const query =
+            `?id=${encodeURIComponent(
+                identifier
+            )}`;
+
+
+        if (
+            window.location.search !==
+            query
+        ) {
+
+            history.pushState(
+                {
+                    playerOpen:
+                        true,
+
+                    id:
+                        identifier
+                },
+
+                "",
+
+                query
+            );
+
+        }
+
+
+        window.scrollTo(
+            0,
+            0
+        );
+
+    }
+
+
+    closePlayer() {
+
+        this.shadow.querySelector(
+            "#player"
+        ).src =
+            "about:blank";
+
+
+        const loadingOverlayEl =
+            this.shadow.querySelector(
+                "#streamLoadingOverlay"
+            );
+
+
+        if (loadingOverlayEl) {
+
+            loadingOverlayEl.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (this.lockTimer) {
+
+            clearTimeout(
+                this.lockTimer
+            );
+
+            this.lockTimer =
+                null;
+
+        }
+
+
+        this.currentStreamId =
+            null;
+
+
+        this.shadow.querySelector(
+            "#player-view"
+        ).classList.remove(
+            "active"
+        );
+
+
+        this.shadow.querySelector(
+            "#home-view"
+        ).classList.add(
+            "active"
+        );
+
+
+        if (
+            window.location.search
+        ) {
+
+            history.pushState(
+                {},
+                "",
+                window.location.pathname
+            );
+
+        }
+
+
+        window.scrollTo(
+            0,
+            0
+        );
+
+    }
+
+
+    handleUrlRouting() {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const id =
+            params.get("id");
+
+
+        if (id !== null) {
+
+            this.openPlayer(id);
+
+        } else if (
+            id === null &&
+            this.currentStreamId !== null
+        ) {
+
+            this.closePlayer();
+
+        }
+
+    }
+
+
+    triggerLock() {
+
+        if (this.isUnlocked)
+            return;
+
+
+        const iframe =
+            this.shadow.querySelector(
+                "#player"
+            );
+
+
+        try {
+
+            if (
+                iframe &&
+                iframe.contentWindow
+            ) {
+
+                iframe.contentWindow.postMessage(
+                    "criczone-force-pause",
+                    "*"
+                );
+
+            }
+
+        } catch (e) {}
+
+
+        try {
+
+            if (
+                document.fullscreenElement
+            ) {
+
+                document.exitFullscreen()
+                    .catch(
+                        () => {}
+                    );
+
+            }
+
+        } catch (err) {}
+
+
+        this.shadow.querySelector(
+            "#tgModalDesc"
+        ).innerText =
+            "Free preview ended! Join our CRICZONE Telegram to unlock 24-hour uninterrupted access.";
+
+
+        this.shadow.querySelector(
+            "#tgPremiumModal"
+        ).classList.add(
+            "show"
+        );
+
+    }
+
+
+    handleJoinTelegram() {
+
+        localStorage.setItem(
+            "criczone_unlocked_time",
+            Date.now().toString()
+        );
+
+
+        this.isUnlocked =
+            true;
+
+
+        this.shadow.querySelector(
+            "#tgPremiumModal"
+        ).classList.remove(
+            "show"
+        );
+
+
+        window.open(
+            window.CricConfig.telegramLink,
+            "_blank",
+            "noopener"
+        );
+
+
+        const laterBtn =
+            this.shadow.querySelector(
+                "#tgLaterModalBtn"
+            );
+
+
+        if (laterBtn) {
+
+            laterBtn.style.display =
+                "flex";
+
+        }
+
+
+        const iframe =
+            this.shadow.querySelector(
+                "#player"
+            );
+
+
+        try {
+
+            if (
+                iframe &&
+                iframe.contentWindow
+            ) {
+
+                iframe.contentWindow.postMessage(
+                    "criczone-force-play",
+                    "*"
+                );
+
+            }
+
+        } catch (e) {}
+
+    }
+
+
+    handleLater() {
+
+        this.laterCount++;
+
+
+        if (
+            this.laterCount >= 2
+        ) {
+
+            const laterBtn =
+                this.shadow.querySelector(
+                    "#tgLaterModalBtn"
+                );
+
+
+            if (laterBtn) {
+
+                laterBtn.style.display =
+                    "none";
+
+            }
+
+
+            this.shadow.querySelector(
+                "#tgModalDesc"
+            ).innerText =
+                "Access limit reached! Please join our CRICZONE Telegram channel to proceed.";
+
+
+            return;
+
+        }
+
+
+        this.shadow.querySelector(
+            "#tgPremiumModal"
+        ).classList.remove(
+            "show"
+        );
+
+
+        const iframe =
+            this.shadow.querySelector(
+                "#player"
+            );
+
+
+        try {
+
+            if (
+                iframe &&
+                iframe.contentWindow
+            ) {
+
+                iframe.contentWindow.postMessage(
+                    "criczone-force-play",
+                    "*"
+                );
+
+            }
+
+        } catch (e) {}
+
+    }
+
+
+    toggleFullscreen() {
+
+        const rig =
+            this.shadow.querySelector(
+                "#playerContainer"
+            );
+
+
+        const themeDeck =
+            this.shadow.querySelector(
+                "#themeSwitchDeck"
+            );
+
+
+        const fsIconSvg =
+            this.shadow.querySelector(
+                "#fsIconSvg"
+            );
+
+
+        if (!rig)
+            return;
+
+
+        const isFull =
+            document.fullscreenElement ||
+            rig.classList.contains(
+                "fs-active"
+            );
+
+
+        if (!isFull) {
+
+            rig.classList.add(
+                "fs-active"
+            );
+
+
+            if (themeDeck) {
+
+                themeDeck.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (fsIconSvg) {
+
+                fsIconSvg.innerHTML =
+                    `
+                    <path
+                        d="
+                        M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6
+                        11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z
+                        "
+                    />
+                    `;
+
+            }
+
+
+            try {
+
+                if (
+                    rig.requestFullscreen
+                ) {
+
+                    rig.requestFullscreen()
+                        .catch(
+                            () => {}
+                        );
+
+                }
+
+            } catch (err) {}
+
+
+        } else {
+
+            rig.classList.remove(
+                "fs-active"
+            );
+
+
+            if (themeDeck) {
+
+                themeDeck.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            if (fsIconSvg) {
+
+                fsIconSvg.innerHTML =
+                    `
+                    <path
+                        d="
+                        M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
+                        7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
+                        "
+                    />
+                    `;
+
+            }
+
+
+            try {
+
+                if (
+                    document.exitFullscreen
+                ) {
+
+                    document.exitFullscreen()
+                        .catch(
+                            () => {}
+                        );
+
+                }
+
+            } catch (err) {}
+
+        }
+
+    }
+
+
+    setupMessageListener() {
+
+        window.addEventListener(
+            "message",
+            (e) => {
+
+                if (
+
+                    e.data ===
+                    "criczone-playing" &&
+
+                    !this.isUnlocked &&
+
+                    !this.lockTimer
+
+                ) {
+
+                    this.lockTimer =
+                        setTimeout(
+
+                            () =>
+                                this.triggerLock(),
+
+                            window.CricConfig
+                                .previewDuration
+
+                        );
+
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "fullscreenchange",
+            () => {
+
+                const rig =
+                    this.shadow.querySelector(
+                        "#playerContainer"
+                    );
+
+
+                const themeDeck =
+                    this.shadow.querySelector(
+                        "#themeSwitchDeck"
+                    );
+
+
+                const fsIconSvg =
+                    this.shadow.querySelector(
+                        "#fsIconSvg"
+                    );
+
+
+                if (
+
+                    !document.fullscreenElement &&
+
+                    !document.webkitIsFullScreen &&
+
+                    rig
+
+                ) {
+
+                    rig.classList.remove(
+                        "fs-active"
+                    );
+
+
+                    if (themeDeck) {
+
+                        themeDeck.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+
+                    if (fsIconSvg) {
+
+                        fsIconSvg.innerHTML =
+                            `
+                            <path
+                                d="
+                                M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
+                                7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
+                                "
+                            />
+                            `;
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    initEventListeners() {
+
+        this.shadow.querySelector(
+            "#backHomeBtn"
+        ).onclick =
+            () =>
+                this.closePlayer();
+
+
+        this.shadow.querySelector(
+            "#brandHomeLink"
+        ).onclick =
+            () =>
+                this.closePlayer();
+
+
+        this.shadow.querySelector(
+            "#tgJoinModalBtn"
+        ).onclick =
+            () =>
+                this.handleJoinTelegram();
+
+
+        this.shadow.querySelector(
+            "#tgLaterModalBtn"
+        ).onclick =
+            () =>
+                this.handleLater();
+
+
+        this.shadow.querySelector(
+            "#blendedFsBtn"
+        ).onclick =
+            () =>
+                this.toggleFullscreen();
+
+
+        this.shadow.querySelector(
+            "#themeDarkBtn"
+        ).onclick =
+            () => {
+
+                this.removeAttribute(
+                    "data-theme"
+                );
+
+
+                this.shadow.querySelector(
+                    "#themeDarkBtn"
+                ).classList.add(
+                    "active"
+                );
+
+
+                this.shadow.querySelector(
+                    "#themeLightBtn"
+                ).classList.remove(
+                    "active"
+                );
+
+            };
+
+
+        this.shadow.querySelector(
+            "#themeLightBtn"
+        ).onclick =
+            () => {
+
+                this.setAttribute(
+                    "data-theme",
+                    "light"
+                );
+
+
+                this.shadow.querySelector(
+                    "#themeLightBtn"
+                ).classList.add(
+                    "active"
+                );
+
+
+                this.shadow.querySelector(
+                    "#themeDarkBtn"
+                ).classList.remove(
+                    "active"
+                );
+
+            };
+
+
+        const btnShare =
+            this.shadow.querySelector(
+                "#btnShare"
+            );
+
+
+        const shareText =
+            this.shadow.querySelector(
+                "#shareBtnText"
+            );
+
+
+        btnShare.onclick =
+            async () => {
+
+                try {
+
+                    if (
+                        navigator.share
+                    ) {
+
+                        await navigator.share({
+
+                            title:
+                                "CRICZONE LIVE",
+
+                            url:
+                                window.location.href
+
+                        });
+
+                    } else {
+
+                        await navigator.clipboard
+                            .writeText(
+                                window.location.href
+                            );
+
+
+                        shareText.textContent =
+                            "COPIED!";
+
+
+                        setTimeout(
+                            () => {
+
+                                shareText.textContent =
+                                    "SHARE STREAM";
+
+                            },
+                            1800
+                        );
+
+                    }
+
+                } catch (err) {}
+
+            };
+
+    }
+
+
+    initWarpField() {
+
+        const canvas =
+            this.shadow.getElementById(
+                "warpGridCanvas"
+            );
+
+
+        if (!canvas)
+            return;
+
+
+        const ctx =
+            canvas.getContext(
+                "2d"
+            );
+
+
+        const resize =
+            () => {
+
+                canvas.width =
+                    window.innerWidth;
+
+                canvas.height =
+                    window.innerHeight;
+
+            };
+
+
+        window.addEventListener(
+            "resize",
+            resize
+        );
+
+
+        resize();
+
+
+        for (
+            let i = 0;
+            i < 100;
+            i++
+        ) {
+
+            this.stars.push({
+
+                x:
+                    Math.random() *
+                    canvas.width,
+
+                y:
+                    Math.random() *
+                    canvas.height,
+
+                length:
+                    Math.random() *
+                    20 +
+                    10,
+
+                speed:
+                    Math.random() *
+                    2 +
+                    1,
+
+                alpha:
+                    Math.random() *
+                    0.5 +
+                    0.1
+
+            });
+
+        }
+
+
+        const render =
+            () => {
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+                ctx.lineWidth =
+                    1.2;
+
+
+                this.stars.forEach(
+                    star => {
+
+                        ctx.beginPath();
+
+                        ctx.moveTo(
+                            star.x,
+                            star.y
+                        );
+
+                        ctx.lineTo(
+                            star.x -
+                            star.length,
+                            star.y +
+                            star.length
+                        );
+
+                        ctx.strokeStyle =
+                            `rgba(
+                                0,
+                                255,
+                                204,
+                                ${star.alpha}
+                            )`;
+
+                        ctx.stroke();
+
+
+                        star.x -=
+                            star.speed;
+
+                        star.y +=
+                            star.speed;
+
+
+                        if (
+                            star.x <
+                                -star.length ||
+                            star.y >
+                                canvas.height +
+                                star.length
+                        ) {
+
+                            star.x =
+                                canvas.width +
+                                star.length;
+
+                            star.y =
+                                Math.random() *
+                                canvas.height;
+
+                        }
+
+                    }
+                );
+
+
+                this.animationFrameId =
+                    requestAnimationFrame(
+                        render
+                    );
+
+            };
+
+
+        render();
+
+    }
+
+}
+
+
+customElements.define(
+    "criczone-ui",
+    CriczoneUI
+);
+
+</script>
+
+
+<criczone-ui></criczone-ui>
+
+</body>
+</html>
