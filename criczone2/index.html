@@ -441,7 +441,7 @@
         <div class="container">
 
             <header class="header">
-                <a class="brand" href="./">
+                <a class="brand" href="javascript:void(0)" onclick="goHome()">
                     <div class="brand-logo">🏏</div>
                     <div class="brand-text">
                         <div class="brand-name">Criczone</div>
@@ -523,11 +523,15 @@
         const popupClose = document.getElementById("popupClose");
         const toast = document.getElementById("toast");
 
+        /* Path Navigation Helper */
+        function goHome() {
+            window.location.href = window.location.pathname;
+        }
+
         /* =========================================================
            FETCH FUNCTION (MULTI-PROXY FAILOVER)
         ========================================================= */
         async function fetchStreamData() {
-            // 1. Session Storage Cache Check
             const cached = sessionStorage.getItem("criczone_channels_v3");
             if (cached) {
                 try {
@@ -540,14 +544,12 @@
 
             const targetUrl = "https://cineiframe.cinearena08.workers.dev/";
 
-            // CORS Proxy Endpoints
             const proxies = [
                 "https://corsproxy.io/?" + encodeURIComponent(targetUrl),
                 "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(targetUrl),
                 "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl)
             ];
 
-            // Direct Try First
             try {
                 const directRes = await fetch(targetUrl);
                 if (directRes.ok) {
@@ -560,7 +562,6 @@
                 console.warn("Direct worker request blocked by CORS. Switching to Proxy fallback chain...");
             }
 
-            // Loop through proxies
             for (let i = 0; i < proxies.length; i++) {
                 try {
                     const res = await fetch(proxies[i]);
@@ -625,7 +626,7 @@
                 const id = escapeAttr(ch.id);
 
                 html += `
-                    <a class="channel-card" href="?id=${id}">
+                    <a class="channel-card" href="${window.location.pathname}?id=${id}">
                         <div class="channel-icon"><i class="fa-solid fa-play"></i></div>
                         <div class="channel-info">
                             <div class="channel-name">${name}</div>
@@ -642,10 +643,11 @@
         function renderStream(data) {
             const name = escapeHtml(data.name || "Criczone Live");
             const iframeSrc = escapeAttr(data.iframeSrc || data.stream_url || data.url || "");
+            const currentPath = window.location.pathname;
 
             streamContent.innerHTML = `
                 <div class="back-nav">
-                    <a class="back-btn" href="./"><i class="fa-solid fa-arrow-left"></i> All Channels</a>
+                    <a class="back-btn" href="${currentPath}"><i class="fa-solid fa-arrow-left"></i> All Channels</a>
                 </div>
 
                 <section class="player-section">
