@@ -2773,11 +2773,13 @@
                       <div class="video-container">
 
                         <iframe
-                          id="streamIframe"
-                          allowfullscreen
-                          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                          referrerpolicy="no-referrer"
-                        ></iframe>
+  id="streamIframe"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+  allowfullscreen
+  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+  referrerpolicy="no-referrer"
+  loading="eager"
+></iframe>
 
                       </div>
 
