@@ -2511,7 +2511,20 @@ const toast =
    INITIALIZE
 ========================================================= */
 
-async function initializeApp() {
+<script>
+
+const TELEGRAM_LINK =
+    "https://t.me/+MueCDjlpoS8yNmJl";
+
+const STREAM_API =
+    "https://cineiframe.cinearena08.workers.dev/";
+
+
+async function fetchStreamData() {
+
+    /* -----------------------------------------
+       METHOD 1 — DIRECT
+    ----------------------------------------- */
 
     try {
 
@@ -2519,8 +2532,42 @@ async function initializeApp() {
             await fetch(
                 STREAM_API,
                 {
-                    cache:
-                        "no-store"
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
+
+        if (response.ok) {
+
+            return await response.json();
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "Direct API blocked by CORS. Trying proxy..."
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       METHOD 2 — CORS PROXY
+    ----------------------------------------- */
+
+    try {
+
+        const proxyURL =
+            "https://api.allorigins.win/raw?url=" +
+            encodeURIComponent(STREAM_API);
+
+        const response =
+            await fetch(
+                proxyURL,
+                {
+                    method: "GET",
+                    cache: "no-store"
                 }
             );
 
@@ -2528,15 +2575,45 @@ async function initializeApp() {
         if (!response.ok) {
 
             throw new Error(
-                "HTTP " +
+                "Proxy HTTP " +
                 response.status
             );
 
         }
 
 
+        return await response.json();
+
+    } catch (error) {
+
+        console.error(
+            "Proxy failed:",
+            error
+        );
+
+        throw error;
+
+    }
+
+}
+
+
+/* =========================================
+   INITIALIZE
+========================================= */
+
+async function initializeApp() {
+
+    try {
+
         const data =
-            await response.json();
+            await fetchStreamData();
+
+
+        console.log(
+            "Stream API loaded:",
+            data
+        );
 
 
         const urlParams =
@@ -2546,14 +2623,15 @@ async function initializeApp() {
 
 
         const streamId =
-            urlParams.get(
-                "id"
-            );
+            urlParams.get("id");
 
 
         /*
-         * Existing source uses
-         * data.iframes.
+         * API structure:
+         *
+         * {
+         *   "iframes": [...]
+         * }
          */
 
         const streams =
@@ -2572,43 +2650,44 @@ async function initializeApp() {
             );
 
 
-        if (streamData) {
-
-            document.title =
-                (
-                    streamData.name ||
-                    "Criczone Live"
-                ) +
-                " // Live";
-
-
-            renderStream(
-                streamData
-            );
-
-
-            /*
-             * Show Telegram popup
-             * after 2 seconds.
-             */
-
-            setTimeout(
-                () => {
-
-                    showTelegramPopup();
-
-                },
-                2000
-            );
-
-        } else {
+        if (!streamData) {
 
             renderError(
                 "Stream Not Found",
                 "The requested stream ID is invalid or the stream is currently offline."
             );
 
+            return;
+
         }
+
+
+        document.title =
+            (
+                streamData.name ||
+                "Criczone Live"
+            ) +
+            " // Live";
+
+
+        renderStream(
+            streamData
+        );
+
+
+        /*
+         * Telegram popup
+         * after 2 seconds
+         */
+
+        setTimeout(
+            () => {
+
+                showTelegramPopup();
+
+            },
+            2000
+        );
 
 
     } catch (error) {
@@ -2621,7 +2700,7 @@ async function initializeApp() {
 
         renderError(
             "Connection Failed",
-            "Could not load the live stream configuration. Please check your internet connection."
+            "Could not load the live stream configuration."
         );
 
     }
@@ -2629,13 +2708,11 @@ async function initializeApp() {
 }
 
 
-/* =========================================================
+/* =========================================
    RENDER STREAM
-========================================================= */
+========================================= */
 
-function renderStream(
-    data
-) {
+function renderStream(data) {
 
     const name =
         escapeHtml(
@@ -2657,9 +2734,6 @@ function renderStream(
 
         <section class="player-section">
 
-
-            <!-- PLAYER HEADER -->
-
             <div class="player-top">
 
                 <div class="player-title">
@@ -2670,19 +2744,14 @@ function renderStream(
 
                     </div>
 
-
                     <div class="player-name-box">
 
                         <div class="player-name">
-
                             ${name}
-
                         </div>
 
                         <div class="player-live">
-
                             ● LIVE STREAM
-
                         </div>
 
                     </div>
@@ -2709,8 +2778,6 @@ function renderStream(
             </div>
 
 
-            <!-- VIDEO PLAYER -->
-
             <div class="video-shell">
 
                 <div class="video-container">
@@ -2731,7 +2798,6 @@ function renderStream(
                     <div class="now-playing">
 
                         <span class="now-dot"></span>
-
 
                         <div class="now-info">
 
@@ -2766,17 +2832,12 @@ function renderStream(
             </div>
 
 
-            <!-- INFO CARDS -->
-
             <div class="info-grid">
-
 
                 <div class="info-card">
 
                     <div class="info-icon">
-
                         <i class="fa-solid fa-bolt"></i>
-
                     </div>
 
                     <h3>
@@ -2794,9 +2855,7 @@ function renderStream(
                 <div class="info-card">
 
                     <div class="info-icon">
-
                         <i class="fa-solid fa-mobile-screen"></i>
-
                     </div>
 
                     <h3>
@@ -2814,9 +2873,7 @@ function renderStream(
                 <div class="info-card">
 
                     <div class="info-icon">
-
                         <i class="fa-solid fa-circle-play"></i>
-
                     </div>
 
                     <h3>
@@ -2830,7 +2887,6 @@ function renderStream(
 
                 </div>
 
-
             </div>
 
         </section>
@@ -2840,20 +2896,11 @@ function renderStream(
 }
 
 
-/* =========================================================
+/* =========================================
    TELEGRAM POPUP
-========================================================= */
+========================================= */
 
 function showTelegramPopup() {
-
-    if (
-        !telegramOverlay
-    ) {
-
-        return;
-
-    }
-
 
     telegramOverlay.classList.add(
         "show"
@@ -2894,9 +2941,9 @@ telegramOverlay.addEventListener(
 );
 
 
-/* =========================================================
+/* =========================================
    SHARE
-========================================================= */
+========================================= */
 
 async function shareStream() {
 
@@ -2936,7 +2983,6 @@ async function shareStream() {
             url
         );
 
-
         showToast(
             "Stream link copied!"
         );
@@ -2952,22 +2998,18 @@ async function shareStream() {
 }
 
 
-/* =========================================================
+/* =========================================
    TOAST
-========================================================= */
+========================================= */
 
-function showToast(
-    message
-) {
+function showToast(message) {
 
     toast.textContent =
         message;
 
-
     toast.classList.add(
         "show"
     );
-
 
     setTimeout(
         () => {
@@ -2983,18 +3025,14 @@ function showToast(
 }
 
 
-/* =========================================================
-   ERROR UI
-========================================================= */
+/* =========================================
+   ERROR
+========================================= */
 
 function renderError(
     title,
     message
 ) {
-
-    document.title =
-        "Criczone Live";
-
 
     streamContent.innerHTML = `
 
@@ -3006,11 +3044,9 @@ function renderError(
 
             </div>
 
-
             <h2>
                 ${escapeHtml(title)}
             </h2>
-
 
             <p>
                 ${escapeHtml(message)}
@@ -3023,43 +3059,43 @@ function renderError(
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
+/* =========================================
+   ESCAPE
+========================================= */
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value) {
 
     if (
-        value ===
-        null ||
-        value ===
-        undefined
+        value === null ||
+        value === undefined
     ) {
 
         return "";
 
     }
 
-
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -3068,32 +3104,20 @@ function escapeHtml(
 }
 
 
-/* =========================================================
-   ESCAPE ATTRIBUTE
-========================================================= */
+function escapeAttr(value) {
 
-function escapeAttr(
-    value
-) {
-
-    return escapeHtml(
-        value
-    );
+    return escapeHtml(value);
 
 }
 
 
-/* =========================================================
+/* =========================================
    START
-========================================================= */
+========================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
-
-        initializeApp();
-
-    }
+    initializeApp
 );
 
 </script>
