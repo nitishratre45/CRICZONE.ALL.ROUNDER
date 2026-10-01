@@ -47,9 +47,7 @@
             outline: none;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             min-height: 100vh;
@@ -321,7 +319,7 @@
             position: relative;
             width: 100%;
             aspect-ratio: 16 / 9;
-            min-height: 320px;
+            min-height: 240px;
             background: #000;
         }
 
@@ -526,7 +524,7 @@
         const toast = document.getElementById("toast");
 
         /* =========================================
-           SERVERLESS FETCH FUNCTION
+           SERVERLESS FETCH FUNCTION (FIXED)
         ========================================= */
         async function fetchStreamData() {
             // 1. Session Storage Cache Check
@@ -534,8 +532,10 @@
             if (cached) {
                 try {
                     const parsed = JSON.parse(cached);
-                    if (parsed && parsed.iframes) return parsed;
-                } catch(e) {}
+                    if (parsed && (parsed.iframes || Array.isArray(parsed))) return parsed;
+                } catch(e) {
+                    sessionStorage.removeItem("criczone_channels_v3");
+                }
             }
 
             // 2. Fetch from Vercel Serverless Function
@@ -554,9 +554,19 @@
             }
 
             // 3. Fallback direct API
-            const directRes = await fetch("https://cineiframe.cinearena08.workers.dev/");
-            const directData = await directRes.json();
-            return directData.iframes ? directData : { iframes: directData };
+            try {
+                const directRes = await fetch("https://cineiframe.cinearena08.workers.dev/");
+                if (directRes.ok) {
+                    const directData = await directRes.json();
+                    const result = directData.iframes ? directData : { iframes: directData };
+                    sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
+                    return result;
+                }
+            } catch (e) {
+                console.error("Direct fetch failed", e);
+            }
+
+            throw new Error("Unable to fetch channel data from both sources.");
         }
 
         async function initializeApp() {
@@ -586,6 +596,11 @@
         }
 
         function renderHome(channels) {
+            if (!channels || channels.length === 0) {
+                renderError("No Channels", "There are currently no live channels available.");
+                return;
+            }
+
             let html = `
                 <div class="channels-header">
                     <div class="channels-title">
@@ -715,7 +730,12 @@
 
         function escapeHtml(value) {
             if (!value) return "";
-            return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         function escapeAttr(value) { return escapeHtml(value); }
