@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta name="theme-color" content="#050a0f">
 
 <title>CRICZONE LIVE — Sports Hub</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
 
 <link
-  href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap"
-  rel="stylesheet"
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap"
+    rel="stylesheet"
 >
 
 <style>
+
 html,
 body {
     margin: 0;
@@ -22,12 +38,94 @@ body {
     min-height: 100%;
     background: #050a0f;
 }
+
 </style>
+
 </head>
 
 <body>
 
-<script>
+
+<!-- =====================================================
+     CRICZONE
+     ===================================================== -->
+
+<criczone-ui></criczone-ui>
+
+
+<!-- =====================================================
+     FIREBASE + CRICZONE
+     ===================================================== -->
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE IMPORTS
+   ========================================================= */
+
+import {
+    initializeApp
+} from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+
+import {
+    getDatabase,
+    ref,
+    push,
+    set,
+    remove,
+    onDisconnect,
+    onValue,
+    serverTimestamp
+} from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+/* =========================================================
+   FIREBASE CONFIG
+   ========================================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+
+    authDomain:
+        "cricket-live-39106.firebaseapp.com",
+
+    databaseURL:
+        "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+    projectId:
+        "cricket-live-39106",
+
+    storageBucket:
+        "cricket-live-39106.firebasestorage.app",
+
+    messagingSenderId:
+        "841890143",
+
+    appId:
+        "1:841890143:web:ca5b87c9395bdc19145eea",
+
+    measurementId:
+        "G-ZNEZC8YVMX"
+
+};
+
+
+/* =========================================================
+   INITIALIZE FIREBASE
+   ========================================================= */
+
+const firebaseApp =
+    initializeApp(firebaseConfig);
+
+
+const database =
+    getDatabase(firebaseApp);
+
 
 /* =========================================================
    CRICZONE CONFIG
@@ -43,6 +141,7 @@ window.CricConfig = {
 
     previewDuration:
         10000
+
 };
 
 
@@ -52,33 +151,69 @@ window.CricConfig = {
 
 class CriczoneUI extends HTMLElement {
 
+
     constructor() {
 
         super();
 
-        /* IMPORTANT FIX */
-        this.shadow = this.attachShadow({
-            mode: "closed"
-        });
+
+        /* IMPORTANT */
+
+        this.shadow =
+            this.attachShadow({
+                mode: "closed"
+            });
+
 
         this.masterChannels = [];
 
-        this.currentStreamId = null;
 
-        this.isUnlocked = false;
+        this.currentStreamId =
+            null;
 
-        this.lockTimer = null;
 
-        this.animationFrameId = null;
+        this.currentChannelTitle =
+            "";
+
+
+        this.isUnlocked =
+            false;
+
+
+        this.lockTimer =
+            null;
+
+
+        this.currentFilter =
+            "all";
+
+
+        this.presenceRef =
+            null;
+
+
+        this.presenceDisconnect =
+            null;
+
+
+        this.viewerListener =
+            null;
+
+
+        this.firebaseConnected =
+            false;
+
+
+        this.viewerCount =
+            0;
+
 
         this.stars = [];
 
-        this.currentFilter = "all";
 
-        this.initialPendingId =
-            new URLSearchParams(
-                window.location.search
-            ).get("id");
+        this.animationFrameId =
+            null;
+
     }
 
 
@@ -87,6 +222,7 @@ class CriczoneUI extends HTMLElement {
        ===================================================== */
 
     connectedCallback() {
+
 
         this.shadow.innerHTML = `
 
@@ -104,15 +240,13 @@ class CriczoneUI extends HTMLElement {
 
     --bg: #050a0f;
 
-    --card: rgba(8,17,27,.88);
-
-    --border: rgba(0,255,204,.18);
-
-    --border-hover: rgba(0,255,204,.65);
-
     --text: #f5f7fa;
 
     --muted: #8293a0;
+
+    --border: rgba(0,255,204,.18);
+
+    --border-hover: rgba(0,255,204,.70);
 
     display: block;
 
@@ -161,9 +295,9 @@ button {
 
     height: 100vh;
 
-    pointer-events: none;
-
     z-index: 0;
+
+    pointer-events: none;
 
     opacity: .75;
 }
@@ -184,7 +318,7 @@ button {
 
 
 /* =========================================================
-   NAVBAR
+   NAV
    ========================================================= */
 
 .nav {
@@ -220,7 +354,7 @@ button {
 
     letter-spacing: -1.5px;
 
-    color: #fff;
+    color: white;
 }
 
 
@@ -229,7 +363,7 @@ button {
     background:
         linear-gradient(
             135deg,
-            #fff,
+            #ffffff,
             #00ffcc,
             #0096ff
         );
@@ -271,7 +405,7 @@ button {
     background:
         rgba(5,12,18,.80);
 
-    color: #fff;
+    color: white;
 
     font-family:
         DM Mono,
@@ -312,6 +446,7 @@ button {
         opacity: .35;
         transform: scale(.75);
     }
+
 }
 
 
@@ -372,7 +507,7 @@ button {
 .hero {
 
     padding:
-        clamp(55px, 7vw, 95px)
+        clamp(55px,7vw,95px)
         0
         35px;
 }
@@ -427,9 +562,9 @@ button {
     background:
         linear-gradient(
             135deg,
-            #00ffcc 0%,
-            #00c8ff 48%,
-            #007bff 100%
+            #00ffcc,
+            #00c8ff,
+            #007bff
         );
 
     -webkit-background-clip: text;
@@ -465,7 +600,7 @@ button {
 
 
 .hero-info strong {
-    color: #fff;
+    color: white;
 }
 
 
@@ -548,7 +683,7 @@ button {
 
     background: transparent;
 
-    color: #fff;
+    color: white;
 
     font-size: 14px;
 }
@@ -607,7 +742,7 @@ button {
     border-color:
         var(--accent);
 
-    color: #fff;
+    color: white;
 }
 
 
@@ -675,7 +810,6 @@ button {
 
 /* =========================================================
    CHANNEL CARD
-   NO LOGO / NO IMAGE
    ========================================================= */
 
 .channel-card {
@@ -719,6 +853,23 @@ button {
 }
 
 
+.channel-card:hover {
+
+    transform:
+        translateY(-5px);
+
+    border-color:
+        var(--border-hover);
+
+    box-shadow:
+        0 18px 45px
+        rgba(0,0,0,.45),
+
+        0 0 25px
+        rgba(0,255,204,.08);
+}
+
+
 .channel-card::before {
 
     content: "";
@@ -742,49 +893,9 @@ button {
 }
 
 
-.channel-card::after {
-
-    content: "";
-
-    position: absolute;
-
-    right: -40px;
-
-    bottom: -55px;
-
-    width: 140px;
-
-    height: 140px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(0,255,204,.04);
-
-    filter: blur(20px);
-
-    pointer-events: none;
-}
-
-
-.channel-card:hover {
-
-    transform:
-        translateY(-5px);
-
-    border-color:
-        var(--border-hover);
-
-    box-shadow:
-        0 18px 45px
-        rgba(0,0,0,.45),
-
-        0 0 25px
-        rgba(0,255,204,.08);
-}
-
-
-/* ONLY TEXT */
+/* =========================================================
+   CHANNEL TEXT ONLY
+   ========================================================= */
 
 .card-title {
 
@@ -848,7 +959,7 @@ button {
 
 
 /* =========================================================
-   STATE
+   LOADING
    ========================================================= */
 
 .state {
@@ -900,9 +1011,11 @@ button {
 
 
 @keyframes spin {
+
     to {
         transform: rotate(360deg);
     }
+
 }
 
 
@@ -945,7 +1058,7 @@ button {
     background:
         rgba(7,15,23,.85);
 
-    color: #fff;
+    color: white;
 
     font-family:
         Space Grotesk,
@@ -981,7 +1094,7 @@ button {
 
     border-radius: 18px;
 
-    background: #000;
+    background: black;
 
     box-shadow:
         0 30px 80px
@@ -999,7 +1112,7 @@ button {
 
     border: 0;
 
-    background: #000;
+    background: black;
 }
 
 
@@ -1022,7 +1135,7 @@ button {
     background:
         rgba(0,0,0,.72);
 
-    color: #fff;
+    color: white;
 
     font-size: 20px;
 
@@ -1035,9 +1148,13 @@ button {
     background:
         var(--accent);
 
-    color: #000;
+    color: black;
 }
 
+
+/* =========================================================
+   PLAYER INFO
+   ========================================================= */
 
 .player-info {
 
@@ -1090,6 +1207,76 @@ button {
 }
 
 
+/* =========================================================
+   LIVE WATCHING
+   ========================================================= */
+
+.watching-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 12px;
+
+    color: #9aaab5;
+
+    font-family:
+        DM Mono,
+        monospace;
+
+    font-size: 11px;
+
+    letter-spacing: .6px;
+}
+
+
+.watching-dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+        #00ff7f;
+
+    box-shadow:
+        0 0 12px
+        rgba(0,255,127,.85);
+
+    animation:
+        watchingPulse 1.3s infinite;
+}
+
+
+@keyframes watchingPulse {
+
+    0%,100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: .45;
+        transform: scale(.75);
+    }
+
+}
+
+
+.watching-count {
+
+    color:
+        #00ffcc;
+
+    font-weight: 700;
+}
+
+
 .share-btn {
 
     height: 40px;
@@ -1104,7 +1291,7 @@ button {
 
     background: transparent;
 
-    color: #fff;
+    color: white;
 
     font-family:
         DM Mono,
@@ -1119,7 +1306,7 @@ button {
     background:
         var(--accent);
 
-    color: #000;
+    color: black;
 }
 
 
@@ -1159,7 +1346,7 @@ button {
 .modal-box {
 
     width:
-        min(430px, 100%);
+        min(430px,100%);
 
     padding: 30px;
 
@@ -1199,7 +1386,7 @@ button {
     background:
         linear-gradient(
             135deg,
-            #fff,
+            white,
             #00ffcc
         );
 
@@ -1244,7 +1431,7 @@ button {
     background:
         rgba(255,255,255,.04);
 
-    color: #fff;
+    color: white;
 
     font-weight: 800;
 }
@@ -1302,8 +1489,12 @@ button {
     }
 
     .channels-grid {
+
         grid-template-columns:
-            repeat(2, minmax(0,1fr));
+            repeat(
+                2,
+                minmax(0,1fr)
+            );
 
         gap: 11px;
     }
@@ -1322,13 +1513,16 @@ button {
     }
 
     .player-info {
+
         flex-direction: column;
+
         align-items: stretch;
     }
 
     .share-btn {
         width: 100%;
     }
+
 }
 
 
@@ -1358,7 +1552,7 @@ button {
 
 
 <!-- =====================================================
-     NAVIGATION
+     NAV
      ===================================================== -->
 
 <header class="nav">
@@ -1451,7 +1645,7 @@ button {
 
 
 <!-- =====================================================
-     SEARCH / FILTER
+     SEARCH
      ===================================================== -->
 
 <div class="tools">
@@ -1524,7 +1718,9 @@ button {
 <div class="separator-line"></div>
 
 
-<!-- CHANNELS -->
+<!-- =====================================================
+     CHANNELS
+     ===================================================== -->
 
 <div
     class="channels-grid"
@@ -1583,7 +1779,6 @@ button {
         <button
             class="fullscreen-btn"
             id="fullscreenBtn"
-            title="Fullscreen"
         >
             ⛶
         </button>
@@ -1604,7 +1799,32 @@ button {
 
 
             <div class="player-subtitle">
-                CRICZONE • HIGH-DEFINITION LIVE STREAM
+
+                CRICZONE •
+                HIGH-DEFINITION LIVE STREAM
+
+            </div>
+
+
+            <!-- LIVE WATCHING -->
+
+            <div class="watching-box">
+
+                <span class="watching-dot"></span>
+
+                <span>
+
+                    <span
+                        class="watching-count"
+                        id="viewerCount"
+                    >
+                        0
+                    </span>
+
+                    WATCHING NOW
+
+                </span>
+
             </div>
 
         </div>
@@ -1671,26 +1891,9 @@ button {
 `;
 
 
-        this.cacheElements();
-
-        this.setupEvents();
-
-        this.setupBackground();
-
-        this.checkUnlock();
-
-        this.fetchChannels();
-
-        this.handleUrl();
-
-    }
-
-
-    /* =====================================================
-       CACHE ELEMENTS
-       ===================================================== */
-
-    cacheElements() {
+        /* =================================================
+           CACHE
+           ================================================= */
 
         this.$ = {
 
@@ -1729,14 +1932,14 @@ button {
                     "#playerTitle"
                 ),
 
+            viewerCount:
+                this.shadow.querySelector(
+                    "#viewerCount"
+                ),
+
             modal:
                 this.shadow.querySelector(
                     "#telegramModal"
-                ),
-
-            fullscreen:
-                this.shadow.querySelector(
-                    "#fullscreenBtn"
                 ),
 
             share:
@@ -1745,6 +1948,15 @@ button {
                 )
 
         };
+
+
+        this.setupEvents();
+
+        this.setupBackground();
+
+        this.fetchChannels();
+
+        this.setupFirebaseConnection();
 
     }
 
@@ -1755,46 +1967,68 @@ button {
 
     setupEvents() {
 
+
         this.shadow
             .querySelector("#brandHome")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.closePlayer();
+
+            };
 
 
         this.shadow
             .querySelector("#backBtn")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.closePlayer();
+
+            };
 
 
         this.shadow
             .querySelector("#joinBtn")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.joinTelegram();
+
+            };
 
 
         this.shadow
             .querySelector("#laterBtn")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.closeModal();
+
+            };
 
 
         this.shadow
             .querySelector("#fullscreenBtn")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.toggleFullscreen();
+
+            };
 
 
         this.shadow
             .querySelector("#shareBtn")
-            .onclick = () =>
+            .onclick = () => {
+
                 this.shareStream();
+
+            };
 
 
         this.$.search.addEventListener(
             "input",
-            () =>
-                this.applyFilters()
+            () => {
+
+                this.applyFilters();
+
+            }
         );
 
 
@@ -1810,11 +2044,14 @@ button {
                             .querySelectorAll(
                                 ".filter-btn"
                             )
-                            .forEach(btn =>
-                                btn.classList.remove(
-                                    "active"
-                                )
-                            );
+                            .forEach(btn => {
+
+                                btn.classList
+                                    .remove(
+                                        "active"
+                                    );
+
+                            });
 
 
                         button.classList.add(
@@ -1836,9 +2073,362 @@ button {
 
         window.addEventListener(
             "popstate",
-            () =>
-                this.handleUrl()
+            () => {
+
+                this.handleUrl();
+
+            }
         );
+
+
+        /* Browser close / refresh */
+
+        window.addEventListener(
+            "pagehide",
+            () => {
+
+                this.leaveViewer();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       FIREBASE CONNECTION
+       ===================================================== */
+
+    setupFirebaseConnection() {
+
+
+        const connectedRef =
+            ref(
+                database,
+                ".info/connected"
+            );
+
+
+        onValue(
+            connectedRef,
+            snapshot => {
+
+                this.firebaseConnected =
+                    snapshot.val() === true;
+
+
+                console.log(
+                    "Firebase connected:",
+                    this.firebaseConnected
+                );
+
+
+                /*
+                 * If a channel is already open
+                 * and connection comes back,
+                 * register viewer again.
+                 */
+
+                if (
+                    this.firebaseConnected &&
+                    this.currentStreamId !== null
+                ) {
+
+                    this.enterViewer(
+                        this.currentStreamId
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ENTER LIVE VIEWER
+       ===================================================== */
+
+    async enterViewer(channelId) {
+
+
+        try {
+
+            /*
+             * Remove previous presence first.
+             */
+
+            await this.leaveViewer();
+
+
+            if (
+                !this.firebaseConnected
+            ) {
+
+                return;
+
+            }
+
+
+            const safeChannelId =
+                this.safeFirebaseKey(
+                    channelId
+                );
+
+
+            /*
+             * Create unique connection.
+             */
+
+            const viewersRef =
+                ref(
+                    database,
+                    "liveViewers/" +
+                    safeChannelId
+                );
+
+
+            this.presenceRef =
+                push(
+                    viewersRef
+                );
+
+
+            /*
+             * IMPORTANT:
+             * Register disconnect cleanup
+             * BEFORE marking user online.
+             */
+
+            this.presenceDisconnect =
+                onDisconnect(
+                    this.presenceRef
+                );
+
+
+            await this.presenceDisconnect
+                .remove();
+
+
+            /*
+             * Mark this viewer online.
+             */
+
+            await set(
+                this.presenceRef,
+                {
+                    online: true,
+
+                    channelId:
+                        String(channelId),
+
+                    joinedAt:
+                        serverTimestamp()
+                }
+            );
+
+
+            /*
+             * Listen to current channel count.
+             */
+
+            this.listenViewerCount(
+                safeChannelId
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Viewer presence error:",
+                error
+            );
+
+            this.viewerCount = 0;
+
+            this.updateViewerCount();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LEAVE VIEWER
+       ===================================================== */
+
+    async leaveViewer() {
+
+
+        try {
+
+            if (
+                this.presenceRef
+            ) {
+
+                await remove(
+                    this.presenceRef
+                );
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Could not remove viewer:",
+                error
+            );
+
+        }
+
+
+        this.presenceRef =
+            null;
+
+
+        this.presenceDisconnect =
+            null;
+
+
+        this.viewerCount =
+            0;
+
+
+        this.updateViewerCount();
+
+
+        /*
+         * Stop previous Firebase listener.
+         */
+
+        if (
+            this.viewerListener
+        ) {
+
+            try {
+
+                this.viewerListener();
+
+            } catch (error) {}
+
+        }
+
+
+        this.viewerListener =
+            null;
+
+    }
+
+
+    /* =====================================================
+       LISTEN VIEWER COUNT
+       ===================================================== */
+
+    listenViewerCount(channelId) {
+
+
+        /*
+         * Remove previous listener.
+         */
+
+        if (
+            this.viewerListener
+        ) {
+
+            try {
+
+                this.viewerListener();
+
+            } catch (error) {}
+
+        }
+
+
+        const viewersRef =
+            ref(
+                database,
+                "liveViewers/" +
+                channelId
+            );
+
+
+        this.viewerListener =
+            onValue(
+                viewersRef,
+                snapshot => {
+
+                    const data =
+                        snapshot.val();
+
+
+                    if (
+                        !data
+                    ) {
+
+                        this.viewerCount =
+                            0;
+
+                    } else {
+
+                        this.viewerCount =
+                            Object.keys(
+                                data
+                            ).length;
+
+                    }
+
+
+                    this.updateViewerCount();
+
+                },
+                error => {
+
+                    console.error(
+                        "Viewer count error:",
+                        error
+                    );
+
+                    this.viewerCount =
+                        0;
+
+                    this.updateViewerCount();
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       UPDATE VIEWER UI
+       ===================================================== */
+
+    updateViewerCount() {
+
+        if (
+            this.$ &&
+            this.$.viewerCount
+        ) {
+
+            this.$.viewerCount.textContent =
+                String(
+                    this.viewerCount
+                );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SAFE FIREBASE KEY
+       ===================================================== */
+
+    safeFirebaseKey(value) {
+
+        return String(value)
+            .replace(/[.#$[\]/]/g, "_");
 
     }
 
@@ -1849,18 +2439,22 @@ button {
 
     async fetchChannels() {
 
+
         try {
 
             const response =
                 await fetch(
                     window.CricConfig.sourceUrl,
                     {
-                        cache: "no-store"
+                        cache:
+                            "no-store"
                     }
                 );
 
 
-            if (!response.ok) {
+            if (
+                !response.ok
+            ) {
 
                 throw new Error(
                     "HTTP " +
@@ -1874,7 +2468,9 @@ button {
                 await response.json();
 
 
-            if (Array.isArray(data)) {
+            if (
+                Array.isArray(data)
+            ) {
 
                 this.masterChannels =
                     data;
@@ -1882,10 +2478,15 @@ button {
             } else {
 
                 this.masterChannels =
+
                     data.iframes ||
+
                     data.channels ||
+
                     data.streams ||
+
                     data.data ||
+
                     [];
 
             }
@@ -1897,7 +2498,8 @@ button {
                 )
             ) {
 
-                this.masterChannels = [];
+                this.masterChannels =
+                    [];
 
             }
 
@@ -1907,6 +2509,7 @@ button {
             this.applyFilters();
 
             this.handleUrl();
+
 
         } catch (error) {
 
@@ -1943,6 +2546,7 @@ button {
 
     renderChannels() {
 
+
         this.$.grid.innerHTML = "";
 
 
@@ -1966,6 +2570,7 @@ button {
         this.masterChannels.forEach(
             (channel, index) => {
 
+
                 const id =
                     channel.id !== undefined
                         ? channel.id
@@ -1973,9 +2578,13 @@ button {
 
 
                 const title =
+
                     channel.title ||
+
                     channel.name ||
+
                     channel.channel ||
+
                     `Channel ${index + 1}`;
 
 
@@ -1999,11 +2608,9 @@ button {
 
 
                 /*
-                   IMPORTANT:
-                   NO IMAGE
-                   NO LOGO
-                   NO IMG TAG
-                */
+                 * NO LOGO
+                 * NO IMAGE
+                 */
 
                 card.innerHTML = `
 
@@ -2031,8 +2638,13 @@ button {
                 `;
 
 
-                card.onclick = () =>
-                    this.openPlayer(id);
+                card.onclick = () => {
+
+                    this.openPlayer(
+                        id
+                    );
+
+                };
 
 
                 this.$.grid.appendChild(
@@ -2046,10 +2658,11 @@ button {
 
 
     /* =====================================================
-       SEARCH + FILTER
+       FILTER
        ===================================================== */
 
     applyFilters() {
+
 
         const query =
             (
@@ -2061,8 +2674,7 @@ button {
 
 
         const filter =
-            this.currentFilter ||
-            "all";
+            this.currentFilter;
 
 
         this.shadow
@@ -2070,6 +2682,7 @@ button {
                 ".channel-card"
             )
             .forEach(card => {
+
 
                 const title =
                     card.dataset.title ||
@@ -2087,64 +2700,73 @@ button {
                     true;
 
 
-                switch(filter) {
+                if (
+                    filter === "sony"
+                ) {
 
-                    case "sony":
+                    filterMatch =
+                        title.includes(
+                            "sony"
+                        );
 
-                        filterMatch =
-                            title.includes(
-                                "sony"
-                            );
-
-                        break;
-
-
-                    case "star":
-
-                        filterMatch =
-                            title.includes(
-                                "star"
-                            );
-
-                        break;
+                }
 
 
-                    case "sports":
+                if (
+                    filter === "star"
+                ) {
 
-                        filterMatch =
-                            title.includes(
-                                "sports"
-                            );
+                    filterMatch =
+                        title.includes(
+                            "star"
+                        );
 
-                        break;
-
-
-                    case "cricket":
-
-                        filterMatch =
-                            title.includes(
-                                "cricket"
-                            );
-
-                        break;
+                }
 
 
-                    case "hd":
+                if (
+                    filter === "sports"
+                ) {
 
-                        filterMatch =
-                            title.includes(
-                                "hd"
-                            );
+                    filterMatch =
+                        title.includes(
+                            "sports"
+                        );
 
-                        break;
+                }
+
+
+                if (
+                    filter === "cricket"
+                ) {
+
+                    filterMatch =
+                        title.includes(
+                            "cricket"
+                        );
+
+                }
+
+
+                if (
+                    filter === "hd"
+                ) {
+
+                    filterMatch =
+                        title.includes(
+                            "hd"
+                        );
 
                 }
 
 
                 card.style.display =
+
                     searchMatch &&
                     filterMatch
+
                         ? ""
+
                         : "none";
 
             });
@@ -2156,7 +2778,8 @@ button {
        OPEN PLAYER
        ===================================================== */
 
-    openPlayer(identifier) {
+    async openPlayer(identifier) {
+
 
         const target =
             this.masterChannels.find(
@@ -2167,6 +2790,7 @@ button {
                             ? channel.id
                             : index;
 
+
                     return String(id) ===
                         String(identifier);
 
@@ -2174,16 +2798,20 @@ button {
             );
 
 
-        if (!target) {
-
-            console.warn(
-                "Channel not found:",
-                identifier
-            );
+        if (
+            !target
+        ) {
 
             return;
 
         }
+
+
+        /*
+         * Leave previous channel.
+         */
+
+        await this.leaveViewer();
 
 
         let streamUrl =
@@ -2204,13 +2832,17 @@ button {
 
 
         /*
-         * Fallback used by your existing feed
+         * Existing fallback.
          */
 
-        if (!streamUrl) {
+        if (
+            !streamUrl
+        ) {
 
             streamUrl =
+
                 "https://sonucdn-v2.pages.dev/star.html?id=" +
+
                 encodeURIComponent(
                     target.id !== undefined
                         ? target.id
@@ -2226,15 +2858,23 @@ button {
                 : identifier;
 
 
-        const title =
+        this.currentChannelTitle =
+
             target.title ||
+
             target.name ||
+
             target.channel ||
+
             "Live Stream";
 
 
         this.$.playerTitle.textContent =
-            title;
+            this.currentChannelTitle;
+
+
+        this.$.viewerCount.textContent =
+            "0";
 
 
         this.$.player.src =
@@ -2264,6 +2904,16 @@ button {
         );
 
 
+        /*
+         * Register this user as
+         * watching this channel.
+         */
+
+        this.enterViewer(
+            this.currentStreamId
+        );
+
+
         this.startPreviewTimer();
 
     }
@@ -2273,9 +2923,13 @@ button {
        CLOSE PLAYER
        ===================================================== */
 
-    closePlayer() {
+    async closePlayer() {
+
 
         this.stopPreviewTimer();
+
+
+        await this.leaveViewer();
 
 
         this.$.player.src =
@@ -2294,6 +2948,10 @@ button {
 
         this.currentStreamId =
             null;
+
+
+        this.currentChannelTitle =
+            "";
 
 
         if (
@@ -2317,13 +2975,16 @@ button {
 
     handleUrl() {
 
+
         const id =
             new URLSearchParams(
                 window.location.search
             ).get("id");
 
 
-        if (!id) {
+        if (
+            !id
+        ) {
 
             return;
 
@@ -2334,7 +2995,9 @@ button {
             this.masterChannels.length
         ) {
 
-            this.openPlayer(id);
+            this.openPlayer(
+                id
+            );
 
         }
 
@@ -2342,15 +3005,18 @@ button {
 
 
     /* =====================================================
-       PREVIEW TIMER
+       PREVIEW
        ===================================================== */
 
     startPreviewTimer() {
 
+
         this.stopPreviewTimer();
 
 
-        if (this.isUnlocked) {
+        if (
+            this.isUnlocked
+        ) {
 
             return;
 
@@ -2364,14 +3030,17 @@ button {
                     this.showTelegramModal();
 
                 },
+
                 window.CricConfig
                     .previewDuration
+
             );
 
     }
 
 
     stopPreviewTimer() {
+
 
         if (
             this.lockTimer
@@ -2390,12 +3059,15 @@ button {
 
 
     /* =====================================================
-       TELEGRAM MODAL
+       TELEGRAM
        ===================================================== */
 
     showTelegramModal() {
 
-        if (this.isUnlocked) {
+
+        if (
+            this.isUnlocked
+        ) {
 
             return;
 
@@ -2409,17 +3081,12 @@ button {
 
         try {
 
-            if (
-                this.$.player.contentWindow
-            ) {
-
-                this.$.player.contentWindow
-                    .postMessage(
-                        "criczone-force-pause",
-                        "*"
-                    );
-
-            }
+            this.$.player
+                .contentWindow
+                .postMessage(
+                    "criczone-force-pause",
+                    "*"
+                );
 
         } catch (error) {}
 
@@ -2437,9 +3104,12 @@ button {
 
     joinTelegram() {
 
+
         localStorage.setItem(
             "criczone_unlocked_time",
-            String(Date.now())
+            String(
+                Date.now()
+            )
         );
 
 
@@ -2459,61 +3129,14 @@ button {
 
         try {
 
-            if (
-                this.$.player.contentWindow
-            ) {
-
-                this.$.player.contentWindow
-                    .postMessage(
-                        "criczone-force-play",
-                        "*"
-                    );
-
-            }
+            this.$.player
+                .contentWindow
+                .postMessage(
+                    "criczone-force-play",
+                    "*"
+                );
 
         } catch (error) {}
-
-    }
-
-
-    /* =====================================================
-       UNLOCK CHECK
-       ===================================================== */
-
-    checkUnlock() {
-
-        const saved =
-            localStorage.getItem(
-                "criczone_unlocked_time"
-            );
-
-
-        if (!saved) {
-
-            return;
-
-        }
-
-
-        const timestamp =
-            Number(saved);
-
-
-        if (
-            Date.now() - timestamp <
-            24 * 60 * 60 * 1000
-        ) {
-
-            this.isUnlocked =
-                true;
-
-        } else {
-
-            localStorage.removeItem(
-                "criczone_unlocked_time"
-            );
-
-        }
 
     }
 
@@ -2523,6 +3146,7 @@ button {
        ===================================================== */
 
     async toggleFullscreen() {
+
 
         try {
 
@@ -2543,7 +3167,6 @@ button {
         } catch (error) {
 
             console.error(
-                "Fullscreen error:",
                 error
             );
 
@@ -2557,6 +3180,7 @@ button {
        ===================================================== */
 
     async shareStream() {
+
 
         try {
 
@@ -2578,38 +3202,36 @@ button {
 
                 });
 
-                return;
+            } else {
 
-            }
+                await navigator.clipboard
+                    .writeText(
+                        window.location.href
+                    );
 
 
-            await navigator.clipboard
-                .writeText(
-                    window.location.href
+                const old =
+                    this.$.share
+                        .textContent;
+
+
+                this.$.share
+                    .textContent =
+                    "COPIED!";
+
+
+                setTimeout(
+                    () => {
+
+                        this.$.share
+                            .textContent =
+                            old;
+
+                    },
+                    1800
                 );
 
-
-            const button =
-                this.$.share;
-
-
-            const oldText =
-                button.textContent;
-
-
-            button.textContent =
-                "COPIED!";
-
-
-            setTimeout(
-                () => {
-
-                    button.textContent =
-                        oldText;
-
-                },
-                1800
-            );
+            }
 
         } catch (error) {}
 
@@ -2617,10 +3239,11 @@ button {
 
 
     /* =====================================================
-       BACKGROUND ANIMATION
+       BACKGROUND
        ===================================================== */
 
     setupBackground() {
+
 
         const canvas =
             this.shadow.querySelector(
@@ -2629,7 +3252,9 @@ button {
 
 
         const ctx =
-            canvas.getContext("2d");
+            canvas.getContext(
+                "2d"
+            );
 
 
         const resize = () => {
@@ -2690,6 +3315,7 @@ button {
 
         const draw = () => {
 
+
             ctx.clearRect(
                 0,
                 0,
@@ -2700,6 +3326,7 @@ button {
 
             this.stars.forEach(
                 star => {
+
 
                     ctx.strokeStyle =
                         `rgba(
@@ -2744,6 +3371,7 @@ button {
                         star.x =
                             -star.length;
 
+
                         star.y =
                             Math.random() *
                             canvas.height;
@@ -2772,6 +3400,7 @@ button {
        ===================================================== */
 
     escapeHtml(value) {
+
 
         return String(value)
 
@@ -2806,7 +3435,7 @@ button {
 
 
 /* =========================================================
-   IMPORTANT FIX
+   REGISTER
    ========================================================= */
 
 customElements.define(
@@ -2814,14 +3443,16 @@ customElements.define(
     CriczoneUI
 );
 
+
+/* =========================================================
+   DEBUG
+   ========================================================= */
+
+console.log(
+    "CRICZONE Firebase Live Watching initialized"
+);
+
 </script>
-
-
-<!-- =====================================================
-     CRICZONE
-     ===================================================== -->
-
-<criczone-ui></criczone-ui>
 
 </body>
 </html>
