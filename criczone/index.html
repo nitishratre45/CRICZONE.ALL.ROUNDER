@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#050a0f">
 
-    <title>CRICZONE LIVE — Sports Hub</title>
+<title>CRICZONE LIVE — Sports Hub</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
 </head>
 
-<body style="background-color:#050a0f;color:#fff;margin:0;padding:0;overflow-x:hidden;">
+<body>
 
 <script>
+/* =========================================================
+   CRICZONE CONFIG
+   ========================================================= */
 
 window.CricConfig = {
 
@@ -25,16 +29,14 @@ window.CricConfig = {
         "https://t.me/+MueCDjlpoS8yNmJl",
 
     previewDuration:
-        10000,
-
-    starLogo:
-        "https://imgs.search.brave.com/wwDVnaXzqoCR-Bho0gu5YU3tfThVvzb-hpdYLapatZE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9sb2dvZGl4LmNvbS9sb2dvLzk0Nzc3Ni5qcGc",
-
-    sonyLogo:
-        "https://imgs.search.brave.com/bXKRGBbwSsMRgzwLUP1oIsYXAltL3qP5Zbfv8D5PsNY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlhLm9yZy93aWtpcGVkaWEvY29tbW9ucy8yLzIzL1NvbnlfU3BvcnRzX05ldHdvcmtfTG9nby5wbmc"
+        10000
 
 };
 
+
+/* =========================================================
+   CRICZONE UI
+   ========================================================= */
 
 class CriczoneUI extends HTMLElement {
 
@@ -42,10 +44,9 @@ class CriczoneUI extends HTMLElement {
 
         super();
 
-        this.shadow =
-            this.attachShadow({
-                mode: "closed"
-            });
+        this.attachShadow({
+            mode: "closed"
+        });
 
         this.masterChannels = [];
 
@@ -55,188 +56,145 @@ class CriczoneUI extends HTMLElement {
 
         this.lockTimer = null;
 
-        this.stars = [];
-
         this.animationFrameId = null;
 
-        this.laterCount = 0;
+        this.stars = [];
 
         this.initialPendingId =
             new URLSearchParams(
                 window.location.search
             ).get("id");
 
+    }
+
+
+    /* =====================================================
+       CONNECTED
+       ===================================================== */
+
+    connectedCallback() {
 
         this.shadow.innerHTML = `
 
 <style>
 
-:root {
-
-    --primary-rgb: 0, 255, 204;
-
-    --accent:
-        rgb(var(--primary-rgb));
-
-    --accent-glow:
-        rgba(var(--primary-rgb), 0.45);
-
-    --accent-glow-intense:
-        rgba(var(--primary-rgb), 0.85);
-
-    --bg-pure:
-        #050a0f;
-
-    --bg-card:
-        rgba(12, 18, 28, 0.88);
-
-    --border-glass:
-        rgba(0, 255, 204, 0.18);
-
-    --border-glass-bright:
-        rgba(0, 255, 204, 0.4);
-
-    --heading-dynamic:
-        #ffffff;
-
-    --text-main:
-        #e0f2f1;
-
-    --text-muted:
-        #78909c;
-
-    --text-dark:
-        #455a64;
-
-    --btn-main-bg:
-        #ffffff;
-
-    --btn-main-text:
-        #050a0f;
-
-    --player-shadow:
-        0 45px 120px -20px
-        rgba(0, 255, 204, 0.25);
-}
-
-
-:host([data-theme="light"]) {
-
-    --primary-rgb:
-        0, 200, 180;
-
-    --accent:
-        #00c8b4;
-
-    --accent-glow:
-        rgba(0, 200, 180, 0.35);
-
-    --bg-pure:
-        #f0f7f7;
-
-    --bg-card:
-        rgba(255, 255, 255, 0.95);
-
-    --border-glass:
-        rgba(0, 0, 0, 0.1);
-
-    --border-glass-bright:
-        rgba(0, 0, 0, 0.25);
-
-    --heading-dynamic:
-        #000000;
-
-    --text-main:
-        #0a0f12;
-
-    --text-muted:
-        #546e7a;
-
-    --text-dark:
-        #90a4ae;
-
-    --btn-main-bg:
-        #091015;
-
-    --btn-main-text:
-        #ffffff;
-}
-
-
-*,
-*::before,
-*::after {
-
-    box-sizing: border-box;
-
-    margin: 0;
-
-    padding: 0;
-}
-
+/* =========================================================
+   ROOT
+   ========================================================= */
 
 :host {
 
-    display: block;
+    --accent: #00ffcc;
+    --accent2: #0096ff;
 
-    width: 100%;
+    --bg: #050a0f;
+
+    --card:
+        rgba(8, 17, 27, .82);
+
+    --border:
+        rgba(0, 255, 204, .20);
+
+    --border-hover:
+        rgba(0, 255, 204, .70);
+
+    --text:
+        #f5f7fa;
+
+    --muted:
+        #8a9aa8;
+
+    display: block;
 
     min-height: 100vh;
 
     background:
-        var(--bg-pure);
+        var(--bg);
 
     color:
-        var(--text-main);
+        var(--text);
 
     font-family:
-        "Manrope",
+        Manrope,
         sans-serif;
 
-    position: relative;
+    overflow-x: hidden;
 }
 
 
-canvas#warpGridCanvas {
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+button,
+input {
+    font: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+#bgCanvas {
 
     position: fixed;
 
     inset: 0;
 
-    width: 100vw;
+    width: 100%;
 
-    height: 100vh;
-
-    pointer-events: none;
+    height: 100%;
 
     z-index: 0;
 
-    opacity: 0.85;
+    pointer-events: none;
+
+    opacity: .75;
 }
 
 
-.container {
+.page {
+
+    position: relative;
+
+    z-index: 2;
 
     width:
         min(1500px, 92vw);
 
     margin:
-        0 auto;
+        auto;
 
     padding:
-        0 0
-        clamp(40px, 6vw, 100px);
-
-    position: relative;
-
-    z-index: 10;
+        0 0 70px;
 }
 
 
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
 .nav {
 
-    height:
-        clamp(64px, 8.5vh, 96px);
+    height: 82px;
 
     display: flex;
 
@@ -244,43 +202,48 @@ canvas#warpGridCanvas {
 
     justify-content: space-between;
 
-    position: relative;
-
-    z-index: 50;
+    border-bottom:
+        1px solid
+        rgba(0,255,204,.10);
 }
 
 
 .brand {
 
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    text-decoration: none;
-
-    cursor: pointer;
-}
-
-
-.brand-title {
+    color: white;
 
     font-family:
-        "Space Grotesk",
+        Space Grotesk,
         sans-serif;
 
     font-size:
-        clamp(20px, 2.2vw, 28px);
+        clamp(25px, 3vw, 38px);
 
     font-weight: 900;
 
-    letter-spacing: 1px;
+    letter-spacing:
+        -1.5px;
 
-    text-transform: uppercase;
+    cursor: pointer;
 
-    color:
-        var(--heading-dynamic);
+    user-select: none;
+}
+
+
+.brand span {
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff,
+            #00ffcc,
+            #0096ff
+        );
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color:
+        transparent;
 }
 
 
@@ -290,247 +253,214 @@ canvas#warpGridCanvas {
 
     align-items: center;
 
-    gap: 12px;
+    gap: 10px;
 }
 
 
-.live-pill-badge {
+.live-pill {
 
-    height: 38px;
+    height: 40px;
 
     padding:
-        0 14px;
+        0 16px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 6px;
-
-    background:
-        var(--bg-card);
+    gap: 8px;
 
     border:
         1px solid
-        var(--border-glass);
-
-    backdrop-filter:
-        blur(16px);
+        rgba(0,255,204,.35);
 
     border-radius:
-        100px;
+        999px;
+
+    background:
+        rgba(5,12,18,.75);
 
     color:
-        var(--text-muted);
+        #fff;
 
     font-family:
-        "DM Mono",
+        DM Mono,
         monospace;
 
-    font-size: 9px;
+    font-size:
+        11px;
 
-    letter-spacing: 1.2px;
+    letter-spacing:
+        1px;
 
-    text-transform: uppercase;
+    backdrop-filter:
+        blur(15px);
 }
 
 
-.pulsing-live-dot {
+.live-dot {
 
-    width: 6px;
+    width: 7px;
 
-    height: 6px;
+    height: 7px;
 
-    background:
-        #ff2a2a;
+    background: #ff3030;
 
-    border-radius:
-        50%;
+    border-radius: 50%;
 
     box-shadow:
         0 0 12px
-        #ff2a2a;
+        #ff3030;
 
     animation:
-        liveSignal 1.5s
-        ease-in-out
-        infinite;
+        pulse 1.4s infinite;
 }
 
 
-@keyframes liveSignal {
+@keyframes pulse {
 
-    0%,
-    100% {
-
+    0%,100% {
         opacity: 1;
-
-        transform:
-            scale(1);
+        transform: scale(1);
     }
 
     50% {
-
-        opacity: 0.35;
-
-        transform:
-            scale(0.8);
+        opacity: .35;
+        transform: scale(.75);
     }
+
 }
 
 
-.nav-join-btn {
+.telegram-btn {
 
-    height: 38px;
+    height: 40px;
 
     padding:
-        0 20px;
+        0 18px;
 
-    display: inline-flex;
+    display: flex;
 
     align-items: center;
 
     justify-content: center;
 
     border-radius:
-        100px;
+        999px;
 
     background:
-        var(--btn-main-bg);
+        linear-gradient(
+            135deg,
+            #00ffcc,
+            #0096ff
+        );
 
     color:
-        var(--btn-main-text);
-
-    text-decoration: none;
+        #001014;
 
     font-family:
-        "Space Grotesk",
+        Space Grotesk,
         sans-serif;
 
-    font-size: 12px;
+    font-weight:
+        900;
 
-    font-weight: 800;
+    font-size:
+        11px;
 
-    letter-spacing: 1px;
+    letter-spacing:
+        .7px;
 
     transition:
-        all 0.3s
-        cubic-bezier(
-            0.16,
-            1,
-            0.3,
-            1
-        );
+        .25s ease;
 }
 
 
-.nav-join-btn:hover {
-
-    background:
-        var(--accent);
-
-    color:
-        #000;
-
-    box-shadow:
-        0 0 20px
-        var(--accent-glow);
+.telegram-btn:hover {
 
     transform:
         translateY(-2px);
+
+    box-shadow:
+        0 0 30px
+        rgba(0,255,204,.30);
 }
 
+
+/* =========================================================
+   HERO
+   ========================================================= */
 
 .hero {
 
-    position: relative;
-
     padding:
-        clamp(20px, 3.5vw, 56px)
+        clamp(50px, 7vw, 95px)
         0
-        clamp(14px, 2.2vw, 36px);
+        35px;
 }
 
 
-.hero-tag {
-
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
+.hero-label {
 
     color:
         var(--accent);
 
-    font-size: 14px;
+    font-family:
+        Space Grotesk,
+        sans-serif;
 
-    font-weight: 800;
+    font-size:
+        12px;
 
-    letter-spacing: 3px;
+    font-weight:
+        800;
+
+    letter-spacing:
+        3px;
 
     text-transform:
         uppercase;
+
+    margin-bottom:
+        12px;
 }
 
 
-.hero-tag::before {
-
-    content: "";
-
-    width: 28px;
-
-    height: 2px;
-
-    background:
-        var(--accent);
-
-    border-radius: 2px;
-}
-
-
-.hero-headline {
-
-    margin-top: 12px;
+.hero h1 {
 
     font-family:
-        "Syne",
+        Syne,
         sans-serif;
 
     font-size:
         clamp(
-            36px,
-            7.5vw,
-            92px
+            65px,
+            11vw,
+            155px
         );
 
-    line-height: 0.88;
+    line-height:
+        .78;
 
     letter-spacing:
-        -0.06em;
+        -7px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
     text-transform:
         uppercase;
 }
 
 
-.hero-headline
-.accent-txt {
-
-    color:
-        var(--accent);
+.hero h1 .gradient {
 
     background:
         linear-gradient(
             135deg,
             #00ffcc 0%,
-            #0096ff 100%
+            #00c8ff 48%,
+            #007bff 100%
         );
 
     -webkit-background-clip:
@@ -541,74 +471,241 @@ canvas#warpGridCanvas {
 }
 
 
-.hero-details {
-
-    margin-top: 16px;
+.hero-info {
 
     display: flex;
 
-    align-items: center;
-
     flex-wrap: wrap;
 
-    gap: 10px;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top:
+        22px;
 
     color:
-        var(--text-muted);
+        #aab7c2;
 
     font-family:
-        "DM Mono",
+        DM Mono,
         monospace;
 
-    font-size: 9px;
+    font-size:
+        10px;
 
-    letter-spacing: 1.4px;
+    letter-spacing:
+        1.5px;
 
     text-transform:
         uppercase;
 }
 
 
-.hero-details b {
+.hero-info strong {
 
     color:
-        var(--text-main);
-
-    font-weight: 600;
+        #fff;
 }
 
 
-.meta-separator {
+.dot-separator {
 
-    width: 3px;
+    width: 4px;
 
-    height: 3px;
-
-    border-radius:
-        50%;
+    height: 4px;
 
     background:
-        var(--text-dark);
+        #53636f;
+
+    border-radius: 50%;
 }
 
 
-.track-separator-beam {
+/* =========================================================
+   SEARCH + FILTER
+   ========================================================= */
+
+.tools {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin:
+        10px 0 25px;
+
+    flex-wrap: wrap;
+}
+
+
+.search-box {
+
+    flex: 1;
+
+    min-width: 240px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    border:
+        1px solid
+        rgba(0,255,204,.35);
+
+    border-radius:
+        14px;
+
+    background:
+        rgba(4,14,22,.75);
+
+    backdrop-filter:
+        blur(15px);
+
+    padding:
+        0 16px;
+}
+
+
+.search-icon {
+
+    color:
+        var(--accent);
+
+    font-size:
+        19px;
+
+    margin-right:
+        10px;
+}
+
+
+.search-box input {
 
     width: 100%;
 
+    border: 0;
+
+    outline: 0;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-size: 14px;
+}
+
+
+.search-box input::placeholder {
+    color: #657784;
+}
+
+
+.filters {
+
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+
+.filter-btn {
+
+    height: 42px;
+
+    padding:
+        0 18px;
+
+    border:
+        1px solid
+        rgba(100,130,160,.25);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(8,17,27,.75);
+
+    color:
+        #c8d2d9;
+
+    font-family:
+        Space Grotesk,
+        sans-serif;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    transition:
+        .2s ease;
+}
+
+
+.filter-btn:hover {
+
+    border-color:
+        var(--accent);
+
+    color:
+        #fff;
+}
+
+
+.filter-btn.active {
+
+    color:
+        #001014;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffcc,
+            #00bfff
+        );
+
+    border-color:
+        transparent;
+
+    box-shadow:
+        0 0 20px
+        rgba(0,255,204,.18);
+}
+
+
+/* =========================================================
+   SEPARATOR
+   ========================================================= */
+
+.separator {
+
     height: 1px;
+
+    width: 100%;
 
     background:
         linear-gradient(
             90deg,
-            var(--accent) 0%,
-            var(--border-glass) 45%,
-            transparent 100%
+            var(--accent),
+            rgba(0,255,204,.15),
+            transparent
         );
 
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
+
+/* =========================================================
+   CHANNEL GRID
+   ========================================================= */
 
 .channels-grid {
 
@@ -618,386 +715,148 @@ canvas#warpGridCanvas {
         repeat(
             auto-fill,
             minmax(
-                260px,
+                250px,
                 1fr
             )
         );
 
-    gap: 24px;
-
-    margin-top: 24px;
+    gap: 18px;
 }
 
 
+/* =========================================================
+   TEXT ONLY CARD
+   ========================================================= */
+
 .channel-card {
 
+    min-height: 112px;
+
+    padding:
+        22px;
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
     background:
-        var(--bg-card);
-
-    border-radius:
-        18px;
-
-    overflow:
-        hidden;
-
-    cursor:
-        pointer;
+        linear-gradient(
+            135deg,
+            rgba(10,20,31,.94),
+            rgba(4,11,18,.90)
+        );
 
     border:
         1px solid
-        var(--border-glass);
+        rgba(70,110,140,.30);
 
-    transition:
-        all 0.4s
-        cubic-bezier(
-            0.16,
-            1,
-            0.3,
-            1
-        );
+    border-radius:
+        16px;
 
-    position:
-        relative;
+    cursor: pointer;
 
-    display:
-        flex;
-
-    flex-direction:
-        column;
+    overflow: hidden;
 
     backdrop-filter:
+        blur(18px);
+
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+
+.channel-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 35%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            transparent
+        );
+
+    opacity: .8;
+}
+
+
+.channel-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: -40px;
+
+    bottom: -55px;
+
+    width: 130px;
+
+    height: 130px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,255,204,.04);
+
+    filter:
         blur(20px);
+
+    pointer-events: none;
 }
 
 
 .channel-card:hover {
 
     transform:
-        translateY(-8px)
-        scale(1.02);
+        translateY(-5px);
 
     border-color:
-        var(--accent);
+        var(--border-hover);
 
     box-shadow:
-        0 25px 50px -12px
-        rgba(0, 0, 0, 0.7),
+        0 18px 45px
+        rgba(0,0,0,.45),
 
         0 0 25px
-        var(--accent-glow);
-}
-
-
-.card-thumbnail {
-
-    width: 100%;
-
-    height: 155px;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(
-                12,
-                22,
-                35,
-                0.9
-            ) 0%,
-
-            rgba(
-                3,
-                7,
-                12,
-                0.98
-            ) 100%
-        );
-
-    background-size:
-        cover;
-
-    background-position:
-        center;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    position:
-        relative;
-
-    overflow:
-        hidden;
-
-    border-bottom:
-        1px solid
-        var(--border-glass);
-}
-
-
-.channel-logo-box {
-
-    width: 82px;
-
-    height: 82px;
-
-    border-radius: 18px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.96
-        );
-
-    border:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.25
-        );
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    padding: 10px;
-
-    box-shadow:
-        0 10px 30px
-        rgba(
-            0,
-            0,
-            0,
-            0.5
-        );
-
-    z-index: 2;
-
-    transition:
-        transform 0.3s ease;
-}
-
-
-.channel-card:hover
-.channel-logo-box {
-
-    transform:
-        scale(1.1)
-        rotate(3deg);
-}
-
-
-.channel-logo {
-
-    display: block;
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: contain;
-
-    border-radius: 10px;
-}
-
-
-.channel-badge-box {
-
-    width: 56px;
-
-    height: 56px;
-
-    border-radius: 16px;
-
-    background:
-        rgba(
-            15,
-            25,
-            40,
-            0.9
-        );
-
-    border:
-        1px solid
-        var(--border-glass-bright);
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    box-shadow:
-        0 8px 25px
-        rgba(
-            0,
-            0,
-            0,
-            0.5
-        );
-
-    z-index: 2;
-
-    transition:
-        transform 0.3s ease;
-}
-
-
-.channel-card:hover
-.channel-badge-box {
-
-    transform:
-        scale(1.1)
-        rotate(5deg);
-}
-
-
-.channel-badge-box svg {
-
-    width: 26px;
-
-    height: 26px;
-
-    fill:
-        var(--accent);
-}
-
-
-.card-network-tag {
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size: 13px;
-
-    font-weight: 800;
-
-    color: #fff;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing: 2px;
-
-    margin-top: 10px;
-
-    z-index: 2;
-}
-
-
-.play-overlay-icon {
-
-    position: absolute;
-
-    width: 52px;
-
-    height: 52px;
-
-    background:
-        var(--accent);
-
-    border-radius:
-        50%;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    opacity: 0;
-
-    transform:
-        scale(0.6);
-
-    transition:
-        all 0.35s
-        cubic-bezier(
-            0.16,
-            1,
-            0.3,
-            1
-        );
-
-    box-shadow:
-        0 10px 30px
-        var(--accent-glow-intense);
-
-    z-index: 5;
-}
-
-
-.channel-card:hover
-.play-overlay-icon {
-
-    opacity: 1;
-
-    transform:
-        scale(1);
-}
-
-
-.play-overlay-icon svg {
-
-    width: 22px;
-
-    height: 22px;
-
-    fill: #000;
-
-    margin-left: 3px;
-}
-
-
-.card-body {
-
-    padding: 18px;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    gap: 8px;
+        rgba(0,255,204,.08);
 }
 
 
 .card-title {
 
+    position: relative;
+
+    z-index: 2;
+
     font-family:
-        "Space Grotesk",
+        Space Grotesk,
         sans-serif;
 
-    font-size: 16px;
+    font-size:
+        16px;
 
-    font-weight: 700;
+    font-weight:
+        800;
 
     color:
-        var(--text-main);
+        #f5f7fa;
 
     white-space:
         nowrap;
@@ -1007,370 +866,17 @@ canvas#warpGridCanvas {
 
     text-overflow:
         ellipsis;
+
+    margin-bottom:
+        14px;
 }
 
 
 .card-meta {
 
-    font-size: 11px;
-
-    color:
-        var(--text-muted);
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-    font-family:
-        "DM Mono",
-        monospace;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing: 1px;
-}
-
-
-.view-section {
-
-    display:
-        none;
-}
-
-
-.view-section.active {
-
-    display:
-        block;
-
-    animation:
-        fadeInView
-        0.4s
-        ease
-        forwards;
-}
-
-
-@keyframes fadeInView {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(10px);
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0);
-    }
-}
-
-
-.player-top-nav {
-
-    margin-bottom:
-        16px;
-}
-
-
-.back-home-btn {
-
-    background:
-        var(--bg-card);
-
-    border:
-        1px solid
-        var(--border-glass-bright);
-
-    color:
-        var(--text-main);
-
-    padding:
-        10px 22px;
-
-    border-radius:
-        100px;
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size: 13px;
-
-    font-weight: 700;
-
-    cursor:
-        pointer;
-
-    display:
-        inline-flex;
-
-    align-items:
-        center;
-
-    gap: 8px;
-
-    backdrop-filter:
-        blur(16px);
-
-    transition:
-        all 0.3s ease;
-}
-
-
-.back-home-btn:hover {
-
-    background:
-        var(--accent);
-
-    color:
-        #000;
-
-    box-shadow:
-        0 0 25px
-        var(--accent-glow);
-
-    transform:
-        translateX(-4px);
-}
-
-
-.player-rig-box {
-
-    width: 100%;
-
-    aspect-ratio:
-        16 / 9;
-
-    position:
-        relative;
-
-    background:
-        #000;
-
-    overflow:
-        hidden;
-
-    border-radius:
-        24px;
-
-    border:
-        1px solid
-        var(--border-glass-bright);
-
-    box-shadow:
-        var(--player-shadow);
-
-    isolation:
-        isolate;
-}
-
-
-.stream-loading-overlay {
-
-    position: absolute;
-
-    inset: 0;
-
-    z-index: 10;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 16px;
-
-    background: #000;
-
-    color: var(--text-muted);
-
-    font-family: "DM Mono", monospace;
-
-    font-size: 12px;
-
-    letter-spacing: 1px;
-
-    text-transform: uppercase;
-}
-
-
-.stream-loading-overlay.hidden {
-
-    display: none;
-}
-
-
-iframe#player {
-
-    width: 100%;
-
-    height: 100%;
-
-    border: none;
-
-    display: block;
-
     position: relative;
 
-    z-index: 5;
-
-    object-fit: cover;
-}
-
-
-.player-rig-box.fs-active {
-
-    position:
-        fixed !important;
-
-    inset:
-        0 !important;
-
-    width:
-        100vw !important;
-
-    height:
-        100vh !important;
-
-    z-index:
-        9999999 !important;
-
-    border-radius:
-        0 !important;
-
-    border:
-        none !important;
-
-    background:
-        #000 !important;
-
-    display:
-        flex !important;
-
-    align-items:
-        center !important;
-
-    justify-content:
-        center !important;
-}
-
-
-.player-rig-box.fs-active
-iframe#player {
-
-    width:
-        100vw !important;
-
-    height:
-        100vh !important;
-
-    object-fit:
-        fill !important;
-}
-
-
-.blended-fs-btn {
-
-    position:
-        absolute;
-
-    bottom:
-        14px;
-
-    right:
-        14px;
-
-    z-index:
-        30;
-
-    width:
-        38px;
-
-    height:
-        38px;
-
-    background:
-        rgba(
-            20,
-            20,
-            20,
-            0.65
-        );
-
-    border:
-        1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.15
-        );
-
-    border-radius:
-        4px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    cursor:
-        pointer;
-
-    transition:
-        all 0.2s ease;
-
-    backdrop-filter:
-        blur(4px);
-}
-
-
-.blended-fs-btn:hover {
-
-    background:
-        var(--accent);
-
-    border-color:
-        var(--accent);
-
-    transform:
-        scale(1.08);
-}
-
-
-.blended-fs-btn svg {
-
-    width:
-        16px;
-
-    height:
-        16px;
-
-    fill:
-        #fff;
-}
-
-
-.player-meta-bar {
+    z-index: 2;
 
     display:
         flex;
@@ -1381,673 +887,44 @@ iframe#player {
     justify-content:
         space-between;
 
-    gap:
-        14px;
-
-    padding-top:
-        20px;
-
-    flex-wrap:
-        wrap;
-}
-
-
-.stream-title-group strong {
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size:
-        20px;
-
-    font-weight:
-        700;
-
-    display:
-        block;
-}
-
-
-.stream-title-group span {
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
+    gap: 10px;
 
     color:
-        var(--text-muted);
+        #8495a2;
+
+    font-family:
+        DM Mono,
+        monospace;
 
     font-size:
         10px;
 
     letter-spacing:
-        1.2px;
-
-    text-transform:
-        uppercase;
+        1px;
 }
 
 
-.share-action-btn {
-
-    height:
-        44px;
-
-    padding:
-        0 24px;
-
-    display:
-        inline-flex;
-
-    align-items:
-        center;
-
-    gap:
-        8px;
-
-    border-radius:
-        100px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--bg-card) 0%,
-            rgba(
-                0,
-                255,
-                204,
-                0.16
-            ) 100%
-        );
-
-    border:
-        1px solid
-        var(--accent);
+.watch {
 
     color:
-        var(--text-main);
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size:
-        11px;
+        var(--accent);
 
     font-weight:
         700;
-
-    letter-spacing:
-        1.5px;
-
-    text-transform:
-        uppercase;
-
-    cursor:
-        pointer;
-
-    transition:
-        all 0.3s ease;
 }
 
 
-.share-action-btn:hover {
-
-    background:
-        var(--accent);
-
-    color:
-        #000;
-}
-
-
-.tg-modal-overlay {
-
-    position:
-        fixed;
-
-    inset:
-        0;
-
-    background:
-        rgba(
-            3,
-            7,
-            12,
-            0.95
-        );
-
-    backdrop-filter:
-        blur(20px);
-
-    z-index:
-        999999;
-
-    display:
-        flex;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
-
-    opacity:
-        0;
-
-    pointer-events:
-        none;
-
-    transition:
-        opacity 1.5s
-        cubic-bezier(
-            0.16,
-            1,
-            0.3,
-            1
-        );
-}
-
-
-.tg-modal-overlay.show {
-
-    opacity:
-        1;
-
-    pointer-events:
-        all;
-}
-
-
-.tg-modal-box {
-
-    position:
-        relative;
-
-    background:
-        var(--bg-card);
-
-    border-radius:
-        22px;
-
-    padding:
-        32px 28px;
-
-    text-align:
-        center;
-
-    max-width:
-        390px;
-
-    width:
-        90%;
-
-    box-shadow:
-        0 40px 90px
-        rgba(
-            0,
-            0,
-            0,
-            0.9
-        ),
-
-        0 0 40px
-        var(--accent-glow);
-
-    transform:
-        scale(0.85);
-
-    transition:
-        transform 1.5s
-        cubic-bezier(
-            0.16,
-            1,
-            0.3,
-            1
-        );
-
-    backdrop-filter:
-        blur(24px);
-
-    overflow:
-        hidden;
-}
-
-
-.tg-modal-box::before {
-
-    content:
-        "";
-
-    position:
-        absolute;
-
-    inset:
-        -2px;
-
-    border-radius:
-        24px;
-
-    background:
-        conic-gradient(
-            from 0deg at 50% 50%,
-            transparent 0%,
-            transparent 70%,
-            var(--accent) 90%,
-            #ffffff 100%
-        );
-
-    animation:
-        borderSpin 3s
-        linear infinite;
-
-    z-index:
-        -1;
-}
-
-
-.tg-modal-box::after {
-
-    content:
-        "";
-
-    position:
-        absolute;
-
-    inset:
-        1px;
-
-    border-radius:
-        21px;
-
-    background:
-        #0c121c;
-
-    z-index:
-        -1;
-}
-
-
-@keyframes borderSpin {
-
-    0% {
-
-        transform:
-            rotate(0deg);
-    }
-
-    100% {
-
-        transform:
-            rotate(360deg);
-    }
-}
-
-
-.tg-modal-overlay.show
-.tg-modal-box {
-
-    transform:
-        scale(1);
-}
-
-
-.tg-modal-title {
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size:
-        22px;
-
-    font-weight:
-        900;
-
-    color:
-        var(--heading-dynamic);
-
-    margin-bottom:
-        8px;
-
-    letter-spacing:
-        0.5px;
-
-    text-transform:
-        uppercase;
-}
-
-
-.tg-modal-desc {
-
-    font-size:
-        13.5px;
-
-    color:
-        var(--text-muted);
-
-    line-height:
-        1.6;
-
-    margin-bottom:
-        24px;
-
-    font-family:
-        "Manrope",
-        sans-serif;
-}
-
-
-.tg-modal-actions {
-
-    display:
-        flex;
-
-    gap:
-        12px;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
-}
-
-
-.tg-modal-btn-later {
-
-    flex:
-        1;
-
-    height:
-        46px;
-
-    border-radius:
-        12px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.05
-        );
-
-    color:
-        var(--text-main);
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size:
-        13px;
-
-    font-weight:
-        800;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        0.5px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    cursor:
-        pointer;
-
-    transition:
-        all 0.3s ease;
-
-    border:
-        1px solid
-        var(--border-glass);
-}
-
-
-.tg-modal-btn-later:hover {
-
-    background:
-        var(--border-glass-bright);
-
-    color:
-        #fff;
-
-    transform:
-        translateY(-2px);
-}
-
-
-.tg-modal-btn-join {
-
-    flex:
-        1;
-
-    height:
-        46px;
-
-    border-radius:
-        12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #00ffcc 0%,
-            #0096ff 100%
-        );
-
-    color:
-        #000;
-
-    font-family:
-        "Space Grotesk",
-        sans-serif;
-
-    font-size:
-        13px;
-
-    font-weight:
-        900;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        0.5px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    cursor:
-        pointer;
-
-    transition:
-        all 0.3s ease;
-
-    border:
-        none;
-
-    box-shadow:
-        0 8px 25px
-        var(--accent-glow);
-}
-
-
-.tg-modal-btn-join:hover {
-
-    filter:
-        brightness(1.1);
-
-    transform:
-        translateY(-2px);
-}
-
-
-.theme-switch-deck {
-
-    position:
-        fixed;
-
-    right:
-        20px;
-
-    bottom:
-        20px;
-
-    z-index:
-        900;
-
-    background:
-        var(--bg-card);
-
-    border:
-        1px solid
-        var(--border-glass-bright);
-
-    border-radius:
-        100px;
-
-    backdrop-filter:
-        blur(24px);
-
-    box-shadow:
-        0 20px 60px
-        rgba(
-            0,
-            0,
-            0,
-            0.45
-        );
-
-    padding:
-        5px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        4px;
-
-    transition:
-        transform 0.4s ease,
-        opacity 0.4s ease;
-}
-
-
-.theme-switch-deck.hidden {
-
-    opacity:
-        0;
-
-    pointer-events:
-        none;
-
-    transform:
-        translateY(20px);
-}
-
-
-.mode-toggle-btn {
-
-    height:
-        32px;
-
-    padding:
-        0 12px;
-
-    display:
-        inline-flex;
-
-    align-items:
-        center;
-
-    gap:
-        6px;
-
-    border:
-        0;
-
-    background:
-        transparent;
-
-    color:
-        var(--text-muted);
-
-    font-family:
-        "DM Mono",
-        monospace;
-
-    font-size:
-        8px;
-
-    font-weight:
-        500;
-
-    letter-spacing:
-        1px;
-
-    text-transform:
-        uppercase;
-
-    border-radius:
-        100px;
-
-    cursor:
-        pointer;
-
-    transition:
-        all 0.3s ease;
-}
-
-
-.mode-toggle-btn i {
-
-    width:
-        4px;
-
-    height:
-        4px;
-
-    border-radius:
-        50%;
-
-    background:
-        currentColor;
-}
-
-
-.mode-toggle-btn.active {
-
-    background:
-        var(--accent);
-
-    color:
-        #000;
-}
-
-
-.state-container {
+/* =========================================================
+   EMPTY / LOADING
+   ========================================================= */
+
+.state {
 
     grid-column:
         1 / -1;
+
+    min-height:
+        220px;
 
     display:
         flex;
@@ -2061,134 +938,533 @@ iframe#player {
     justify-content:
         center;
 
-    padding:
-        100px 20px;
-
-    text-align:
-        center;
-
-    gap:
-        16px;
-
     color:
-        var(--text-muted);
+        var(--muted);
+
+    font-family:
+        DM Mono,
+        monospace;
+
+    font-size:
+        12px;
+
+    gap: 15px;
 }
 
 
 .spinner {
 
-    width:
-        50px;
+    width: 35px;
 
-    height:
-        50px;
+    height: 35px;
 
     border:
-        4px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.08
-        );
+        3px solid
+        rgba(255,255,255,.08);
 
-    border-left-color:
+    border-top-color:
         var(--accent);
 
-    border-radius:
-        50%;
+    border-radius: 50%;
 
     animation:
-        spin 0.9s
-        linear infinite;
+        spin .8s linear infinite;
 }
 
 
 @keyframes spin {
 
-    0% {
-
-        transform:
-            rotate(0deg);
+    to {
+        transform: rotate(360deg);
     }
 
-    100% {
-
-        transform:
-            rotate(360deg);
-    }
 }
 
 
-@media (max-width: 600px) {
+/* =========================================================
+   PLAYER
+   ========================================================= */
 
-    .container {
+.player-view {
+
+    display: none;
+
+    padding-top:
+        30px;
+}
+
+
+.player-view.active {
+
+    display: block;
+}
+
+
+.home-view.hidden {
+
+    display: none;
+}
+
+
+.back-btn {
+
+    height: 42px;
+
+    padding:
+        0 17px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(7,15,23,.8);
+
+    color:
+        #fff;
+
+    font-family:
+        Space Grotesk,
+        sans-serif;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        18px;
+}
+
+
+.back-btn:hover {
+
+    border-color:
+        var(--accent);
+
+    color:
+        var(--accent);
+}
+
+
+.player-box {
+
+    width: 100%;
+
+    aspect-ratio:
+        16 / 9;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        #000;
+
+    border:
+        1px solid
+        rgba(0,255,204,.22);
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.55);
+}
+
+
+#player {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: 0;
+
+    background: #000;
+}
+
+
+.fullscreen-btn {
+
+    position: absolute;
+
+    right: 15px;
+
+    bottom: 15px;
+
+    width: 44px;
+
+    height: 44px;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    color: #fff;
+
+    z-index: 10;
+
+    font-size: 19px;
+
+    backdrop-filter:
+        blur(10px);
+}
+
+
+.fullscreen-btn:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+}
+
+
+.player-info {
+
+    margin-top:
+        15px;
+
+    padding:
+        17px 20px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        14px;
+
+    background:
+        rgba(7,15,23,.78);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap: 15px;
+}
+
+
+.player-title {
+
+    font-family:
+        Space Grotesk,
+        sans-serif;
+
+    font-size:
+        18px;
+
+    font-weight:
+        800;
+}
+
+
+.player-subtitle {
+
+    color:
+        #718390;
+
+    font-family:
+        DM Mono,
+        monospace;
+
+    font-size:
+        10px;
+
+    margin-top:
+        5px;
+}
+
+
+.share-btn {
+
+    height:
+        40px;
+
+    padding:
+        0 16px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        9px;
+
+    background:
+        transparent;
+
+    color:
+        #fff;
+
+    font-size:
+        11px;
+
+    font-family:
+        DM Mono,
+        monospace;
+}
+
+
+.share-btn:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        #000;
+}
+
+
+/* =========================================================
+   TELEGRAM MODAL
+   ========================================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,.78);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+.modal.show {
+
+    display: flex;
+}
+
+
+.modal-box {
+
+    width:
+        min(430px, 100%);
+
+    padding:
+        30px;
+
+    border:
+        1px solid
+        rgba(0,255,204,.28);
+
+    border-radius:
+        22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0b1822,
+            #050b10
+        );
+
+    box-shadow:
+        0 30px 90px
+        rgba(0,0,0,.65);
+
+    text-align:
+        center;
+}
+
+
+.modal-title {
+
+    font-family:
+        Space Grotesk,
+        sans-serif;
+
+    font-size:
+        25px;
+
+    font-weight:
+        900;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff,
+            #00ffcc
+        );
+
+    -webkit-background-clip:
+        text;
+
+    -webkit-text-fill-color:
+        transparent;
+
+    margin-bottom:
+        10px;
+}
+
+
+.modal-text {
+
+    color:
+        #8ea0ad;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.6;
+
+    margin-bottom:
+        22px;
+}
+
+
+.modal-actions {
+
+    display:
+        flex;
+
+    gap:
+        10px;
+}
+
+
+.modal-actions button {
+
+    flex: 1;
+
+    height:
+        45px;
+
+    border-radius:
+        10px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    background:
+        rgba(255,255,255,.04);
+
+    color:
+        #fff;
+
+    font-weight:
+        800;
+}
+
+
+.modal-actions .join {
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffcc,
+            #0096ff
+        );
+
+    color:
+        #001014;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .page {
 
         width:
             92vw;
     }
 
 
-    .live-pill-badge {
+    .nav {
 
-        display:
-            none;
+        height: 70px;
     }
 
 
-    .nav-join-btn {
+    .brand {
+
+        font-size: 25px;
+    }
+
+
+    .live-pill {
+
+        display: none;
+    }
+
+
+    .telegram-btn {
 
         padding:
-            0 14px;
+            0 13px;
 
         font-size:
             10px;
     }
 
 
+    .hero {
+
+        padding-top:
+            55px;
+    }
+
+
+    .hero h1 {
+
+        font-size:
+            70px;
+
+        letter-spacing:
+            -4px;
+    }
+
+
     .channels-grid {
 
         grid-template-columns:
-            repeat(
-                auto-fill,
-                minmax(
-                    150px,
-                    1fr
-                )
-            );
+            repeat(2, minmax(0, 1fr));
 
-        gap:
-            12px;
+        gap: 11px;
     }
 
 
-    .card-thumbnail {
+    .channel-card {
 
-        height:
-            120px;
-    }
-
-
-    .channel-logo-box {
-
-        width:
-            65px;
-
-        height:
-            65px;
+        min-height:
+            105px;
 
         padding:
-            8px;
-
-        border-radius:
-            14px;
-    }
-
-
-    .card-body {
-
-        padding:
-            12px;
+            15px;
     }
 
 
@@ -2196,6 +1472,9 @@ iframe#player {
 
         font-size:
             13px;
+
+        margin-bottom:
+            12px;
     }
 
 
@@ -2206,37 +1485,37 @@ iframe#player {
     }
 
 
-    .player-rig-box {
+    .player-info {
 
-        border-radius:
-            14px;
-    }
-
-
-    .player-meta-bar {
+        flex-direction:
+            column;
 
         align-items:
-            flex-start;
+            stretch;
     }
 
 
-    .share-action-btn {
+    .share-btn {
 
-        width:
-            100%;
+        width: 100%;
+    }
 
-        justify-content:
-            center;
+}
+
+
+@media (max-width: 430px) {
+
+    .channels-grid {
+
+        grid-template-columns:
+            1fr;
     }
 
 
-    .theme-switch-deck {
+    .hero h1 {
 
-        right:
-            10px;
-
-        bottom:
-            10px;
+        font-size:
+            60px;
     }
 
 }
@@ -2244,566 +1523,631 @@ iframe#player {
 </style>
 
 
-<canvas id="warpGridCanvas"></canvas>
+<!-- =====================================================
+     BACKGROUND
+     ===================================================== -->
+
+<canvas id="bgCanvas"></canvas>
 
 
-<div
-    class="container"
-    id="mainContainer"
->
+<!-- =====================================================
+     PAGE
+     ===================================================== -->
 
-<header class="nav">
+<div class="page">
 
-    <a
-        class="brand"
-        id="brandHomeLink"
+
+    <!-- =================================================
+         NAV
+         ================================================= -->
+
+    <header class="nav">
+
+        <div
+            class="brand"
+            id="brandHome"
+        >
+            CRIC<span>ZONE</span>
+        </div>
+
+
+        <div class="nav-actions">
+
+            <div class="live-pill">
+
+                <i class="live-dot"></i>
+
+                LIVE
+
+            </div>
+
+
+            <a
+                class="telegram-btn"
+                id="telegramTop"
+                href="${window.CricConfig.telegramLink}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                JOIN TELEGRAM
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         HOME
+         ================================================= -->
+
+    <main
+        class="home-view"
+        id="homeView"
     >
 
-        <div class="brand-title">
-            CRICZONE
+        <section class="hero">
+
+            <div class="hero-label">
+                CRICZONE LIVE
+            </div>
+
+
+            <h1>
+
+                LIVE
+
+                <br>
+
+                <span class="gradient">
+                    SPORTS.
+                </span>
+
+            </h1>
+
+
+            <div class="hero-info">
+
+                <strong>
+                    CRICKET
+                </strong>
+
+                <span class="dot-separator"></span>
+
+                SPORTS
+
+                <span class="dot-separator"></span>
+
+                LIVE
+
+                <span class="dot-separator"></span>
+
+                HD CHANNELS
+
+                <span class="dot-separator"></span>
+
+                WATCH NOW
+
+            </div>
+
+        </section>
+
+
+        <!-- =============================================
+             SEARCH
+             ============================================= -->
+
+        <div class="tools">
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search channels..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filters">
+
+                <button
+                    class="filter-btn active"
+                    data-filter="all"
+                >
+                    All
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="star"
+                >
+                    Star
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="sony"
+                >
+                    Sony
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="sports"
+                >
+                    Sports
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="cricket"
+                >
+                    Cricket
+                </button>
+
+                <button
+                    class="filter-btn"
+                    data-filter="hd"
+                >
+                    HD
+                </button>
+
+            </div>
+
         </div>
 
-    </a>
+
+        <div class="separator"></div>
 
 
-    <div class="nav-actions">
+        <!-- =============================================
+             CHANNELS
+             ============================================= -->
 
-        <div class="live-pill-badge">
-
-            <i class="pulsing-live-dot"></i>
-
-            ON AIR
-
-        </div>
-
-
-        <a
-            class="nav-join-btn"
-            id="navJoinBtn"
-            href="#"
-            target="_blank"
-            rel="noopener"
+        <div
+            class="channels-grid"
+            id="channelsGrid"
         >
-            JOIN TG
-        </a>
 
-    </div>
+            <div class="state">
 
-</header>
+                <div class="spinner"></div>
+
+                Loading channels...
+
+            </div>
+
+        </div>
+
+    </main>
 
 
-<div
-    id="home-view"
-    class="view-section ${this.initialPendingId ? '' : 'active'}"
->
+    <!-- =================================================
+         PLAYER
+         ================================================= -->
 
-    <section class="hero">
+    <section
+        class="player-view"
+        id="playerView"
+    >
 
-        <div class="hero-tag">
-            CRICZONE LIVE
+        <button
+            class="back-btn"
+            id="backBtn"
+        >
+            ← Back to Channels
+        </button>
+
+
+        <div
+            class="player-box"
+            id="playerBox"
+        >
+
+            <iframe
+                id="player"
+                allow="
+                    autoplay;
+                    fullscreen;
+                    encrypted-media;
+                    picture-in-picture
+                "
+                allowfullscreen
+                referrerpolicy="no-referrer"
+                loading="eager"
+            ></iframe>
+
+
+            <button
+                class="fullscreen-btn"
+                id="fullscreenBtn"
+                title="Fullscreen"
+            >
+                ⛶
+            </button>
+
         </div>
 
 
-        <h1 class="hero-headline">
+        <div class="player-info">
 
-            LIVE
+            <div>
 
-            <br>
+                <div
+                    class="player-title"
+                    id="playerTitle"
+                >
+                    Live Stream
+                </div>
 
-            <span class="accent-txt">
-                SPORTS.
-            </span>
+                <div class="player-subtitle">
+                    CRICZONE • HIGH-DEFINITION LIVE STREAM
+                </div>
 
-        </h1>
+            </div>
 
 
-        <div class="hero-details">
-
-            <b>
-                CRICKET • SPORTS • LIVE
-            </b>
-
-            <span class="meta-separator"></span>
-
-            HD CHANNELS
-
-            <span class="meta-separator"></span>
-
-            WATCH NOW
+            <button
+                class="share-btn"
+                id="shareBtn"
+            >
+                SHARE STREAM
+            </button>
 
         </div>
 
     </section>
 
-
-    <div class="track-separator-beam"></div>
-
-
-    <div
-        id="channels-grid"
-        class="channels-grid"
-    >
-
-        <div class="state-container">
-
-            <div class="spinner"></div>
-
-            <p>
-                Fetching CRICZONE sports feed...
-            </p>
-
-        </div>
-
-    </div>
-
 </div>
 
 
-<div
-    id="player-view"
-    class="view-section ${this.initialPendingId ? 'active' : ''}"
->
-
-
-    <div class="player-top-nav">
-
-        <button
-            class="back-home-btn"
-            id="backHomeBtn"
-        >
-            &#8592; Back to Channels
-        </button>
-
-    </div>
-
-
-    <div
-        class="player-rig-box"
-        id="playerContainer"
-    >
-
-        <div
-            class="stream-loading-overlay ${this.initialPendingId ? '' : 'hidden'}"
-            id="streamLoadingOverlay"
-        >
-
-            <div class="spinner"></div>
-
-            <span>Connecting to CRICZONE stream...</span>
-
-        </div>
-
-
-        <iframe
-            id="player"
-            allow="
-                autoplay;
-                fullscreen;
-                encrypted-media;
-                picture-in-picture
-            "
-            allowfullscreen="true"
-        ></iframe>
-
-
-        <button
-            class="blended-fs-btn"
-            id="blendedFsBtn"
-            title="Toggle Fullscreen"
-        >
-
-            <svg
-                id="fsIconSvg"
-                viewBox="0 0 24 24"
-            >
-
-                <path
-                    d="
-                    M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
-                    7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
-                    "
-                />
-
-            </svg>
-
-        </button>
-
-    </div>
-
-
-    <div class="player-meta-bar">
-
-        <div class="stream-title-group">
-
-            <strong
-                id="activeStreamTitleDisplay"
-            >
-                Live Broadcast
-            </strong>
-
-            <span>
-                CRICZONE • HIGH-DEFINITION LIVE STREAM
-            </span>
-
-        </div>
-
-
-        <button
-            class="share-action-btn"
-            id="btnShare"
-        >
-
-            <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-            >
-
-                <line
-                    x1="7"
-                    y1="17"
-                    x2="17"
-                    y2="7"
-                ></line>
-
-                <polyline
-                    points="
-                    7 7
-                    17 7
-                    17 17
-                    "
-                ></polyline>
-
-            </svg>
-
-
-            <span id="shareBtnText">
-                SHARE STREAM
-            </span>
-
-        </button>
-
-    </div>
-
-</div>
-
+<!-- =====================================================
+     TELEGRAM MODAL
+     ===================================================== -->
 
 <div
-    class="tg-modal-overlay"
-    id="tgPremiumModal"
+    class="modal"
+    id="telegramModal"
 >
 
-    <div class="tg-modal-box">
+    <div class="modal-box">
 
-        <h3 class="tg-modal-title">
+        <div class="modal-title">
             CRICZONE
-        </h3>
+        </div>
 
 
-        <p
-            class="tg-modal-desc"
-            id="tgModalDesc"
-        >
-            Join our Telegram for more stream links and updates.
-        </p>
+        <div class="modal-text">
+
+            Join our Telegram channel for
+            stream links and updates.
+
+        </div>
 
 
-        <div class="tg-modal-actions">
+        <div class="modal-actions">
 
-            <div
-                class="tg-modal-btn-later"
-                id="tgLaterModalBtn"
+            <button
+                id="laterBtn"
             >
-                Later
-            </div>
+                LATER
+            </button>
 
 
-            <div
-                class="tg-modal-btn-join"
-                id="tgJoinModalBtn"
+            <button
+                class="join"
+                id="joinBtn"
             >
-                Join Telegram
-            </div>
+                JOIN TELEGRAM
+            </button>
 
         </div>
 
     </div>
 
 </div>
-
-
-<aside
-    class="theme-switch-deck"
-    id="themeSwitchDeck"
->
-
-    <button
-        class="mode-toggle-btn active"
-        id="themeDarkBtn"
-    >
-
-        <i></i>
-
-        Obsidian
-
-    </button>
-
-
-    <button
-        class="mode-toggle-btn"
-        id="themeLightBtn"
-    >
-
-        <i></i>
-
-        Ceramic
-
-    </button>
-
-</aside>
 
 `;
 
-    }
 
+        this.cacheElements();
 
-    connectedCallback() {
+        this.setupEvents();
 
-        this.shadow.querySelector(
-            "#navJoinBtn"
-        ).href =
-            window.CricConfig.telegramLink;
+        this.setupBackground();
 
-
-        this.checkUnlockStatus();
-
-        this.initWarpField();
-
-        this.initEventListeners();
-
-        this.setupMessageListener();
+        this.checkUnlock();
 
         this.fetchChannels();
 
+        this.handleUrl();
+
+
         window.addEventListener(
             "popstate",
-            () => this.handleUrlRouting()
+            () => this.handleUrl()
         );
 
     }
 
 
-    disconnectedCallback() {
+    /* =====================================================
+       ELEMENT CACHE
+       ===================================================== */
 
-        if (this.animationFrameId) {
+    cacheElements() {
 
-            cancelAnimationFrame(
-                this.animationFrameId
-            );
+        this.$ = {
 
-        }
+            home:
+                this.shadow.querySelector(
+                    "#homeView"
+                ),
 
+            playerView:
+                this.shadow.querySelector(
+                    "#playerView"
+                ),
 
-        if (this.lockTimer) {
+            grid:
+                this.shadow.querySelector(
+                    "#channelsGrid"
+                ),
 
-            clearTimeout(
-                this.lockTimer
-            );
+            search:
+                this.shadow.querySelector(
+                    "#searchInput"
+                ),
 
-        }
+            player:
+                this.shadow.querySelector(
+                    "#player"
+                ),
+
+            playerBox:
+                this.shadow.querySelector(
+                    "#playerBox"
+                ),
+
+            playerTitle:
+                this.shadow.querySelector(
+                    "#playerTitle"
+                ),
+
+            modal:
+                this.shadow.querySelector(
+                    "#telegramModal"
+                )
+
+        };
 
     }
 
 
-    checkUnlockStatus() {
+    /* =====================================================
+       EVENTS
+       ===================================================== */
 
-        const saved =
-            localStorage.getItem(
-                "criczone_unlocked_time"
-            );
+    setupEvents() {
+
+        this.shadow.querySelector(
+            "#brandHome"
+        ).onclick = () => {
+
+            this.closePlayer();
+
+        };
 
 
-        if (saved) {
+        this.shadow.querySelector(
+            "#backBtn"
+        ).onclick = () => {
 
-            if (
+            this.closePlayer();
 
-                Date.now() -
-                parseInt(saved, 10)
+        };
 
-                <
 
-                24 *
-                60 *
-                60 *
-                1000
+        this.shadow.querySelector(
+            "#joinBtn"
+        ).onclick = () => {
 
-            ) {
+            this.joinTelegram();
 
-                this.isUnlocked =
-                    true;
+        };
 
-            } else {
 
-                localStorage.removeItem(
-                    "criczone_unlocked_time"
+        this.shadow.querySelector(
+            "#laterBtn"
+        ).onclick = () => {
+
+            this.closeModal();
+
+        };
+
+
+        this.shadow.querySelector(
+            "#fullscreenBtn"
+        ).onclick = () => {
+
+            this.toggleFullscreen();
+
+        };
+
+
+        this.shadow.querySelector(
+            "#shareBtn"
+        ).onclick = () => {
+
+            this.shareStream();
+
+        };
+
+
+        this.$.search.addEventListener(
+            "input",
+            () => this.applyFilters()
+        );
+
+
+        this.shadow
+            .querySelectorAll(
+                ".filter-btn"
+            )
+            .forEach(btn => {
+
+                btn.addEventListener(
+                    "click",
+                    () => {
+
+                        this.shadow
+                            .querySelectorAll(
+                                ".filter-btn"
+                            )
+                            .forEach(
+                                b =>
+                                    b.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+                        btn.classList.add(
+                            "active"
+                        );
+
+                        this.currentFilter =
+                            btn.dataset.filter;
+
+                        this.applyFilters();
+
+                    }
                 );
 
-            }
-
-        }
+            });
 
 
-        if (!this.isUnlocked) {
-
-            setTimeout(() => {
-
-                const desc =
-                    this.shadow.querySelector(
-                        "#tgModalDesc"
-                    );
-
-
-                const modal =
-                    this.shadow.querySelector(
-                        "#tgPremiumModal"
-                    );
-
-
-                if (desc) {
-
-                    desc.innerText =
-                        "Join our CRICZONE Telegram channel for 24-hour full access to uninterrupted HD live streams and updates.";
-
-                }
-
-
-                if (modal) {
-
-                    modal.classList.add(
-                        "show"
-                    );
-
-                }
-
-            }, 200);
-
-        }
+        this.currentFilter =
+            "all";
 
     }
 
+
+    /* =====================================================
+       FETCH CHANNELS
+       ===================================================== */
 
     async fetchChannels() {
 
-        const grid =
-            this.shadow.querySelector(
-                "#channels-grid"
-            );
-
-
         try {
 
-            const res =
+            const response =
                 await fetch(
-                    window.CricConfig.sourceUrl
+                    window.CricConfig.sourceUrl,
+                    {
+                        cache: "no-store"
+                    }
                 );
 
 
-            if (!res.ok) {
+            if (!response.ok) {
 
                 throw new Error(
-                    "HTTP " +
-                    res.status
+                    "Feed request failed"
                 );
 
             }
 
 
             const data =
-                await res.json();
+                await response.json();
+
+
+            let channels = [];
+
+
+            if (Array.isArray(data)) {
+
+                channels = data;
+
+            } else {
+
+                channels =
+                    data.iframes ||
+                    data.channels ||
+                    data.streams ||
+                    data.data ||
+                    [];
+
+            }
+
+
+            if (!Array.isArray(channels)) {
+
+                channels = [];
+
+            }
 
 
             this.masterChannels =
-                Array.isArray(data)
-
-                    ? data
-
-                    : (
-                        data.iframes ||
-                        data.channels ||
-                        data.streams ||
-                        data.data ||
-                        []
-                    );
-
-
-            if (
-                this.masterChannels.length === 0
-            ) {
-
-                grid.innerHTML =
-                    `
-                    <div class="state-container">
-                        No channels found.
-                    </div>
-                    `;
-
-                return;
-            }
+                channels;
 
 
             this.renderGrid();
 
-            this.handleUrlRouting();
+
+            this.applyFilters();
 
 
-        } catch (err) {
+            this.handleUrl();
+
+
+        } catch (error) {
 
             console.error(
-                "Channel feed error:",
-                err
+                "CRICZONE feed error:",
+                error
             );
 
 
-            grid.innerHTML =
-                `
-                <div
-                    class="state-container"
-                    style="color:#ef4444;"
-                >
-                    Failed to load channels feed.
+            this.$.grid.innerHTML = `
+
+                <div class="state">
+
+                    Unable to load channels.
+
+                    <small>
+                        Please refresh the page.
+                    </small>
+
                 </div>
-                `;
 
-            if (this.initialPendingId) {
-
-                this.closePlayer();
-
-            }
+            `;
 
         }
 
     }
 
 
+    /* =====================================================
+       RENDER CHANNELS
+       ===================================================== */
+
     renderGrid() {
 
-        const grid =
-            this.shadow.querySelector(
-                "#channels-grid"
-            );
-
-
-        grid.innerHTML =
-            "";
+        this.$.grid.innerHTML = "";
 
 
         this.masterChannels.forEach(
             (channel, index) => {
 
-                const channelId =
+                const id =
                     channel.id !== undefined
                         ? channel.id
                         : index;
@@ -2816,244 +2160,8 @@ iframe#player {
                     `Channel ${index + 1}`;
 
 
-                const poster =
-                    channel.poster ||
-                    channel.image ||
-                    channel.logo ||
-                    channel.img ||
-                    "";
-
-
-                const lowerTitle =
+                const lower =
                     title.toLowerCase();
-
-
-                const isSony =
-                    lowerTitle.includes(
-                        "sony"
-                    );
-
-
-                const isStar =
-                    lowerTitle.includes(
-                        "star"
-                    );
-
-
-                let tagText =
-                    title.split(" ")[0] ||
-                    "LIVE";
-
-
-                let thumbHtml =
-                    "";
-
-
-                if (isStar) {
-
-                    tagText =
-                        "STAR";
-
-
-                    thumbHtml =
-                        `
-                        <div
-                            class="card-thumbnail"
-                        >
-
-                            <div
-                                class="channel-logo-box"
-                            >
-
-                                <img
-                                    class="channel-logo"
-                                    src="${window.CricConfig.starLogo}"
-                                    alt="Star Sports"
-                                    loading="lazy"
-                                    referrerpolicy="no-referrer"
-                                >
-
-                            </div>
-
-
-                            <span
-                                class="card-network-tag"
-                            >
-                                STAR
-                            </span>
-
-
-                            <div
-                                class="play-overlay-icon"
-                            >
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                >
-
-                                    <path
-                                        d="M8 5v14l11-7z"
-                                    />
-
-                                </svg>
-
-                            </div>
-
-                        </div>
-                        `;
-
-
-                } else if (isSony) {
-
-                    tagText =
-                        "SONY";
-
-
-                    thumbHtml =
-                        `
-                        <div
-                            class="card-thumbnail"
-                        >
-
-                            <div
-                                class="channel-logo-box"
-                            >
-
-                                <img
-                                    class="channel-logo"
-                                    src="${window.CricConfig.sonyLogo}"
-                                    alt="Sony Sports"
-                                    loading="lazy"
-                                    referrerpolicy="no-referrer"
-                                >
-
-                            </div>
-
-
-                            <span
-                                class="card-network-tag"
-                            >
-                                SONY
-                            </span>
-
-
-                            <div
-                                class="play-overlay-icon"
-                            >
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                >
-
-                                    <path
-                                        d="M8 5v14l11-7z"
-                                    />
-
-                                </svg>
-
-                            </div>
-
-                        </div>
-                        `;
-
-
-                } else if (poster) {
-
-                    thumbHtml =
-                        `
-                        <div
-                            class="card-thumbnail"
-                            style="
-                                background-image:
-                                url('${poster.replace(
-                                    /'/g,
-                                    "%27"
-                                )}')
-                            "
-                        >
-
-                            <div
-                                class="play-overlay-icon"
-                            >
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                >
-
-                                    <path
-                                        d="M8 5v14l11-7z"
-                                    />
-
-                                </svg>
-
-                            </div>
-
-                        </div>
-                        `;
-
-
-                } else {
-
-                    const badgeIcon =
-                        `
-                        <svg
-                            viewBox="0 0 24 24"
-                        >
-
-                            <path
-                                d="
-                                M12 2L2 7l10 5 10-5-10-5z
-                                M2 17l10 5 10-5
-                                M2 12l10 5 10-5
-                                "
-                            />
-
-                        </svg>
-                        `;
-
-
-                    thumbHtml =
-                        `
-                        <div
-                            class="card-thumbnail"
-                        >
-
-                            <div
-                                class="channel-badge-box"
-                            >
-                                ${badgeIcon}
-                            </div>
-
-
-                            <span
-                                class="card-network-tag"
-                            >
-                                ${this.escapeHtml(
-                                    tagText
-                                )}
-                            </span>
-
-
-                            <div
-                                class="play-overlay-icon"
-                            >
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                >
-
-                                    <path
-                                        d="M8 5v14l11-7z"
-                                    />
-
-                                </svg>
-
-                            </div>
-
-                        </div>
-                        `;
-
-                }
 
 
                 const card =
@@ -3066,56 +2174,48 @@ iframe#player {
                     "channel-card";
 
 
-                card.onclick =
-                    () =>
-                        this.openPlayer(
-                            channelId
-                        );
+                card.dataset.title =
+                    lower;
 
 
-                card.innerHTML =
-                    `
-
-                    ${thumbHtml}
+                card.dataset.id =
+                    String(id);
 
 
-                    <div class="card-body">
+                card.innerHTML = `
 
-                        <div
-                            class="card-title"
-                        >
-                            ${this.escapeHtml(
-                                title
-                            )}
-                        </div>
+                    <div class="card-title">
 
-
-                        <div
-                            class="card-meta"
-                        >
-
-                            <span>
-                                HD FEED
-                            </span>
-
-
-                            <span
-                                style="
-                                    color:
-                                    var(--accent);
-                                "
-                            >
-                                WATCH NOW
-                            </span>
-
-                        </div>
+                        ${this.escapeHtml(
+                            title
+                        )}
 
                     </div>
 
-                    `;
+
+                    <div class="card-meta">
+
+                        <span>
+                            HD FEED
+                        </span>
+
+                        <span class="watch">
+                            WATCH NOW →
+                        </span>
+
+                    </div>
+
+                `;
 
 
-                grid.appendChild(
+                card.onclick = () => {
+
+                    this.openPlayer(id);
+
+                };
+
+
+                this.$.grid.appendChild(
                     card
                 );
 
@@ -3124,6 +2224,736 @@ iframe#player {
 
     }
 
+
+    /* =====================================================
+       SEARCH / FILTER
+       ===================================================== */
+
+    applyFilters() {
+
+        const query =
+            (
+                this.$.search.value ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const filter =
+            this.currentFilter ||
+            "all";
+
+
+        this.shadow
+            .querySelectorAll(
+                ".channel-card"
+            )
+            .forEach(card => {
+
+                const title =
+                    card.dataset.title ||
+                    "";
+
+
+                const matchesSearch =
+                    !query ||
+                    title.includes(
+                        query
+                    );
+
+
+                let matchesFilter =
+                    true;
+
+
+                if (
+                    filter === "sony"
+                ) {
+
+                    matchesFilter =
+                        title.includes(
+                            "sony"
+                        );
+
+                }
+
+
+                if (
+                    filter === "star"
+                ) {
+
+                    matchesFilter =
+                        title.includes(
+                            "star"
+                        );
+
+                }
+
+
+                if (
+                    filter === "sports"
+                ) {
+
+                    matchesFilter =
+                        title.includes(
+                            "sports"
+                        );
+
+                }
+
+
+                if (
+                    filter === "cricket"
+                ) {
+
+                    matchesFilter =
+                        title.includes(
+                            "cricket"
+                        );
+
+                }
+
+
+                if (
+                    filter === "hd"
+                ) {
+
+                    matchesFilter =
+                        title.includes(
+                            "hd"
+                        );
+
+                }
+
+
+                card.style.display =
+                    matchesSearch &&
+                    matchesFilter
+                        ? ""
+                        : "none";
+
+            });
+
+    }
+
+
+    /* =====================================================
+       OPEN PLAYER
+       ===================================================== */
+
+    openPlayer(identifier) {
+
+        const target =
+            this.masterChannels.find(
+                (channel, index) =>
+                    String(
+                        channel.id !== undefined
+                            ? channel.id
+                            : index
+                    ) ===
+                    String(identifier)
+            );
+
+
+        if (!target) {
+
+            return;
+
+        }
+
+
+        let streamUrl =
+
+            target.iframeSrc ||
+
+            target.url ||
+
+            target.link ||
+
+            target.stream ||
+
+            target.file ||
+
+            target.source ||
+
+            target.src;
+
+
+        if (!streamUrl) {
+
+            streamUrl =
+                `https://sonucdn-v2.pages.dev/star.html?id=${encodeURIComponent(
+                    target.id !== undefined
+                        ? target.id
+                        : identifier
+                )}`;
+
+        }
+
+
+        this.currentStreamId =
+            target.id !== undefined
+                ? target.id
+                : identifier;
+
+
+        const title =
+            target.title ||
+            target.name ||
+            target.channel ||
+            "Live Stream";
+
+
+        this.$.playerTitle.textContent =
+            title;
+
+
+        this.$.player.src =
+            streamUrl;
+
+
+        this.$.home.classList.add(
+            "hidden"
+        );
+
+
+        this.$.playerView.classList.add(
+            "active"
+        );
+
+
+        history.pushState(
+            {
+                id:
+                    this.currentStreamId
+            },
+            "",
+            `?id=${encodeURIComponent(
+                this.currentStreamId
+            )}`
+        );
+
+
+        this.startPreviewTimer();
+
+    }
+
+
+    /* =====================================================
+       CLOSE PLAYER
+       ===================================================== */
+
+    closePlayer() {
+
+        this.stopPreviewTimer();
+
+
+        this.$.player.src =
+            "about:blank";
+
+
+        this.$.playerView.classList.remove(
+            "active"
+        );
+
+
+        this.$.home.classList.remove(
+            "hidden"
+        );
+
+
+        this.currentStreamId =
+            null;
+
+
+        if (
+            window.location.search
+        ) {
+
+            history.pushState(
+                {},
+                "",
+                window.location.pathname
+            );
+
+        }
+
+
+        try {
+
+            if (
+                document.fullscreenElement
+            ) {
+
+                document.exitFullscreen();
+
+            }
+
+        } catch (e) {}
+
+    }
+
+
+    /* =====================================================
+       URL ROUTING
+       ===================================================== */
+
+    handleUrl() {
+
+        const id =
+            new URLSearchParams(
+                window.location.search
+            ).get("id");
+
+
+        if (!id) {
+
+            return;
+
+        }
+
+
+        if (
+            this.masterChannels.length
+        ) {
+
+            this.openPlayer(id);
+
+        }
+
+    }
+
+
+    /* =====================================================
+       PREVIEW TIMER
+       ===================================================== */
+
+    startPreviewTimer() {
+
+        this.stopPreviewTimer();
+
+
+        if (this.isUnlocked) {
+
+            return;
+
+        }
+
+
+        this.lockTimer =
+            setTimeout(
+                () => {
+
+                    this.showTelegramModal();
+
+                },
+
+                window.CricConfig
+                    .previewDuration
+            );
+
+    }
+
+
+    stopPreviewTimer() {
+
+        if (
+            this.lockTimer
+        ) {
+
+            clearTimeout(
+                this.lockTimer
+            );
+
+            this.lockTimer =
+                null;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       TELEGRAM MODAL
+       ===================================================== */
+
+    showTelegramModal() {
+
+        if (
+            this.isUnlocked
+        ) {
+
+            return;
+
+        }
+
+
+        this.$.modal.classList.add(
+            "show"
+        );
+
+
+        try {
+
+            this.$.player.contentWindow.postMessage(
+                "criczone-force-pause",
+                "*"
+            );
+
+        } catch (e) {}
+
+    }
+
+
+    closeModal() {
+
+        this.$.modal.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    joinTelegram() {
+
+        localStorage.setItem(
+            "criczone_unlocked_time",
+            Date.now().toString()
+        );
+
+
+        this.isUnlocked =
+            true;
+
+
+        this.closeModal();
+
+
+        window.open(
+            window.CricConfig.telegramLink,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+
+        try {
+
+            this.$.player.contentWindow.postMessage(
+                "criczone-force-play",
+                "*"
+            );
+
+        } catch (e) {}
+
+    }
+
+
+    /* =====================================================
+       UNLOCK STATUS
+       ===================================================== */
+
+    checkUnlock() {
+
+        const value =
+            localStorage.getItem(
+                "criczone_unlocked_time"
+            );
+
+
+        if (!value) {
+
+            return;
+
+        }
+
+
+        const time =
+            Number(value);
+
+
+        if (
+            Date.now() - time <
+            24 * 60 * 60 * 1000
+        ) {
+
+            this.isUnlocked =
+                true;
+
+        } else {
+
+            localStorage.removeItem(
+                "criczone_unlocked_time"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       FULLSCREEN
+       ===================================================== */
+
+    async toggleFullscreen() {
+
+        const box =
+            this.$.playerBox;
+
+
+        try {
+
+            if (
+                !document.fullscreenElement
+            ) {
+
+                await box.requestFullscreen();
+
+            } else {
+
+                await document.exitFullscreen();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Fullscreen error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SHARE
+       ===================================================== */
+
+    async shareStream() {
+
+        try {
+
+            if (
+                navigator.share
+            ) {
+
+                await navigator.share({
+
+                    title:
+                        "CRICZONE LIVE",
+
+                    text:
+                        this.$.playerTitle
+                            .textContent,
+
+                    url:
+                        window.location.href
+
+                });
+
+            } else {
+
+                await navigator.clipboard
+                    .writeText(
+                        window.location.href
+                    );
+
+                const btn =
+                    this.shadow.querySelector(
+                        "#shareBtn"
+                    );
+
+
+                const oldText =
+                    btn.textContent;
+
+
+                btn.textContent =
+                    "COPIED!";
+
+
+                setTimeout(
+                    () => {
+
+                        btn.textContent =
+                            oldText;
+
+                    },
+                    1800
+                );
+
+            }
+
+        } catch (error) {}
+
+    }
+
+
+    /* =====================================================
+       BACKGROUND
+       ===================================================== */
+
+    setupBackground() {
+
+        const canvas =
+            this.shadow.querySelector(
+                "#bgCanvas"
+            );
+
+
+        const ctx =
+            canvas.getContext(
+                "2d"
+            );
+
+
+        const resize =
+            () => {
+
+                canvas.width =
+                    window.innerWidth;
+
+                canvas.height =
+                    window.innerHeight;
+
+            };
+
+
+        resize();
+
+
+        window.addEventListener(
+            "resize",
+            resize
+        );
+
+
+        this.stars = [];
+
+
+        for (
+            let i = 0;
+            i < 90;
+            i++
+        ) {
+
+            this.stars.push({
+
+                x:
+                    Math.random() *
+                    window.innerWidth,
+
+                y:
+                    Math.random() *
+                    window.innerHeight,
+
+                length:
+                    10 +
+                    Math.random() *
+                    35,
+
+                speed:
+                    .4 +
+                    Math.random() *
+                    1.4,
+
+                alpha:
+                    .08 +
+                    Math.random() *
+                    .30
+
+            });
+
+        }
+
+
+        const draw =
+            () => {
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+                for (
+                    const star
+                    of this.stars
+                ) {
+
+                    ctx.strokeStyle =
+                        `rgba(
+                            0,
+                            255,
+                            204,
+                            ${star.alpha}
+                        )`;
+
+
+                    ctx.lineWidth =
+                        1;
+
+
+                    ctx.beginPath();
+
+
+                    ctx.moveTo(
+                        star.x,
+                        star.y
+                    );
+
+
+                    ctx.lineTo(
+                        star.x +
+                        star.length,
+                        star.y
+                    );
+
+
+                    ctx.stroke();
+
+
+                    star.x +=
+                        star.speed;
+
+
+                    if (
+                        star.x >
+                        canvas.width
+                    ) {
+
+                        star.x =
+                            -star.length;
+
+                        star.y =
+                            Math.random() *
+                            canvas.height;
+
+                    }
+
+                }
+
+
+                this.animationFrameId =
+                    requestAnimationFrame(
+                        draw
+                    );
+
+            };
+
+
+        draw();
+
+    }
+
+
+    /* =====================================================
+       ESCAPE HTML
+       ===================================================== */
 
     escapeHtml(value) {
 
@@ -3156,1002 +2986,12 @@ iframe#player {
 
     }
 
-
-    openPlayer(identifier) {
-
-        const target =
-            this.masterChannels.find(
-                (ch, idx) =>
-                    ch.id == identifier ||
-                    idx == identifier
-            );
-
-
-        if (!target) {
-            this.closePlayer();
-            return;
-        }
-
-
-        let streamUrl =
-
-            target.iframeSrc ||
-
-            target.url ||
-
-            target.link ||
-
-            target.stream ||
-
-            target.file ||
-
-            target.source ||
-
-            target.src;
-
-
-        if (!streamUrl) {
-
-            streamUrl =
-                `https://sonucdn-v2.pages.dev/star.html?id=${encodeURIComponent(
-                    target.id ||
-                    identifier
-                )}`;
-
-        }
-
-
-        const title =
-
-            target.title ||
-
-            target.name ||
-
-            target.channel ||
-
-            "Live Broadcast";
-
-
-        this.currentStreamId =
-            identifier;
-
-
-        this.shadow.querySelector(
-            "#activeStreamTitleDisplay"
-        ).innerText =
-            title;
-
-
-        this.shadow.querySelector(
-            "#player"
-        ).src =
-            streamUrl;
-
-
-        const loadingOverlay =
-            this.shadow.querySelector(
-                "#streamLoadingOverlay"
-            );
-
-
-        if (loadingOverlay) {
-
-            loadingOverlay.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        this.shadow.querySelector(
-            "#home-view"
-        ).classList.remove(
-            "active"
-        );
-
-
-        this.shadow.querySelector(
-            "#player-view"
-        ).classList.add(
-            "active"
-        );
-
-
-        if (!this.isUnlocked) {
-
-            if (this.lockTimer) {
-
-                clearTimeout(
-                    this.lockTimer
-                );
-
-            }
-
-
-            this.lockTimer =
-                setTimeout(
-                    () =>
-                        this.triggerLock(),
-
-                    window.CricConfig
-                        .previewDuration
-                );
-
-        }
-
-
-        const query =
-            `?id=${encodeURIComponent(
-                identifier
-            )}`;
-
-
-        if (
-            window.location.search !==
-            query
-        ) {
-
-            history.pushState(
-                {
-                    playerOpen:
-                        true,
-
-                    id:
-                        identifier
-                },
-
-                "",
-
-                query
-            );
-
-        }
-
-
-        window.scrollTo(
-            0,
-            0
-        );
-
-    }
-
-
-    closePlayer() {
-
-        this.shadow.querySelector(
-            "#player"
-        ).src =
-            "about:blank";
-
-
-        const loadingOverlayEl =
-            this.shadow.querySelector(
-                "#streamLoadingOverlay"
-            );
-
-
-        if (loadingOverlayEl) {
-
-            loadingOverlayEl.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        if (this.lockTimer) {
-
-            clearTimeout(
-                this.lockTimer
-            );
-
-            this.lockTimer =
-                null;
-
-        }
-
-
-        this.currentStreamId =
-            null;
-
-
-        this.shadow.querySelector(
-            "#player-view"
-        ).classList.remove(
-            "active"
-        );
-
-
-        this.shadow.querySelector(
-            "#home-view"
-        ).classList.add(
-            "active"
-        );
-
-
-        if (
-            window.location.search
-        ) {
-
-            history.pushState(
-                {},
-                "",
-                window.location.pathname
-            );
-
-        }
-
-
-        window.scrollTo(
-            0,
-            0
-        );
-
-    }
-
-
-    handleUrlRouting() {
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-        const id =
-            params.get("id");
-
-
-        if (id !== null) {
-
-            this.openPlayer(id);
-
-        } else if (
-            id === null &&
-            this.currentStreamId !== null
-        ) {
-
-            this.closePlayer();
-
-        }
-
-    }
-
-
-    triggerLock() {
-
-        if (this.isUnlocked)
-            return;
-
-
-        const iframe =
-            this.shadow.querySelector(
-                "#player"
-            );
-
-
-        try {
-
-            if (
-                iframe &&
-                iframe.contentWindow
-            ) {
-
-                iframe.contentWindow.postMessage(
-                    "criczone-force-pause",
-                    "*"
-                );
-
-            }
-
-        } catch (e) {}
-
-
-        try {
-
-            if (
-                document.fullscreenElement
-            ) {
-
-                document.exitFullscreen()
-                    .catch(
-                        () => {}
-                    );
-
-            }
-
-        } catch (err) {}
-
-
-        this.shadow.querySelector(
-            "#tgModalDesc"
-        ).innerText =
-            "Free preview ended! Join our CRICZONE Telegram to unlock 24-hour uninterrupted access.";
-
-
-        this.shadow.querySelector(
-            "#tgPremiumModal"
-        ).classList.add(
-            "show"
-        );
-
-    }
-
-
-    handleJoinTelegram() {
-
-        localStorage.setItem(
-            "criczone_unlocked_time",
-            Date.now().toString()
-        );
-
-
-        this.isUnlocked =
-            true;
-
-
-        this.shadow.querySelector(
-            "#tgPremiumModal"
-        ).classList.remove(
-            "show"
-        );
-
-
-        window.open(
-            window.CricConfig.telegramLink,
-            "_blank",
-            "noopener"
-        );
-
-
-        const laterBtn =
-            this.shadow.querySelector(
-                "#tgLaterModalBtn"
-            );
-
-
-        if (laterBtn) {
-
-            laterBtn.style.display =
-                "flex";
-
-        }
-
-
-        const iframe =
-            this.shadow.querySelector(
-                "#player"
-            );
-
-
-        try {
-
-            if (
-                iframe &&
-                iframe.contentWindow
-            ) {
-
-                iframe.contentWindow.postMessage(
-                    "criczone-force-play",
-                    "*"
-                );
-
-            }
-
-        } catch (e) {}
-
-    }
-
-
-    handleLater() {
-
-        this.laterCount++;
-
-
-        if (
-            this.laterCount >= 2
-        ) {
-
-            const laterBtn =
-                this.shadow.querySelector(
-                    "#tgLaterModalBtn"
-                );
-
-
-            if (laterBtn) {
-
-                laterBtn.style.display =
-                    "none";
-
-            }
-
-
-            this.shadow.querySelector(
-                "#tgModalDesc"
-            ).innerText =
-                "Access limit reached! Please join our CRICZONE Telegram channel to proceed.";
-
-
-            return;
-
-        }
-
-
-        this.shadow.querySelector(
-            "#tgPremiumModal"
-        ).classList.remove(
-            "show"
-        );
-
-
-        const iframe =
-            this.shadow.querySelector(
-                "#player"
-            );
-
-
-        try {
-
-            if (
-                iframe &&
-                iframe.contentWindow
-            ) {
-
-                iframe.contentWindow.postMessage(
-                    "criczone-force-play",
-                    "*"
-                );
-
-            }
-
-        } catch (e) {}
-
-    }
-
-
-    toggleFullscreen() {
-
-        const rig =
-            this.shadow.querySelector(
-                "#playerContainer"
-            );
-
-
-        const themeDeck =
-            this.shadow.querySelector(
-                "#themeSwitchDeck"
-            );
-
-
-        const fsIconSvg =
-            this.shadow.querySelector(
-                "#fsIconSvg"
-            );
-
-
-        if (!rig)
-            return;
-
-
-        const isFull =
-            document.fullscreenElement ||
-            rig.classList.contains(
-                "fs-active"
-            );
-
-
-        if (!isFull) {
-
-            rig.classList.add(
-                "fs-active"
-            );
-
-
-            if (themeDeck) {
-
-                themeDeck.classList.add(
-                    "hidden"
-                );
-
-            }
-
-
-            if (fsIconSvg) {
-
-                fsIconSvg.innerHTML =
-                    `
-                    <path
-                        d="
-                        M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6
-                        11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z
-                        "
-                    />
-                    `;
-
-            }
-
-
-            try {
-
-                if (
-                    rig.requestFullscreen
-                ) {
-
-                    rig.requestFullscreen()
-                        .catch(
-                            () => {}
-                        );
-
-                }
-
-            } catch (err) {}
-
-
-        } else {
-
-            rig.classList.remove(
-                "fs-active"
-            );
-
-
-            if (themeDeck) {
-
-                themeDeck.classList.remove(
-                    "hidden"
-                );
-
-            }
-
-
-            if (fsIconSvg) {
-
-                fsIconSvg.innerHTML =
-                    `
-                    <path
-                        d="
-                        M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
-                        7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
-                        "
-                    />
-                    `;
-
-            }
-
-
-            try {
-
-                if (
-                    document.exitFullscreen
-                ) {
-
-                    document.exitFullscreen()
-                        .catch(
-                            () => {}
-                        );
-
-                }
-
-            } catch (err) {}
-
-        }
-
-    }
-
-
-    setupMessageListener() {
-
-        window.addEventListener(
-            "message",
-            (e) => {
-
-                if (
-
-                    e.data ===
-                    "criczone-playing" &&
-
-                    !this.isUnlocked &&
-
-                    !this.lockTimer
-
-                ) {
-
-                    this.lockTimer =
-                        setTimeout(
-
-                            () =>
-                                this.triggerLock(),
-
-                            window.CricConfig
-                                .previewDuration
-
-                        );
-
-                }
-
-            }
-        );
-
-
-        document.addEventListener(
-            "fullscreenchange",
-            () => {
-
-                const rig =
-                    this.shadow.querySelector(
-                        "#playerContainer"
-                    );
-
-
-                const themeDeck =
-                    this.shadow.querySelector(
-                        "#themeSwitchDeck"
-                    );
-
-
-                const fsIconSvg =
-                    this.shadow.querySelector(
-                        "#fsIconSvg"
-                    );
-
-
-                if (
-
-                    !document.fullscreenElement &&
-
-                    !document.webkitIsFullScreen &&
-
-                    rig
-
-                ) {
-
-                    rig.classList.remove(
-                        "fs-active"
-                    );
-
-
-                    if (themeDeck) {
-
-                        themeDeck.classList.remove(
-                            "hidden"
-                        );
-
-                    }
-
-
-                    if (fsIconSvg) {
-
-                        fsIconSvg.innerHTML =
-                            `
-                            <path
-                                d="
-                                M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12
-                                7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z
-                                "
-                            />
-                            `;
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    initEventListeners() {
-
-        this.shadow.querySelector(
-            "#backHomeBtn"
-        ).onclick =
-            () =>
-                this.closePlayer();
-
-
-        this.shadow.querySelector(
-            "#brandHomeLink"
-        ).onclick =
-            () =>
-                this.closePlayer();
-
-
-        this.shadow.querySelector(
-            "#tgJoinModalBtn"
-        ).onclick =
-            () =>
-                this.handleJoinTelegram();
-
-
-        this.shadow.querySelector(
-            "#tgLaterModalBtn"
-        ).onclick =
-            () =>
-                this.handleLater();
-
-
-        this.shadow.querySelector(
-            "#blendedFsBtn"
-        ).onclick =
-            () =>
-                this.toggleFullscreen();
-
-
-        this.shadow.querySelector(
-            "#themeDarkBtn"
-        ).onclick =
-            () => {
-
-                this.removeAttribute(
-                    "data-theme"
-                );
-
-
-                this.shadow.querySelector(
-                    "#themeDarkBtn"
-                ).classList.add(
-                    "active"
-                );
-
-
-                this.shadow.querySelector(
-                    "#themeLightBtn"
-                ).classList.remove(
-                    "active"
-                );
-
-            };
-
-
-        this.shadow.querySelector(
-            "#themeLightBtn"
-        ).onclick =
-            () => {
-
-                this.setAttribute(
-                    "data-theme",
-                    "light"
-                );
-
-
-                this.shadow.querySelector(
-                    "#themeLightBtn"
-                ).classList.add(
-                    "active"
-                );
-
-
-                this.shadow.querySelector(
-                    "#themeDarkBtn"
-                ).classList.remove(
-                    "active"
-                );
-
-            };
-
-
-        const btnShare =
-            this.shadow.querySelector(
-                "#btnShare"
-            );
-
-
-        const shareText =
-            this.shadow.querySelector(
-                "#shareBtnText"
-            );
-
-
-        btnShare.onclick =
-            async () => {
-
-                try {
-
-                    if (
-                        navigator.share
-                    ) {
-
-                        await navigator.share({
-
-                            title:
-                                "CRICZONE LIVE",
-
-                            url:
-                                window.location.href
-
-                        });
-
-                    } else {
-
-                        await navigator.clipboard
-                            .writeText(
-                                window.location.href
-                            );
-
-
-                        shareText.textContent =
-                            "COPIED!";
-
-
-                        setTimeout(
-                            () => {
-
-                                shareText.textContent =
-                                    "SHARE STREAM";
-
-                            },
-                            1800
-                        );
-
-                    }
-
-                } catch (err) {}
-
-            };
-
-    }
-
-
-    initWarpField() {
-
-        const canvas =
-            this.shadow.getElementById(
-                "warpGridCanvas"
-            );
-
-
-        if (!canvas)
-            return;
-
-
-        const ctx =
-            canvas.getContext(
-                "2d"
-            );
-
-
-        const resize =
-            () => {
-
-                canvas.width =
-                    window.innerWidth;
-
-                canvas.height =
-                    window.innerHeight;
-
-            };
-
-
-        window.addEventListener(
-            "resize",
-            resize
-        );
-
-
-        resize();
-
-
-        for (
-            let i = 0;
-            i < 100;
-            i++
-        ) {
-
-            this.stars.push({
-
-                x:
-                    Math.random() *
-                    canvas.width,
-
-                y:
-                    Math.random() *
-                    canvas.height,
-
-                length:
-                    Math.random() *
-                    20 +
-                    10,
-
-                speed:
-                    Math.random() *
-                    2 +
-                    1,
-
-                alpha:
-                    Math.random() *
-                    0.5 +
-                    0.1
-
-            });
-
-        }
-
-
-        const render =
-            () => {
-
-                ctx.clearRect(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-
-                ctx.lineWidth =
-                    1.2;
-
-
-                this.stars.forEach(
-                    star => {
-
-                        ctx.beginPath();
-
-                        ctx.moveTo(
-                            star.x,
-                            star.y
-                        );
-
-                        ctx.lineTo(
-                            star.x -
-                            star.length,
-                            star.y +
-                            star.length
-                        );
-
-                        ctx.strokeStyle =
-                            `rgba(
-                                0,
-                                255,
-                                204,
-                                ${star.alpha}
-                            )`;
-
-                        ctx.stroke();
-
-
-                        star.x -=
-                            star.speed;
-
-                        star.y +=
-                            star.speed;
-
-
-                        if (
-                            star.x <
-                                -star.length ||
-                            star.y >
-                                canvas.height +
-                                star.length
-                        ) {
-
-                            star.x =
-                                canvas.width +
-                                star.length;
-
-                            star.y =
-                                Math.random() *
-                                canvas.height;
-
-                        }
-
-                    }
-                );
-
-
-                this.animationFrameId =
-                    requestAnimationFrame(
-                        render
-                    );
-
-            };
-
-
-        render();
-
-    }
-
 }
 
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
 
 customElements.define(
     "criczone-ui",
@@ -4160,6 +3000,10 @@ customElements.define(
 
 </script>
 
+
+<!-- =====================================================
+     CRICZONE
+     ===================================================== -->
 
 <criczone-ui></criczone-ui>
 
