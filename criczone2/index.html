@@ -523,9 +523,9 @@
         const popupClose = document.getElementById("popupClose");
         const toast = document.getElementById("toast");
 
-        /* =========================================
-           SERVERLESS FETCH FUNCTION (FIXED)
-        ========================================= */
+        /* =========================================================
+           FETCH FUNCTION (FIXED CORS & PROXY FALLBACK)
+        ========================================================= */
         async function fetchStreamData() {
             // 1. Session Storage Cache Check
             const cached = sessionStorage.getItem("criczone_channels_v3");
@@ -538,24 +538,11 @@
                 }
             }
 
-            // 2. Fetch from Vercel Serverless Function
-            try {
-                const response = await fetch('/api/channels');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && (data.iframes || Array.isArray(data))) {
-                        const result = data.iframes ? data : { iframes: data };
-                        sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
-                        return result;
-                    }
-                }
-            } catch (e) {
-                console.warn("Serverless API failed, trying direct...");
-            }
+            const targetUrl = "https://cineiframe.cinearena08.workers.dev/";
 
-            // 3. Fallback direct API
+            // 2. Direct Worker Fetch Try
             try {
-                const directRes = await fetch("https://cineiframe.cinearena08.workers.dev/");
+                const directRes = await fetch(targetUrl);
                 if (directRes.ok) {
                     const directData = await directRes.json();
                     const result = directData.iframes ? directData : { iframes: directData };
@@ -563,10 +550,24 @@
                     return result;
                 }
             } catch (e) {
-                console.error("Direct fetch failed", e);
+                console.warn("Direct fetch blocked or failed (CORS), trying CORS proxy...");
             }
 
-            throw new Error("Unable to fetch channel data from both sources.");
+            // 3. Fallback CORS Proxy Fetch
+            try {
+                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+                const proxyRes = await fetch(proxyUrl);
+                if (proxyRes.ok) {
+                    const proxyData = await proxyRes.json();
+                    const result = proxyData.iframes ? proxyData : { iframes: proxyData };
+                    sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
+                    return result;
+                }
+            } catch (e) {
+                console.error("Proxy fetch failed:", e);
+            }
+
+            throw new Error("Unable to fetch channel data.");
         }
 
         async function initializeApp() {
