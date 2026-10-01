@@ -22,11 +22,11 @@
   </style>
 </head>
 <body>
-  <cricxcrate-ui></cricxcrate-ui>
+  <criczone-ui></criczone-ui>
 
   <script>
     (function() {
-      class CricXCrateUI extends HTMLElement {
+      class criczoneUI extends HTMLElement {
         constructor() {
           super();
           this.shadow = this.attachShadow({ mode: 'closed' });
@@ -138,7 +138,7 @@
             <div id="playerView" class="view">
               <div class="hero-section" style="padding-bottom: 20px;">
                 <div class="top-bar">
-                  <div class="brand">CricxCrate live</div>
+                  <div class="brand">criczone live</div>
                   <button class="server-btn" id="backHubBtn">← Back to Hub</button>
                 </div>
               </div>
@@ -152,7 +152,7 @@
                   <div class="video-details">
                     <div class="video-meta-row">
                       <div class="video-title-block">
-                        <h3 id="channelNameDisplay" style="font-size: 18px;">CricxCrate live</h3>
+                        <h3 id="channelNameDisplay" style="font-size: 18px;">criczone live</h3>
                       </div>
                       <div class="action-buttons">
                         <button class="btn-action" id="btn-share">Share</button>
@@ -275,13 +275,13 @@
           grid.innerHTML = this.state.channels.map(c => `
             <div class="channel-card" data-channel-id="${c.id}">
               <div class="channel-name">${c.name || "Channel " + c.id}</div>
-              <div class="channel-status">🟢 CricxCrate live</div>
+              <div class="channel-status">🟢 criczone live</div>
             </div>
           `).join("");
         }
         playChannel(channel) {
           this.state.currentChannel = channel;
-          const name = channel.name || "CricxCrate live";
+          const name = channel.name || "criczone live";
           this.shadow.getElementById("channelNameDisplay").textContent = name;
           this.showView('playerView');
 
@@ -317,7 +317,7 @@
           shadow.getElementById("backHubBtn").addEventListener("click", () => this.showView('hubView'));
 
           setTimeout(() => {
-            const lastShown = localStorage.getItem('cricxcrate_popup3_time');
+            const lastShown = localStorage.getItem('criczone_popup3_time');
             const now = new Date().getTime();
             const oneDayMs = 24 * 60 * 60 * 1000;
             if(!lastShown || (now - parseInt(lastShown)) > oneDayMs) {
@@ -326,7 +326,7 @@
           }, 300000);
 
           shadow.getElementById('btn-unlock-tg').addEventListener('click', () => {
-            localStorage.setItem('cricxcrate_popup3_time', new Date().getTime().toString());
+            localStorage.setItem('criczone_popup3_time', new Date().getTime().toString());
             this.goTelegram();
             shadow.getElementById('overlay-3').classList.remove('show');
           });
@@ -352,7 +352,7 @@
             const shareUrl = cur ? `${window.location.origin}${window.location.pathname}?id=${cur.id}` : window.location.href;
 
             if (navigator.share) {
-              navigator.share({ title: "CricxCrate live", url: shareUrl }).catch(()=>{});
+              navigator.share({ title: "criczone live", url: shareUrl }).catch(()=>{});
             } else {
               navigator.clipboard.writeText(shareUrl);
               alert("Stream share link copied to clipboard!");
@@ -366,7 +366,7 @@
         }
       }
 
-      customElements.define('cricxcrate-ui', CricXCrateUI);
+      customElements.define('criczone-ui', criczoneUI);
     })();
   </script>
 </body>
