@@ -2587,6 +2587,9 @@ async function fetchStreamData() {
 /* =========================================
    INITIALIZE
 ========================================= */
+/* =========================================
+   INITIALIZE
+========================================= */
 
 async function initializeApp() {
 
@@ -2628,12 +2631,10 @@ async function initializeApp() {
                 : [];
 
 
-        const streamData =
-            streams.find(
-                item =>
-                    String(item.id) ===
-                    String(streamId)
-            );
+        // FIXED: Fallback to the first available stream if no ID is provided
+        const streamData = streamId 
+            ? streams.find(item => String(item.id) === String(streamId))
+            : streams[0];
 
 
         if (!streamData) {
