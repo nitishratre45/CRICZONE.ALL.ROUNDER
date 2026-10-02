@@ -542,41 +542,22 @@
                 }
             }
 
-            const targetUrl = "https://cineiframe.cinearena08.workers.dev/";
+            const sourceUrl = "https://allrounderid2.pages.dev/id.json";
+            const response = await fetch(sourceUrl, { cache: "no-store" });
 
-            const proxies = [
-                "https://corsproxy.io/?" + encodeURIComponent(targetUrl),
-                "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(targetUrl),
-                "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl)
-            ];
-
-            try {
-                const directRes = await fetch(targetUrl);
-                if (directRes.ok) {
-                    const directData = await directRes.json();
-                    const result = directData.iframes ? directData : { iframes: directData };
-                    sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
-                    return result;
-                }
-            } catch (e) {
-                console.warn("Direct worker request blocked by CORS. Switching to Proxy fallback chain...");
+            if (!response.ok) {
+                throw new Error(`Channel feed request failed: ${response.status}`);
             }
 
-            for (let i = 0; i < proxies.length; i++) {
-                try {
-                    const res = await fetch(proxies[i]);
-                    if (res.ok) {
-                        const data = await res.json();
-                        const result = data.iframes ? data : { iframes: data };
-                        sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
-                        return result;
-                    }
-                } catch (err) {
-                    console.warn(`Proxy ${i+1} failed, trying next...`);
-                }
+            const data = await response.json();
+            const result = Array.isArray(data) ? { iframes: data } : data;
+
+            if (!result || !Array.isArray(result.iframes)) {
+                throw new Error("Channel feed has an invalid format.");
             }
 
-            throw new Error("Unable to fetch channel data from all available sources.");
+            sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
+            return result;
         }
 
         async function initializeApp() {
