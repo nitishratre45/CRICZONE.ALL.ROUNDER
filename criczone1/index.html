@@ -60,6 +60,13 @@
 
           };
 
+          this.viewerPresenceRef = null;
+          this.viewerCountUnsubscribe = null;
+          this.firebaseConnectionUnsubscribe = null;
+          this.firebaseRemove = null;
+          this.viewerCountStarted = false;
+          this.viewerJoinInFlight = false;
+
         }
 
 
@@ -70,6 +77,15 @@
           this.initEvents();
 
           this.loadChannelsData();
+
+          this.setupViewerCount();
+
+        }
+
+
+        disconnectedCallback() {
+
+          this.cleanupViewerCount();
 
         }
 
@@ -404,6 +420,32 @@
 
                 letter-spacing:
                   .7px;
+
+              }
+
+
+              .viewer-count {
+
+                padding-left: 8px;
+
+                border-left:
+                  1px solid
+                  rgba(37,229,138,.25);
+
+                color:
+                  #d5e2ed;
+
+                font-size:
+                  9px;
+
+                font-weight:
+                  700;
+
+                letter-spacing:
+                  0;
+
+                white-space:
+                  nowrap;
 
               }
 
@@ -2198,6 +2240,17 @@
                 }
 
 
+                .viewer-count {
+
+                  padding-left:
+                    6px;
+
+                  font-size:
+                    8px;
+
+                }
+
+
                 .hero {
 
                   padding:
@@ -2560,6 +2613,14 @@
 
                   LIVE NOW
 
+                  <span
+                    class="viewer-count"
+                    id="viewerCount"
+                    aria-live="polite"
+                  >
+                    Connecting...
+                  </span>
+
                 </div>
 
               </header>
@@ -2850,7 +2911,6 @@
                         <iframe
   id="streamIframe"
   sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-  allowfullscreen
   allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
   referrerpolicy="no-referrer"
   loading="eager"
@@ -3109,6 +3169,255 @@
 
               }
             );
+
+        }
+
+
+        async setupViewerCount() {
+
+          const countElement =
+            this.shadow.getElementById(
+              "viewerCount"
+            );
+
+
+          if (
+            !countElement ||
+            this.viewerCountStarted
+          ) {
+
+            return;
+
+          }
+
+
+          this.viewerCountStarted = true;
+
+
+          try {
+
+            const [firebaseAppSdk, firebaseDatabaseSdk] =
+              await Promise.all([
+                import(
+                  "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+                ),
+                import(
+                  "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+                )
+              ]);
+
+
+            const firebaseConfig = {
+              apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+              authDomain: "cricket-live-39106.firebaseapp.com",
+              databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+              projectId: "cricket-live-39106",
+              storageBucket: "cricket-live-39106.firebasestorage.app",
+              messagingSenderId: "841890143",
+              appId: "1:841890143:web:ca5b87c9395bdc19145eea"
+            };
+
+
+            const appName =
+              "criczone1-live-viewers";
+
+
+            const firebaseApp =
+              firebaseAppSdk.getApps().find(
+                app => app.name === appName
+              ) ||
+              firebaseAppSdk.initializeApp(
+                firebaseConfig,
+                appName
+              );
+
+
+            const database =
+              firebaseDatabaseSdk.getDatabase(
+                firebaseApp
+              );
+
+
+            const viewersRef =
+              firebaseDatabaseSdk.ref(
+                database,
+                "liveViewers/page_criczone1"
+              );
+
+
+            this.firebaseRemove =
+              firebaseDatabaseSdk.remove;
+
+
+            this.viewerCountUnsubscribe =
+              firebaseDatabaseSdk.onValue(
+                viewersRef,
+                snapshot => {
+
+                  const records =
+                    Object.values(
+                      snapshot.val() || {}
+                    );
+
+
+                  const onlineCount =
+                    records.filter(
+                      record =>
+                        record?.online === true
+                    ).length;
+
+
+                  countElement.textContent =
+                    `${onlineCount} watching`;
+
+                },
+                error => {
+
+                  console.error(
+                    "Firebase viewer count failed:",
+                    error
+                  );
+
+                  countElement.textContent =
+                    "Unavailable";
+
+                }
+              );
+
+
+            this.firebaseConnectionUnsubscribe =
+              firebaseDatabaseSdk.onValue(
+                firebaseDatabaseSdk.ref(
+                  database,
+                  ".info/connected"
+                ),
+                snapshot => {
+
+                  if (
+                    snapshot.val() !== true ||
+                    this.viewerJoinInFlight
+                  ) {
+
+                    return;
+
+                  }
+
+
+                  this.viewerJoinInFlight = true;
+
+
+                  void (async () => {
+
+                    try {
+
+                      if (!this.viewerPresenceRef) {
+
+                        this.viewerPresenceRef =
+                          firebaseDatabaseSdk.push(
+                            viewersRef
+                          );
+
+                      }
+
+
+                      await firebaseDatabaseSdk
+                        .onDisconnect(
+                          this.viewerPresenceRef
+                        )
+                        .remove();
+
+
+                      await firebaseDatabaseSdk.set(
+                        this.viewerPresenceRef,
+                        {
+                          online: true,
+                          joinedAt:
+                            firebaseDatabaseSdk.serverTimestamp()
+                        }
+                      );
+
+                    } catch (error) {
+
+                      console.error(
+                        "Firebase viewer presence failed:",
+                        error
+                      );
+
+                      countElement.textContent =
+                        "Unavailable";
+
+                    } finally {
+
+                      this.viewerJoinInFlight = false;
+
+                    }
+
+                  })();
+
+                }
+              );
+
+
+            window.addEventListener(
+              "pagehide",
+              () => this.cleanupViewerCount(),
+              { once: true }
+            );
+
+          } catch (error) {
+
+            console.error(
+              "Firebase viewer setup failed:",
+              error
+            );
+
+            countElement.textContent =
+              "Unavailable";
+
+          }
+
+        }
+
+
+        cleanupViewerCount() {
+
+          if (
+            this.viewerPresenceRef &&
+            this.firebaseRemove
+          ) {
+
+            this.firebaseRemove(
+              this.viewerPresenceRef
+            ).catch(
+              error =>
+                console.warn(
+                  "Firebase viewer cleanup failed:",
+                  error
+                )
+            );
+
+          }
+
+
+          this.viewerPresenceRef = null;
+
+
+          if (this.viewerCountUnsubscribe) {
+
+            this.viewerCountUnsubscribe();
+
+            this.viewerCountUnsubscribe = null;
+
+          }
+
+
+          if (this.firebaseConnectionUnsubscribe) {
+
+            this.firebaseConnectionUnsubscribe();
+
+            this.firebaseConnectionUnsubscribe = null;
+
+          }
 
         }
 
