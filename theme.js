@@ -22,7 +22,7 @@
 
         if (button) {
             const nextMode = currentTheme === "light" ? "night" : "light";
-            button.textContent = currentTheme === "light" ? "☾" : "☼";
+            button.textContent = currentTheme === "light" ? "\u263E" : "\u2600";
             button.title = `Switch to ${nextMode} mode`;
             button.setAttribute("aria-label", `Switch to ${nextMode} mode`);
             button.setAttribute("aria-pressed", String(currentTheme === "light"));
@@ -50,10 +50,46 @@
         });
     }
 
-    document.documentElement.dataset.theme = currentTheme;
-    window.CriczoneTheme = { bind };
+    function bindAll(scope) {
+        (scope || document).querySelectorAll(".theme-toggle").forEach(button => bind(button));
+    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".theme-toggle").forEach(button => bind(button));
-    });
+    function observe() {
+        if (!window.MutationObserver || !document.body) {
+            return;
+        }
+
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (!node || node.nodeType !== 1) {
+                        return;
+                    }
+
+                    if (node.classList && node.classList.contains("theme-toggle")) {
+                        bind(node);
+                    }
+
+                    if (node.querySelectorAll) {
+                        node.querySelectorAll(".theme-toggle").forEach(button => bind(button));
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    document.documentElement.dataset.theme = currentTheme;
+    window.CriczoneTheme = { bind, bindAll };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            bindAll(document);
+            observe();
+        });
+    } else {
+        bindAll(document);
+        observe();
+    }
 })();
