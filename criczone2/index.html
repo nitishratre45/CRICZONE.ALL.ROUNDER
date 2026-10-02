@@ -369,8 +369,6 @@
 
         .watching strong { color: white; font-size: 9px; }
         .watching-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-        .open-stream { color: inherit; font-size: inherit; text-decoration: none; white-space: nowrap; }
-        .open-stream:hover { color: var(--green); }
 
         .info-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 14px; }
         .info-card { padding: 19px; border: 1px solid var(--border); border-radius: 17px; background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.018)); }
@@ -640,52 +638,35 @@
         }
 
         /* =========================================================
-           LIVE CHANNEL FEED
+           FETCH FUNCTION (MULTI-PROXY FAILOVER)
         ========================================================= */
-        const CHANNEL_CACHE_KEY = "criczone_channels_v4";
-        const CHANNEL_CACHE_MAX_AGE = 5 * 60 * 1000;
+        async function fetchStreamData() {
+            const cached = sessionStorage.getItem("criczone_channels_v3");
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && (parsed.iframes || Array.isArray(parsed))) return parsed;
+                } catch(e) {
+                    sessionStorage.removeItem("criczone_channels_v3");
+                }
+            }
 
-        function normalizeStreamData(data) {
+            const sourceUrl = "/api/channels?feed=directory";
+            const response = await fetch(sourceUrl, { cache: "no-store" });
+
+            if (!response.ok) {
+                throw new Error(`Channel feed request failed: ${response.status}`);
+            }
+
+            const data = await response.json();
             const result = Array.isArray(data) ? { iframes: data } : data;
+
             if (!result || !Array.isArray(result.iframes)) {
                 throw new Error("Channel feed has an invalid format.");
             }
+
+            sessionStorage.setItem("criczone_channels_v3", JSON.stringify(result));
             return result;
-        }
-
-        function getCachedStreamData() {
-            try {
-                const cached = JSON.parse(sessionStorage.getItem(CHANNEL_CACHE_KEY) || "null");
-                if (!cached || Date.now() - cached.savedAt > CHANNEL_CACHE_MAX_AGE) return null;
-                return normalizeStreamData(cached.data);
-            } catch (error) {
-                sessionStorage.removeItem(CHANNEL_CACHE_KEY);
-                return null;
-            }
-        }
-
-        async function fetchStreamData() {
-            const sourceUrl = "/api/channels?feed=directory";
-
-            try {
-                // Live stream URLs rotate often, so always request a fresh channel list first.
-                const response = await fetch(sourceUrl, { cache: "no-store" });
-                if (!response.ok) {
-                    throw new Error(`Channel feed request failed: ${response.status}`);
-                }
-
-                const result = normalizeStreamData(await response.json());
-                sessionStorage.setItem(CHANNEL_CACHE_KEY, JSON.stringify({
-                    savedAt: Date.now(),
-                    data: result
-                }));
-                sessionStorage.removeItem("criczone_channels_v3");
-                return result;
-            } catch (error) {
-                const cached = getCachedStreamData();
-                if (cached) return cached;
-                throw error;
-            }
         }
 
         async function initializeApp() {
@@ -754,11 +735,6 @@
             const iframeSrc = escapeAttr(data.iframeSrc || data.stream_url || data.url || "");
             const currentPath = window.location.pathname;
 
-            if (!iframeSrc) {
-                renderError("Stream Unavailable", "This channel does not currently have a playable stream URL.");
-                return;
-            }
-
             streamContent.innerHTML = `
                 <div class="back-nav">
                     <a class="back-btn" href="${currentPath}"><i class="fa-solid fa-arrow-left"></i> All Channels</a>
@@ -778,7 +754,7 @@
 
                     <div class="video-shell">
                         <div class="video-container">
-                            <iframe id="streamFrame" title="${name} live stream" src="${iframeSrc}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                            <iframe id="streamFrame" src="${iframeSrc}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="no-referrer"></iframe>
                         </div>
 
                         <div class="video-bottom">
@@ -791,7 +767,7 @@
                             </div>
                             <div class="watching">
                                 <span class="watching-dot"></span>
-                                <a class="open-stream" href="${iframeSrc}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open stream</a>
+                                <span><strong>345</strong> watching live</span>
                             </div>
                         </div>
                     </div>
