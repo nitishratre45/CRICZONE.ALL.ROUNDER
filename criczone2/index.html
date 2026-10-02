@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#05070d">
     <meta name="description" content="Criczone Live - Watch live cricket streaming">
     <title>Criczone Live</title>
+    <script src="../theme.js"></script>
 
     <!-- GOOGLE FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,6 +95,12 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255,255,255,.055);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .brand {
@@ -530,6 +537,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="../theme.css">
 </head>
 
 <body>
@@ -550,6 +558,7 @@
                 </a>
 
                 <div class="header-right">
+                    <button class="theme-toggle" type="button"></button>
                     <div class="live-status">
                         <span class="live-status-dot"></span>
                         LIVE NOW

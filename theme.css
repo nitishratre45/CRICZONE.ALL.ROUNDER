@@ -1,0 +1,282 @@
+.theme-toggle {
+    display: inline-grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(133, 170, 151, .35) !important;
+    border-radius: 9px;
+    color: #eaf5ee !important;
+    background: rgba(14, 28, 22, .82) !important;
+    font: 700 18px/1 "Manrope", sans-serif;
+    cursor: pointer;
+    transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(119, 220, 173, .72);
+    background: rgba(26, 53, 40, .92);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid #b8e67e;
+    outline-offset: 3px;
+}
+
+/* Keep each page's new control alongside its existing header actions. */
+.list-header .theme-toggle {
+    margin-left: auto;
+}
+
+:host .header {
+    gap: 10px;
+}
+
+:host .header > .theme-toggle {
+    margin-left: auto;
+}
+
+:root[data-theme="light"] .theme-toggle {
+    color: #20372a !important;
+    border-color: rgba(34, 89, 58, .24) !important;
+    background: rgba(255, 255, 255, .9) !important;
+}
+
+:host([data-theme="light"]) .theme-toggle {
+    color: #20372a !important;
+    border-color: rgba(34, 89, 58, .24) !important;
+    background: rgba(255, 255, 255, .9) !important;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f2f6f3;
+    --bg2: #e7efea;
+    --card: #ffffff;
+    --card2: #f5f8f6;
+    --border: rgba(30, 67, 47, .16);
+    --border-blue: rgba(35, 110, 151, .25);
+    --text: #17271e;
+    --muted: #52675b;
+    --muted2: #66786e;
+    --blue: #26749c;
+    --blue2: #1f648c;
+    --cyan: #13869a;
+    --green: #08784b;
+    --red: #bf384b;
+    --telegram: #147fa9;
+    --shadow: 0 18px 50px rgba(25, 52, 37, .12);
+    --cc-accent: #0a805e;
+    --cc-accent-2: #158361;
+    --cc-accent-3: #267b9a;
+    --cc-accent-deep: #dcebe3;
+    --cc-gold: #967018;
+    --cc-bg: #f1f6f2;
+    --cc-bg2: #e9f0eb;
+    --cc-panel: #ffffff;
+    --cc-panel2: #f8fbf9;
+    --cc-border: #d5e2da;
+    --cc-border2: #bdcfc4;
+    --cc-text: #18291f;
+    --cc-muted: #5c7064;
+    --cc-live: #c83d47;
+}
+
+:root[data-theme="light"] body {
+    color: #17271e;
+    background: linear-gradient(180deg, #f4f8f5, #e9f0ec 60%, #f4f7f5);
+}
+
+:root[data-theme="light"] body::before {
+    opacity: .07;
+}
+
+:root[data-theme="light"] .bg-glow {
+    opacity: .12;
+}
+
+:root[data-theme="light"] .live-status,
+:root[data-theme="light"] .live-badge {
+    color: #08784b;
+    background: rgba(10, 128, 94, .08);
+    border-color: rgba(10, 128, 94, .2);
+}
+
+:root[data-theme="light"] .channel-card {
+    color: #18291f;
+    border-color: rgba(30, 67, 47, .16);
+    background: linear-gradient(145deg, #ffffff, #f2f7f4);
+    box-shadow: 0 8px 22px rgba(24, 54, 38, .08);
+}
+
+:root[data-theme="light"] .channel-card:hover {
+    border-color: rgba(10, 128, 94, .44);
+    background: #ffffff;
+}
+
+:root[data-theme="light"] .channel-card .card-title,
+:root[data-theme="light"] .channel-card .name {
+    color: #18291f;
+}
+
+:root[data-theme="light"] .search-box,
+:root[data-theme="light"] .search input,
+:root[data-theme="light"] .cc-search input,
+:root[data-theme="light"] #cc-sort {
+    color: #17271e;
+    border-color: rgba(30, 67, 47, .18);
+    background-color: rgba(255, 255, 255, .9);
+}
+
+:root[data-theme="light"] .filter-btn,
+:root[data-theme="light"] .cc-chip {
+    color: #354b3e;
+    border-color: rgba(30, 67, 47, .18);
+    background: #ffffff;
+}
+
+:root[data-theme="light"] .cc-chip.active {
+    color: #ffffff;
+    border-color: #08784b;
+    background: #08784b;
+}
+
+:root[data-theme="light"] .cc-marquee {
+    border-color: rgba(30, 67, 47, .15);
+    background: rgba(255, 255, 255, .66);
+}
+
+:root[data-theme="light"] .brand-name,
+:root[data-theme="light"] .cc-marquee-track em {
+    color: #18291f;
+}
+
+:root[data-theme="light"] #cc-hero {
+    border-color: #cfddd4;
+    box-shadow: 0 16px 42px rgba(24, 54, 38, .12);
+}
+
+:root[data-theme="light"] #channel-list {
+    background:
+        radial-gradient(75% 42% at 50% 0%, rgba(21, 131, 97, .12), transparent 72%),
+        linear-gradient(180deg, #f1f6f2, #e8efeb 56%, #f3f7f4);
+}
+
+:root[data-theme="light"] #channel-list::before {
+    opacity: .42;
+}
+
+:root[data-theme="light"] #ch-header {
+    border-bottom-color: rgba(30, 67, 47, .16);
+    background: rgba(244, 248, 245, .92);
+}
+
+:root[data-theme="light"] #ch-header h1,
+:root[data-theme="light"] .ch-card span {
+    color: #18291f;
+}
+
+:root[data-theme="light"] .header-tag {
+    color: #0a805e;
+}
+
+:root[data-theme="light"] .ch-card {
+    border-color: #d2dfd7;
+    background: linear-gradient(135deg, #ffffff, #f2f7f4);
+    box-shadow: 0 6px 17px rgba(25, 52, 37, .07);
+}
+
+:root[data-theme="light"] .ch-card:hover {
+    border-color: rgba(10, 128, 94, .44);
+    background: #ffffff;
+}
+
+:root[data-theme="light"] .ch-card::before {
+    color: #0a805e;
+}
+
+:root[data-theme="light"] .ch-card::after {
+    color: #397d4d;
+}
+
+:root[data-theme="light"] .net-head,
+:root[data-theme="light"] .grid-head {
+    color: #263d30;
+}
+
+:root[data-theme="light"] .net-head h2,
+:root[data-theme="light"] .grid-head h2 {
+    color: #20382b;
+}
+
+:host([data-theme="light"]) {
+    --bg: #f2f6f3;
+    --card: #ffffff;
+    --text: #17271e;
+    --muted: #52675b;
+    --accent: #08784b;
+    --accent2: #26749c;
+    --border: rgba(30, 67, 47, .17);
+    --border-hover: rgba(10, 128, 94, .48);
+    --bg2: #e7efea;
+    --card-hover: #ffffff;
+    --blue: #26749c;
+    --blue2: #1f648c;
+    --cyan: #13869a;
+    --green: #08784b;
+    --shadow: 0 18px 50px rgba(25, 52, 37, .12);
+    color: var(--text);
+    background: var(--bg);
+}
+
+:host([data-theme="light"]) .page {
+    color: var(--text);
+    background: linear-gradient(180deg, #f5f8f6, #eaf1ed);
+}
+
+:host([data-theme="light"]) .channel-card {
+    color: var(--text);
+    border-color: rgba(30, 67, 47, .17);
+    background: linear-gradient(145deg, #ffffff, #f2f7f4);
+    box-shadow: 0 8px 22px rgba(24, 54, 38, .08);
+}
+
+:host([data-theme="light"]) .channel-card .card-title,
+:host([data-theme="light"]) .card-title {
+    color: #18291f;
+}
+
+:host([data-theme="light"]) .nav,
+:host([data-theme="light"]) .header {
+    border-color: rgba(30, 67, 47, .16);
+}
+
+:host([data-theme="light"]) .search-box,
+:host([data-theme="light"]) .search input {
+    color: #17271e;
+    border-color: rgba(30, 67, 47, .18);
+    background: #ffffff;
+}
+
+:host([data-theme="light"]) .filter-btn:not(.active) {
+    color: #354b3e;
+    border-color: rgba(30, 67, 47, .18);
+    background: #ffffff;
+}
+
+:host([data-theme="light"]) .app {
+    color: var(--text);
+    background: linear-gradient(180deg, #f4f8f5, #e9f0ec 60%, #f4f7f5);
+}
+
+:host([data-theme="light"]) .background-glow {
+    opacity: .12;
+}
+
+:host([data-theme="light"]) .hero p,
+:host([data-theme="light"]) .section-count {
+    color: #52675b;
+}

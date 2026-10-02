@@ -26,9 +26,11 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.2/controls.min.css"
 >
 
+<script src="../theme.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.2/shaka-player.compiled.min.js"></script>
 
 <style>
+
 html,
 body {
     margin: 0;
@@ -1821,6 +1823,7 @@ button {
 
 </style>
 
+<link rel="stylesheet" href="../theme.css">
 
 <!-- =====================================================
      BACKGROUND
@@ -1847,6 +1850,12 @@ button {
 
 
     <div class="nav-actions">
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+        ></button>
 
         <div class="live-pill">
 
@@ -2237,6 +2246,11 @@ button {
 
 
         this.setupEvents();
+
+        window.CriczoneTheme.bind(
+            this.shadow.querySelector("#themeToggle"),
+            this
+        );
 
         this.setupBackground();
 
