@@ -3,114 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criczone Live</title>
-
+    <meta name="theme-color" content="#08100d">
+    <meta name="description" content="Choose a Criczone live sports channel hub.">
+    <title>Criczone | Live Sports Hubs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            color-scheme: dark;
+            --bg: #08100d;
+            --panel: #101a15;
+            --panel-hover: #14221b;
+            --text: #f1f6f2;
+            --muted: #9aa99f;
+            --line: rgba(210, 230, 216, .13);
+            --mint: #72e0aa;
+            --lime: #d5ef7b;
+            --blue: #70c7e8;
         }
+
+        * { box-sizing: border-box; }
 
         body {
+            min-width: 320px;
             min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+            background:
+                linear-gradient(rgba(8, 16, 13, .96), rgba(8, 16, 13, .98)),
+                repeating-linear-gradient(0deg, transparent 0 63px, rgba(210, 230, 216, .05) 64px),
+                var(--bg);
+            font-family: "Manrope", sans-serif;
+        }
+
+        a { color: inherit; }
+
+        .shell {
+            width: min(100% - 40px, 1040px);
+            margin-inline: auto;
+            padding: 28px 0 36px;
+        }
+
+        .masthead {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: #050812;
-            color: white;
-            font-family: Arial, sans-serif;
+            justify-content: space-between;
+            min-height: 54px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 18px;
         }
 
-        .box {
-            text-align: center;
-            padding: 35px;
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            text-decoration: none;
         }
 
-        .logo {
-            font-size: 55px;
-            margin-bottom: 15px;
+        .brand-mark {
+            display: grid;
+            width: 42px;
+            aspect-ratio: 1;
+            place-items: center;
+            border: 1px solid rgba(114, 224, 170, .32);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(114, 224, 170, .16), rgba(112, 199, 232, .08));
+            font-size: 22px;
+        }
+
+        .brand-name {
+            display: block;
+            font: 700 17px/1 "Space Grotesk", sans-serif;
+        }
+
+        .brand-sub {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .live-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--mint);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .live-state::before {
+            width: 7px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: var(--mint);
+            box-shadow: 0 0 12px rgba(114, 224, 170, .6);
+            content: "";
+        }
+
+        main { padding-top: clamp(34px, 7vw, 70px); }
+
+        .intro {
+            max-width: 650px;
+            margin-bottom: 30px;
+            animation: rise-in .55s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 14px;
+            color: var(--mint);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+        }
+
+        .eyebrow::before {
+            width: 24px;
+            height: 1px;
+            background: var(--mint);
+            content: "";
         }
 
         h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            margin: 0;
+            font: 700 clamp(34px, 7vw, 58px)/1.02 "Space Grotesk", sans-serif;
         }
 
-        p {
-            color: #8d99ad;
-            margin-bottom: 25px;
+        h1 span { color: var(--lime); }
+
+        .intro p {
+            max-width: 470px;
+            margin: 14px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
         }
 
-        .loader {
-            width: 38px;
-            height: 38px;
-            margin: auto;
-            border: 3px solid rgba(255,255,255,.15);
-            border-top-color: #229ed9;
+        .hub-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 520px);
+            gap: 12px;
+        }
+
+        .hub-card {
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr) 24px;
+            align-items: center;
+            gap: 13px;
+            min-height: 92px;
+            padding: 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: linear-gradient(115deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012));
+            text-decoration: none;
+            animation: rise-in .48s cubic-bezier(.2, .7, .2, 1) both;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease;
+        }
+
+        .hub-card:nth-child(2) { animation-delay: .05s; }
+        .hub-card:nth-child(3) { animation-delay: .1s; }
+        .hub-card:nth-child(4) { animation-delay: .15s; }
+        .hub-card:nth-child(5) { animation-delay: .2s; }
+
+        .hub-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(114, 224, 170, .42);
+            background: var(--panel-hover);
+        }
+
+        .hub-card:focus-visible,
+        .community-link:focus-visible {
+            outline: 2px solid var(--lime);
+            outline-offset: 3px;
+        }
+
+        .hub-number {
+            color: var(--mint);
+            font: 700 13px "Space Grotesk", sans-serif;
+        }
+
+        .hub-copy { min-width: 0; }
+
+        .hub-title {
+            display: block;
+            overflow-wrap: anywhere;
+            font: 700 15px/1.25 "Space Grotesk", sans-serif;
+        }
+
+        .hub-detail {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .hub-arrow {
+            color: var(--lime);
+            font-size: 19px;
+            text-align: right;
+            transition: transform .18s ease;
+        }
+
+        .hub-card:hover .hub-arrow { transform: translateX(3px); }
+
+        .redirect-spinner {
+            width: 24px;
+            aspect-ratio: 1;
+            margin-top: 22px;
+            border: 2px solid rgba(210, 230, 216, .18);
+            border-top-color: var(--mint);
             border-radius: 50%;
             animation: spin .8s linear infinite;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 28px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            color: #77867d;
+            font-size: 10px;
         }
 
-        .btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 12px 22px;
-            border-radius: 10px;
-            background: #229ed9;
-            color: white;
+        .community-link {
+            color: var(--blue);
+            font-weight: 700;
             text-decoration: none;
-            font-weight: bold;
+        }
+
+        @keyframes rise-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 620px) {
+            .shell { width: min(100% - 28px, 460px); padding-top: 16px; }
+            main { padding-top: 36px; }
+            .hub-grid { grid-template-columns: 1fr; gap: 9px; }
+            .hub-card { min-height: 78px; padding: 13px 14px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
 </head>
-
 <body>
+    <div class="shell">
+        <header class="masthead">
+            <a class="brand" href="./" aria-label="Criczone home">
+                <span class="brand-mark" aria-hidden="true">🏏</span>
+                <span>
+                    <span class="brand-name">CRICZONE</span>
+                    <span class="brand-sub">LIVE SPORTS NETWORK</span>
+                </span>
+            </a>
+            <span class="live-state">TELEGRAM CHANNEL</span>
+        </header>
 
-    <div class="box">
+        <main>
+            <section class="intro" aria-labelledby="page-title">
+                <div class="eyebrow">CRICZONE LIVE</div>
+                <h1 id="page-title">Live updates.<br><span>One channel.</span></h1>
+                <p>Opening the Criczone Telegram channel...</p>
+            </section>
 
-        <div class="logo">🏏</div>
+            <nav class="hub-grid" aria-label="Criczone Telegram channel">
+                <a class="hub-card" href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" rel="noopener noreferrer">
+                    <span class="hub-number">LIVE</span>
+                    <span class="hub-copy"><span class="hub-title">Open Telegram Channel</span><span class="hub-detail">Criczone match and stream updates</span></span>
+                    <span class="hub-arrow" aria-hidden="true">↗</span>
+                </a>
+            </nav>
 
-        <h1>Criczone Live</h1>
+            <div class="redirect-spinner" role="status" aria-label="Opening Telegram"></div>
+        </main>
 
-        <p>Opening Criczone channels...</p>
-
-        <div class="loader"></div>
-
-        <a
-            class="btn"
-            href="criczone/index.html"
-        >
-            OPEN CHANNELS
-        </a>
-
+        <footer>
+            <span>CRICZONE · LIVE SPORTS</span>
+            <span class="community-link">CRICZONE LIVE</span>
+        </footer>
     </div>
-
-
     <script>
-
-        const channelHub =
-            "criczone/index.html";
-
-        /*
-         * Automatically open the channel hub
-         * after 800 milliseconds.
-         */
-
-        setTimeout(() => {
-
-            window.location.href =
-                channelHub;
-
+        window.setTimeout(() => {
+            window.location.href = "https://t.me/+MueCDjlpoS8yNmJl";
         }, 800);
-
     </script>
-
 </body>
 </html>
