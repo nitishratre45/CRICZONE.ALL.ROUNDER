@@ -429,6 +429,106 @@
             .telegram-content { flex-direction: column; }
             .telegram-btn { width: 100%; }
         }
+
+        body { background-attachment: fixed; }
+
+        .header {
+            animation: pageEnter .55s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .hero { position: relative; }
+        .hero-label,
+        .hero h1,
+        .hero p {
+            animation: pageEnter .65s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .hero h1 { animation-delay: .08s; }
+        .hero p { animation-delay: .16s; }
+
+        .hero::after {
+            content: "";
+            display: block;
+            width: min(100%, 760px);
+            height: 1px;
+            margin-top: 28px;
+            transform: scaleX(0);
+            transform-origin: left;
+            background: linear-gradient(90deg, var(--cyan), rgba(61,124,255,.3), transparent);
+            animation: ruleReveal .75s .22s ease-out forwards;
+        }
+
+        .channels-header,
+        .player-section {
+            animation: pageEnter .5s .12s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .channel-card {
+            animation: cardEnter .5s cubic-bezier(.2, .7, .2, 1) both;
+            transform-origin: center bottom;
+        }
+
+        .channel-card:nth-child(2) { animation-delay: .04s; }
+        .channel-card:nth-child(3) { animation-delay: .08s; }
+        .channel-card:nth-child(4) { animation-delay: .12s; }
+        .channel-card:nth-child(5) { animation-delay: .16s; }
+        .channel-card:nth-child(6) { animation-delay: .2s; }
+        .channel-card:nth-child(7) { animation-delay: .24s; }
+        .channel-card:nth-child(8) { animation-delay: .28s; }
+
+        .channel-card:hover .channel-icon {
+            transform: scale(1.06) rotate(-4deg);
+            border-color: rgba(41,213,255,.35);
+            color: var(--cyan);
+        }
+
+        .channel-icon { transition: .25s ease; }
+
+        .channel-card:focus-visible,
+        .telegram-btn:focus-visible,
+        .back-btn:focus-visible,
+        .action-btn:focus-visible,
+        .popup-close:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+        }
+
+        .telegram-card,
+        .video-shell { transition: border-color .25s ease, box-shadow .25s ease; }
+
+        .telegram-card:hover {
+            border-color: rgba(34,158,217,.42);
+            box-shadow: 0 18px 45px rgba(0,0,0,.22);
+        }
+
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(14px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes ruleReveal {
+            to { transform: scaleX(1); }
+        }
+
+        @media (max-width: 760px) {
+            .hero::after { margin-top: 23px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
+        }
     </style>
 </head>
 

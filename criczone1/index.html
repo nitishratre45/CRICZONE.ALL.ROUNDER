@@ -2441,6 +2441,81 @@
 
               }
 
+              .app {
+                isolation: isolate;
+              }
+
+              .app::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+                pointer-events: none;
+                opacity: .18;
+                background-image:
+                  linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+                background-size: 64px 64px;
+                mask-image: linear-gradient(to bottom, black, transparent 82%);
+              }
+
+              .background-glow {
+                animation: glowDrift 16s ease-in-out infinite alternate;
+              }
+
+              .hero-small,
+              .hero h1,
+              .hero p {
+                animation: riseIn .7s cubic-bezier(.2, .7, .2, 1) both;
+              }
+
+              .hero h1 { animation-delay: .08s; }
+              .hero p { animation-delay: .16s; }
+
+              .toolbar {
+                animation: riseIn .65s .18s cubic-bezier(.2, .7, .2, 1) both;
+              }
+
+              .channel-card:nth-child(2) { animation-delay: .04s; }
+              .channel-card:nth-child(3) { animation-delay: .08s; }
+              .channel-card:nth-child(4) { animation-delay: .12s; }
+              .channel-card:nth-child(5) { animation-delay: .16s; }
+              .channel-card:nth-child(6) { animation-delay: .2s; }
+              .channel-card:nth-child(7) { animation-delay: .24s; }
+              .channel-card:nth-child(8) { animation-delay: .28s; }
+
+              .channel-card:focus-visible,
+              .search input:focus-visible,
+              .filter-btn:focus-visible {
+                outline: 2px solid #35d8c3;
+                outline-offset: 3px;
+              }
+
+              .player-view.active {
+                animation: riseIn .45s cubic-bezier(.2, .7, .2, 1) both;
+              }
+
+              @keyframes riseIn {
+                from { opacity: 0; transform: translateY(18px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+
+              @keyframes glowDrift {
+                from { transform: translate3d(0, -10px, 0); }
+                to { transform: translate3d(14px, 16px, 0); }
+              }
+
+              @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                  animation-duration: .01ms !important;
+                  animation-iteration-count: 1 !important;
+                  scroll-behavior: auto !important;
+                  transition-duration: .01ms !important;
+                }
+              }
+
             </style>
 
 
