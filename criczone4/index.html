@@ -71,12 +71,14 @@ animation:cc-load 1.3s ease-in-out infinite}
 overflow-y:auto;-webkit-overflow-scrolling:touch;
 padding:0 0 max(40px,env(safe-area-inset-bottom));
 background:
-linear-gradient(180deg,rgba(7,11,9,.82),rgba(7,11,9,.94) 40%,rgba(7,11,9,.99)),
-var(--logo) -9999px -9999px,
-url('https://static.prod-images.emergentagent.com/jobs/7bfb4c42-cb80-4f32-9490-b18d877f39ab/images/ad172cf3ec117709ddb6fe7cf49bd9c7d3f918933a6711d5af2b774b3b1d0382.jpeg') center top/cover no-repeat fixed,
-var(--cc-bg)}
+radial-gradient(ellipse 76% 44% at 50% -4%,rgba(16,185,129,.13),transparent 72%),
+radial-gradient(ellipse 40% 45% at 100% 20%,rgba(234,179,8,.035),transparent 75%),
+linear-gradient(180deg,#0b120e 0%,#080c0a 38%,#060907 100%)}
 #channel-list::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-background:radial-gradient(90% 55% at 50% -8%,rgba(16,185,129,.16),transparent 60%)}
+background:
+linear-gradient(90deg,transparent 49.9%,rgba(52,211,153,.035) 50%,transparent 50.1%),
+repeating-linear-gradient(0deg,rgba(232,239,235,.014) 0 1px,transparent 1px 64px),
+radial-gradient(90% 55% at 50% -8%,rgba(16,185,129,.12),transparent 60%)}
 
 /* ---- Header ---- */
 .list-header{position:relative;z-index:2;
@@ -147,7 +149,8 @@ animation:cardIn .6s cubic-bezier(.2,.7,.2,1) both}
 .ch-card:nth-child(5){animation-delay:.23s}.ch-card:nth-child(6){animation-delay:.28s}
 .ch-card:nth-child(7){animation-delay:.33s}.ch-card:nth-child(8){animation-delay:.38s}
 .ch-card:nth-child(9){animation-delay:.43s}.ch-card:nth-child(10){animation-delay:.48s}
-.ch-card:nth-child(n+11){animation-delay:.52s}
+.ch-card:nth-child(n+11){animation:none}
+.ch-card:nth-child(n+11) .ch-live-tag::before{animation:none}
 .ch-card::after{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
 box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .3s}
 .ch-card:hover{transform:translateY(-6px);border-color:rgba(52,211,153,.45);
@@ -417,8 +420,7 @@ radial-gradient(70% 130% at 12% 15%,rgba(16,185,129,.4),transparent 55%),
 radial-gradient(65% 130% at 92% 85%,rgba(6,95,70,.55),transparent 60%),
 linear-gradient(120deg,#0b1913,#0a0f0c 62%);
 background-size:220% 220%,220% 220%,100% 100%;
-animation:heroPan 18s ease-in-out infinite}
-@keyframes heroPan{0%,100%{background-position:0% 50%,100% 50%,0 0}50%{background-position:100% 50%,0% 50%,0 0}}
+}
 .hero-bg::after{content:"";position:absolute;inset:0;
 background:url('https://static.prod-images.emergentagent.com/jobs/7bfb4c42-cb80-4f32-9490-b18d877f39ab/images/ad172cf3ec117709ddb6fe7cf49bd9c7d3f918933a6711d5af2b774b3b1d0382.jpeg') center/cover no-repeat;
 opacity:.2;mix-blend-mode:screen;animation:heroZoom 22s ease-in-out infinite}
@@ -498,6 +500,10 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 #tg-link .tg-txt{display:none}
 #tg-link{padding:9px;gap:0}
 .brand-tag{font-size:9.5px;letter-spacing:1.1px}
+}
+@media (prefers-reduced-motion: reduce){
+*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 </style>
 </head>
