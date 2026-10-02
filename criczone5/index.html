@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criczone - Live Sports Streaming</title>
+    
+    <!-- HLS.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- ArtPlayer Library -->
+    <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand-logo" onclick="showHome()">
+                <i class="fa-solid fa-circle-play logo-icon"></i>
+                <span>Criczone</span>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="back-btn" id="back-btn" onclick="showHome()">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Channels
+                </button>
+                <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fa-solid fa-sun" id="theme-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <!-- Home Section -->
+        <section class="home-section" id="home-section">
+            <div class="hero-banner">
+                <h1 class="hero-title">Welcome to <span>Criczone</span></h1>
+                <p class="hero-subtitle">Watch High-Quality Live Sports Channels Anywhere, Anytime.</p>
+            </div>
+            
+            <div class="section-header">
+                <h2><i class="fa-solid fa-tv"></i> Live Channels</h2>
+                <span class="badge-live"><i class="fa-solid fa-circle"></i> Live Now</span>
+            </div>
+
+            <div class="channel-grid" id="channel-grid"></div>
+        </section>
+
+        <!-- Player Section -->
+        <section class="player-section" id="player-section">
+            <div class="player-wrapper">
+                <div class="artplayer-app" id="artplayer"></div>
+            </div>
+
+            <div class="player-info-card">
+                <div class="channel-meta">
+                    <h2 class="active-title" id="active-channel-name">Channel Name</h2>
+                    <span class="live-tag"><i class="fa-solid fa-signal"></i> Streaming Live</span>
+                </div>
+
+                <!-- Live Stream Telegram Banner -->
+                <div class="telegram-banner">
+                    <div class="tg-info">
+                        <i class="fa-brands fa-telegram tg-banner-icon"></i>
+                        <div>
+                            <h4>Never Miss A Match Link!</h4>
+                            <p>Get backup links, live updates & instant stream notifications on Telegram.</p>
+                        </div>
+                    </div>
+                    <a href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" class="tg-banner-btn">
+                        <i class="fa-brands fa-telegram"></i> Join Telegram Now
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Telegram Modal / Popup -->
+    <div class="modal-overlay" id="telegram-modal">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeTelegramModal()">&times;</button>
+            <div class="tg-popup-icon">
+                <i class="fa-brands fa-telegram"></i>
+            </div>
+            <h3>Join Criczone Telegram</h3>
+            <p>Important match links and backup streams are posted daily on our official channel!</p>
+            
+            <div class="modal-actions">
+                <a href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" class="modal-join-btn" onclick="proceedToStream()">
+                    <i class="fa-brands fa-telegram"></i> Join Channel
+                </a>
+                <button class="modal-skip-btn" onclick="proceedToStream()">Continue to Stream</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Logic File -->
+    <script src="script.js"></script>
+</body>
+</html>
