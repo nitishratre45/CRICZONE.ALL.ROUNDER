@@ -54,24 +54,6 @@ body {
    FIREBASE
    ========================================================= */
 
-import {
-    initializeApp
-} from
-"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-
-import {
-    getDatabase,
-    ref,
-    push,
-    set,
-    remove,
-    onDisconnect,
-    onValue,
-    serverTimestamp
-} from
-"https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
-
-
 const firebaseConfig = {
 
     apiKey:
@@ -100,11 +82,57 @@ const firebaseConfig = {
 };
 
 
-const firebaseApp =
-    initializeApp(firebaseConfig);
+let database = null;
+let ref;
+let push;
+let set;
+let remove;
+let onDisconnect;
+let onValue;
+let serverTimestamp;
 
-const database =
-    getDatabase(firebaseApp);
+const firebaseReady =
+    Promise.all([
+        import(
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+        ),
+        import(
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js"
+        )
+    ])
+        .then(([firebaseAppSdk, firebaseDatabaseSdk]) => {
+
+            const firebaseApp =
+                firebaseAppSdk.getApps().length
+                    ? firebaseAppSdk.getApp()
+                    : firebaseAppSdk.initializeApp(firebaseConfig);
+
+            database =
+                firebaseDatabaseSdk.getDatabase(firebaseApp);
+
+            ({
+                ref,
+                push,
+                set,
+                remove,
+                onDisconnect,
+                onValue,
+                serverTimestamp
+            } = firebaseDatabaseSdk);
+
+            return true;
+
+        })
+        .catch(error => {
+
+            console.warn(
+                "Firebase unavailable; live viewer counts are disabled.",
+                error
+            );
+
+            return false;
+
+        });
 
 
 /* =========================================================
@@ -2345,7 +2373,20 @@ button {
        FIREBASE CONNECTION
        ===================================================== */
 
-    setupFirebaseConnection() {
+    async setupFirebaseConnection() {
+
+        const ready =
+            await firebaseReady;
+
+
+        if (
+            !ready ||
+            !database
+        ) {
+
+            return;
+
+        }
 
         const connectedRef =
             ref(
