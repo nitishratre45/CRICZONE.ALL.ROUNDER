@@ -1,6 +1,6 @@
 // ============================================================
-// CRICZONE CHANNEL API
-// Multi-domain / CORS fixed version
+// CRICZONE - CHANNEL API
+// Vercel + Cloudflare multi-domain version
 // ============================================================
 
 const ALLOWED_HOSTS = [
@@ -26,7 +26,7 @@ const FEEDS = {
 
 
 // ============================================================
-// GET REQUEST HOST
+// GET HOST
 // ============================================================
 
 function getRequestHost(request) {
@@ -45,18 +45,20 @@ function getRequestHost(request) {
 
 
 // ============================================================
-// GET REQUEST ORIGIN
+// GET ORIGIN
 // ============================================================
 
 function getRequestOrigin(request) {
 
     const origin = request.headers.origin;
 
-    if (origin) {
-        return String(origin).trim().replace(/\/$/, "");
+    if (!origin) {
+        return "";
     }
 
-    return "";
+    return String(origin)
+        .trim()
+        .replace(/\/$/, "");
 }
 
 
@@ -79,68 +81,66 @@ function getRefererOrigin(request) {
     } catch (error) {
 
         return "";
-
     }
 }
 
 
 // ============================================================
-// FIRST PARTY / ALLOWED REQUEST CHECK
+// CHECK FIRST-PARTY REQUEST
 // ============================================================
 
 function isFirstPartyRequest(request) {
 
-    const host = getRequestHost(request);
+    const host =
+        getRequestHost(request);
 
-    const origin = getRequestOrigin(request);
+    const origin =
+        getRequestOrigin(request);
 
-    const refererOrigin = getRefererOrigin(request);
+    const refererOrigin =
+        getRefererOrigin(request);
 
     const fetchSite =
         request.headers["sec-fetch-site"] || "";
 
-    const hostAllowed =
-        ALLOWED_HOSTS.includes(host);
 
-    const originAllowed =
-        ALLOWED_ORIGINS.includes(origin);
-
-    const refererAllowed =
-        ALLOWED_ORIGINS.includes(refererOrigin);
-
-
-    // Host of API itself must be one of our allowed hosts
-    if (!hostAllowed) {
+    // API host must be one of our domains
+    if (!ALLOWED_HOSTS.includes(host)) {
         return false;
     }
 
 
-    // Normal browser request with Origin
+    // Browser request with Origin
     if (origin) {
-        return originAllowed;
+
+        return ALLOWED_ORIGINS.includes(origin);
     }
 
 
     // Requests without Origin
     return (
         fetchSite === "same-origin" ||
-        refererAllowed
+        ALLOWED_ORIGINS.includes(refererOrigin)
     );
 }
 
 
 // ============================================================
-// MAIN API HANDLER
+// MAIN HANDLER
 // ============================================================
 
-module.exports = async function handler(request, response) {
+module.exports = async function handler(
+    request,
+    response
+) {
 
-    const origin = getRequestOrigin(request);
+    const origin =
+        getRequestOrigin(request);
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CACHE
-    // --------------------------------------------------------
+    // ========================================================
 
     response.setHeader(
         "Vary",
@@ -153,11 +153,13 @@ module.exports = async function handler(request, response) {
     );
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // CORS
-    // --------------------------------------------------------
+    // ========================================================
 
-    if (ALLOWED_ORIGINS.includes(origin)) {
+    if (
+        ALLOWED_ORIGINS.includes(origin)
+    ) {
 
         response.setHeader(
             "Access-Control-Allow-Origin",
@@ -181,13 +183,15 @@ module.exports = async function handler(request, response) {
     }
 
 
-    // --------------------------------------------------------
-    // OPTIONS / PREFLIGHT
-    // --------------------------------------------------------
+    // ========================================================
+    // PREFLIGHT
+    // ========================================================
 
     if (request.method === "OPTIONS") {
 
-        if (!ALLOWED_ORIGINS.includes(origin)) {
+        if (
+            !ALLOWED_ORIGINS.includes(origin)
+        ) {
 
             return response
                 .status(403)
@@ -202,9 +206,9 @@ module.exports = async function handler(request, response) {
     }
 
 
-    // --------------------------------------------------------
-    // DOMAIN / ORIGIN SECURITY
-    // --------------------------------------------------------
+    // ========================================================
+    // FIRST-PARTY CHECK
+    // ========================================================
 
     if (!isFirstPartyRequest(request)) {
 
@@ -216,9 +220,9 @@ module.exports = async function handler(request, response) {
     }
 
 
-    // --------------------------------------------------------
-    // ONLY GET ALLOWED
-    // --------------------------------------------------------
+    // ========================================================
+    // ONLY GET
+    // ========================================================
 
     if (request.method !== "GET") {
 
@@ -235,9 +239,9 @@ module.exports = async function handler(request, response) {
     }
 
 
-    // --------------------------------------------------------
-    // GET FEED NAME
-    // --------------------------------------------------------
+    // ========================================================
+    // GET FEED
+    // ========================================================
 
     const feedName =
         Array.isArray(request.query?.feed)
@@ -245,9 +249,9 @@ module.exports = async function handler(request, response) {
             : request.query?.feed;
 
 
-    // --------------------------------------------------------
-    // FIND FEED URL
-    // --------------------------------------------------------
+    // ========================================================
+    // FIND FEED
+    // ========================================================
 
     const feedUrl =
         FEEDS[feedName];
@@ -263,9 +267,9 @@ module.exports = async function handler(request, response) {
     }
 
 
-    // --------------------------------------------------------
-    // FETCH UPSTREAM CHANNEL FEED
-    // --------------------------------------------------------
+    // ========================================================
+    // FETCH CHANNEL FEED
+    // ========================================================
 
     try {
 
@@ -283,55 +287,56 @@ module.exports = async function handler(request, response) {
             );
 
 
-        // ----------------------------------------------------
+        // ====================================================
         // UPSTREAM ERROR
-        // ----------------------------------------------------
+        // ====================================================
 
         if (!upstream.ok) {
 
             return response
                 .status(502)
                 .json({
-                    error: "Channel feed unavailable"
+                    error:
+                        "Channel feed unavailable"
                 });
         }
 
 
-        // ----------------------------------------------------
-        // READ RESPONSE
-        // ----------------------------------------------------
+        // ====================================================
+        // READ DATA
+        // ====================================================
 
         const body =
             await upstream.text();
 
 
-        // ----------------------------------------------------
+        // ====================================================
         // VALIDATE JSON
-        // ----------------------------------------------------
+        // ====================================================
 
         try {
 
             JSON.parse(body);
 
-        } catch (jsonError) {
+        } catch (error) {
 
             return response
                 .status(502)
                 .json({
-                    error: "Invalid channel feed"
+                    error:
+                        "Invalid channel feed"
                 });
         }
 
 
-        // ----------------------------------------------------
-        // RESPONSE
-        // ----------------------------------------------------
+        // ====================================================
+        // SEND JSON
+        // ====================================================
 
         response.setHeader(
             "Content-Type",
             "application/json; charset=utf-8"
         );
-
 
         return response
             .status(200)
@@ -349,7 +354,8 @@ module.exports = async function handler(request, response) {
         return response
             .status(502)
             .json({
-                error: "Channel feed unavailable"
+                error:
+                    "Channel feed unavailable"
             });
     }
 };
