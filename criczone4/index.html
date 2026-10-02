@@ -530,8 +530,8 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 </div>
 <div class="cc-marquee">
 <div class="cc-marquee-track">
-<span><i></i><em>LIVE CRICET</em></span><span><i></i><em>HD STREAMS</em></span><span><i></i><em>ZERO BUFFERING</em></span><span><i></i><em>ALL MATCHES</em></span><span><i></i><em>WATCH FREE</em></span><span><i></i><em>MULTI QUALITY</em></span>
-<span><i></i><em>LIVE CRICET</em></span><span><i></i><em>HD STREAMS</em></span><span><i></i><em>ZERO BUFFERING</em></span><span><i></i><em>ALL MATCHES</em></span><span><i></i><em>WATCH FREE</em></span><span><i></i><em>MULTI QUALITY</em></span>
+<span><i></i><em>LIVE CRICKET</em></span><span><i></i><em>HD STREAMS</em></span><span><i></i><em>ZERO BUFFERING</em></span><span><i></i><em>ALL MATCHES</em></span><span><i></i><em>WATCH FREE</em></span><span><i></i><em>MULTI QUALITY</em></span>
+<span><i></i><em>LIVE CRICKET</em></span><span><i></i><em>HD STREAMS</em></span><span><i></i><em>ZERO BUFFERING</em></span><span><i></i><em>ALL MATCHES</em></span><span><i></i><em>WATCH FREE</em></span><span><i></i><em>MULTI QUALITY</em></span>
 </div>
 </div>
 <section id="cc-hero">
@@ -539,7 +539,7 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 <div class="hero-grain"></div>
 <div class="hero-inner">
 <div class="hero-badge"><span class="live-dot"></span>LIVE NOW · FEATURED</div>
-<h1 class="hero-title"><span id="hero-title-text">Live CRICet</span></h1>
+<h1 class="hero-title"><span id="hero-title-text">Live Cricket</span></h1>
 <p class="hero-sub">Your top live channel, streaming right now in crystal-clear HD — no buffering, no sign-up.</p>
 <div class="hero-actions">
 <a class="hero-cta" id="hero-cta" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch Live</a>
@@ -805,10 +805,10 @@ return w? (w.charAt(0).toUpperCase()+w.slice(1)) : "Other";
 function matchCat(name,cat){
 if(cat==="All") return true;
 var n=(name||"").toLowerCase();
-if(cat==="Sports") return /sport|CRICet|willow|\bten\b|ptv/.test(n);
+if(cat==="Sports") return /sport|cricket|willow|\bten\b|ptv/.test(n);
 if(cat==="HD") return /\bhd\b/.test(n);
 if(cat==="Kids") return /kids|pogo|nick|cartoon|disney|chutti|hungama|baby/.test(n);
-if(cat==="Entertainment") return !/sport|CRICet|willow|kids|pogo|nick|cartoon|disney|chutti|hungama|baby|news/.test(n);
+if(cat==="Entertainment") return !/sport|cricket|willow|kids|pogo|nick|cartoon|disney|chutti|hungama|baby|news/.test(n);
 return true;
 }
 function passes(ch){
