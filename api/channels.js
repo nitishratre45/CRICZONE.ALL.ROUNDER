@@ -1,4 +1,4 @@
-const ALLOWED_HOST = "criczoneall.vercel.app";
+const ALLOWED_HOST = "https://criczone.pages.dev";
 const ALLOWED_ORIGIN = `https://${ALLOWED_HOST}`;
 
 const FEEDS = {
