@@ -642,7 +642,7 @@
                 }
             }
 
-            const sourceUrl = "https://allrounderid2.pages.dev/id.json";
+            const sourceUrl = "/api/channels?feed=directory";
             const response = await fetch(sourceUrl, { cache: "no-store" });
 
             if (!response.ok) {
