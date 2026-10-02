@@ -121,6 +121,14 @@
     border-color: rgba(10, 128, 94, .2);
 }
 
+/* A status label is informational, not a button or filter control. */
+:root[data-theme="light"] .live-status.live-status--label,
+:host([data-theme="light"]) .live-status.live-status--label {
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
 :root[data-theme="light"] .channel-card,
 :host([data-theme="light"]) .channel-card {
     color: #18291f;
