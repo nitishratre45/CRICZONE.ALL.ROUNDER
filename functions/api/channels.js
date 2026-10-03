@@ -4,7 +4,7 @@
 
 const FEEDS = {
     sports: "https://sonujson-v5.pages.dev/Data/sports.json",
-    directory: "https://allrounderid2.pages.dev/id.json",
+    directory: "https://allrounder3-0.pages.dev/id.json",
     select: "https://raw.githubusercontent.com/sportlive18/playlist/refs/heads/main/jtv2.json"
 };
 
