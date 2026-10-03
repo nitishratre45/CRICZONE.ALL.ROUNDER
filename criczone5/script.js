@@ -1,9 +1,7 @@
 /* =========================================
-   CORS PROXY & STREAMS MAPPING
+   STREAMS MAPPING
 ========================================= */
-const corsProxy = "https://corsproxy.io/?";
-
-const rawStreams = {
+const streamMap = {
     "TEN3HD": "https://sliv.tgaadi.workers.dev/ten3hd.m3u8",
     "TEN1HD": "https://sliv.tgaadi.workers.dev/ten1hd.m3u8",
     "TEN2HD": "https://sliv.tgaadi.workers.dev/ten2hd.m3u8",
@@ -24,88 +22,19 @@ const rawStreams = {
     "BACKUPHD": "https://27lftgqlgzmy.windows-devs.top/AccessLog2/83_FHD/apache.m3u8"
 };
 
-let art = null;
-let activeHls = null;
-let pendingChannelKey = null;
-
-/* =========================================
-   THEME TOGGLE
-========================================= */
-function toggleTheme() {
-    const body = document.body;
-    const icon = document.getElementById('theme-icon');
-    
-    if (body.classList.contains('dark-mode')) {
-        body.classList.remove('dark-mode');
-        body.classList.add('light-mode');
-        icon.className = 'fa-solid fa-moon';
-    } else {
-        body.classList.remove('light-mode');
-        body.classList.add('dark-mode');
-        icon.className = 'fa-solid fa-sun';
-    }
-}
-
-/* =========================================
-   GRID GENERATION
-========================================= */
-function renderChannels() {
-    const grid = document.getElementById('channel-grid');
-    grid.innerHTML = '';
-
-    Object.keys(rawStreams).forEach(key => {
-        const card = document.createElement('div');
-        card.className = 'channel-card';
-        card.onclick = () => requestChannelPlay(key);
-        card.innerHTML = `
-            <div class="card-icon-box"><i class="fa-solid fa-tv"></i></div>
-            <div class="channel-name">${key}</div>
-            <span class="play-tag"><i class="fa-solid fa-play"></i> Watch Stream</span>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-/* =========================================
-   TELEGRAM POPUP INTERACTION
-========================================= */
-function requestChannelPlay(key) {
-    pendingChannelKey = key;
-    document.getElementById('telegram-modal').style.display = 'flex';
-}
-
-function closeTelegramModal() {
-    document.getElementById('telegram-modal').style.display = 'none';
-}
-
-function proceedToStream() {
-    closeTelegramModal();
-    if (pendingChannelKey) {
-        startStream(pendingChannelKey);
-    }
-}
-
-/* =========================================
-   PLAYER ENGINE
-========================================= */
+// Player engine function update:
 function startStream(channelKey) {
-    const rawUrl = rawStreams[channelKey];
-    if (!rawUrl) return;
+    const streamUrl = streamMap[channelKey];
+    if (!streamUrl) return;
 
-    // View Switching
     document.getElementById('home-section').style.display = 'none';
     document.getElementById('player-section').style.display = 'flex';
     document.getElementById('back-btn').style.display = 'flex';
     document.getElementById('active-channel-name').innerText = channelKey;
 
-    // URL parameter update
     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?channel=' + encodeURIComponent(channelKey);
     window.history.pushState({ path: newUrl }, '', newUrl);
 
-    // Apply Proxy to avoid CORS issues
-    const streamUrl = corsProxy + encodeURIComponent(rawUrl);
-
-    // Destroy Previous Instance
     if (art) art.destroy(true);
     if (activeHls) activeHls.destroy();
 
@@ -132,24 +61,6 @@ function startStream(channelKey) {
 
                     hls.on(Hls.Events.MANIFEST_PARSED, function () {
                         video.play().catch(() => {});
-                        const levels = hls.levels;
-                        if (levels && levels.length > 0) {
-                            const qualityList = levels.map((level, index) => ({
-                                html: level.height ? `${level.height}p` : `Quality ${index + 1}`,
-                                level: index,
-                            }));
-                            qualityList.unshift({ html: 'Auto', level: -1, default: true });
-
-                            art.setting.add({
-                                html: 'Quality',
-                                tooltip: 'Auto',
-                                selector: qualityList,
-                                onSelect: function (item) {
-                                    hls.currentLevel = item.level;
-                                    return item.html;
-                                },
-                            });
-                        }
                     });
 
                     art.on('destroy', () => hls.destroy());
@@ -160,30 +71,3 @@ function startStream(channelKey) {
         },
     });
 }
-
-function showHome() {
-    if (art) { art.destroy(true); art = null; }
-    if (activeHls) { activeHls.destroy(); activeHls = null; }
-
-    document.getElementById('player-section').style.display = 'none';
-    document.getElementById('back-btn').style.display = 'none';
-    document.getElementById('home-section').style.display = 'block';
-
-    // Clear URL parameters
-    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-    window.history.pushState({ path: cleanUrl }, '', cleanUrl);
-}
-
-/* =========================================
-   INITIALIZATION & DIRECT LINK HANDLING
-========================================= */
-window.onload = () => {
-    renderChannels();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const sharedChannel = urlParams.get('channel');
-
-    if (sharedChannel && rawStreams[sharedChannel]) {
-        requestChannelPlay(sharedChannel);
-    }
-};
