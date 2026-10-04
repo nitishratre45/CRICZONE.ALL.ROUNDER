@@ -1105,7 +1105,104 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+        /* =========================================================
+   REALTIME LIVE WATCHING
+========================================================= */
 
+const firebaseConfig = {
+    apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+    authDomain: "cricket-live-39106.firebaseapp.com",
+    databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cricket-live-39106",
+    storageBucket: "cricket-live-39106.firebasestorage.app",
+    messagingSenderId: "841890143",
+    appId: "1:841890143:web:ca5b87c9395bdc19145eea",
+    measurementId: "G-ZNEZC8YVMX"
+};
+
+let watchingViewerRef = null;
+
+async function startRealtimeWatching(streamId) {
+
+    try {
+
+        const {
+            initializeApp,
+            getDatabase,
+            ref,
+            onValue,
+            onDisconnect,
+            set,
+            remove,
+            getAuth,
+            signInAnonymously
+        } = window.FirebaseWatching;
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getDatabase(app);
+
+        const auth = getAuth(app);
+
+        await signInAnonymously(auth);
+
+        const viewerId =
+            crypto.randomUUID
+                ? crypto.randomUUID()
+                : Date.now() + "_" +
+                  Math.random().toString(36).slice(2);
+
+        const viewersPath =
+            `liveViewers/${streamId}`;
+
+        watchingViewerRef =
+            ref(db, `${viewersPath}/${viewerId}`);
+
+        // Browser disconnect hone par automatically remove
+        await onDisconnect(watchingViewerRef).remove();
+
+        // Current viewer register
+        await set(watchingViewerRef, {
+            joinedAt: Date.now()
+        });
+
+        // Realtime viewer count
+        const viewersRef =
+            ref(db, viewersPath);
+
+        onValue(viewersRef, snapshot => {
+
+            const actualViewers =
+                snapshot.size;
+
+            // 300 + real viewers
+            const watching =
+                300 + actualViewers;
+
+            const countElement =
+                document.getElementById("watchingCount");
+
+            if (countElement) {
+                countElement.textContent =
+                    watching.toLocaleString("en-IN");
+            }
+
+        });
+
+        console.log(
+            "🔥 Realtime watching started:",
+            streamId
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Firebase watching error:",
+            error
+        );
+
+    }
+}
         function escapeAttr(value) { return escapeHtml(value); }
 
         document.addEventListener("DOMContentLoaded", initializeApp);
