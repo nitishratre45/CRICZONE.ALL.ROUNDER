@@ -662,6 +662,33 @@
         }
     </style>
     <link rel="stylesheet" href="../theme.css">
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        onValue,
+        onDisconnect,
+        set,
+        remove
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    import {
+        getAuth,
+        signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+    window.FirebaseWatching = {
+        initializeApp,
+        getDatabase,
+        ref,
+        onValue,
+        onDisconnect,
+        set,
+        remove,
+        getAuth,
+        signInAnonymously
+    };
+</script>
 </head>
 
 <body>
@@ -1003,10 +1030,12 @@
                                     <span>Criczone Live Streaming</span>
                                 </div>
                             </div>
-                            <div class="watching">
-                                <span class="watching-dot"></span>
-                                <span><strong>345</strong> watching live</span>
-                            </div>
+                       <div class="watching">
+    <span class="watching-dot"></span>
+    <span>
+        <strong id="watchingCount">300</strong> watching live
+    </span>
+</div>
                         </div>
                     </div>
 
