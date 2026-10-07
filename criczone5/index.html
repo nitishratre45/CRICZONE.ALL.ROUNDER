@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>CricZone • Live Cricket</title>
+<meta name="theme-color" content="#06070a">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js" crossorigin="anonymous"></script>
+
+<style>
+:root{--red:#e10600;--red2:#ff3b30;--muted:rgba(255,255,255,.6)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{color:#fff}
+.player{position:fixed;inset:0;background:#000}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.top{position:absolute;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:linear-gradient(to bottom,rgba(0,0,0,.88),rgba(0,0,0,.2),transparent);pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:16px;font-weight:900;background:linear-gradient(135deg,#ff2a1f,#a90000);box-shadow:0 8px 25px rgba(225,6,0,.28)}
+.name{font-size:16px;font-weight:900}.sub{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.live{display:flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);font-size:10px;font-weight:900;letter-spacing:.8px}
+.dot{width:7px;height:7px;border-radius:50%;background:#ff3028;box-shadow:0 0 12px #ff3028;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.4;transform:scale(.85)}}
+.telegram{position:absolute;z-index:25;right:16px;bottom:82px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;color:#fff;text-decoration:none;font-size:11px;font-weight:800;background:linear-gradient(135deg,#229ed9,#147fc1);box-shadow:0 10px 30px rgba(20,127,193,.3)}
+.watermark{position:absolute;z-index:15;left:17px;bottom:74px;font-size:9px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,.18)}
+.loading,.error{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.92)}
+.loading{flex-direction:column;gap:14px}.loading.hide{opacity:0;visibility:hidden;pointer-events:none;transition:.3s}
+.spin{width:45px;height:45px;border:4px solid rgba(255,255,255,.12);border-top-color:var(--red2);border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.lt{font-size:15px;font-weight:800}.ls{font-size:12px;color:var(--muted)}
+.error{display:none;padding:20px}.card{width:min(410px,100%);padding:26px;border-radius:20px;text-align:center;border:1px solid rgba(255,255,255,.09);background:rgba(15,15,18,.88);backdrop-filter:blur(15px)}
+.icon{width:50px;height:50px;margin:0 auto 13px;border-radius:50%;display:grid;place-items:center;background:rgba(225,6,0,.12);color:#ff625b;font-size:21px;font-weight:900}
+.et{font-size:18px;font-weight:900}.es{margin-top:7px;font-size:13px;line-height:1.5;color:var(--muted)}
+.retry{margin-top:18px;padding:11px 17px;border:0;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--red),var(--red2));font-weight:800;cursor:pointer}
+.plyr{width:100%;height:100%}.plyr__video-wrapper{height:100%;background:#000}
+.plyr__controls{background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.35),transparent)!important;padding-top:45px!important}
+.plyr__control--overlaid{background:rgba(225,6,0,.95)!important}.plyr__progress__played{background:var(--red2)!important}
+.plyr__menu__container{background:rgba(16,16,18,.97)!important;border-radius:14px;border:1px solid rgba(255,255,255,.08)}
+@media(max-width:700px){.top{padding:11px 12px}.logo{width:34px;height:34px;border-radius:10px;font-size:14px}.name{font-size:14px}.sub{font-size:7px}.live{padding:6px 9px;font-size:9px}.telegram{right:10px;bottom:72px;padding:9px 12px;font-size:10px}.watermark{left:11px;bottom:69px;font-size:8px}}
+</style>
+</head>
+<body>
+<div class="player">
+<div class="top">
+<div class="brand"><div class="logo">CZ</div><div><div class="name">CricZone</div><div class="sub">Live Cricket Streaming</div></div></div>
+<div class="live"><span class="dot"></span>LIVE</div>
+</div>
+
+<video id="video" playsinline autoplay muted preload="metadata"></video>
+
+<a class="telegram" href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" rel="noopener noreferrer">➤&nbsp; Join CricZone Telegram</a>
+<div class="watermark">CRICZONE • LIVE</div>
+
+<div id="loading" class="loading">
+<div class="spin"></div><div class="lt">Loading CricZone</div><div class="ls">Connecting to live stream...</div>
+</div>
+
+<div id="error" class="error">
+<div class="card"><div class="icon">!</div><div class="et">Stream Unavailable</div><div class="es">The live stream could not be loaded right now. Please try again.</div><button class="retry" id="retry">Try Again</button></div>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var STREAM_URL="https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791471355~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F*~SessionID%3D68af7a8f728b9df6_fc-app_sportsguruand_e1dc9dbb-8389-41~Signature%3DAXZsC1BXvTvxcbuv1aEHNED23L9-UZr7M6YYj62eZ1mJDf7prVBbX5M0pFXi6YkV2kjNd7bcc4XTAWPHZtM7GmolTlkF";
+
+var video=document.getElementById("video"),loading=document.getElementById("loading"),errorBox=document.getElementById("error"),retry=document.getElementById("retry"),hls=null,plyr=null;
+
+function hideLoading(){loading.classList.add("hide")}
+function showLoading(){loading.classList.remove("hide")}
+function showError(){hideLoading();errorBox.style.display="flex"}
+function hideError(){errorBox.style.display="none"}
+
+function destroy(){
+ if(hls){try{hls.destroy()}catch(e){}hls=null}
+ if(plyr){try{plyr.destroy()}catch(e){}plyr=null}
+}
+
+function setupPlyr(levels){
+ var qualities=levels.length?Array.from(new Set(levels)).sort(function(a,b){return a-b}):[360,480,720,1080];
+ plyr=new Plyr(video,{
+  controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"],
+  settings:["quality","speed"],
+  quality:{default:qualities[qualities.length-1]||720,options:qualities,forced:true,onChange:function(q){
+   if(!hls)return;
+   var i=hls.levels.findIndex(function(x){return x.height===q});
+   if(i>=0)hls.currentLevel=i;
+  }},
+  tooltips:{controls:true,seek:true}
+ });
+}
+
+function native(){
+ destroy();
+ video.src=STREAM_URL;
+ plyr=new Plyr(video,{controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"]});
+ video.muted=true;
+ video.addEventListener("loadeddata",function(){hideError();hideLoading();video.play().catch(function(){});},{once:true});
+ video.addEventListener("error",showError,{once:true});
+}
+
+function init(){
+ showLoading();hideError();destroy();
+ try{
+  if(window.Hls&&Hls.isSupported()){
+   hls=new Hls({enableWorker:true,maxBufferLength:30,maxMaxBufferLength:60,liveSyncDurationCount:2,liveMaxLatencyDurationCount:5,lowLatencyMode:true,backBufferLength:30});
+   hls.loadSource(STREAM_URL);hls.attachMedia(video);
+   hls.on(Hls.Events.MANIFEST_PARSED,function(){
+    var levels=hls.levels.map(function(x){return x.height}).filter(Boolean);
+    setupPlyr(levels);hideLoading();video.muted=true;video.play().catch(function(){});
+   });
+   hls.on(Hls.Events.ERROR,function(_,data){
+    if(!data.fatal)return;
+    if(data.type===Hls.ErrorTypes.NETWORK_ERROR){try{hls.startLoad()}catch(e){showError()}}
+    else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){try{hls.recoverMediaError()}catch(e){showError()}}
+    else{destroy();showError()}
+   });
+  }else if(video.canPlayType("application/vnd.apple.mpegurl"))native();
+  else showError();
+ }catch(e){console.error(e);showError()}
+}
+
+video.addEventListener("playing",function(){hideLoading();hideError()});
+retry.addEventListener("click",init);
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&video.paused&&!video.ended)video.play().catch(function(){})});
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+
+})();
+</script>
+</body>
+</html>
