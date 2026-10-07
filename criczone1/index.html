@@ -2,63 +2,105 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#050a0f">
 <title>CRICZONE 1 · LIVE CHANNELS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../theme.css">
+<script src="../theme.js" defer></script>
 <style>
-:root{--bg:#050a0f;--panel:#0a141e;--text:#f4f8fb;--muted:#8fa2b1;--accent:#00f5c8;--accent2:#2fa7ff;--border:rgba(0,245,200,.16)}
+:root{
+  --cz-bg:#050a0f;--cz-bg2:#08131c;--cz-panel:#0c1a25;--cz-panel2:#102230;
+  --cz-text:#f4f8fb;--cz-muted:#8ea4b4;--cz-accent:#00f5c8;--cz-accent2:#2fa7ff;
+  --cz-border:rgba(104,156,185,.18);--cz-border-strong:rgba(0,245,200,.45);
+  --cz-shadow:0 18px 45px rgba(0,0,0,.28);
+}
+:root[data-theme="light"]{
+  --cz-bg:#eef4f0;--cz-bg2:#f7faf8;--cz-panel:#fff;--cz-panel2:#f7faf8;
+  --cz-text:#17271e;--cz-muted:#5b6e63;--cz-accent:#0a805e;--cz-accent2:#26749c;
+  --cz-border:rgba(30,67,47,.14);--cz-border-strong:rgba(10,128,94,.42);
+  --cz-shadow:0 14px 32px rgba(24,54,38,.11);
+}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% 0%,rgba(0,245,200,.09),transparent 28%),radial-gradient(circle at 90% 10%,rgba(47,167,255,.08),transparent 25%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
-body{padding:24px}
-.wrap{width:min(1500px,100%);margin:auto}
-.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px;flex-wrap:wrap}
-.brand{font-size:28px;font-weight:900;letter-spacing:-1px}.brand span{color:var(--accent)}
-.sub{color:var(--muted);font-size:13px;margin-top:5px}
-.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.badge,.btn{height:40px;border-radius:12px;border:1px solid var(--border);background:rgba(7,18,28,.82);color:var(--text);padding:0 14px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.badge{color:var(--accent)}
-.btn{cursor:pointer;text-decoration:none}.btn:hover{border-color:rgba(0,245,200,.45)}
+html,body{margin:0;min-height:100%;background:
+radial-gradient(circle at 10% -10%,rgba(0,245,200,.12),transparent 28%),
+radial-gradient(circle at 95% 0%,rgba(47,167,255,.11),transparent 26%),
+linear-gradient(180deg,var(--cz-bg),var(--cz-bg2));color:var(--cz-text)}
+body{padding:24px;font-family:Inter,Manrope,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+button,input{font:inherit}
+.wrap{width:min(1540px,100%);margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px;padding:18px 20px;border:1px solid var(--cz-border);border-radius:18px;background:color-mix(in srgb,var(--cz-panel) 88%,transparent);box-shadow:var(--cz-shadow);backdrop-filter:blur(14px)}
+.brand-row{display:flex;align-items:center;gap:12px}
+.brand-mark{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;border:1px solid var(--cz-border-strong);background:linear-gradient(135deg,rgba(0,245,200,.16),rgba(47,167,255,.12));font:900 18px/1 "Space Grotesk";color:var(--cz-accent)}
+.brand{font:900 28px/1 "Space Grotesk";letter-spacing:-1.2px;color:var(--cz-text)}
+.brand span{color:var(--cz-accent)}
+.sub{color:var(--cz-muted);font-size:12px;margin-top:6px}
+.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.badge,.btn{min-height:40px;border-radius:12px;border:1px solid var(--cz-border);background:var(--cz-panel2);color:var(--cz-text);padding:0 14px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;letter-spacing:.4px;text-decoration:none}
+.badge{color:var(--cz-accent);border-color:rgba(0,245,200,.22)}
+.btn{cursor:pointer;transition:.2s ease}.btn:hover{transform:translateY(-1px);border-color:var(--cz-border-strong);box-shadow:0 8px 18px rgba(0,0,0,.16)}
+.theme-toggle{margin-left:0!important}
 .toolbar{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
-.search{flex:1;min-width:240px;height:48px;border:1px solid var(--border);background:rgba(7,18,28,.82);border-radius:13px;color:#fff;padding:0 15px;outline:none}
-.search:focus{border-color:rgba(0,245,200,.55);box-shadow:0 0 0 3px rgba(0,245,200,.07)}
-.count{color:var(--muted);font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
-.card{position:relative;overflow:hidden;border:1px solid rgba(120,160,190,.18);background:linear-gradient(145deg,rgba(12,25,37,.95),rgba(5,14,22,.94));border-radius:16px;padding:18px;cursor:pointer;min-height:128px;transition:.2s transform,.2s border-color,.2s box-shadow}
-.card:hover{transform:translateY(-3px);border-color:rgba(0,245,200,.38);box-shadow:0 18px 40px rgba(0,0,0,.32)}
-.card:before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
-.title{font-size:16px;font-weight:900;line-height:1.3;margin-bottom:14px}
-.meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}
-.live{color:var(--accent);font-weight:900}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+.search-wrap{position:relative;flex:1;min-width:240px}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--cz-muted);font-size:16px;pointer-events:none}
+.search{width:100%;height:50px;border:1px solid var(--cz-border);background:var(--cz-panel);border-radius:14px;color:var(--cz-text);padding:0 16px 0 42px;outline:none;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.search::placeholder{color:var(--cz-muted)}
+.search:focus{border-color:var(--cz-border-strong);box-shadow:0 0 0 3px rgba(0,245,200,.08),0 10px 28px rgba(0,0,0,.12)}
+.count{color:var(--cz-muted);font:700 11px/1 "Space Grotesk";letter-spacing:.7px;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.channel-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:142px;width:100%;padding:19px;border:1px solid var(--cz-border);border-radius:17px;background:linear-gradient(145deg,var(--cz-panel),var(--cz-panel2));color:var(--cz-text);text-align:left;cursor:pointer;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.channel-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--cz-accent),var(--cz-accent2),transparent)}
+.channel-card::after{content:"";position:absolute;width:160px;height:160px;right:-80px;bottom:-95px;border-radius:50%;background:rgba(0,245,200,.06);filter:blur(15px);pointer-events:none}
+.channel-card:hover{transform:translateY(-4px);border-color:var(--cz-border-strong);box-shadow:0 18px 38px rgba(0,0,0,.2)}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:2}
+.card-num{color:var(--cz-muted);font:700 10px/1 "Space Grotesk";letter-spacing:1px}
+.card-type{padding:5px 8px;border-radius:8px;border:1px solid var(--cz-border);color:var(--cz-muted);font:700 9px/1 "Space Grotesk";letter-spacing:.8px;text-transform:uppercase;background:rgba(255,255,255,.02)}
+.card-title{position:relative;z-index:2;margin:24px 0 0;color:var(--cz-text);font:800 16px/1.28 "Space Grotesk";letter-spacing:-.2px;white-space:normal;overflow-wrap:anywhere}
+.card-foot{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}
+.live{display:inline-flex;align-items:center;gap:7px;color:var(--cz-accent);font:900 10px/1 "Space Grotesk";letter-spacing:1px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#19e59b;box-shadow:0 0 12px rgba(25,229,155,.8);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.42;transform:scale(.78)}}
+.empty{grid-column:1/-1;padding:70px 20px;text-align:center;color:var(--cz-muted);border:1px dashed var(--cz-border);border-radius:17px;background:rgba(255,255,255,.015)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
 .overlay.show{display:flex}
-.modal{width:min(1200px,100%);height:min(760px,90vh);background:#03080d;border:1px solid rgba(0,245,200,.24);border-radius:18px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.55);display:flex;flex-direction:column}
-.modal-head{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:1px solid rgba(255,255,255,.07);background:#07111a}
-.now{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px}
+.modal{width:min(1240px,100%);height:min(780px,92vh);background:#03080d;border:1px solid rgba(0,245,200,.28);border-radius:18px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.62);display:flex;flex-direction:column}
+.modal-head{min-height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:1px solid rgba(255,255,255,.07);background:#07111a}
+.now{font:800 14px/1.25 "Space Grotesk";color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px}
 .close{width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0c1823;color:#fff;font-size:20px;cursor:pointer}
-.frame-wrap{flex:1;background:#000;position:relative}
+.frame-wrap{flex:1;min-height:0;background:#000;position:relative}
 .frame-wrap iframe{width:100%;height:100%;border:0;background:#000}
 .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9db0bd;background:#000;z-index:2}
 .loading.hide{display:none}
-.empty{padding:40px;text-align:center;color:var(--muted)}
-@media(max-width:700px){body{padding:14px}.brand{font-size:23px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:14px;min-height:112px}.title{font-size:14px}.modal{height:86vh;border-radius:14px}}
-@media(max-width:430px){.grid{grid-template-columns:1fr}.toolbar{display:block}.search{width:100%;margin-bottom:9px}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
+@media(max-width:700px){body{padding:12px}.top{padding:15px;align-items:flex-start}.brand{font-size:23px}.brand-mark{width:40px;height:40px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.channel-card{min-height:132px;padding:14px}.card-title{font-size:14px;margin-top:19px}.modal{height:90vh;border-radius:14px}.sub{max-width:260px}}
+@media(max-width:460px){.grid{grid-template-columns:1fr}.toolbar{display:block}.count{margin-top:9px}.search-wrap{width:100%;margin-bottom:9px}.actions{width:100%}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
-    <div>
-      <div class="brand">CRIC<span>ZONE</span> 1</div>
-      <div class="sub">Live channel directory powered by your Cloudflare channel API.</div>
+  <header class="top">
+    <div class="brand-row">
+      <div class="brand-mark">CZ</div>
+      <div>
+        <div class="brand">CRIC<span>ZONE</span> 1</div>
+        <div class="sub">Live channel directory · powered by your Cloudflare channel API</div>
+      </div>
     </div>
     <div class="actions">
       <div class="badge" id="status">LOADING…</div>
       <a class="btn" href="https://criczone.pages-1.workers.dev/channels" target="_blank" rel="noopener">API</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">☀</button>
     </div>
-  </div>
+  </header>
 
   <div class="toolbar">
-    <input id="search" class="search" placeholder="Search channels…">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="search" class="search" placeholder="Search channels, language, or ID…" autocomplete="off">
+    </div>
     <div class="count" id="count">Loading channels…</div>
   </div>
 
@@ -80,42 +122,41 @@ body{padding:24px}
 
 <script>
 const API_URL="https://criczone.pages-1.workers.dev/channels";
-const grid=document.getElementById("grid"), search=document.getElementById("search"), count=document.getElementById("count"), status=document.getElementById("status"), overlay=document.getElementById("overlay"), player=document.getElementById("player"), now=document.getElementById("now"), loading=document.getElementById("loading");
-
-let channels=[];
-let filtered=[];
+const grid=document.getElementById("grid");
+const search=document.getElementById("search");
+const count=document.getElementById("count");
+const status=document.getElementById("status");
+const overlay=document.getElementById("overlay");
+const player=document.getElementById("player");
+const now=document.getElementById("now");
+const loading=document.getElementById("loading");
+let channels=[],filtered=[];
 
 function normalize(x,i){
   return {
-    id:x?.id ?? String(i+1),
-    name:x?.name || x?.channel || ("Channel "+(i+1)),
-    type:x?.type || "iframe",
-    src:x?.iframeSrc || x?.url || x?.src || ""
+    id:String(x?.id ?? i+1),
+    name:String(x?.name || x?.channel || ("Channel "+(i+1))),
+    type:String(x?.type || "iframe"),
+    src:String(x?.iframeSrc || x?.url || x?.src || "")
   };
 }
-
+function escapeHtml(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
 function render(){
   const q=search.value.trim().toLowerCase();
-  filtered=channels.filter(c => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q));
-  count.textContent=`${filtered.length} of ${channels.length} channels`;
+  filtered=channels.filter(c=>c.name.toLowerCase().includes(q)||c.id.toLowerCase().includes(q)||c.type.toLowerCase().includes(q));
+  count.textContent=filtered.length+" of "+channels.length+" channels";
   if(!filtered.length){grid.innerHTML='<div class="empty">No channels found.</div>';return;}
-  grid.innerHTML="";
   const frag=document.createDocumentFragment();
   filtered.forEach((c,idx)=>{
     const el=document.createElement("button");
     el.type="button";
-    el.className="card";
-    el.innerHTML=`<div class="title">${escapeHtml(c.name)}</div><div class="meta"><span>${escapeHtml(c.type)}</span><span class="live">LIVE · ${String(idx+1).padStart(2,"0")}</span></div>`;
+    el.className="channel-card";
+    el.innerHTML='<div class="card-top"><span class="card-num">#'+String(idx+1).padStart(3,"0")+'</span><span class="card-type">'+escapeHtml(c.type)+'</span></div><div class="card-title">'+escapeHtml(c.name)+'</div><div class="card-foot"><span class="live"><i class="live-dot"></i>LIVE</span><span class="card-num">OPEN PLAYER</span></div>';
     el.addEventListener("click",()=>openPlayer(c));
     frag.appendChild(el);
   });
-  grid.appendChild(frag);
+  grid.replaceChildren(frag);
 }
-
-function escapeHtml(s){
-  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-
 function openPlayer(c){
   if(!c.src){alert("No player URL available for this channel.");return;}
   now.textContent=c.name;
@@ -125,14 +166,12 @@ function openPlayer(c){
   overlay.setAttribute("aria-hidden","false");
   document.body.style.overflow="hidden";
 }
-
 function closePlayer(){
   player.src="about:blank";
   overlay.classList.remove("show");
   overlay.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
 }
-
 player.addEventListener("load",()=>loading.classList.add("hide"));
 document.getElementById("close").addEventListener("click",closePlayer);
 overlay.addEventListener("click",e=>{if(e.target===overlay)closePlayer();});
@@ -141,18 +180,19 @@ search.addEventListener("input",render);
 
 async function load(){
   try{
+    status.textContent="CONNECTING…";
     const res=await fetch(API_URL,{cache:"no-store"});
     if(!res.ok) throw new Error("API "+res.status);
     const data=await res.json();
     const list=Array.isArray(data?.iframes)?data.iframes:[];
     channels=list.map(normalize).filter(x=>x.src);
-    status.textContent=`${channels.length} LIVE CHANNELS`;
+    status.textContent=channels.length+" LIVE CHANNELS";
     render();
   }catch(err){
     console.error(err);
     status.textContent="API ERROR";
-    grid.innerHTML='<div class="empty">Unable to load channels right now.</div>';
     count.textContent="API unavailable";
+    grid.innerHTML='<div class="empty">Unable to load channels right now.</div>';
   }
 }
 load();
