@@ -104,23 +104,49 @@ function isFirstPartyRequest(request) {
         request.headers["sec-fetch-site"] || "";
 
 
-    // API host must be one of our domains
-    if (!ALLOWED_HOSTS.includes(host)) {
-        return false;
+    // Keep the existing allowlist exactly as-is.
+    if (ALLOWED_HOSTS.includes(host)) {
+
+        if (origin) {
+            return ALLOWED_ORIGINS.includes(origin);
+        }
+
+        return (
+            fetchSite === "same-origin" ||
+            ALLOWED_ORIGINS.includes(refererOrigin)
+        );
     }
 
 
-    // Browser request with Origin
+    // Also support the same API when it is deployed behind
+    // another HTTPS/custom domain, without changing any feed URL.
+    // Only the API's own origin/host is accepted; cross-site
+    // browser requests are still rejected.
     if (origin) {
 
-        return ALLOWED_ORIGINS.includes(origin);
+        try {
+
+            const parsedOrigin =
+                new URL(origin);
+
+            if (
+                parsedOrigin.protocol === "https:" &&
+                parsedOrigin.host === host
+            ) {
+                return true;
+            }
+
+        } catch (error) {
+
+            return false;
+        }
+
     }
 
 
-    // Requests without Origin
     return (
-        fetchSite === "same-origin" ||
-        ALLOWED_ORIGINS.includes(refererOrigin)
+        fetchSite === "same-origin" &&
+        String(request.headers.origin || "") === ""
     );
 }
 
