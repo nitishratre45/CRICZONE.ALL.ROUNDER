@@ -21,7 +21,6 @@
         html, body {
             width: 100%;
             height: 100%;
-            min-height: 100dvh;
             background: #000;
             overflow: hidden;
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -30,8 +29,6 @@
         .player-container {
             position: fixed;
             inset: 0;
-            width: 100vw;
-            height: 100dvh;
             background: #000;
             display: flex;
             align-items: center;
@@ -138,108 +135,7 @@
             background: #ff3b30 !important;
         }
 
-
-
-        /* Mobile rotate / fullscreen button */
-        /* Mobile video controls */
-        .mobile-tools {
-            display: none;
-            position: absolute;
-            z-index: 75;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .mobile-tool-btn {
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            border: 1px solid rgba(255,255,255,.13);
-            border-radius: 12px;
-            background: rgba(10,10,12,.74);
-            color: #fff;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 24px rgba(0,0,0,.32);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: transform .16s ease, background .16s ease, opacity .16s ease;
-        }
-
-        .mobile-tool-btn:hover,
-        .mobile-tool-btn:focus-visible {
-            background: rgba(255,255,255,.13);
-            outline: none;
-        }
-
-        .mobile-tool-btn:active {
-            transform: scale(.92);
-        }
-
-        .mobile-tool-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.9;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .mobile-tool-label {
-            position: absolute;
-            right: 49px;
-            padding: 5px 8px;
-            border-radius: 7px;
-            background: rgba(0,0,0,.78);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transform: translateX(4px);
-            transition: .16s ease;
-        }
-
-        .mobile-tool-wrap {
-            position: relative;
-        }
-
-        .mobile-tool-wrap:hover .mobile-tool-label,
-        .mobile-tool-wrap:focus-within .mobile-tool-label {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .video-fit-contain video {
-            object-fit: contain !important;
-            transform: scale(1);
-        }
-
-        .video-fit-cover video {
-            object-fit: cover !important;
-            transform: scale(1);
-        }
-
-        .video-zoom video {
-            object-fit: contain !important;
-            transform: scale(1.18);
-        }
-
-        .mobile-tools.hidden {
-            display: none !important;
-        }
-
         @media (max-width: 700px) {
-            .mobile-tools {
-                display: flex;
-                right: 10px;
-            }
-
             .custom-watermark {
                 font-size: 9px;
                 bottom: 70px;
@@ -252,58 +148,7 @@
 
 <div class="player-container" id="playerContainer">
     <video id="video" autoplay muted playsinline preload="metadata"></video>
-    <div class="custom-watermark">CRICZONE · LIVE</div>
-    <div id="mobileTools" class="mobile-tools">
-        <div class="mobile-tool-wrap">
-            <button id="rotateBtn" class="mobile-tool-btn" type="button" aria-label="Rotate and fullscreen">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8.5 4H5a1 1 0 0 0-1 1v3.5"></path>
-                    <path d="M4.4 8.5A8 8 0 1 0 8.1 4.9"></path>
-                    <path d="m5 4 3.5 0"></path>
-                    <path d="M15.5 20H19a1 1 0 0 0 1-1v-3.5"></path>
-                </svg>
-            </button>
-            <span class="mobile-tool-label">Rotate</span>
-        </div>
-
-        <div class="mobile-tool-wrap">
-            <button id="fitBtn" class="mobile-tool-btn" type="button" aria-label="Fit video">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
-                    <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
-                    <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
-                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
-                </svg>
-            </button>
-            <span class="mobile-tool-label">Fit</span>
-        </div>
-
-        <div class="mobile-tool-wrap">
-            <button id="fillBtn" class="mobile-tool-btn" type="button" aria-label="Fill screen">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
-                    <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
-                    <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
-                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
-                    <path d="m9 9-3 3 3 3"></path>
-                    <path d="m15 9 3 3-3 3"></path>
-                </svg>
-            </button>
-            <span class="mobile-tool-label">Fill</span>
-        </div>
-
-        <div class="mobile-tool-wrap">
-            <button id="zoomBtn" class="mobile-tool-btn" type="button" aria-label="Zoom video">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="10.5" cy="10.5" r="5.5"></circle>
-                    <path d="m15 15 5 5"></path>
-                    <path d="M10.5 8v5"></path>
-                    <path d="M8 10.5h5"></path>
-                </svg>
-            </button>
-            <span class="mobile-tool-label">Zoom</span>
-        </div>
-    </div>
+    <div class="custom-watermark">LIVE · FANCODE</div>
 
     <!-- Loading overlay -->
     <div id="loading" class="loading-overlay">
@@ -528,136 +373,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             initPlayer();
         });
-
-
-
-        /* ========== MOBILE ROTATE + FULLSCREEN ========== */
-        async function enterMobileFullscreenLandscape() {
-            const container = DOM.container;
-
-            try {
-                if (!document.fullscreenElement) {
-                    if (container.requestFullscreen) {
-                        await container.requestFullscreen();
-                    } else if (DOM.video.webkitEnterFullscreen) {
-                        DOM.video.webkitEnterFullscreen();
-                    }
-                }
-
-                if (
-                    screen.orientation &&
-                    screen.orientation.lock
-                ) {
-                    try {
-                        await screen.orientation.lock('landscape');
-                    } catch (_) {}
-                }
-            } catch (err) {
-                console.warn('Fullscreen/orientation request failed:', err);
-            }
-        }
-
-        async function exitMobileFullscreenLandscape() {
-            try {
-                if (document.fullscreenElement && document.exitFullscreen) {
-                    await document.exitFullscreen();
-                }
-            } catch (_) {}
-        }
-
-        const rotateButton = document.getElementById('rotateBtn');
-        const fitButton = document.getElementById('fitBtn');
-        const fillButton = document.getElementById('fillBtn');
-        const zoomButton = document.getElementById('zoomBtn');
-        const mobileTools = document.getElementById('mobileTools');
-
-        function setVideoMode(mode) {
-            DOM.container.classList.remove(
-                'video-fit-contain',
-                'video-fit-cover',
-                'video-zoom'
-            );
-
-            if (mode === 'fill') {
-                DOM.container.classList.add('video-fit-cover');
-            } else if (mode === 'zoom') {
-                DOM.container.classList.add('video-zoom');
-            } else {
-                DOM.container.classList.add('video-fit-contain');
-            }
-
-            try {
-                localStorage.setItem('criczone5_video_mode', mode);
-            } catch (_) {}
-        }
-
-        function restoreVideoMode() {
-            let mode = 'fit';
-            try {
-                mode = localStorage.getItem('criczone5_video_mode') || 'fit';
-            } catch (_) {}
-            setVideoMode(mode);
-        }
-
-        if (rotateButton) {
-            rotateButton.addEventListener('click', async () => {
-                if (document.fullscreenElement) {
-                    await exitMobileFullscreenLandscape();
-                } else {
-                    await enterMobileFullscreenLandscape();
-                }
-            });
-        }
-
-        if (fitButton) {
-            fitButton.addEventListener('click', () => {
-                setVideoMode('fit');
-            });
-        }
-
-        if (fillButton) {
-            fillButton.addEventListener('click', () => {
-                setVideoMode('fill');
-            });
-        }
-
-        if (zoomButton) {
-            zoomButton.addEventListener('click', () => {
-                const isZoomed = DOM.container.classList.contains('video-zoom');
-                setVideoMode(isZoomed ? 'fit' : 'zoom');
-            });
-        }
-
-        restoreVideoMode();
-
-        function updateMobileToolsVisibility() {
-            if (!mobileTools) return;
-            mobileTools.classList.toggle(
-                'hidden',
-                !!document.fullscreenElement
-            );
-        }
-
-        document.addEventListener('fullscreenchange', async () => {
-            updateMobileToolsVisibility();
-
-            if (document.fullscreenElement) {
-                if (screen.orientation && screen.orientation.lock) {
-                    try {
-                        await screen.orientation.lock('landscape');
-                    } catch (_) {}
-                }
-            } else if (
-                screen.orientation &&
-                screen.orientation.unlock
-            ) {
-                try {
-                    screen.orientation.unlock();
-                } catch (_) {}
-            }
-        });
-
-        updateMobileToolsVisibility();
 
         // Handle visibility change to resume if needed
         document.addEventListener('visibilitychange', () => {
