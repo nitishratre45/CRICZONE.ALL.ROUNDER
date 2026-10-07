@@ -1,168 +1,566 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="referrer" content="no-referrer">
-<title>CricZone • Live Cricket</title>
-<meta name="theme-color" content="#06070a">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>CricZone • Live Cricket</title>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js" crossorigin="anonymous"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/controls.css"
+    crossorigin="anonymous"
+  >
 
-<style>
-:root{--red:#e10600;--red2:#ff3b30;--muted:rgba(255,255,255,.6)}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-body{color:#fff}
-.player{position:fixed;inset:0;background:#000}
-video{width:100%;height:100%;object-fit:contain;background:#000}
-.top{position:absolute;z-index:20;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:linear-gradient(to bottom,rgba(0,0,0,.88),rgba(0,0,0,.2),transparent);pointer-events:none}
-.brand{display:flex;align-items:center;gap:10px}
-.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:16px;font-weight:900;background:linear-gradient(135deg,#ff2a1f,#a90000);box-shadow:0 8px 25px rgba(225,6,0,.28)}
-.name{font-size:16px;font-weight:900}.sub{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.live{display:flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);font-size:10px;font-weight:900;letter-spacing:.8px}
-.dot{width:7px;height:7px;border-radius:50%;background:#ff3028;box-shadow:0 0 12px #ff3028;animation:p 1.4s infinite}
-@keyframes p{50%{opacity:.4;transform:scale(.85)}}
-.telegram{position:absolute;z-index:25;right:16px;bottom:82px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;color:#fff;text-decoration:none;font-size:11px;font-weight:800;background:linear-gradient(135deg,#229ed9,#147fc1);box-shadow:0 10px 30px rgba(20,127,193,.3)}
-.quality-section{position:absolute;z-index:28;right:16px;bottom:130px;min-width:175px;padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(10,10,13,.78);backdrop-filter:blur(14px);box-shadow:0 12px 35px rgba(0,0,0,.3)}
-.quality-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:8px}.quality-current{color:#fff;font-size:11px}.quality-options{display:flex;flex-wrap:wrap;gap:6px}.quality-btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);color:#fff;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer;transition:.18s}.quality-btn:hover{background:rgba(255,255,255,.1)}.quality-btn.active{background:linear-gradient(135deg,#e10600,#ff3b30);border-color:transparent}.quality-section.hidden{display:none}
-.watermark{position:absolute;z-index:15;left:17px;bottom:74px;font-size:9px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,.18)}
-.loading,.error{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.92)}
-.loading{flex-direction:column;gap:14px}.loading.hide{opacity:0;visibility:hidden;pointer-events:none;transition:.3s}
-.spin{width:45px;height:45px;border:4px solid rgba(255,255,255,.12);border-top-color:var(--red2);border-radius:50%;animation:s .8s linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}
-.lt{font-size:15px;font-weight:800}.ls{font-size:12px;color:var(--muted)}
-.error{display:none;padding:20px}.card{width:min(410px,100%);padding:26px;border-radius:20px;text-align:center;border:1px solid rgba(255,255,255,.09);background:rgba(15,15,18,.88);backdrop-filter:blur(15px)}
-.icon{width:50px;height:50px;margin:0 auto 13px;border-radius:50%;display:grid;place-items:center;background:rgba(225,6,0,.12);color:#ff625b;font-size:21px;font-weight:900}
-.et{font-size:18px;font-weight:900}.es{margin-top:7px;font-size:13px;line-height:1.5;color:var(--muted)}
-.retry{margin-top:18px;padding:11px 17px;border:0;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--red),var(--red2));font-weight:800;cursor:pointer}
-.plyr{width:100%;height:100%}.plyr__video-wrapper{height:100%;background:#000}
-.plyr__controls{background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.35),transparent)!important;padding-top:45px!important}
-.plyr__control--overlaid{background:rgba(225,6,0,.95)!important}.plyr__progress__played{background:var(--red2)!important}
-.plyr__menu__container{background:rgba(16,16,18,.97)!important;border-radius:14px;border:1px solid rgba(255,255,255,.08)}
-@media(max-width:700px){.top{padding:11px 12px}.logo{width:34px;height:34px;border-radius:10px;font-size:14px}.name{font-size:14px}.sub{font-size:7px}.live{padding:6px 9px;font-size:9px}.telegram{right:10px;bottom:72px;padding:9px 12px;font-size:10px}.watermark{left:11px;bottom:69px;font-size:8px}}
-@media(max-width:700px){.quality-section{right:10px;bottom:112px;min-width:160px;padding:8px}.quality-btn{padding:6px 7px;font-size:9px}.quality-title{font-size:9px}}
-</style>
+  <script
+    src="https://cdn.jsdelivr.net/npm/shaka-player@latest/dist/shaka-player.ui.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <style>
+    :root {
+      --red: #e10600;
+      --red2: #ff3b30;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      color: #fff;
+    }
+
+    .player-shell {
+      position: fixed;
+      inset: 0;
+      background: #000;
+    }
+
+    .player-container {
+      position: absolute;
+      inset: 0;
+      background: #000;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
+
+    /* CricZone header */
+    .topbar {
+      position: absolute;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, .88),
+        rgba(0, 0, 0, .25),
+        transparent
+      );
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ff2a1f, #a90000);
+      box-shadow: 0 8px 26px rgba(225, 6, 0, .28);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: .25px;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .58);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255, 255, 255, .10);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .52);
+      backdrop-filter: blur(12px);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .8px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ff3028;
+      box-shadow: 0 0 12px #ff3028;
+      animation: livePulse 1.4s infinite;
+    }
+
+    @keyframes livePulse {
+      50% {
+        opacity: .42;
+        transform: scale(.84);
+      }
+    }
+
+    /* Telegram */
+    .telegram-btn {
+      position: absolute;
+      z-index: 60;
+      right: 16px;
+      bottom: 78px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #229ed9, #147fc1);
+      box-shadow: 0 10px 30px rgba(20, 127, 193, .30);
+    }
+
+    .watermark {
+      position: absolute;
+      z-index: 45;
+      left: 17px;
+      bottom: 73px;
+      pointer-events: none;
+      color: rgba(255, 255, 255, .18);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Loading */
+    .loading-overlay,
+    .error-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .93);
+    }
+
+    .loading-overlay {
+      flex-direction: column;
+      gap: 14px;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 46px;
+      height: 46px;
+      border: 4px solid rgba(255, 255, 255, .12);
+      border-top-color: var(--red2);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .loading-subtitle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .58);
+    }
+
+    /* Error */
+    .error-overlay {
+      display: none;
+      padding: 20px;
+    }
+
+    .error-card {
+      width: min(410px, 100%);
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 20px;
+      text-align: center;
+      background: rgba(15, 15, 18, .90);
+      backdrop-filter: blur(15px);
+    }
+
+    .error-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 13px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(225, 6, 0, .12);
+      color: #ff625b;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .error-title {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .error-text {
+      margin-top: 7px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, .58);
+    }
+
+    .retry-btn {
+      margin-top: 18px;
+      padding: 11px 17px;
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--red), var(--red2));
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Shaka styling */
+    .shaka-video-container {
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    .shaka-controls-container {
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, .88),
+        rgba(0, 0, 0, .38),
+        transparent
+      ) !important;
+    }
+
+    .shaka-bottom-controls {
+      padding-left: 18px !important;
+      padding-right: 18px !important;
+    }
+
+    .shaka-overflow-menu {
+      background: rgba(14, 14, 18, .97) !important;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px !important;
+      backdrop-filter: blur(16px);
+    }
+
+    .shaka-overflow-menu button,
+    .shaka-settings-menu button {
+      color: #fff !important;
+    }
+
+    .shaka-overflow-menu button:hover,
+    .shaka-settings-menu button:hover {
+      background: rgba(255, 255, 255, .07) !important;
+    }
+
+    .shaka-resolution-button {
+      color: #fff !important;
+    }
+
+    .shaka-seek-bar-container {
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        padding: 11px 12px;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .brand-title {
+        font-size: 14px;
+      }
+
+      .brand-subtitle {
+        font-size: 7px;
+      }
+
+      .live-badge {
+        padding: 6px 9px;
+        font-size: 9px;
+      }
+
+      .telegram-btn {
+        right: 10px;
+        bottom: 71px;
+        padding: 9px 12px;
+        font-size: 10px;
+      }
+
+      .watermark {
+        left: 11px;
+        bottom: 68px;
+        font-size: 8px;
+      }
+
+      .shaka-bottom-controls {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="player">
-<div class="top">
-<div class="brand"><div class="logo">CZ</div><div><div class="name">CricZone</div><div class="sub">Live Cricket Streaming</div></div></div>
-<div class="live"><span class="dot"></span>LIVE</div>
-</div>
+  <div class="player-shell">
+    <div
+      id="video-container"
+      class="player-container"
+      data-shaka-player-container
+    >
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">CZ</div>
+          <div>
+            <div class="brand-title">CricZone</div>
+            <div class="brand-subtitle">Live Cricket Streaming</div>
+          </div>
+        </div>
 
-<video id="video" playsinline autoplay muted preload="metadata"></video>
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
+      </div>
 
-<a class="telegram" href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" rel="noopener noreferrer">➤&nbsp; Join CricZone Telegram</a>
-<div id="qualitySection" class="quality-section hidden">
-<div class="quality-title"><span>Quality</span><span id="qualityCurrent" class="quality-current">Auto</span></div>
-<div id="qualityOptions" class="quality-options"></div>
-</div>
-<div class="watermark">CRICZONE • LIVE</div>
+      <video
+        id="video"
+        data-shaka-player
+        autoplay
+        muted
+        playsinline
+      ></video>
 
-<div id="loading" class="loading">
-<div class="spin"></div><div class="lt">Loading CricZone</div><div class="ls">Connecting to live stream...</div>
-</div>
+      <a
+        class="telegram-btn"
+        href="https://t.me/+MueCDjlpoS8yNmJl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        ➤&nbsp; Join CricZone Telegram
+      </a>
 
-<div id="error" class="error">
-<div class="card"><div class="icon">!</div><div class="et">Stream Unavailable</div><div class="es">The live stream could not be loaded right now. Please try again.</div><button class="retry" id="retry">Try Again</button></div>
-</div>
-</div>
+      <div class="watermark">CRICZONE • LIVE</div>
 
-<script>
-(function(){
-"use strict";
+      <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-title">Loading CricZone</div>
+        <div class="loading-subtitle">Connecting to live stream...</div>
+      </div>
 
-var STREAM_URL="https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791471355~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F*~SessionID%3D68af7a8f728b9df6_fc-app_sportsguruand_e1dc9dbb-8389-41~Signature%3DAXZsC1BXvTvxcbuv1aEHNED23L9-UZr7M6YYj62eZ1mJDf7prVBbX5M0pFXi6YkV2kjNd7bcc4XTAWPHZtM7GmolTlkF";
+      <div id="error" class="error-overlay">
+        <div class="error-card">
+          <div class="error-icon">!</div>
+          <div class="error-title">Stream Unavailable</div>
+          <div class="error-text">
+            The live stream could not be loaded right now. Please try again.
+          </div>
+          <button id="retry" class="retry-btn" type="button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-var video=document.getElementById("video"),loading=document.getElementById("loading"),errorBox=document.getElementById("error"),retry=document.getElementById("retry"),qualitySection=document.getElementById("qualitySection"),qualityOptions=document.getElementById("qualityOptions"),qualityCurrent=document.getElementById("qualityCurrent"),hls=null,plyr=null;
+  <script>
+    const STREAM_URL =
+      "https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791471355~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F*~SessionID%3D68af7a8f728b9df6_fc-app_sportsguruand_e1dc9dbb-8389-41~Signature%3DAXZsC1BXvTvxcbuv1aEHNED23L9-UZr7M6YYj62eZ1mJDf7prVBbX5M0pFXi6YkV2kjNd7bcc4XTAWPHZtM7GmolTlkF";
 
-function hideLoading(){loading.classList.add("hide")}
-function showLoading(){loading.classList.remove("hide")}
-function showError(){hideLoading();errorBox.style.display="flex"}
-function hideError(){errorBox.style.display="none"}
+    const video = document.getElementById("video");
+    const container = document.getElementById("video-container");
+    const loading = document.getElementById("loading");
+    const errorOverlay = document.getElementById("error");
+    const retryButton = document.getElementById("retry");
 
-function destroy(){
- if(hls){try{hls.destroy()}catch(e){}hls=null}
- if(plyr){try{plyr.destroy()}catch(e){}plyr=null}
-}
+    let player = null;
+    let ui = null;
 
-function setupQuality(levels){
- qualityOptions.innerHTML="";
- var unique=Array.from(new Set(levels)).sort(function(a,b){return b-a});
- var auto=document.createElement("button");
- auto.className="quality-btn active";
- auto.textContent="Auto";
- auto.onclick=function(){if(hls)hls.currentLevel=-1;setQualityActive(auto,"Auto")};
- qualityOptions.appendChild(auto);
- unique.forEach(function(height){
-  var btn=document.createElement("button");
-  btn.className="quality-btn";
-  btn.textContent=height+"p";
-  btn.onclick=function(){
-   if(!hls)return;
-   var index=hls.levels.findIndex(function(level){return level.height===height});
-   if(index>=0){hls.currentLevel=index;setQualityActive(btn,height+"p")}
-  };
-  qualityOptions.appendChild(btn);
- });
- qualityCurrent.textContent="Auto";
- qualitySection.classList.remove("hidden");
-}
+    function showLoading() {
+      loading.classList.remove("hidden");
+      errorOverlay.style.display = "none";
+    }
 
-function setQualityActive(active,label){
- Array.prototype.forEach.call(qualityOptions.querySelectorAll(".quality-btn"),function(btn){btn.classList.remove("active")});
- active.classList.add("active");
- qualityCurrent.textContent=label;
-}
+    function hideLoading() {
+      loading.classList.add("hidden");
+    }
 
-function setupPlyr(){
- plyr=new Plyr(video,{
-  controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"],
-  settings:["speed"],
-  tooltips:{controls:true,seek:true}
- });
-}
+    function showError() {
+      hideLoading();
+      errorOverlay.style.display = "flex";
+    }
 
-function native(){
- qualitySection.classList.add("hidden");
- destroy();
- video.src=STREAM_URL;
- plyr=new Plyr(video,{controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"]});
- video.muted=true;
- video.addEventListener("loadeddata",function(){hideError();hideLoading();video.play().catch(function(){});},{once:true});
- video.addEventListener("error",showError,{once:true});
-}
+    function hideError() {
+      errorOverlay.style.display = "none";
+    }
 
-function init(){
- showLoading();hideError();destroy();
- try{
-  if(window.Hls&&Hls.isSupported()){
-   hls=new Hls({enableWorker:true,maxBufferLength:30,maxMaxBufferLength:60,liveSyncDurationCount:2,liveMaxLatencyDurationCount:5,lowLatencyMode:true,backBufferLength:30});
-   hls.loadSource(STREAM_URL);hls.attachMedia(video);
-   hls.on(Hls.Events.MANIFEST_PARSED,function(){
-    var levels=hls.levels.map(function(x){return x.height}).filter(Boolean);
-    setupQuality(levels);setupPlyr();hideLoading();video.muted=true;video.play().catch(function(){});
-   });
-   hls.on(Hls.Events.ERROR,function(_,data){
-    if(!data.fatal)return;
-    if(data.type===Hls.ErrorTypes.NETWORK_ERROR){try{hls.startLoad()}catch(e){showError()}}
-    else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){try{hls.recoverMediaError()}catch(e){showError()}}
-    else{destroy();showError()}
-   });
-  }else if(video.canPlayType("application/vnd.apple.mpegurl"))native();
-  else showError();
- }catch(e){console.error(e);showError()}
-}
+    async function destroyPlayer() {
+      if (ui) {
+        try {
+          ui.destroy();
+        } catch (_) {}
+        ui = null;
+      }
 
-video.addEventListener("playing",function(){hideLoading();hideError()});
-retry.addEventListener("click",init);
-document.addEventListener("visibilitychange",function(){if(!document.hidden&&video.paused&&!video.ended)video.play().catch(function(){})});
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+      if (player) {
+        try {
+          await player.destroy();
+        } catch (_) {}
+        player = null;
+      }
+    }
 
-})();
-</script>
+    function configureUI() {
+      ui.configure({
+        controlPanelElements: [
+          "play_pause",
+          "time_and_duration",
+          "mute",
+          "volume",
+          "spacer",
+          "overflow_menu",
+          "fullscreen"
+        ],
+
+        overflowMenuButtons: [
+          "quality",
+          "playback_rate",
+          "picture_in_picture"
+        ],
+
+        clearBufferOnQualityChange: true,
+        enableTooltips: true,
+        addSeekBar: true,
+        addBigPlayButton: true,
+        showBufferingSpinner: true
+      });
+    }
+
+    async function initPlayer() {
+      showLoading();
+      await destroyPlayer();
+
+      try {
+        if (!shaka.Player.isBrowserSupported()) {
+          throw new Error("Shaka Player is not supported in this browser.");
+        }
+
+        player = new shaka.Player();
+
+        await player.attach(video);
+
+        ui = new shaka.ui.Overlay(
+          player,
+          container,
+          video
+        );
+
+        configureUI();
+
+        player.addEventListener("error", (event) => {
+          console.error("Shaka error:", event.detail);
+          showError();
+        });
+
+        await player.load(STREAM_URL);
+
+        hideError();
+        hideLoading();
+
+        video.muted = true;
+        video.play().catch(() => {});
+      } catch (error) {
+        console.error("CricZone player error:", error);
+        showError();
+      }
+    }
+
+    video.addEventListener("playing", () => {
+      hideLoading();
+      hideError();
+    });
+
+    retryButton.addEventListener("click", () => {
+      initPlayer();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && video.paused && !video.ended) {
+        video.play().catch(() => {});
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initPlayer();
+    });
+  </script>
 </body>
 </html>
