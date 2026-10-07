@@ -26,6 +26,8 @@ video{width:100%;height:100%;object-fit:contain;background:#000}
 .dot{width:7px;height:7px;border-radius:50%;background:#ff3028;box-shadow:0 0 12px #ff3028;animation:p 1.4s infinite}
 @keyframes p{50%{opacity:.4;transform:scale(.85)}}
 .telegram{position:absolute;z-index:25;right:16px;bottom:82px;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;color:#fff;text-decoration:none;font-size:11px;font-weight:800;background:linear-gradient(135deg,#229ed9,#147fc1);box-shadow:0 10px 30px rgba(20,127,193,.3)}
+.quality-section{position:absolute;z-index:28;right:16px;bottom:130px;min-width:175px;padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(10,10,13,.78);backdrop-filter:blur(14px);box-shadow:0 12px 35px rgba(0,0,0,.3)}
+.quality-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:8px}.quality-current{color:#fff;font-size:11px}.quality-options{display:flex;flex-wrap:wrap;gap:6px}.quality-btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);color:#fff;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer;transition:.18s}.quality-btn:hover{background:rgba(255,255,255,.1)}.quality-btn.active{background:linear-gradient(135deg,#e10600,#ff3b30);border-color:transparent}.quality-section.hidden{display:none}
 .watermark{position:absolute;z-index:15;left:17px;bottom:74px;font-size:9px;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,.18)}
 .loading,.error{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.92)}
 .loading{flex-direction:column;gap:14px}.loading.hide{opacity:0;visibility:hidden;pointer-events:none;transition:.3s}
@@ -41,6 +43,7 @@ video{width:100%;height:100%;object-fit:contain;background:#000}
 .plyr__control--overlaid{background:rgba(225,6,0,.95)!important}.plyr__progress__played{background:var(--red2)!important}
 .plyr__menu__container{background:rgba(16,16,18,.97)!important;border-radius:14px;border:1px solid rgba(255,255,255,.08)}
 @media(max-width:700px){.top{padding:11px 12px}.logo{width:34px;height:34px;border-radius:10px;font-size:14px}.name{font-size:14px}.sub{font-size:7px}.live{padding:6px 9px;font-size:9px}.telegram{right:10px;bottom:72px;padding:9px 12px;font-size:10px}.watermark{left:11px;bottom:69px;font-size:8px}}
+@media(max-width:700px){.quality-section{right:10px;bottom:112px;min-width:160px;padding:8px}.quality-btn{padding:6px 7px;font-size:9px}.quality-title{font-size:9px}}
 </style>
 </head>
 <body>
@@ -53,6 +56,10 @@ video{width:100%;height:100%;object-fit:contain;background:#000}
 <video id="video" playsinline autoplay muted preload="metadata"></video>
 
 <a class="telegram" href="https://t.me/+MueCDjlpoS8yNmJl" target="_blank" rel="noopener noreferrer">➤&nbsp; Join CricZone Telegram</a>
+<div id="qualitySection" class="quality-section hidden">
+<div class="quality-title"><span>Quality</span><span id="qualityCurrent" class="quality-current">Auto</span></div>
+<div id="qualityOptions" class="quality-options"></div>
+</div>
 <div class="watermark">CRICZONE • LIVE</div>
 
 <div id="loading" class="loading">
@@ -70,7 +77,7 @@ video{width:100%;height:100%;object-fit:contain;background:#000}
 
 var STREAM_URL="https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791471355~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F*~SessionID%3D68af7a8f728b9df6_fc-app_sportsguruand_e1dc9dbb-8389-41~Signature%3DAXZsC1BXvTvxcbuv1aEHNED23L9-UZr7M6YYj62eZ1mJDf7prVBbX5M0pFXi6YkV2kjNd7bcc4XTAWPHZtM7GmolTlkF";
 
-var video=document.getElementById("video"),loading=document.getElementById("loading"),errorBox=document.getElementById("error"),retry=document.getElementById("retry"),hls=null,plyr=null;
+var video=document.getElementById("video"),loading=document.getElementById("loading"),errorBox=document.getElementById("error"),retry=document.getElementById("retry"),qualitySection=document.getElementById("qualitySection"),qualityOptions=document.getElementById("qualityOptions"),qualityCurrent=document.getElementById("qualityCurrent"),hls=null,plyr=null;
 
 function hideLoading(){loading.classList.add("hide")}
 function showLoading(){loading.classList.remove("hide")}
@@ -82,21 +89,45 @@ function destroy(){
  if(plyr){try{plyr.destroy()}catch(e){}plyr=null}
 }
 
-function setupPlyr(levels){
- var qualities=levels.length?Array.from(new Set(levels)).sort(function(a,b){return a-b}):[360,480,720,1080];
+function setupQuality(levels){
+ qualityOptions.innerHTML="";
+ var unique=Array.from(new Set(levels)).sort(function(a,b){return b-a});
+ var auto=document.createElement("button");
+ auto.className="quality-btn active";
+ auto.textContent="Auto";
+ auto.onclick=function(){if(hls)hls.currentLevel=-1;setQualityActive(auto,"Auto")};
+ qualityOptions.appendChild(auto);
+ unique.forEach(function(height){
+  var btn=document.createElement("button");
+  btn.className="quality-btn";
+  btn.textContent=height+"p";
+  btn.onclick=function(){
+   if(!hls)return;
+   var index=hls.levels.findIndex(function(level){return level.height===height});
+   if(index>=0){hls.currentLevel=index;setQualityActive(btn,height+"p")}
+  };
+  qualityOptions.appendChild(btn);
+ });
+ qualityCurrent.textContent="Auto";
+ qualitySection.classList.remove("hidden");
+}
+
+function setQualityActive(active,label){
+ Array.prototype.forEach.call(qualityOptions.querySelectorAll(".quality-btn"),function(btn){btn.classList.remove("active")});
+ active.classList.add("active");
+ qualityCurrent.textContent=label;
+}
+
+function setupPlyr(){
  plyr=new Plyr(video,{
   controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"],
-  settings:["quality","speed"],
-  quality:{default:qualities[qualities.length-1]||720,options:qualities,forced:true,onChange:function(q){
-   if(!hls)return;
-   var i=hls.levels.findIndex(function(x){return x.height===q});
-   if(i>=0)hls.currentLevel=i;
-  }},
+  settings:["speed"],
   tooltips:{controls:true,seek:true}
  });
 }
 
 function native(){
+ qualitySection.classList.add("hidden");
  destroy();
  video.src=STREAM_URL;
  plyr=new Plyr(video,{controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"]});
@@ -113,7 +144,7 @@ function init(){
    hls.loadSource(STREAM_URL);hls.attachMedia(video);
    hls.on(Hls.Events.MANIFEST_PARSED,function(){
     var levels=hls.levels.map(function(x){return x.height}).filter(Boolean);
-    setupPlyr(levels);hideLoading();video.muted=true;video.play().catch(function(){});
+    setupQuality(levels);setupPlyr();hideLoading();video.muted=true;video.play().catch(function(){});
    });
    hls.on(Hls.Events.ERROR,function(_,data){
     if(!data.fatal)return;
