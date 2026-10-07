@@ -13,13 +13,30 @@ const ALLOWED_ORIGINS = new Set([
     "https://criczone.pages.dev"
 ]);
 
-function corsHeaders(origin) {
+function isAllowedOrigin(request, origin) {
+
+    if (!origin) {
+        return true;
+    }
+
+    if (origin && (ALLOWED_ORIGINS.has(origin) || (() => { try { return new URL(request.url).origin === origin; } catch { return false; } })())) {
+        return true;
+    }
+
+    try {
+        return new URL(request.url).origin === origin;
+    } catch {
+        return false;
+    }
+}
+
+function corsHeaders(origin, request) {
     const headers = {
         "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
         "Vary": "Origin"
     };
 
-    if (ALLOWED_ORIGINS.has(origin)) {
+    if (origin && (ALLOWED_ORIGINS.has(origin) || (() => { try { return new URL(request.url).origin === origin; } catch { return false; } })())) {
         headers["Access-Control-Allow-Origin"] = origin;
         headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
         headers["Access-Control-Allow-Headers"] = "Accept, Content-Type";
@@ -39,7 +56,7 @@ export async function onRequestOptions(context) {
     const origin =
         context.request.headers.get("Origin") || "";
 
-    if (!ALLOWED_ORIGINS.has(origin)) {
+    if (!isAllowedOrigin(context.request, origin)) {
         return new Response(
             JSON.stringify({
                 error: "Forbidden origin"
@@ -56,7 +73,7 @@ export async function onRequestOptions(context) {
 
     return new Response(null, {
         status: 204,
-        headers: corsHeaders(origin)
+        headers: corsHeaders(origin, request)
     });
 }
 
@@ -80,6 +97,22 @@ export async function onRequestGet(context) {
 
     const feedUrl =
         FEEDS[feedName];
+
+
+    if (!isAllowedOrigin(request, origin)) {
+        return new Response(
+            JSON.stringify({
+                error: "Forbidden origin"
+            }),
+            {
+                status: 403,
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    ...corsHeaders(origin, request)
+                }
+            }
+        );
+    }
 
 
     // ----------------------------------------------------------
