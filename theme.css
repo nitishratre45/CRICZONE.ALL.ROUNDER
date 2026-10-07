@@ -304,3 +304,137 @@
 :host([data-theme="light"]) .section-count {
     color: #52675b;
 }
+
+
+/* =========================================================
+   PREMIUM THEME POLISH
+   Visual-only enhancements; existing theme behavior preserved.
+   ========================================================= */
+
+.theme-toggle {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.theme-toggle::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,.14), transparent 55%);
+    pointer-events: none;
+    opacity: .8;
+}
+
+.theme-toggle:active {
+    transform: translateY(0) scale(.94);
+}
+
+.theme-toggle:hover {
+    box-shadow: 0 9px 24px rgba(0, 0, 0, .22);
+}
+
+:root[data-theme="light"] .theme-toggle {
+    box-shadow: 0 7px 20px rgba(24, 54, 38, .12);
+}
+
+:root[data-theme="light"] .theme-toggle:hover {
+    box-shadow: 0 10px 26px rgba(24, 54, 38, .18);
+}
+
+:root[data-theme="light"] .channel-card,
+:host([data-theme="light"]) .channel-card,
+:root[data-theme="light"] .ch-card,
+:host([data-theme="light"]) .ch-card {
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease,
+        background .22s ease;
+}
+
+:root[data-theme="light"] .channel-card:hover,
+:host([data-theme="light"]) .channel-card:hover,
+:root[data-theme="light"] .ch-card:hover,
+:host([data-theme="light"]) .ch-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(24, 54, 38, .13);
+}
+
+:root[data-theme="light"] .search-box:focus-within,
+:host([data-theme="light"]) .search-box:focus-within,
+:root[data-theme="light"] .search input:focus,
+:host([data-theme="light"]) .search input:focus,
+:root[data-theme="light"] .cc-search input:focus,
+:host([data-theme="light"]) .cc-search input:focus {
+    border-color: rgba(10, 128, 94, .55);
+    box-shadow: 0 0 0 3px rgba(10, 128, 94, .10), 0 8px 24px rgba(24, 54, 38, .08);
+}
+
+:root[data-theme="light"] .filter-btn,
+:host([data-theme="light"]) .filter-btn,
+:root[data-theme="light"] .cc-chip,
+:host([data-theme="light"]) .cc-chip {
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+:root[data-theme="light"] .filter-btn:hover,
+:host([data-theme="light"]) .filter-btn:hover,
+:root[data-theme="light"] .cc-chip:hover,
+:host([data-theme="light"]) .cc-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(10, 128, 94, .38);
+    box-shadow: 0 6px 16px rgba(24, 54, 38, .08);
+}
+
+:root[data-theme="light"] .cc-chip.active,
+:host([data-theme="light"]) .cc-chip.active {
+    box-shadow: 0 7px 18px rgba(10, 128, 94, .18);
+}
+
+:root[data-theme="light"] #cc-hero,
+:host([data-theme="light"]) #cc-hero {
+    background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(238,246,241,.96));
+}
+
+:root[data-theme="light"] .cc-marquee,
+:host([data-theme="light"]) .cc-marquee {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.75), 0 7px 20px rgba(24, 54, 38, .06);
+}
+
+@media (max-width: 700px) {
+    .theme-toggle {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+    }
+
+    :root[data-theme="light"] .channel-card:hover,
+    :host([data-theme="light"]) .channel-card:hover,
+    :root[data-theme="light"] .ch-card:hover,
+    :host([data-theme="light"]) .ch-card:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle,
+    .theme-toggle:hover,
+    .theme-toggle:active,
+    :root[data-theme="light"] .channel-card,
+    :host([data-theme="light"]) .channel-card,
+    :root[data-theme="light"] .ch-card,
+    :host([data-theme="light"]) .ch-card,
+    :root[data-theme="light"] .filter-btn,
+    :host([data-theme="light"]) .filter-btn,
+    :root[data-theme="light"] .cc-chip,
+    :host([data-theme="light"]) .cc-chip {
+        transition: none !important;
+        transform: none !important;
+    }
+}
