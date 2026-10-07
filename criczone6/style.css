@@ -2879,3 +2879,6 @@ iframe#player {
             auto !important;
     }
 }
+
+/* ===== CRICZONE UI POLISH v1 ===== */
+button,a,input,select{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid rgba(52,211,153,.9)!important;outline-offset:3px!important}.cc-card,.channel-card,.ch-card{border-radius:18px!important;box-shadow:0 12px 32px rgba(0,0,0,.22)}.cc-card:hover,.channel-card:hover,.ch-card:hover{transform:translateY(-5px);box-shadow:0 20px 44px rgba(0,0,0,.35),0 0 0 1px rgba(52,211,153,.14)}button{transition:transform .18s ease,filter .2s ease,box-shadow .2s ease,border-color .2s ease}button:hover{filter:brightness(1.06)}input,select{transition:border-color .2s,box-shadow .2s}input:focus,select:focus{border-color:rgba(52,211,153,.55)!important;box-shadow:0 0 0 4px rgba(52,211,153,.08)!important}*{scrollbar-width:thin;scrollbar-color:rgba(52,211,153,.35) transparent}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-thumb{background:rgba(52,211,153,.28);border-radius:999px}@media(max-width:700px){.cc-card,.channel-card,.ch-card{border-radius:15px!important}}
