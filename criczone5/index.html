@@ -21,6 +21,7 @@
         html, body {
             width: 100%;
             height: 100%;
+            min-height: 100dvh;
             background: #000;
             overflow: hidden;
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -29,6 +30,8 @@
         .player-container {
             position: fixed;
             inset: 0;
+            width: 100vw;
+            height: 100dvh;
             background: #000;
             display: flex;
             align-items: center;
@@ -135,7 +138,38 @@
             background: #ff3b30 !important;
         }
 
+
+
+        /* Mobile rotate / fullscreen button */
+        .mobile-rotate-btn {
+            display: none;
+            position: absolute;
+            z-index: 70;
+            right: 14px;
+            bottom: 130px;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 50%;
+            background: rgba(0,0,0,.68);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0,0,0,.35);
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .mobile-rotate-btn:active {
+            transform: scale(.94);
+        }
+
         @media (max-width: 700px) {
+            .mobile-rotate-btn {
+                display: flex;
+            }
+
             .custom-watermark {
                 font-size: 9px;
                 bottom: 70px;
@@ -148,7 +182,10 @@
 
 <div class="player-container" id="playerContainer">
     <video id="video" autoplay muted playsinline preload="metadata"></video>
-    <div class="custom-watermark">LIVE · FANCODE</div>
+    <div class="custom-watermark">CRICZONE · LIVE</div>
+    <button id="rotateBtn" class="mobile-rotate-btn" type="button" aria-label="Rotate and fullscreen">
+        ⟳
+    </button>
 
     <!-- Loading overlay -->
     <div id="loading" class="loading-overlay">
@@ -372,6 +409,71 @@
         /* ========== START ========== */
         document.addEventListener('DOMContentLoaded', () => {
             initPlayer();
+        });
+
+
+
+        /* ========== MOBILE ROTATE + FULLSCREEN ========== */
+        async function enterMobileFullscreenLandscape() {
+            const container = DOM.container;
+
+            try {
+                if (!document.fullscreenElement) {
+                    if (container.requestFullscreen) {
+                        await container.requestFullscreen();
+                    } else if (DOM.video.webkitEnterFullscreen) {
+                        DOM.video.webkitEnterFullscreen();
+                    }
+                }
+
+                if (
+                    screen.orientation &&
+                    screen.orientation.lock
+                ) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (_) {}
+                }
+            } catch (err) {
+                console.warn('Fullscreen/orientation request failed:', err);
+            }
+        }
+
+        async function exitMobileFullscreenLandscape() {
+            try {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    await document.exitFullscreen();
+                }
+            } catch (_) {}
+        }
+
+        const rotateButton = document.getElementById('rotateBtn');
+
+        if (rotateButton) {
+            rotateButton.addEventListener('click', async () => {
+                if (document.fullscreenElement) {
+                    await exitMobileFullscreenLandscape();
+                } else {
+                    await enterMobileFullscreenLandscape();
+                }
+            });
+        }
+
+        document.addEventListener('fullscreenchange', async () => {
+            if (document.fullscreenElement) {
+                if (screen.orientation && screen.orientation.lock) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (_) {}
+                }
+            } else if (
+                screen.orientation &&
+                screen.orientation.unlock
+            ) {
+                try {
+                    screen.orientation.unlock();
+                } catch (_) {}
+            }
         });
 
         // Handle visibility change to resume if needed
