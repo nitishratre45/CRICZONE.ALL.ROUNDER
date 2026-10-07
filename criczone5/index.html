@@ -1,1 +1,679 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>criczone live </title>
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Plyr + HLS.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js" crossorigin="anonymous"></script>
+
+    <style>
+        /* Reset & Fullscreen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100dvh;
+            background: #000;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .player-container {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100dvh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plyr {
+            width: 100%;
+            height: 100%;
+        }
+
+        .plyr__video-wrapper {
+            height: 100%;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* Custom watermark */
+        .custom-watermark {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            bottom: 80px;
+            right: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.10);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #000;
+            color: #fff;
+            z-index: 2000;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, .15);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Plyr overrides for dark theme */
+        .plyr--video {
+            background: #000;
+        }
+        .plyr__controls {
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px);
+        }
+        .plyr__control--overlaid {
+            background: rgba(255, 59, 48, 0.9) !important;
+        }
+        .plyr__control--overlaid svg {
+            fill: #fff !important;
+        }
+        .plyr__progress__buffer {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        .plyr__progress__played {
+            background: #ff3b30 !important;
+        }
+        .plyr__menu__container {
+            background: rgba(20, 20, 20, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+        .plyr__menu__container .plyr__control--back {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .plyr__volume input[type="range"] {
+            background: rgba(255,255,255,0.2) !important;
+        }
+        .plyr__volume input[type="range"]::-webkit-slider-thumb {
+            background: #ff3b30 !important;
+        }
+        .plyr__volume input[type="range"]::-moz-range-thumb {
+            background: #ff3b30 !important;
+        }
+
+
+
+        /* Mobile rotate / fullscreen button */
+        /* Mobile video controls */
+        .mobile-tools {
+            display: none;
+            position: absolute;
+            z-index: 75;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mobile-tool-btn {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 12px;
+            background: rgba(10,10,12,.74);
+            color: #fff;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0,0,0,.32);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform .16s ease, background .16s ease, opacity .16s ease;
+        }
+
+        .mobile-tool-btn:hover,
+        .mobile-tool-btn:focus-visible {
+            background: rgba(255,255,255,.13);
+            outline: none;
+        }
+
+        .mobile-tool-btn:active {
+            transform: scale(.92);
+        }
+
+        .mobile-tool-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .mobile-tool-label {
+            position: absolute;
+            right: 49px;
+            padding: 5px 8px;
+            border-radius: 7px;
+            background: rgba(0,0,0,.78);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(4px);
+            transition: .16s ease;
+        }
+
+        .mobile-tool-wrap {
+            position: relative;
+        }
+
+        .mobile-tool-wrap:hover .mobile-tool-label,
+        .mobile-tool-wrap:focus-within .mobile-tool-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .video-fit-contain video {
+            object-fit: contain !important;
+            transform: scale(1);
+        }
+
+        .video-fit-cover video {
+            object-fit: cover !important;
+            transform: scale(1);
+        }
+
+        .video-zoom video {
+            object-fit: contain !important;
+            transform: scale(1.18);
+        }
+
+        .mobile-tools.hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 700px) {
+            .mobile-tools {
+                display: flex;
+                right: 10px;
+            }
+
+            .custom-watermark {
+                font-size: 9px;
+                bottom: 70px;
+                right: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-container" id="playerContainer">
+    <video id="video" autoplay muted playsinline preload="metadata"></video>
+    <div class="custom-watermark">CRICZONE · LIVE</div>
+    <div id="mobileTools" class="mobile-tools">
+        <div class="mobile-tool-wrap">
+            <button id="rotateBtn" class="mobile-tool-btn" type="button" aria-label="Rotate and fullscreen">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.5 4H5a1 1 0 0 0-1 1v3.5"></path>
+                    <path d="M4.4 8.5A8 8 0 1 0 8.1 4.9"></path>
+                    <path d="m5 4 3.5 0"></path>
+                    <path d="M15.5 20H19a1 1 0 0 0 1-1v-3.5"></path>
+                </svg>
+            </button>
+            <span class="mobile-tool-label">Rotate</span>
+        </div>
+
+        <div class="mobile-tool-wrap">
+            <button id="fitBtn" class="mobile-tool-btn" type="button" aria-label="Fit video">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                    <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                    <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                </svg>
+            </button>
+            <span class="mobile-tool-label">Fit</span>
+        </div>
+
+        <div class="mobile-tool-wrap">
+            <button id="fillBtn" class="mobile-tool-btn" type="button" aria-label="Fill screen">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                    <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                    <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                    <path d="m9 9-3 3 3 3"></path>
+                    <path d="m15 9 3 3-3 3"></path>
+                </svg>
+            </button>
+            <span class="mobile-tool-label">Fill</span>
+        </div>
+
+        <div class="mobile-tool-wrap">
+            <button id="zoomBtn" class="mobile-tool-btn" type="button" aria-label="Zoom video">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="5.5"></circle>
+                    <path d="m15 15 5 5"></path>
+                    <path d="M10.5 8v5"></path>
+                    <path d="M8 10.5h5"></path>
+                </svg>
+            </button>
+            <span class="mobile-tool-label">Zoom</span>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        Loading stream...
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        /* ========== CONFIG ========== */
+        const STREAM_URL =
+            "https://sunny-relay-friend.lovable.app/api/public/px/sony?url=https%3A%2F%2Fin-mc-flive.fancode.com%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F1080p.m3u8%3Fhdntl%3DExpires%3D1791471355~_GO%3DGenerated~acl%3D%2Fmumbai%2F4249233_hindi_hls_2e75e343d930961_1ta-di_h264%2F*~SessionID%3D68af7a8f728b9df6_fc-app_sportsguruand_e1dc9dbb-8389-41~Signature%3DAXZsC1BXvTvxcbuv1aEHNED23L9-UZr7M6YYj62eZ1mJDf7prVBbX5M0pFXi6YkV2kjNd7bcc4XTAWPHZtM7GmolTlkF";
+
+        const DOM = {
+            video: document.getElementById('video'),
+            container: document.getElementById('playerContainer'),
+            loading: document.getElementById('loading'),
+        };
+
+        let hlsInstance = null;
+        let plyrInstance = null;
+        let userPaused = false;
+        let isInitialized = false;
+
+        /* ========== HELPERS ========== */
+        function hideLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'none';
+        }
+
+        function showLoading() {
+            if (DOM.loading) DOM.loading.style.display = 'flex';
+        }
+
+        function destroyPlayer() {
+            if (hlsInstance) {
+                try { hlsInstance.destroy(); } catch (_) {}
+                hlsInstance = null;
+            }
+            if (plyrInstance) {
+                try { plyrInstance.destroy(); } catch (_) {}
+                plyrInstance = null;
+            }
+        }
+
+        /* ========== PAUSE/RESUME LOGIC (from original) ========== */
+        function setupPauseResumeLogic(video) {
+            // Reset userPaused flag on play
+            video.addEventListener('play', function() {
+                userPaused = false;
+            });
+
+            // Detect user-initiated pause via click on play/pause button
+            document.addEventListener('click', function(e) {
+                const pauseBtn = e.target.closest('.plyr__control--pressed') || 
+                                e.target.closest('.plyr__control[data-plyr="play"]');
+                if (pauseBtn) {
+                    if (!video.paused) {
+                        userPaused = true;
+                    } else {
+                        userPaused = false;
+                    }
+                }
+            });
+
+            // Handle automatic pauses (buffering, etc.)
+            video.addEventListener('pause', function() {
+                if (!video.ended && !userPaused && isInitialized) {
+                    // Auto-resume after a short delay
+                    setTimeout(() => {
+                        if (video.paused && !video.ended && !userPaused) {
+                            video.play().catch(() => {});
+                        }
+                    }, 500);
+                }
+                // Reset flag after pause event
+                setTimeout(() => {
+                    userPaused = false;
+                }, 100);
+            });
+
+            // Periodic check: if video is stuck paused, resume
+            setInterval(() => {
+                if (video.paused && !video.ended && !userPaused && isInitialized) {
+                    video.play().catch(() => {});
+                }
+            }, 3000);
+        }
+
+        /* ========== INIT PLAYER ========== */
+        async function initPlayer() {
+            const video = DOM.video;
+            const container = DOM.container;
+
+            showLoading();
+            destroyPlayer();
+
+            try {
+                // --- Try HLS.js first ---
+                if (Hls.isSupported()) {
+                    const hls = new Hls({
+                        maxMaxBufferLength: 100,
+                        liveSyncDurationCount: 3,
+                        liveMaxLatencyDurationCount: 6,
+                        enableWorker: true,
+                        xhrSetup: (xhr) => { xhr.withCredentials = false; }
+                    });
+
+                    hlsInstance = hls;
+                    hls.loadSource(STREAM_URL);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        // Get quality levels
+                        const levels = hls.levels
+                            .map(l => l.height)
+                            .filter(Boolean)
+                            .sort((a, b) => a - b);
+
+                        // Init Plyr
+                        plyrInstance = new Plyr(video, {
+                            controls: [
+                                'play-large', 'play', 'progress', 'current-time',
+                                'mute', 'volume', 'settings', 'fullscreen'
+                            ],
+                            settings: ['quality'],
+                            quality: {
+                                default: levels[levels.length - 1] || 720,
+                                options: levels.length ? levels : [360, 480, 720, 1080],
+                                forced: true,
+                                onChange: (newQuality) => {
+                                    hls.levels.forEach((level, index) => {
+                                        if (level.height === newQuality) hls.currentLevel = index;
+                                    });
+                                }
+                            }
+                        });
+
+                        // ========== KEY CHANGE: Start with pause but unmuted ==========
+                        // First ensure video is unmuted
+                        video.muted = false;
+
+                        // Load the stream but don't autoplay - keep it paused
+                        // The video will be paused initially with the big play button visible
+                        // We need to make sure it stays paused after loading
+                        video.pause();
+
+                        // Mark as initialized so the auto-resume logic doesn't kick in
+                        isInitialized = true;
+
+                        // Hide loading once stream is ready
+                        video.addEventListener('loadeddata', hideLoading);
+                        setTimeout(hideLoading, 3000);
+
+                        // Setup pause/resume logic
+                        setupPauseResumeLogic(video);
+
+                        // Also handle quality changes via Plyr settings
+                        plyrInstance.on('qualitychange', (quality) => {
+                            // quality is already handled by the onChange above
+                        });
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                                hls.startLoad();
+                            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                                hls.recoverMediaError();
+                            } else {
+                                console.warn('Fatal HLS error:', data);
+                                // Try fallback
+                                fallbackToNative(video);
+                            }
+                        }
+                    });
+
+                } else {
+                    // --- Fallback to native HLS (Safari) ---
+                    fallbackToNative(video);
+                }
+
+            } catch (err) {
+                console.error('Init error:', err);
+                fallbackToNative(video);
+            }
+        }
+
+        /* ========== FALLBACK: Native HLS ========== */
+        function fallbackToNative(video) {
+            console.log('Using native HLS fallback');
+            destroyPlayer();
+
+            video.src = STREAM_URL;
+
+            // ========== KEY CHANGE: Start with pause but unmuted ==========
+            video.muted = false;
+
+            // Init Plyr without quality settings
+            plyrInstance = new Plyr(video, {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time',
+                    'mute', 'volume', 'settings', 'fullscreen'
+                ]
+            });
+
+            // Keep it paused initially
+            video.pause();
+
+            // Mark as initialized
+            isInitialized = true;
+
+            video.addEventListener('loadeddata', hideLoading);
+            setTimeout(hideLoading, 3000);
+
+            setupPauseResumeLogic(video);
+        }
+
+        /* ========== START ========== */
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlayer();
+        });
+
+
+
+        /* ========== MOBILE ROTATE + FULLSCREEN ========== */
+        async function enterMobileFullscreenLandscape() {
+            const container = DOM.container;
+
+            try {
+                if (!document.fullscreenElement) {
+                    if (container.requestFullscreen) {
+                        await container.requestFullscreen();
+                    } else if (DOM.video.webkitEnterFullscreen) {
+                        DOM.video.webkitEnterFullscreen();
+                    }
+                }
+
+                if (
+                    screen.orientation &&
+                    screen.orientation.lock
+                ) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (_) {}
+                }
+            } catch (err) {
+                console.warn('Fullscreen/orientation request failed:', err);
+            }
+        }
+
+        async function exitMobileFullscreenLandscape() {
+            try {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    await document.exitFullscreen();
+                }
+            } catch (_) {}
+        }
+
+        const rotateButton = document.getElementById('rotateBtn');
+        const fitButton = document.getElementById('fitBtn');
+        const fillButton = document.getElementById('fillBtn');
+        const zoomButton = document.getElementById('zoomBtn');
+        const mobileTools = document.getElementById('mobileTools');
+
+        function setVideoMode(mode) {
+            DOM.container.classList.remove(
+                'video-fit-contain',
+                'video-fit-cover',
+                'video-zoom'
+            );
+
+            if (mode === 'fill') {
+                DOM.container.classList.add('video-fit-cover');
+            } else if (mode === 'zoom') {
+                DOM.container.classList.add('video-zoom');
+            } else {
+                DOM.container.classList.add('video-fit-contain');
+            }
+
+            try {
+                localStorage.setItem('criczone5_video_mode', mode);
+            } catch (_) {}
+        }
+
+        function restoreVideoMode() {
+            let mode = 'fit';
+            try {
+                mode = localStorage.getItem('criczone5_video_mode') || 'fit';
+            } catch (_) {}
+            setVideoMode(mode);
+        }
+
+        if (rotateButton) {
+            rotateButton.addEventListener('click', async () => {
+                if (document.fullscreenElement) {
+                    await exitMobileFullscreenLandscape();
+                } else {
+                    await enterMobileFullscreenLandscape();
+                }
+            });
+        }
+
+        if (fitButton) {
+            fitButton.addEventListener('click', () => {
+                setVideoMode('fit');
+            });
+        }
+
+        if (fillButton) {
+            fillButton.addEventListener('click', () => {
+                setVideoMode('fill');
+            });
+        }
+
+        if (zoomButton) {
+            zoomButton.addEventListener('click', () => {
+                const isZoomed = DOM.container.classList.contains('video-zoom');
+                setVideoMode(isZoomed ? 'fit' : 'zoom');
+            });
+        }
+
+        restoreVideoMode();
+
+        function updateMobileToolsVisibility() {
+            if (!mobileTools) return;
+            mobileTools.classList.toggle(
+                'hidden',
+                !!document.fullscreenElement
+            );
+        }
+
+        document.addEventListener('fullscreenchange', async () => {
+            updateMobileToolsVisibility();
+
+            if (document.fullscreenElement) {
+                if (screen.orientation && screen.orientation.lock) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (_) {}
+                }
+            } else if (
+                screen.orientation &&
+                screen.orientation.unlock
+            ) {
+                try {
+                    screen.orientation.unlock();
+                } catch (_) {}
+            }
+        });
+
+        updateMobileToolsVisibility();
+
+        // Handle visibility change to resume if needed
+        document.addEventListener('visibilitychange', () => {
+            const video = DOM.video;
+            if (!document.hidden && video && video.paused && !video.ended && isInitialized) {
+                video.play().catch(() => {});
+            }
+        });
+
+    })();
+</script>
+<script>
+// alert('Join Our Telegram For More Live Links')
+         if (confirm("Join Our Telegram Channel @Criczone") == true) {
+         window.open("https://t.me/+oSJGQ0kZr0c1MmM1", '_blank');
+     }
+</script>
+</body>
+</html>
