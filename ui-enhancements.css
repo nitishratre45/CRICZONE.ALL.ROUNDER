@@ -1,0 +1,163 @@
+/* =========================================================
+   CRICZONE — SHARED UI ENHANCEMENTS
+   Visual-only layer. Does not modify stream URLs or player logic.
+   ========================================================= */
+
+html { scroll-behavior: smooth; }
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, a, input, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  transition:
+    transform .18s cubic-bezier(.2,.7,.2,1),
+    box-shadow .22s ease,
+    border-color .22s ease,
+    background-color .22s ease,
+    color .18s ease,
+    opacity .18s ease,
+    filter .22s ease;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid rgba(52,211,153,.9) !important;
+  outline-offset: 3px !important;
+}
+
+/* App shell / backgrounds */
+.page, .app, #channel-list {
+  position: relative;
+  isolation: isolate;
+}
+
+.page::after, .app::after, #channel-list::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42rem 22rem at 50% -10%, rgba(16,185,129,.10), transparent 70%),
+    radial-gradient(30rem 20rem at 100% 70%, rgba(59,130,246,.06), transparent 70%);
+}
+
+/* Headers */
+.header, .nav, #ch-header, .list-header {
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+.header, .nav, #ch-header {
+  box-shadow: 0 8px 30px rgba(0,0,0,.12);
+}
+
+/* Search */
+.search-box, .search input, .cc-search input, #cc-sort {
+  min-height: 42px;
+  border-radius: 12px !important;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+}
+
+.search-box:focus-within, .search input:focus, .cc-search input:focus {
+  border-color: rgba(52,211,153,.55) !important;
+  box-shadow: 0 0 0 4px rgba(52,211,153,.09), 0 10px 30px rgba(0,0,0,.14) !important;
+}
+
+/* Filter chips / buttons */
+.filter-btn, .cc-chip {
+  min-height: 34px;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+}
+
+.filter-btn:hover, .cc-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(52,211,153,.45) !important;
+}
+
+/* Cards */
+.channel-card, .ch-card {
+  overflow: hidden;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.18);
+}
+
+.channel-card:hover, .ch-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.30),
+    0 0 0 1px rgba(52,211,153,.14);
+}
+
+.channel-card img, .ch-card img {
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .3s ease;
+}
+
+.channel-card:hover img, .ch-card:hover img {
+  transform: scale(1.045);
+  filter: saturate(1.08) brightness(1.04);
+}
+
+/* Empty/loading states */
+.empty-state, .loading-state, .error-state {
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  background: rgba(255,255,255,.025);
+  box-shadow: 0 16px 45px rgba(0,0,0,.16);
+}
+
+/* Hero */
+#cc-hero {
+  overflow: hidden;
+  border-radius: 22px !important;
+  box-shadow: 0 20px 55px rgba(0,0,0,.25);
+}
+
+#cc-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.035), transparent 65%);
+  transform: translateX(-100%);
+  animation: cc-shine 7s ease-in-out infinite;
+}
+
+@keyframes cc-shine {
+  0%, 55% { transform: translateX(-100%); }
+  75%, 100% { transform: translateX(100%); }
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(52,211,153,.35) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(52,211,153,.28);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(52,211,153,.5); }
+
+/* Mobile */
+@media (max-width: 700px) {
+  .channel-card, .ch-card { border-radius: 15px !important; }
+  .search-box, .search input, .cc-search input, #cc-sort { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
