@@ -169,6 +169,7 @@
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getDatabase, ref, push, set, remove, onDisconnect, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
   authDomain: "cricket-live-39106.firebaseapp.com",
@@ -181,7 +182,8 @@ const firebaseConfig = {
 };
 window.CricZoneFivePresenceReady = (async function() {
   const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  const sdk = {db:getDatabase(app),ref,push,set,remove,onDisconnect,onValue,serverTimestamp};
+  const sdk = {db:getDatabase(app),auth:getAuth(app),signInAnonymously,ref,push,set,remove,onDisconnect,onValue,serverTimestamp};
+  await signInAnonymously(sdk.auth);
   window.CricZoneFivePresence = sdk;
   return sdk;
 })().catch(function(e) {
@@ -473,7 +475,7 @@ window.CricZoneFivePresenceReady = (async function() {
       await sdk.set(presence,{online:true,channelId:channelKey,joinedAt:sdk.serverTimestamp()});
       unsubscribe=sdk.onValue(viewers,function(snapshot){
         var data=snapshot.val()||{};
-        setCount(Object.keys(data).length);
+        setCount(snapshot.size !== undefined ? snapshot.size : Object.keys(data).length);
       },function(error){console.warn("CricZone 5 viewer count error:",error);});
     }catch(e){console.warn("CricZone 5 live watching setup failed:",e);setCount(0);}
   }
