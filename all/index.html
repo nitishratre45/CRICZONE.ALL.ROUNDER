@@ -859,8 +859,56 @@ async function openPlayer(id, index){
 let shakaPlayer = null;
 let shakaOverlay = null;
 let playbackToken = 0;
+let recoveryTimer = null;
+let recoveryAttempts = 0;
+let recoveryBusy = false;
+
+function clearRecoveryTimer(){
+  if(recoveryTimer){
+    clearTimeout(recoveryTimer);
+    recoveryTimer = null;
+  }
+}
+
+function scheduleAutoReconnect(record, index, token, delay = 9000){
+  if(token !== playbackToken || recoveryTimer || recoveryBusy) return;
+  recoveryTimer = setTimeout(async () => {
+    recoveryTimer = null;
+    if(token !== playbackToken || recoveryBusy) return;
+    const video = $("shaka-video");
+    if(video && !video.paused && !video.ended && video.readyState >= 3){
+      return;
+    }
+    recoveryBusy = true;
+    recoveryAttempts++;
+    $("engine").textContent = `Reconnecting… (${recoveryAttempts}/5)`;
+    try{
+      if(shakaPlayer && token === playbackToken){
+        try{ shakaPlayer.retryStreaming(); }catch(e){}
+      }
+      // Give Shaka a short chance to recover before reloading the selected live link.
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      if(token !== playbackToken) return;
+      const currentVideo = $("shaka-video");
+      if(currentVideo && !currentVideo.paused && !currentVideo.ended && currentVideo.readyState >= 3){
+        $("engine").textContent = "Shaka · DASH";
+        recoveryAttempts = 0;
+        return;
+      }
+      if(recoveryAttempts <= 5 && state.currentStreams[index]){
+        recoveryBusy = false;
+        playRecord(state.currentStreams[index], index);
+        return;
+      }
+      $("engine").textContent = "Reconnect failed";
+    }finally{
+      recoveryBusy = false;
+    }
+  }, delay);
+}
 
 async function destroyShaka(){
+  clearRecoveryTimer();
   if(shakaOverlay){
     try{ shakaOverlay.destroy(); }catch(e){}
     shakaOverlay = null;
@@ -944,11 +992,19 @@ async function initShaka(url, record, token){
 
   shakaPlayer.addEventListener("error", ev => {
     if(token !== playbackToken) return;
-    const code = Number((ev.detail || {}).code || 0);
-    if([3015, 3016, 3017, 3018].includes(code)){
-      try{ shakaPlayer.retryStreaming(); }catch(e){}
-    }
+    try{ shakaPlayer.retryStreaming(); }catch(e){}
+    scheduleAutoReconnect(record, state.currentIndex, token, 2500);
   });
+
+  video.addEventListener("playing", () => {
+    if(token !== playbackToken) return;
+    clearRecoveryTimer();
+    recoveryAttempts = 0;
+    $("engine").textContent = clearKey ? "Shaka · DASH · ClearKey" : "Shaka · DASH";
+  });
+  video.addEventListener("waiting", () => scheduleAutoReconnect(record, state.currentIndex, token, 10000));
+  video.addEventListener("stalled", () => scheduleAutoReconnect(record, state.currentIndex, token, 10000));
+  video.addEventListener("error", () => scheduleAutoReconnect(record, state.currentIndex, token, 2500));
 
   $("engine").textContent = "Loading…";
   await shakaPlayer.load(url);
@@ -965,6 +1021,9 @@ async function playRecord(record, index){
   );
 
   const token = ++playbackToken;
+  clearRecoveryTimer();
+  recoveryAttempts = 0;
+  recoveryBusy = false;
   await destroyShaka();
 
   // Extract raw URL (strip pipe params) then wrap with proxy
