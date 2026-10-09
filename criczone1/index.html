@@ -78,6 +78,13 @@ button,input{font:inherit}
 @media(max-width:460px){.grid{grid-template-columns:1fr}.toolbar{display:block}.count{margin-top:9px}.search-wrap{width:100%;margin-bottom:9px}.actions{width:100%}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+
+<meta name="theme-color" content="#080808">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="../icon-512.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icon-512.svg">
 </head>
 <body>
 <div class="wrap">
@@ -197,5 +204,7 @@ async function load(){
 }
 load();
 </script>
+
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(e=>console.warn("CricZone install:",e)));}</script>
 </body>
 </html>
