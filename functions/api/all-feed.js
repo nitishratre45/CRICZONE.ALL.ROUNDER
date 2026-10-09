@@ -1,11 +1,12 @@
 // CricZone All page feed API — Cloudflare Pages Function
 // Keeps the upstream feed URL on the server side instead of exposing it in page JavaScript.
 
-const UPSTREAM_FEED = "https://raw.githubusercontent.com/darkbyteprojects/iptv_png/refs/heads/main/provider_2/live_events.json";
+const DEFAULT_UPSTREAM_FEED = "https://raw.githubusercontent.com/darkbyteprojects/iptv_png/refs/heads/main/provider_2/live_events.json";
 
-export async function onRequestGet() {
+export async function onRequestGet(context) {
+  const upstreamFeed = context.env.CRICZONE_FEED_URL || DEFAULT_UPSTREAM_FEED;
   try {
-    const upstream = await fetch(UPSTREAM_FEED, {
+    const upstream = await fetch(upstreamFeed, {
       headers: { Accept: "application/json" },
       cf: { cacheTtl: 30, cacheEverything: true }
     });
