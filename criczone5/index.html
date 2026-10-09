@@ -142,9 +142,52 @@
                 right: 14px;
             }
         }
-    </style>
+    
+/* CricZone 5 live badge and Telegram modal */
+#cz5-live{position:fixed;top:max(16px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));z-index:9998;display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(45,226,166,.36);border-radius:999px;background:rgba(4,15,23,.88);box-shadow:0 10px 32px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.07);backdrop-filter:blur(14px);color:#effff8;font:800 11px/1 system-ui,sans-serif;letter-spacing:.45px;pointer-events:none}
+#cz5-live .cz5-dot{width:8px;height:8px;border-radius:50%;background:#36e6a4;box-shadow:0 0 12px #36e6a477;animation:cz5pulse 1.5s infinite}
+#cz5-live-count{color:#6df0bd;font-variant-numeric:tabular-nums}
+@keyframes cz5pulse{50%{opacity:.45;transform:scale(.78)}}
+#cz5-tg-open{position:fixed;top:max(62px,calc(env(safe-area-inset-top) + 62px));left:max(14px,env(safe-area-inset-left));z-index:9997;display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid rgba(87,164,255,.5);border-radius:999px;background:linear-gradient(120deg,#168eea,#2458db);box-shadow:0 8px 24px #1268e544;color:white;font:800 11px system-ui,sans-serif;text-decoration:none;cursor:pointer}
+#cz5-tg-open svg{width:15px;height:15px;fill:currentColor}
+#cz5-modal{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(1,6,12,.74);backdrop-filter:blur(12px);font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+#cz5-modal.show{display:flex;animation:cz5fade .22s ease}
+#cz5-card{position:relative;width:min(390px,100%);padding:30px 25px 24px;text-align:center;overflow:hidden;border:1px solid rgba(92,174,255,.32);border-radius:26px;background:radial-gradient(ellipse at top,#173e72 0%,#0b1729 54%,#08111d 100%);box-shadow:0 25px 90px #000a;color:#fff}
+#cz5-card:before{content:"";position:absolute;width:220px;height:220px;top:-150px;left:calc(50% - 110px);border-radius:50%;background:#288cff55;filter:blur(24px)}
+#cz5-tg-icon{position:relative;display:grid;place-items:center;width:66px;height:66px;margin:0 auto 17px;border-radius:22px;background:linear-gradient(145deg,#35b8ff,#2460db);box-shadow:0 10px 32px #168bff44;font-size:30px}
+#cz5-card h2{position:relative;margin:0 0 10px;font-size:22px;letter-spacing:.2px}
+#cz5-card p{position:relative;margin:0 auto 22px;max-width:290px;color:#b8c8dc;font-size:13px;line-height:1.65}
+.cz5-actions{position:relative;display:grid;grid-template-columns:1fr 1.35fr;gap:10px}
+.cz5-actions button,.cz5-actions a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px;border-radius:13px;font-size:12px;font-weight:850;text-decoration:none;cursor:pointer}
+#cz5-later{border:1px solid #ffffff20;background:#ffffff0b;color:#dce8f8}
+#cz5-join{border:0;background:linear-gradient(120deg,#269eff,#2859df);color:white;box-shadow:0 8px 20px #1a78e844}
+#cz5-close{position:absolute;top:12px;right:13px;width:34px;height:34px;border:1px solid #ffffff18;border-radius:50%;background:#ffffff0b;color:white;font-size:19px;cursor:pointer}
+@keyframes cz5fade{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:480px){#cz5-live{top:max(12px,env(safe-area-inset-top));left:12px;padding:9px 11px;font-size:10px}#cz5-tg-open{top:max(56px,calc(env(safe-area-inset-top) + 56px));left:12px;padding:9px 11px;font-size:10px}#cz5-card{padding:27px 20px 20px}}
+
+</style>
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, push, set, remove, onDisconnect, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+  authDomain: "cricket-live-39106.firebaseapp.com",
+  databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cricket-live-39106",
+  storageBucket: "cricket-live-39106.firebasestorage.app",
+  messagingSenderId: "841890143",
+  appId: "1:841890143:web:ca5b87c9395bdc19145eea",
+  measurementId: "G-ZNEZC8YVMX"
+};
+try {
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  window.CricZoneFivePresence = {db:getDatabase(app),ref,push,set,remove,onDisconnect,onValue,serverTimestamp};
+} catch(e) { console.warn("Live watching unavailable:",e); }
+</script>
 </head>
 <body>
+<div id="cz5-live" aria-live="polite"><span class="cz5-dot"></span><span><strong id="cz5-live-count">200</strong> WATCHING LIVE</span></div>
+<a id="cz5-tg-open" href="https://t.me/+oSJGQ0kZr0c1MmM1" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.9 1.5-1.85.95l-5.1-3.75-2.45 2.35c-.27.27-.5.5-1.02.5l.36-5.2 9.45-8.55c.41-.36-.09-.56-.64-.2L5.58 13.3.55 11.72c-1.1-.34-1.12-1.1.23-1.63L20.45 2.5c.91-.34 1.71.22 1.35.7Z"/></svg>CricZone Telegram</a>
 
 <div class="player-container" id="playerContainer">
     <video id="video" autoplay muted playsinline preload="metadata"></video>
@@ -383,11 +426,54 @@
 
     })();
 </script>
+<div id="cz5-modal" role="dialog" aria-modal="true" aria-labelledby="cz5-title">
+  <div id="cz5-card">
+    <button id="cz5-close" type="button" aria-label="Close popup">×</button>
+    <div id="cz5-tg-icon">✈</div>
+    <h2 id="cz5-title">Join CricZone Telegram</h2>
+    <p>Get live match links, channel updates and cricket alerts in one place. Join our Telegram community and stay connected.</p>
+    <div class="cz5-actions"><button id="cz5-later" type="button">Maybe later</button><a id="cz5-join" href="https://t.me/+oSJGQ0kZr0c1MmM1" target="_blank" rel="noopener noreferrer">Join Telegram ↗</a></div>
+  </div>
+</div>
 <script>
-// alert('Join Our Telegram For More Live Links')
-         if (confirm("Join Our Telegram Channel @Criczone") == true) {
-         window.open("https://t.me/+oSJGQ0kZr0c1MmM1", '_blank');
-     }
+(function(){
+  var modal=document.getElementById("cz5-modal");
+  var closeBtn=document.getElementById("cz5-close");
+  var laterBtn=document.getElementById("cz5-later");
+  var joinBtn=document.getElementById("cz5-join");
+  var shown=false;
+  function closeModal(){modal.classList.remove("show");}
+  function showModal(){if(shown)return;shown=true;modal.classList.add("show");}
+  closeBtn.addEventListener("click",closeModal);
+  laterBtn.addEventListener("click",closeModal);
+  modal.addEventListener("click",function(e){if(e.target===modal)closeModal();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
+  setTimeout(showModal,15000);
+
+  var base=200, sdk=window.CricZoneFivePresence, presence=null, unsubscribe=null;
+  function setCount(n){var el=document.getElementById("cz5-live-count");if(el)el.textContent=(base+Math.max(0,Number(n)||0)).toLocaleString();}
+  function key(v){return String(v).replace(/[.#$\\/\\[\\]]/g,"_");}
+  async function leave(){
+    if(unsubscribe){try{unsubscribe();}catch(e){}unsubscribe=null;}
+    if(presence&&sdk){try{await sdk.remove(presence);}catch(e){}presence=null;}
+  }
+  async function joinPresence(){
+    if(!sdk||!sdk.db)return;
+    try{
+      var channelKey="criczone5-sony-live";
+      var viewers=sdk.ref(sdk.db,"liveViewers/"+key(channelKey));
+      presence=sdk.push(viewers);
+      await sdk.onDisconnect(presence).remove();
+      await sdk.set(presence,{online:true,channelId:channelKey,joinedAt:sdk.serverTimestamp()});
+      unsubscribe=sdk.onValue(viewers,function(snapshot){
+        var data=snapshot.val()||{};
+        setCount(Object.keys(data).length);
+      },function(error){console.warn("CricZone 5 viewer count error:",error);});
+    }catch(e){console.warn("CricZone 5 live watching setup failed:",e);setCount(0);}
+  }
+  window.addEventListener("pagehide",leave);
+  joinPresence();
+})();
 </script>
 </body>
 </html>
