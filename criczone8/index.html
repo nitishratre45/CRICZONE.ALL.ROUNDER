@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#070b14">
+<meta name="description" content="CricZone — live sports channels and match streaming.">
+<title>CricZone | Live Sports</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -178,14 +181,42 @@ video.mode-cover{object-fit:cover}
 .tgBtn{flex:1;height:48px;border-radius:40px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;font-family:'Inter',system-ui,sans-serif}
 #joinNow{background:linear-gradient(135deg,#4fc3f7,#2196f3);color:#fff}
 #joinedBtn{background:rgba(255,255,255,.05);color:#8e9baf;border:1px solid rgba(255,255,255,.08)}
+
+/* CricZone UI refresh */
+html,body{background:#070b14;color:#eaf2ff}
+#channel-list{background:radial-gradient(ellipse at 50% -15%,rgba(14,165,233,.16),transparent 45%),#070b14;padding-left:clamp(14px,3vw,30px);padding-right:clamp(14px,3vw,30px)}
+#ch-header{position:sticky;top:0;z-index:2;justify-content:flex-start;gap:12px;margin:0 0 22px;padding:16px 4px 18px;background:rgba(7,11,20,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(148,163,184,.16)}
+#ch-header h1{font-size:clamp(19px,3vw,25px);font-weight:850;letter-spacing:-.6px;color:#f8fafc}
+#ch-header h1:after{content:" LIVE SPORTS";font-size:10px;letter-spacing:1.4px;color:#38bdf8;margin-left:10px;vertical-align:middle;font-weight:800}
+.brand-dot{width:10px;height:10px;background:#22d3ee;box-shadow:0 0 18px rgba(34,211,238,.75)}
+#ch-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:13px;max-width:1400px;margin:0 auto;width:100%}
+.ch-card{position:relative;overflow:hidden;min-height:146px;padding:18px 12px 15px;gap:13px;background:linear-gradient(155deg,rgba(20,31,49,.96),rgba(10,16,29,.98));border:1px solid rgba(148,163,184,.17);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.ch-card:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,#22d3ee,transparent);opacity:0;transition:opacity .2s}
+.ch-card:hover{background:linear-gradient(155deg,#172940,#101a2b);border-color:rgba(56,189,248,.5);transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.28)}
+.ch-card:hover:before{opacity:1}
+.ch-logo{max-width:100px;height:56px}
+.ch-card span{font-size:13px;font-weight:650;color:#e5edf8;line-height:1.45;max-height:38px}
+.ch-logo-fallback{background:linear-gradient(135deg,#0e7490,#172554);border:1px solid rgba(103,232,249,.3);color:#ecfeff}
+.ch-live-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:4px 7px;border-radius:999px;background:rgba(239,68,68,.12);border:1px solid rgba(248,113,113,.28);color:#fca5a5;font-size:9px;font-weight:850;letter-spacing:.7px;line-height:1;text-transform:uppercase}
+.ch-live-badge i{width:5px;height:5px;border-radius:50%;background:#fb7185;box-shadow:0 0 8px rgba(251,113,133,.75);animation:dot-pulse 1.5s infinite}
+#status{top:max(14px,env(safe-area-inset-top));right:14px;background:rgba(8,14,25,.92);border-color:rgba(56,189,248,.22);box-shadow:0 8px 26px rgba(0,0,0,.45)}
+#tgBadge{background:linear-gradient(135deg,#0891b2,#2563eb);border:1px solid rgba(125,211,252,.3);border-radius:999px;box-shadow:0 8px 28px rgba(2,132,199,.28);font-size:13px;padding:10px 16px}
+#tgBadge:hover{box-shadow:0 10px 32px rgba(2,132,199,.4)}
+#tgCard{background:radial-gradient(ellipse at top,rgba(14,165,233,.15),transparent 60%),linear-gradient(160deg,#111c2e,#080d17);border-color:rgba(56,189,248,.24)}
+#tgCard h2{letter-spacing:-.4px}
+#joinNow{background:linear-gradient(135deg,#0891b2,#2563eb);box-shadow:0 8px 22px rgba(37,99,235,.22)}
+#joinedBtn{border-radius:40px}
+@media(max-width:480px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{min-height:128px;padding:14px 8px 12px;border-radius:13px}.ch-logo,.ch-logo-fallback{max-width:82px;height:46px}.ch-card span{font-size:11px}.ch-live-badge{font-size:8px}}
+@media(min-width:900px){#channel-list{padding-top:26px}#ch-header,#ch-grid{max-width:1280px;width:100%;margin-left:auto;margin-right:auto}#ch-header{margin-bottom:24px}}
+
 </style>
 </head>
 <body>
 
 <!-- Telegram Badge -->
-<a id="tgBadge" href="https://t.me/sportlink10" target="_blank" rel="noopener">
+<a id="tgBadge" href="https://t.me/+5hrS9VoLS8tjOTM1" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-  <span>@Sportlink</span>
+  <span>CricZone Telegram</span>
 </a>
 
 <div id="overlay">
@@ -201,7 +232,7 @@ video.mode-cover{object-fit:cover}
 <div id="channel-list">
   <div id="ch-header">
     <span class="brand-dot"></span>
-    <h1>Sportlink TV</h1>
+    <h1>CricZone</h1>
   </div>
   <div id="ch-grid"></div>
 </div>
@@ -453,8 +484,21 @@ function renderList(channels){
       a.appendChild(fallback);
     }
 
+    var liveBadge = document.createElement("div");
+    liveBadge.className = "ch-live-badge";
+    var liveDot = document.createElement("i");
+    liveBadge.appendChild(liveDot);
+    var liveText = document.createElement("span");
+    var viewerValue = ch.viewers ?? ch.viewerCount ?? ch.view_count ?? ch.watching ?? ch.liveViewers ?? ch.viewers_count;
+    var viewerCount = Number(viewerValue);
+    liveText.textContent = (viewerValue !== undefined && viewerValue !== null && viewerValue !== "" && Number.isFinite(viewerCount) && viewerCount >= 0)
+      ? "LIVE · " + viewerCount.toLocaleString() + " WATCHING"
+      : "LIVE NOW";
+    liveBadge.appendChild(liveText);
+    a.appendChild(liveBadge);
+
     var span = document.createElement("span");
-    span.textContent = ch.name;
+    span.textContent = ch.name || "Live Channel";
     a.appendChild(span);
 
     f.appendChild(a);
@@ -808,7 +852,7 @@ async function main(){
   if(!id){ renderList(data.channels); return; }
   var ch = data.channels.find(function(c){ return c.id === id; });
   if(!ch){ errMsg("Channel Not Found."); return; }
-  document.title = ch.name;
+  document.title = (ch.name || "Live Channel") + " | CricZone";
   await startPlayer(ch);
 }
 
@@ -822,7 +866,7 @@ document.addEventListener("DOMContentLoaded", main);
   var tgOverlay=document.getElementById('tgOverlay');
   function closePopup(){tgOverlay.classList.remove('show');}
   setTimeout(function(){tgOverlay.classList.add('show');},3000);
-  document.getElementById('joinNow').onclick=function(){window.open('https://t.me/sportlink10','_blank');closePopup();};
+  document.getElementById('joinNow').onclick=function(){window.open('https://t.me/+5hrS9VoLS8tjOTM1','_blank');closePopup();};
   document.getElementById('joinedBtn').onclick=function(){closePopup();};
   tgOverlay.addEventListener('click',function(e){if(e.target===tgOverlay)closePopup();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&tgOverlay.classList.contains('show'))closePopup();});
