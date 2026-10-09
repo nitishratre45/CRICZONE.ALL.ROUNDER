@@ -448,6 +448,13 @@ input:focus,select:focus{outline:2px solid rgba(0,208,132,.55)!important;outline
 a{color:#71edb1}::selection{background:#00D084;color:#04110A}
 @media(max-width:600px){body{padding-left:12px;padding-right:12px}}
 
+
+/* Hide Shaka's rotating buffering/loading indicator only; playback remains unchanged. */
+.shaka-spinner-container,
+.shaka-spinner-svg-container,
+.shaka-spinner-svg {
+  display: none !important;
+}
 </style>
 </head>
 
