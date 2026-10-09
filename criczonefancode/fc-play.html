@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#030811">
+<title>CricZone Fancode | Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+<style>
+:root{color-scheme:dark;--green:#35e09a;--muted:#9eb1c8}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#030811;color:#eef6ff;font-family:Inter,system-ui,sans-serif;overflow:hidden}.player-shell{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0,#14243a,#030811 65%)}.player-top{position:absolute;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 14px max(16px,env(safe-area-inset-left));background:linear-gradient(#030811c9,transparent)}.brand{font-weight:900;font-size:16px;letter-spacing:-.4px}.brand span{color:var(--green)}.top-actions{display:flex;gap:8px}.pill{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;border-radius:999px;border:1px solid #ffffff24;background:#101d2dcc;color:#fff;text-decoration:none;font-size:11px;font-weight:800;backdrop-filter:blur(12px)}.pill.telegram{border-color:#269fdc66}.pill.whatsapp{border-color:#25d36666}.video-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.shaka-video-container{width:100%;height:100%;position:relative;background:#000}video{width:100%;height:100%;object-fit:contain;background:#000}.loading{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:radial-gradient(ellipse at center,#101f32,#030811 65%);text-align:center;padding:25px}.spinner{width:43px;height:43px;border:3px solid #ffffff22;border-top-color:var(--green);border-radius:50%;animation:spin .85s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.load-title{font-size:15px;font-weight:800}.load-msg{font-size:12px;color:var(--muted);max-width:430px;line-height:1.7}.load-error .spinner{display:none}.load-error .load-title{color:#ffb4b4}.back-link{position:absolute;z-index:5;bottom:max(18px,env(safe-area-inset-bottom));left:18px;display:inline-flex;align-items:center;gap:8px;background:#111f30d9;border:1px solid #ffffff1c;padding:11px 15px;border-radius:999px;font-size:12px;font-weight:800;color:#e8f2ff;text-decoration:none;backdrop-filter:blur(10px)}.back-link:hover{border-color:var(--green)}@media(max-width:480px){.player-top{padding-left:10px;padding-right:10px}.brand{font-size:14px}.pill{font-size:10px;padding:9px 10px;gap:5px}.back-link{left:10px;bottom:max(10px,env(safe-area-inset-bottom))}} 
+</style>
+</head>
+<body>
+<div class="player-shell">
+<header class="player-top"><a class="brand" href="./">CricZone <span>Fancode</span></a><div class="top-actions"><a class="pill telegram" href="https://t.me/+5hrS9VoLS8tjOTM1" target="_blank" rel="noopener noreferrer">✈ Telegram</a><a class="pill whatsapp" href="https://www.whatsapp.com/channel/0029VbC2oQsC6ZvmwpR3v73v" target="_blank" rel="noopener noreferrer">WhatsApp</a></div></header>
+<div class="video-wrap"><div class="shaka-video-container" data-shaka-player><video id="video" autoplay playsinline controls></video><div class="loading" id="loading"><div class="spinner"></div><div class="load-title" id="load-title">Preparing your stream</div><div class="load-msg" id="load-msg">Loading the selected stream. Please wait…</div></div></div></div>
+<a class="back-link" href="./">← Back to matches</a>
+</div>
+<script>
+const video=document.getElementById('video'),loading=document.getElementById('loading'),loadTitle=document.getElementById('load-title'),loadMsg=document.getElementById('load-msg');
+function showError(title,message){loading.classList.add('load-error');loadTitle.textContent=title;loadMsg.textContent=message;loading.style.display='flex';}
+function decodeStream(){
+ const encoded=new URLSearchParams(location.search).get('data');
+ if(!encoded)return '';
+ try{return decodeURIComponent(escape(atob(encoded)));}catch(e){try{return atob(encoded);}catch(_){return '';}}
+}
+async function init(){
+ const streamUrl=decodeStream();
+ if(!streamUrl){showError('Stream URL missing','Return to the match list and select a stream quality again.');return;}
+ if(!window.shaka||!shaka.Player.isBrowserSupported()){showError('Browser not supported','This browser does not support the selected playback format. Try a current version of Chrome or Edge.');return;}
+ try{
+  shaka.polyfill.installAll();
+  const player=new shaka.Player();
+  await player.attach(video);
+  const container=document.querySelector('.shaka-video-container');
+  const ui=new shaka.ui.Overlay(player,container,video);
+  ui.configure({controlPanelElements:['play_pause','mute','volume','time_and_duration','spacer','quality','picture_in_picture','fullscreen','overflow_menu'],addSeekBar:true});
+  player.configure({streaming:{bufferingGoal:15,rebufferingGoal:3,bufferBehind:30}});
+  player.addEventListener('error',event=>{
+   console.error('Shaka playback error',event.detail);
+   const code=event.detail?.code;
+   if(code===1002)showError('Stream could not be loaded','The stream server may block cross-origin playback (CORS), or the stream URL may be expired. The source server or its authorized playback configuration must allow this request.');
+   else showError('Playback error','The stream could not be played. Check the browser console for the Shaka error details.');
+  });
+  video.addEventListener('playing',()=>{loading.style.display='none';},{once:true});
+  await player.load(streamUrl);
+  video.muted=true;
+  try{await video.play();}catch(e){loadTitle.textContent='Tap play to start';loadMsg.textContent='Autoplay was blocked by the browser. Use the player controls to begin playback.';loading.style.display='none';}
+ }catch(error){
+  console.error('Player initialization/load failed:',error);
+  showError('Unable to play this stream','If the console reports a CORS error, it must be resolved by the stream provider or an authorized playback endpoint; a front-end change alone cannot grant access.');
+ }
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
