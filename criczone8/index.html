@@ -209,7 +209,43 @@ html,body{background:#070b14;color:#eaf2ff}
 @media(max-width:480px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{min-height:128px;padding:14px 8px 12px;border-radius:13px}.ch-logo,.ch-logo-fallback{max-width:82px;height:46px}.ch-card span{font-size:11px}.ch-live-badge{font-size:8px}}
 @media(min-width:900px){#channel-list{padding-top:26px}#ch-header,#ch-grid{max-width:1280px;width:100%;margin-left:auto;margin-right:auto}#ch-header{margin-bottom:24px}}
 
+
+/* Realtime live watching counter */
+#watchingBox{position:absolute;top:max(62px,calc(env(safe-area-inset-top) + 62px));left:max(14px,env(safe-area-inset-left));z-index:2147483000;display:flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid rgba(34,211,153,.3);border-radius:999px;background:rgba(3,12,20,.88);box-shadow:0 8px 26px rgba(0,0,0,.4);backdrop-filter:blur(12px);color:#eafff5;font-size:11px;font-weight:800;letter-spacing:.6px;pointer-events:none}
+#watchingBox .watching-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 10px rgba(52,211,153,.8);animation:dot-pulse 1.5s infinite}
+#watchingCount{color:#6ee7b7;font-variant-numeric:tabular-nums}
+.ch-live-badge{white-space:nowrap}
+.ch-live-badge .ch-viewer-count{color:inherit;font:inherit}
+
 </style>
+
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import {
+  getDatabase, ref, push, set, remove, onDisconnect, onValue, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+  authDomain: "cricket-live-39106.firebaseapp.com",
+  databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cricket-live-39106",
+  storageBucket: "cricket-live-39106.firebasestorage.app",
+  messagingSenderId: "841890143",
+  appId: "1:841890143:web:ca5b87c9395bdc19145eea",
+  measurementId: "G-ZNEZC8YVMX"
+};
+
+try {
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  window.CricZoneWatchingFirebase = {
+    db: getDatabase(app), ref, push, set, remove, onDisconnect, onValue, serverTimestamp
+  };
+} catch (error) {
+  console.warn("CricZone live watching could not initialize:", error);
+}
+</script>
+
 </head>
 <body>
 
@@ -238,6 +274,7 @@ html,body{background:#070b14;color:#eaf2ff}
 </div>
 
 <div id="pc">
+  <div id="watchingBox" aria-live="polite"><span class="watching-dot"></span><span><strong id="watchingCount">200</strong> WATCHING</span></div>
   <video id="v" playsinline webkit-playsinline
     preload="none"
     x5-video-player-type="h5"
@@ -315,6 +352,80 @@ var $grid    = document.getElementById("ch-grid");
 var $pc      = document.getElementById("pc");
 var $vid     = document.getElementById("v");
 var _stTmr   = null;
+var viewerBaseCount = 200;
+var watchingDb = null;
+var watchingSdk = null;
+var viewerPresenceRef = null;
+var viewerCountUnsub = null;
+var cardCountUnsubs = [];
+
+function safeWatchingKey(value){
+  return String(value).replace(/[.#$\/\[\]]/g, "_");
+}
+
+function getWatchingFirebase(){
+  if(watchingSdk) return watchingSdk;
+  var sdk = window.CricZoneWatchingFirebase;
+  if(!sdk || !sdk.db) return null;
+  watchingSdk = sdk;
+  watchingDb = sdk.db;
+  return sdk;
+}
+
+function updatePlayerWatching(count){
+  var el = document.getElementById("watchingCount");
+  if(el) el.textContent = String(viewerBaseCount + Math.max(0, Number(count) || 0)).toLocaleString();
+}
+
+function startCardWatchingCounts(channels){
+  cardCountUnsubs.forEach(function(unsub){ try{unsub();}catch(_){} });
+  cardCountUnsubs = [];
+  var sdk = getWatchingFirebase();
+  if(!sdk) return;
+  channels.forEach(function(ch){
+    var key = safeWatchingKey(ch.id);
+    var target = Array.from(document.querySelectorAll(".ch-viewer-count")).find(function(el){
+      return el.getAttribute("data-channel-id") === String(ch.id);
+    });
+    if(!target) return;
+    var unsub = sdk.onValue(sdk.ref(sdk.db, "liveViewers/" + key), function(snapshot){
+      target.textContent = (viewerBaseCount + snapshot.numChildren()).toLocaleString() + " WATCHING";
+    }, function(error){ console.warn("Channel viewer count unavailable:", error); });
+    cardCountUnsubs.push(unsub);
+  });
+}
+
+async function startRealtimeWatching(streamId){
+  var sdk = getWatchingFirebase();
+  if(!sdk || streamId === undefined || streamId === null) return;
+  await leaveRealtimeWatching();
+  var key = safeWatchingKey(streamId);
+  var viewersRef = sdk.ref(sdk.db, "liveViewers/" + key);
+  try{
+    viewerPresenceRef = sdk.push(viewersRef);
+    await sdk.onDisconnect(viewerPresenceRef).remove();
+    await sdk.set(viewerPresenceRef, {
+      online: true,
+      channelId: String(streamId),
+      joinedAt: sdk.serverTimestamp()
+    });
+    viewerCountUnsub = sdk.onValue(viewersRef, function(snapshot){
+      updatePlayerWatching(snapshot.numChildren());
+    }, function(error){ console.warn("Live watching count unavailable:", error); });
+  }catch(error){
+    console.warn("Could not register live viewer:", error);
+    updatePlayerWatching(0);
+  }
+}
+
+async function leaveRealtimeWatching(){
+  var sdk = getWatchingFirebase();
+  if(viewerCountUnsub){ try{viewerCountUnsub();}catch(_){} viewerCountUnsub = null; }
+  if(viewerPresenceRef && sdk){ try{await sdk.remove(viewerPresenceRef);}catch(_){} }
+  viewerPresenceRef = null;
+}
+
+window.addEventListener("pagehide", function(){ leaveRealtimeWatching(); });
 
 function getTier(){
   var mem   = navigator.deviceMemory || 4;
@@ -506,6 +617,7 @@ function renderList(channels){
 
   $grid.appendChild(f);
   $list.style.display = "flex";
+  startCardWatchingCounts(channels);
 }
 
 function errMsg(msg){
@@ -647,6 +759,9 @@ async function startPlayer(ch){
     toast("No DRM Keys Available","err",0);
     return;
   }
+
+  updatePlayerWatching(0);
+  startRealtimeWatching(ch.id);
 
   var thermalTimer = setInterval(function(){
     if(Date.now() - sessionStart < 60*60*1000) return;
