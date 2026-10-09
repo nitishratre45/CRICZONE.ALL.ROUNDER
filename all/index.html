@@ -252,6 +252,8 @@ a{color:var(--brand-2);text-decoration:none}
 }
 #player-container{position:absolute;inset:0}
 #player-container video{width:100%;height:100%;object-fit:contain;background:#000}
+/* Hide Shaka buffering spinner/indicator only; keep playback controls visible */
+.shaka-spinner-container,.shaka-spinner-svg-container,.shaka-spinner-svg,.shaka-spinner-container[shaka-controls],.shaka-spinner-container[shown]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 .screen-msg{
   position:absolute;inset:0;display:grid;place-items:center;
   color:#93A7C6;font-size:14px;text-align:center;padding:20px;
