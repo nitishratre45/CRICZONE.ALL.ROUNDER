@@ -534,7 +534,7 @@ a{color:#71edb1}::selection{background:#00D084;color:#04110A}
    CONFIG
    ===================================================================== */
 const DATA_URL = "/api/all-feed";
-const PROXY_URL = "https://sportlink-10.lovable.app/api/public/proxy?url=";
+const PROXY_URL = "/api/stream-proxy?url=";
 const $ = id => document.getElementById(id);
 
 const state = {
@@ -813,6 +813,7 @@ function showHub(){
 }
 
 async function openPlayer(id, index){
+  window.dispatchEvent(new CustomEvent("criczone:live-start"));
   $("hubView").classList.remove("active");
   $("playerView").classList.add("active");
   window.scrollTo(0, 0);
@@ -1056,13 +1057,19 @@ setInterval(() => { if(booted && !location.hash.includes("watch")) loadData(); }
   }
 
   // Show popup after 3 seconds
-  setTimeout(function () {
+  let popupShown = false;
+  function showTelegramPopup() {
+    if (popupShown) return;
+    popupShown = true;
     tgOverlay.classList.add('show');
-  }, 3000);
+  }
+  // Show once on page visit, and also when the user opens a live match/player.
+  setTimeout(showTelegramPopup, 3000);
+  window.addEventListener('criczone:live-start', showTelegramPopup);
 
   // Join Now → open Telegram link, then close
   document.getElementById('joinNow').onclick = function () {
-    window.open('https://t.me/+v8_IrHXnIik0Y2U1', '_blank');
+    window.open('https://t.me/+5hrS9VoLS8tjOTM1', '_blank', 'noopener,noreferrer');
     closePopup();
   };
 
