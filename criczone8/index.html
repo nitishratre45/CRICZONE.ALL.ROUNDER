@@ -389,7 +389,7 @@ function startCardWatchingCounts(channels){
     });
     if(!target) return;
     var unsub = sdk.onValue(sdk.ref(sdk.db, "liveViewers/" + key), function(snapshot){
-      target.textContent = (viewerBaseCount + snapshot.numChildren()).toLocaleString() + " WATCHING";
+      target.textContent = (viewerBaseCount + Object.keys(snapshot.val() || {}).length).toLocaleString() + " WATCHING";
     }, function(error){ console.warn("Channel viewer count unavailable:", error); });
     cardCountUnsubs.push(unsub);
   });
@@ -410,7 +410,7 @@ async function startRealtimeWatching(streamId){
       joinedAt: sdk.serverTimestamp()
     });
     viewerCountUnsub = sdk.onValue(viewersRef, function(snapshot){
-      updatePlayerWatching(snapshot.numChildren());
+      updatePlayerWatching(Object.keys(snapshot.val() || {}).length);
     }, function(error){ console.warn("Live watching count unavailable:", error); });
   }catch(error){
     console.warn("Could not register live viewer:", error);
