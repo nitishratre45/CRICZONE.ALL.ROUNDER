@@ -908,12 +908,16 @@ async function initShaka(url, record, token){
 
   shakaPlayer.configure({
     streaming:{
-      lowLatencyMode: true, bufferingGoal: 2, rebufferingGoal: 1, bufferBehind: 2,
-      retryParameters:{ timeout:30000, stallTimeout:10000, connectionTimeout:15000, maxAttempts:4, baseDelay:500, backoffFactor:2 },
+      // Prefer stable playback over chasing the live edge.
+      lowLatencyMode: false,
+      bufferingGoal: 18,
+      rebufferingGoal: 5,
+      bufferBehind: 30,
+      retryParameters:{ timeout:30000, stallTimeout:10000, connectionTimeout:15000, maxAttempts:5, baseDelay:500, backoffFactor:2 },
       stallEnabled: true, stallThreshold: 1, gapDetectionThreshold: 0.5, smallGapLimit: 0.5,
       jumpLargeGaps: true, minTimeBetweenRecoveries: 2
     },
-    abr:{ enabled:true, defaultBandwidthEstimate:5000000, switchInterval:8, bandwidthUpgradeTarget:0.85, bandwidthDowngradeTarget:0.95 },
+    abr:{ enabled:true, defaultBandwidthEstimate:2500000, switchInterval:8, bandwidthUpgradeTarget:0.8, bandwidthDowngradeTarget:0.9 },
     manifest:{ dash:{ ignoreMinBufferTime: true } },
     drm:{ retryParameters:{ timeout:30000, stallTimeout:10000, connectionTimeout:15000, maxAttempts:4, baseDelay:500, backoffFactor:2 } }
   });
