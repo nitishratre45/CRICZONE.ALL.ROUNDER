@@ -19,6 +19,23 @@
     <criczone-ui></criczone-ui>
 
     <script src="/criczone6/script.js"></script>
+<script>
+// Restrict the embedded player so taps cannot open pop-under tabs or navigate the top page.
+customElements.whenDefined('criczone-ui').then(() => {
+  const host = document.querySelector('criczone-ui');
+  if (!host || !host.shadowRoot) return;
+  const applyPlayerSandbox = () => {
+    const frame = host.shadowRoot.querySelector('iframe#player');
+    if (frame && !frame.hasAttribute('sandbox')) {
+      frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
+    }
+  };
+  const observer = new MutationObserver(applyPlayerSandbox);
+  observer.observe(host.shadowRoot, { childList: true, subtree: true });
+  applyPlayerSandbox();
+});
+</script>
+
 
 </body>
 </html>
