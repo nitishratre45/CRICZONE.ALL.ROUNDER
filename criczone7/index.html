@@ -597,6 +597,49 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
 <body>
 
+<!-- CRICZONE7 PASSWORD GATE -->
+<style>
+#cz7-auth{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 10%,#10313a 0%,#050b10 45%,#000 100%);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#fff}
+#cz7-auth .cz7-card{width:min(100%,390px);padding:30px 26px;border:1px solid rgba(0,217,255,.25);border-radius:22px;background:rgba(7,17,24,.94);box-shadow:0 25px 80px rgba(0,0,0,.55);text-align:center}
+#cz7-auth .cz7-logo{font-size:24px;font-weight:950;letter-spacing:1px;margin-bottom:8px}#cz7-auth .cz7-logo span{color:#00d9ff}
+#cz7-auth p{color:#a9bac4;font-size:14px;margin:0 0 22px}
+#cz7-auth input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid #28424c;background:#02080c;color:#fff;font-size:16px;outline:none}
+#cz7-auth input:focus{border-color:#00d9ff;box-shadow:0 0 0 3px #00d9d922}
+#cz7-auth button{width:100%;height:48px;margin-top:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#00d9ff,#008cff);color:#001018;font-size:15px;font-weight:900;cursor:pointer}
+#cz7-auth .cz7-error{min-height:20px;margin-top:12px;color:#ff8181;font-size:13px}
+body.cz7-locked{overflow:hidden!important}body.cz7-locked #playerContainer{visibility:hidden}
+</style>
+<div id="cz7-auth" role="dialog" aria-modal="true" aria-labelledby="cz7-title">
+  <form class="cz7-card" id="cz7-auth-form">
+    <div class="cz7-logo" id="cz7-title">CRIC<span>ZONE</span></div>
+    <p>Enter the password to continue</p>
+    <input id="cz7-password" type="password" placeholder="Enter password" autocomplete="current-password" required autofocus>
+    <button type="submit">Unlock Player</button>
+    <div class="cz7-error" id="cz7-error" aria-live="polite"></div>
+  </form>
+</div>
+<script>
+(function(){
+  document.body.classList.add('cz7-locked');
+  const form=document.getElementById('cz7-auth-form');
+  const field=document.getElementById('cz7-password');
+  const error=document.getElementById('cz7-error');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(field.value==='criczone123'){
+      document.getElementById('cz7-auth').remove();
+      document.body.classList.remove('cz7-locked');
+    }else{
+      error.textContent='Incorrect password. Please try again.';
+      field.value='';
+      field.focus();
+    }
+  });
+})();
+</script>
+<!-- END CRICZONE7 PASSWORD GATE -->
+
+
 
 <!-- =========================================================
      PLAYER
