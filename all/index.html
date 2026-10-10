@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Shaka Player (DASH + ClearKey) -->
+<!-- Shaka Player -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
 
@@ -497,16 +497,11 @@ a{color:#71edb1}::selection{background:#00D084;color:#04110A}
 
     <div class="screen">
       <div id="player-container"></div>
-      <span class="engine" id="engine">Idle</span>
     </div>
 
     <h2 class="player-h2">Available DASH Links</h2>
     <div class="streams" id="streams"></div>
 
-    <p class="note">
-      All streams are DASH (MPD). For best performance, use a modern browser
-      that supports DASH playback. ClearKey DRM is handled automatically.
-    </p>
   </section>
 
 </div>
@@ -891,7 +886,6 @@ function scheduleAutoReconnect(record, index, token, delay = 9000){
       if(token !== playbackToken) return;
       const currentVideo = $("shaka-video");
       if(currentVideo && !currentVideo.paused && !currentVideo.ended && currentVideo.readyState >= 3){
-        $("engine").textContent = "Shaka · DASH";
         recoveryAttempts = 0;
         return;
       }
@@ -924,7 +918,6 @@ async function destroyShaka(){
 async function stopPlayback(){
   playbackToken++;
   await destroyShaka();
-  const engine = $("engine");
   if(engine) engine.textContent = "Idle";
 }
 
@@ -1000,7 +993,6 @@ async function initShaka(url, record, token){
     if(token !== playbackToken) return;
     clearRecoveryTimer();
     recoveryAttempts = 0;
-    $("engine").textContent = clearKey ? "Shaka · DASH · ClearKey" : "Shaka · DASH";
   });
   video.addEventListener("waiting", () => scheduleAutoReconnect(record, state.currentIndex, token, 10000));
   video.addEventListener("stalled", () => scheduleAutoReconnect(record, state.currentIndex, token, 10000));
@@ -1010,7 +1002,6 @@ async function initShaka(url, record, token){
   await shakaPlayer.load(url);
   if(token !== playbackToken) return;
 
-  $("engine").textContent = clearKey ? "Shaka · DASH · ClearKey" : "Shaka · DASH";
   video.play().catch(() => {});
 }
 
