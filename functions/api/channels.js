@@ -53,8 +53,10 @@ function corsHeaders(origin, request) {
 
 export async function onRequestOptions(context) {
 
+    const request = context.request;
+
     const origin =
-        context.request.headers.get("Origin") || "";
+        request.headers.get("Origin") || "";
 
     if (!isAllowedOrigin(context.request, origin)) {
         return new Response(
@@ -65,7 +67,7 @@ export async function onRequestOptions(context) {
                 status: 403,
                 headers: {
                     "Content-Type": "application/json",
-                    ...corsHeaders(origin)
+                    ...corsHeaders(origin, request)
                 }
             }
         );
@@ -128,7 +130,7 @@ export async function onRequestGet(context) {
                 status: 400,
                 headers: {
                     "Content-Type": "application/json; charset=utf-8",
-                    ...corsHeaders(origin)
+                    ...corsHeaders(origin, request)
                 }
             }
         );
@@ -163,7 +165,7 @@ export async function onRequestGet(context) {
                     status: 502,
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
-                        ...corsHeaders(origin)
+                        ...corsHeaders(origin, request)
                     }
                 }
             );
@@ -196,7 +198,7 @@ export async function onRequestGet(context) {
                     status: 502,
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
-                        ...corsHeaders(origin)
+                        ...corsHeaders(origin, request)
                     }
                 }
             );
@@ -215,7 +217,7 @@ export async function onRequestGet(context) {
                     "Content-Type":
                         "application/json; charset=utf-8",
 
-                    ...corsHeaders(origin)
+                    ...corsHeaders(origin, request)
                 }
             }
         );
@@ -235,7 +237,7 @@ export async function onRequestGet(context) {
                 status: 502,
                 headers: {
                     "Content-Type": "application/json; charset=utf-8",
-                    ...corsHeaders(origin)
+                    ...corsHeaders(origin, request)
                 }
             }
         );
