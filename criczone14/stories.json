@@ -1,0 +1,39 @@
+{
+  "updatedAt": "2026-10-12",
+  "source": "User-provided ESPNcricinfo Web Stories JSON",
+  "count": 4,
+  "stories": [
+    {
+      "id": "50b66f1d-7df0-1bf5-98f5-3a2442205d69",
+      "title": "Most successful bowler-fielder pairs in Test cricket",
+      "displayTitle": "Bowler 🤝 Fielder",
+      "thumbnail": "https://espncricinfo.cdn.usestoryteller.com/assets/pages/17cb4f11-7a59-5d30-4eea-3a2442217434/bb12d73d-b21e-5d74-3bce-3a2442217434/image_thumbnail_large.jpeg",
+      "url": "https://www.espncricinfo.com/webstories/most-successful-bowler-fielder-pairs-in-test-cricket",
+      "published": "2026-10-12T12:03:05+00:00"
+    },
+    {
+      "id": "cd66f0fd-1f5f-ef4a-4cfb-3a2441b41baf",
+      "title": "Abhishek Sharma becomes the fastest to complete 2000 T20I runs",
+      "displayTitle": "Abhishek gets to 2K T20I runs",
+      "thumbnail": "https://espncricinfo.cdn.usestoryteller.com/assets/pages/ea641fb8-44ff-4dcd-4959-3a2441b4d4c9/9776fd5e-8f4a-3903-534f-3a2441b4d4c9/image_thumbnail_large.jpeg",
+      "url": "https://www.espncricinfo.com/webstories/abhishek-sharma-becomes-the-fastest-to-complete-2000-t20i-runs",
+      "published": "2026-10-12T10:12:08+00:00"
+    },
+    {
+      "id": "109adda0-28d0-ab5f-777f-3a2397aef4d8",
+      "title": "Cricinfo Games - test your cricket cred daily",
+      "displayTitle": "Daily games for cricket geeks",
+      "thumbnail": "https://espncricinfo.cdn.usestoryteller.com/assets/pages/d234ad38-4b46-90ca-3737-3a242d25f5d8/95b54ba3-ccf8-9fc3-8b9e-3a242d25f5d8/image_thumbnail_large.jpeg",
+      "url": "https://www.cricinfo.com/game/know-your-cricket",
+      "published": "2026-10-09T13:35:19+00:00"
+    },
+    {
+      "id": "93a80626-ae2c-500c-99c9-3a243c1a9ae9",
+      "title": "Hasan Mahmud claimed a hat-trick against Afghanistan",
+      "displayTitle": "Third Test hat-trick for 🇧🇩",
+      "thumbnail": "https://espncricinfo.cdn.usestoryteller.com/assets/pages/6e97b28e-f769-65bc-73eb-3a243c1f0eec/d42474ad-fbf1-5795-4697-3a243c1f0eec/image_thumbnail_large.jpeg",
+      "url": "https://www.espncricinfo.com/webstories/hasan-mahmud-claimed-a-hat-trick-against-afghanistan",
+      "published": "2026-10-11T07:56:33+00:00"
+    }
+  ]
+}
