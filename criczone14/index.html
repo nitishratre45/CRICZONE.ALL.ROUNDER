@@ -58,7 +58,7 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
 .divider{height:1px;background:#263850;margin:16px 0 12px}
 .status{font-size:12px;line-height:1.55;color:#d7e2f1;overflow-wrap:anywhere}
 .status.live{color:#ff8793}
-.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 17px;background:#0b1727;border-top:1px solid #263850;color:var(--muted);font-size:11px}
+.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 17px;background:#0b1727;border-top:1px solid #263850;color:var(--muted);font-size:11px}\n.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}\n.scorecard-link:hover{background:#195443;border-color:#42a982}\n@media(max-width:390px){.card-bottom{align-items:flex-start;flex-wrap:wrap}.scorecard-link{margin-left:auto}}
 .venue{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .badge{font-size:10px;letter-spacing:.5px;font-weight:900;border-radius:6px;padding:5px 7px;white-space:nowrap}
 .badge-live{color:#ff9aa4;background:#4a1c2a}
@@ -145,6 +145,14 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
     const name = t.longName || t.name || 'Team';
     return `<div class="team-row"><div class="team-info"><div class="logo">${teamLogo(team)}</div><div style="min-width:0"><div class="team-name">${esc(name)}</div><div class="team-code">${esc(t.abbreviation || '')}</div></div></div>${scoreInfo(team)}</div>`;
   }
+  function scorecardUrl(m) {
+    const seriesSlug = m.series?.slug;
+    const matchSlug = m.slug;
+    const seriesId = m.series?.objectId || m.series?.id;
+    const matchId = m.objectId || m.id || m._uid;
+    if (!seriesSlug || !matchSlug || !seriesId || !matchId) return '';
+    return `https://www.espncricinfo.com/series/${encodeURIComponent(seriesSlug)}-${encodeURIComponent(seriesId)}/${encodeURIComponent(matchSlug)}-${encodeURIComponent(matchId)}/full-scorecard`;
+  }
   function card(m) {
     const status = matchStatus(m);
     const teams = Array.isArray(m.teams) ? m.teams : [];
@@ -160,7 +168,7 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
       <div class="card-body"><div class="match-title">${esc(title)}${date ? ' · ' + esc(date) : ''}</div>
       ${teamRow(teams[0])}${teamRow(teams[1])}
       <div class="divider"></div><div class="status ${status === 'live' ? 'live' : ''}">${esc(statusText || 'Match information unavailable')}</div></div>
-      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span>${badge}</div>
+      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span><span style="display:flex;align-items:center;gap:8px">${badge}${scoreUrl ? `<a class="scorecard-link" href="${esc(scoreUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full scorecard for ${esc(title)}">Scorecard ↗</a>` : '`'}</span></div>
     </article>`;
   }
   function render() {
