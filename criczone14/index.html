@@ -156,6 +156,17 @@ body.modal-open{overflow:hidden}
 .rss-live-dot{width:7px;height:7px;border-radius:50%;background:#fb5470;box-shadow:0 0 0 4px #fb54701a;flex:0 0 auto}
 .rss-source{font-size:11px;color:#778ba5;margin:14px 0 0}.rss-source a{color:#78e5bf;text-decoration:none}
 @media(max-width:520px){.rss-section{padding:14px;border-radius:17px}.rss-heading{align-items:flex-start;flex-direction:column}.rss-heading .refresh{width:100%}.rss-list{grid-template-columns:1fr;gap:9px}.rss-item{padding:13px}.rss-item-title{font-size:13px}}
+
+/* Detailed JSON scorecard tables */
+.score-table-wrap{width:100%;overflow-x:auto;margin:8px 0 14px;border:1px solid var(--line);border-radius:10px}
+.score-table{width:100%;border-collapse:collapse;min-width:620px;font-size:12px;background:#0b1727}
+.score-table th{position:sticky;top:0;background:#182a40;color:#c8d8ed;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.45px;padding:10px 9px;white-space:nowrap}
+.score-table td{padding:9px;border-top:1px solid #23364d;color:#eaf1fb;vertical-align:top}
+.score-table td:first-child{font-weight:800;min-width:125px}
+.score-table td:nth-child(2){color:var(--muted);min-width:170px}
+.score-table td:nth-child(n+3),.score-table th:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
+.score-table tr:hover td{background:#13253a}
+.modal-note a{color:#8fc1ff}
 </style>
 </head>
 <body>
