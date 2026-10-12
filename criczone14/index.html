@@ -58,7 +58,30 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
 .divider{height:1px;background:#263850;margin:16px 0 12px}
 .status{font-size:12px;line-height:1.55;color:#d7e2f1;overflow-wrap:anywhere}
 .status.live{color:#ff8793}
-.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 17px;background:#0b1727;border-top:1px solid #263850;color:var(--muted);font-size:11px}\n.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}\n.scorecard-link:hover{background:#195443;border-color:#42a982}\n@media(max-width:390px){.card-bottom{align-items:flex-start;flex-wrap:wrap}.scorecard-link{margin-left:auto}}
+.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 17px;background:#0b1727;border-top:1px solid #263850;color:var(--muted);font-size:11px}
+.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}
+.scorecard-link:hover{background:#195443;border-color:#42a982}
+.scorecard-link:focus-visible,.modal-close:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.score-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:#020712cc;backdrop-filter:blur(8px)}
+.score-modal.open{display:flex}
+.score-modal-panel{width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;background:#0d192a;border:1px solid #344861;border-radius:20px;box-shadow:0 24px 90px #0009}
+.score-modal-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:19px 20px;background:#101f33;border-bottom:1px solid var(--line);z-index:1}
+.score-modal-head h2{margin:0;font-size:20px}.score-modal-head p{margin:6px 0 0;color:var(--muted);font-size:12px}
+.modal-close{border:1px solid var(--line);background:#1b2c42;color:var(--text);border-radius:10px;padding:8px 11px;font-size:18px}
+.score-modal-content{padding:20px}
+.modal-teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-team{padding:16px;background:#13243a;border:1px solid var(--line);border-radius:14px;min-width:0}
+.modal-team-name{font-size:13px;color:#c8d7e9;font-weight:750}.modal-team-score{font-size:clamp(20px,4vw,30px);font-weight:900;margin-top:9px;overflow-wrap:anywhere}
+.modal-team-info{font-size:12px;color:var(--muted);margin-top:5px}
+.modal-status{margin-top:14px;padding:13px 14px;background:#122b28;border:1px solid #245446;border-radius:12px;color:#b9ffe0;line-height:1.6;font-size:13px}
+.modal-section-title{font-size:14px;font-weight:850;margin:22px 0 10px}
+.modal-note{padding:13px 14px;background:#101f33;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px;line-height:1.7}
+.modal-extra{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.modal-extra div{padding:12px;background:#101f33;border-radius:10px;min-width:0}
+.modal-extra small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.modal-extra strong{font-size:12px;overflow-wrap:anywhere}
+body.modal-open{overflow:hidden}
+@media(max-width:470px){.score-modal{padding:8px}.score-modal-panel{border-radius:15px}.score-modal-content{padding:13px}.score-modal-head{padding:15px}.modal-teams{grid-template-columns:1fr 1fr;gap:8px}.modal-team{padding:11px}.modal-team-score{font-size:20px}.modal-extra{grid-template-columns:1fr}}\n.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}\n.scorecard-link:hover{background:#195443;border-color:#42a982}\n@media(max-width:390px){.card-bottom{align-items:flex-start;flex-wrap:wrap}.scorecard-link{margin-left:auto}}
 .venue{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .badge{font-size:10px;letter-spacing:.5px;font-weight:900;border-radius:6px;padding:5px 7px;white-space:nowrap}
 .badge-live{color:#ff9aa4;background:#4a1c2a}
@@ -100,15 +123,15 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
   </div>
   <div class="section-heading"><h2 id="listTitle">All matches</h2><span class="count" id="matchCount">Loading…</span></div>
   <section class="grid" id="matchesGrid"><div class="empty">Loading match data…</div></section>
-  <div class="footer">Cricket Live Score Centre · Data displayed from your local JSON file</div>
+  <div class="footer">Cricket Live Score Centre · Match data: live_matches.json · <span id="metadataStatus">Connecting site metadata…</span></div>
 </main>
 <script>
 (() => {
-  const DATA_URL = './live_matches.json';
+  const DATA_URL = './live_matches.json';\n  const METADATA_URL = './site_metadata.json';
   const grid = document.getElementById('matchesGrid');
   const $ = id => document.getElementById(id);
   let matches = [];
-  let activeTab = 'all';
+  let activeTab = 'all';\n  let siteMetadata = null;\n  const modal = $('scorecardModal');
 
   function esc(value) {
     return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -145,13 +168,8 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
     const name = t.longName || t.name || 'Team';
     return `<div class="team-row"><div class="team-info"><div class="logo">${teamLogo(team)}</div><div style="min-width:0"><div class="team-name">${esc(name)}</div><div class="team-code">${esc(t.abbreviation || '')}</div></div></div>${scoreInfo(team)}</div>`;
   }
-  function scorecardUrl(m) {
-    const seriesSlug = m.series?.slug;
-    const matchSlug = m.slug;
-    const seriesId = m.series?.objectId || m.series?.id;
-    const matchId = m.objectId || m.id || m._uid;
-    if (!seriesSlug || !matchSlug || !seriesId || !matchId) return '';
-    return `https://www.espncricinfo.com/series/${encodeURIComponent(seriesSlug)}-${encodeURIComponent(seriesId)}/${encodeURIComponent(matchSlug)}-${encodeURIComponent(matchId)}/full-scorecard`;
+  function scorecardId(m) {
+    return String(m.objectId || m.id || m._uid || '');
   }
   function card(m) {
     const status = matchStatus(m);
@@ -163,13 +181,13 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
     const dateValue = m.startTime || m.startDate;
     const date = dateValue ? new Date(dateValue).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '';
     const badge = status === 'live' ? '<span class="badge badge-live">● LIVE</span>' : status === 'upcoming' ? '<span class="badge badge-upcoming">UPCOMING</span>' : '<span class="badge badge-result">RESULT</span>';
-    const scoreUrl = scorecardUrl(m);
+    const scoreId = scorecardId(m);
     return `<article class="card">
       <div class="card-top"><div class="series" title="${esc(series)}">${esc(series)}</div><span class="format">${esc(formatName(m.format))}</span></div>
       <div class="card-body"><div class="match-title">${esc(title)}${date ? ' · ' + esc(date) : ''}</div>
       ${teamRow(teams[0])}${teamRow(teams[1])}
       <div class="divider"></div><div class="status ${status === 'live' ? 'live' : ''}">${esc(statusText || 'Match information unavailable')}</div></div>
-      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span><span style="display:flex;align-items:center;gap:8px">${badge}${scoreUrl ? `<a class="scorecard-link" href="${esc(scoreUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full scorecard for ${esc(title)}">Scorecard ↗</a>` : ''}</span></div>
+      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span><span style="display:flex;align-items:center;gap:8px">${badge}${scoreId ? `<button class="scorecard-link" type="button" data-scorecard-id="${esc(scoreId)}" aria-label="Open scorecard for ${esc(title)}">Scorecard ↗</button>` : ''}</span></div>
     </article>`;
   }
   function render() {
@@ -194,6 +212,66 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
     $('matchCount').textContent = `${list.length} match${list.length === 1 ? '' : 'es'}`;
     grid.innerHTML = list.length ? list.map(card).join('') : '<div class="empty">No matches found. Try changing the status, format or search.</div>';
   }
+  function openScorecard(matchId) {
+    const match = matches.find(m => scorecardId(m) === String(matchId));
+    if (!match) return;
+    const teams = Array.isArray(match.teams) ? match.teams : [];
+    const title = match.title || match.name || 'Cricket Match';
+    const series = match.series?.longName || match.series?.name || 'Cricket Match';
+    const venue = match.ground?.longName || match.ground?.name || match.ground?.town?.name || 'Venue not available';
+    const dateValue = match.startTime || match.startDate;
+    const date = dateValue ? new Date(dateValue).toLocaleString(undefined,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Date not available';
+    const status = match.statusText || match.status || match.scheduleNote || 'Match status unavailable';
+    $('scoreModalTitle').textContent = title + ' — Scorecard';
+    $('scoreModalSub').textContent = series;
+    const teamCards = teams.slice(0,2).map(team => {
+      const t = team?.team || {};
+      return `<div class="modal-team"><div class="modal-team-name">${esc(t.longName || t.name || 'Team')}</div><div class="modal-team-score">${esc(team?.score || 'Score unavailable')}</div><div class="modal-team-info">${esc(team?.scoreInfo || (Array.isArray(team?.inningNumbers) && team.inningNumbers.length ? 'Innings ' + team.inningNumbers.join(', ') : 'Score details not provided'))}</div></div>`;
+    }).join('');
+    const innings = Array.isArray(match.innings) ? match.innings : Array.isArray(match.scorecard?.innings) ? match.scorecard.innings : [];
+    let inningsMarkup = '';
+    if (innings.length) {
+      inningsMarkup = innings.map((inn,i) => {
+        const batting = inn.batting || inn.batsmen || [];
+        const bowling = inn.bowling || inn.bowlers || [];
+        const rows = list => list.length ? `<div class="modal-extra">${list.map(p => `<div><small>${esc(p.name || p.playerName || 'Player')}</small><strong>${esc(p.runs != null ? 'Runs ' + p.runs + (p.balls != null ? ' (' + p.balls + ' balls)' : '') : p.wickets != null ? 'Wickets ' + p.wickets : p.overs != null ? 'Overs ' + p.overs : p.figures || 'Stats unavailable')}</strong></div>`).join('')}</div>` : '<div class="modal-note">Detailed player data is not included in this JSON.</div>';
+        return `<div class="modal-section-title">Innings ${i+1} — ${esc(inn.teamName || inn.team?.name || '')}</div>${rows(batting)}<div class="modal-section-title">Bowling</div>${rows(bowling)}`;
+      }).join('');
+    } else {
+      inningsMarkup = '<div class="modal-note"><strong>Detailed batting/bowling card is not present in the current live_matches.json.</strong><br>This in-site scorecard is connected to your local match data and will show full innings tables when the source JSON includes them. No external scoreboard page is opened.</div>';
+    }
+    $('scoreModalContent').innerHTML = `
+      <div class="modal-teams">${teamCards || '<div class="modal-note">Team score details are unavailable for this match.</div>'}</div>
+      <div class="modal-status">${esc(status)}</div>
+      <div class="modal-extra">
+        <div><small>Format</small><strong>${esc(formatName(match.format))}</strong></div>
+        <div><small>Date / time</small><strong>${esc(date)}</strong></div>
+        <div><small>Venue</small><strong>${esc(venue)}</strong></div>
+        <div><small>Series</small><strong>${esc(series)}</strong></div>
+      </div>
+      <div class="modal-section-title">Innings & player scorecard</div>${inningsMarkup}`;
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+    $('closeScoreModal').focus();
+  }
+  function closeScorecard() {
+    modal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  }
+  async function loadSiteMetadata() {
+    try {
+      const response = await fetch(METADATA_URL + '?t=' + Date.now(), {cache:'no-store'});
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      siteMetadata = await response.json();
+      window.CRICZONE_SITE_METADATA = siteMetadata;
+      $('metadataStatus').textContent = 'Site metadata connected';
+      $('metadataStatus').style.color = 'var(--green)';
+      document.dispatchEvent(new CustomEvent('criczone:metadata-ready', {detail: siteMetadata}));
+    } catch (error) {
+      $('metadataStatus').textContent = 'Site metadata unavailable';
+      $('metadataStatus').title = error.message;
+    }
+  }
   async function loadData() {
     const btn = $('refreshBtn');
     btn.disabled = true; btn.textContent = '↻ Loading…';
@@ -213,6 +291,13 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
       btn.disabled = false; btn.textContent = '↻ Refresh scores';
     }
   }
+  grid.addEventListener('click', event => {
+    const button = event.target.closest('[data-scorecard-id]');
+    if (button) openScorecard(button.dataset.scorecardId);
+  });
+  $('closeScoreModal').addEventListener('click', closeScorecard);
+  modal.addEventListener('click', event => { if (event.target === modal) closeScorecard(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.classList.contains('open')) closeScorecard(); });
   document.querySelectorAll('.tab').forEach(button => button.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b === button));
     activeTab = button.dataset.filter; render();
