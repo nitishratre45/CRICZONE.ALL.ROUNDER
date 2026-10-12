@@ -167,6 +167,27 @@ body.modal-open{overflow:hidden}
 .score-table td:nth-child(n+3),.score-table th:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
 .score-table tr:hover td{background:#13253a}
 .modal-note a{color:#8fc1ff}
+
+/* Compact, innings-switching scorecard layout */
+.innings-tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;margin:0 0 8px;scrollbar-width:thin;scrollbar-color:#3a506a transparent;position:sticky;top:0;z-index:2;background:#0d192a}
+.innings-tab{flex:0 0 auto;border:1px solid #344861;border-radius:12px;background:#14263b;color:#dbe7f6;padding:11px 14px;font-size:13px;font-weight:750;white-space:nowrap;cursor:pointer}
+.innings-tab.active{background:#07558a;border-color:#1675b5;color:#fff}
+.innings-score-heading{font-size:16px;font-weight:850;line-height:1.45;margin:14px 0 6px}
+.innings-panel[hidden]{display:none!important}
+.innings-panel .modal-section-title{margin:16px 0 8px}
+.scorecard-section-heading{margin-top:20px}
+.fow-note{line-height:1.75;padding:12px 14px;background:#112239;border:1px solid #263b54;border-radius:12px}
+.score-table-wrap{margin:7px 0 12px}
+.score-table{font-size:12px;min-width:660px}
+.score-table th{padding:10px 8px}
+.score-table td{padding:9px 8px}
+@media(max-width:560px){
+ .innings-tabs{margin-left:-2px;margin-right:-2px}
+ .innings-tab{padding:10px 12px;font-size:12px}
+ .innings-score-heading{font-size:15px}
+ .score-modal-content{padding:12px 12px 20px}
+ .score-modal-panel{max-height:94dvh}
+}
 </style>
 </head>
 <body>
@@ -373,15 +394,27 @@ body.modal-open{overflow:hidden}
       }).join('')}</tbody></table></div>`;
     }
 
-    let inningsMarkup = innings.length ? innings.map((inn,i) => {
-      const batting = inn.batting || inn.batsmen || [];
-      const bowling = inn.bowling || inn.bowlers || [];
-      const innLabel = inn.innings || (i + 1);
-      const score = inn.total != null ? ` — ${inn.total}/${inn.wickets ?? '?'} (${inn.overs ?? '?'} ov)` : '';
-      const fow = Array.isArray(inn.fallOfWickets) && inn.fallOfWickets.length
-        ? `<div class="modal-section-title">Fall of wickets</div><p class="modal-note">${inn.fallOfWickets.map(esc).join(' · ')}</p>` : '';
-      return `<div class="modal-section-title">${esc(innLabel)} innings — ${esc(inn.teamName || inn.team || inn.team?.name || '')}${esc(score)}${inn.declared ? ' (declared)' : ''}</div><div class="modal-section-title">Batting</div>${playerTable(batting,'batting')}<div class="modal-section-title">Bowling</div>${playerTable(bowling,'bowling')}${fow}`;
-    }).join('') : '';
+    let inningsMarkup = innings.length ? `
+      <div class="innings-tabs" role="tablist" aria-label="Choose innings">
+        ${innings.map((inn,i) => {
+          const teamName = inn.teamName || (typeof inn.team === 'string' ? inn.team : inn.team?.name) || (i % 2 === 0 ? teams[0]?.team?.abbreviation || teams[0]?.team?.name : teams[1]?.team?.abbreviation || teams[1]?.team?.name) || 'Innings ' + (i + 1);
+          return `<button class="innings-tab${i === 0 ? ' active' : ''}" type="button" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-innings-tab="${i}">${esc((i % 2 === 0 ? (teams[0]?.team?.abbreviation || teamName) : (teams[1]?.team?.abbreviation || teamName)))} ${i % 2 === 0 ? '1st' : '2nd'} Inn</button>`;
+        }).join('')}
+      </div>
+      ${innings.map((inn,i) => {
+        const batting = inn.batting || inn.batsmen || [];
+        const bowling = inn.bowling || inn.bowlers || [];
+        const teamName = inn.teamName || (typeof inn.team === 'string' ? inn.team : inn.team?.name) || '';
+        const innLabel = inn.innings || (i + 1);
+        const score = inn.total != null ? ` — ${inn.total}/${inn.wickets ?? '?'} (${inn.overs ?? '?'} ov)` : '';
+        const fow = Array.isArray(inn.fallOfWickets) && inn.fallOfWickets.length
+          ? `<div class="modal-section-title">Fall of wickets</div><p class="modal-note fow-note">${inn.fallOfWickets.map(esc).join(' · ')}</p>` : '';
+        return `<section class="innings-panel"${i === 0 ? '' : ' hidden'} data-innings-panel="${i}" role="tabpanel">
+          <div class="innings-score-heading">${esc(innLabel)} innings — ${esc(teamName)}${esc(score)}${inn.declared ? ' (declared)' : ''}</div>
+          <div class="modal-section-title">Batting</div>${playerTable(batting,'batting')}
+          <div class="modal-section-title">Bowling</div>${playerTable(bowling,'bowling')}${fow}
+        </section>`;
+      }).join('')}` : '';
     if (!inningsMarkup && Array.isArray(detail?.inningsSummary) && detail.inningsSummary.length) {
       inningsMarkup = `<div class="score-table-wrap"><table class="score-table"><thead><tr><th>Innings</th><th>Team</th><th>Score</th><th>Overs</th><th>Note</th></tr></thead><tbody>${detail.inningsSummary.map(inn => `<tr><td>${esc(inn.innings)}</td><td>${esc(inn.team)}</td><td>${esc(inn.display || (inn.runs + '/' + inn.wickets))}</td><td>${esc(inn.overs || '—')}</td><td>${esc(inn.declared ? 'Declared' : inn.target ? 'Target ' + inn.target : '')}</td></tr>`).join('')}</tbody></table></div>`;
       const current = detail.currentInningsSnapshot;
@@ -401,7 +434,7 @@ body.modal-open{overflow:hidden}
         <div><small>Venue</small><strong>${esc(detail?.matchInfo?.venue || venue)}</strong></div>
         <div><small>Series</small><strong>${esc(series)}</strong></div>
       </div>
-      <div class="modal-section-title">Full innings scorecard</div>${inningsMarkup}
+      <div class="modal-section-title scorecard-section-heading">Full innings scorecard</div>${inningsMarkup}
       ${detail?.sourceUrl ? `<p class="modal-note">Scorecard snapshot · <a href="${esc(detail.sourceUrl)}" target="_blank" rel="noopener noreferrer">Original match page</a></p>` : ''}`;
     $('closeScoreModal').focus();
   }
@@ -464,6 +497,19 @@ body.modal-open{overflow:hidden}
   grid.addEventListener('click', event => {
     const button = event.target.closest('[data-scorecard-id]');
     if (button) openScorecard(button.dataset.scorecardId);
+  });
+  $('scoreModalContent').addEventListener('click', event => {
+    const tab = event.target.closest('[data-innings-tab]');
+    if (!tab) return;
+    const selected = tab.dataset.inningsTab;
+    $('scoreModalContent').querySelectorAll('[data-innings-tab]').forEach(button => {
+      const active = button.dataset.inningsTab === selected;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    $('scoreModalContent').querySelectorAll('[data-innings-panel]').forEach(panel => {
+      panel.hidden = panel.dataset.inningsPanel !== selected;
+    });
   });
   $('closeScoreModal').addEventListener('click', closeScorecard);
   modal.addEventListener('click', event => { if (event.target === modal) closeScorecard(); });
