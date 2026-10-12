@@ -410,6 +410,30 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
  .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(6){display:table-cell!important}
 }
 
+
+/* Premium fall-of-wickets timeline */
+.fow-block{margin:16px 0 8px;padding:13px;border:1px solid #2a405b;border-radius:16px;background:linear-gradient(145deg,#12243a,#0d1a2c);box-shadow:inset 0 1px #ffffff06}
+.fow-heading{display:flex;align-items:center;gap:8px;margin-bottom:11px;font-size:14px;font-weight:850;color:#eef5ff}
+.fow-heading-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:#203952;font-size:14px}
+.fow-count{margin-left:auto;padding:4px 8px;border:1px solid #3a526e;border-radius:999px;color:#b7c9df;background:#172b42;font-size:10px;font-weight:750;white-space:nowrap}
+.fow-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fow-item{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:5px 8px;min-width:0;padding:10px;border:1px solid #2a4059;border-radius:12px;background:#0c1929}
+.fow-wicket{grid-column:1;color:#76e6bf;font-size:10px;font-weight:850;letter-spacing:.35px;white-space:nowrap}
+.fow-score{grid-column:2;color:#fff;font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
+.fow-batter{grid-column:1 / 3;grid-row:2;min-width:0;color:#dce7f6;font-size:12px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.fow-over{grid-column:3;grid-row:1 / 3;justify-self:end;align-self:center;padding:5px 6px;border-radius:8px;background:#182d45;color:#a9bdd4;font-size:10px;font-weight:750;white-space:nowrap}
+@media(max-width:520px){
+ .fow-block{padding:10px;margin-top:12px;border-radius:13px}
+ .fow-heading{font-size:13px;margin-bottom:9px}
+ .fow-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .fow-item{padding:8px;gap:5px}
+ .fow-wicket{font-size:9px}
+ .fow-score{font-size:13px}
+ .fow-batter{font-size:11px}
+ .fow-over{font-size:9px;padding:4px}
+}
+@media(max-width:340px){.fow-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -630,7 +654,20 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
         const innLabel = inn.innings || (i + 1);
         const score = inn.total != null ? ` — ${inn.total}/${inn.wickets ?? '?'} (${inn.overs ?? '?'} ov)` : '';
         const fow = Array.isArray(inn.fallOfWickets) && inn.fallOfWickets.length
-          ? `<div class="modal-section-title">Fall of wickets</div><p class="modal-note fow-note">${inn.fallOfWickets.map(esc).join(' · ')}</p>` : '';
+          ? `<div class="fow-block">
+              <div class="fow-heading"><span class="fow-heading-icon">🏏</span><span>Fall of wickets</span><span class="fow-count">${inn.fallOfWickets.length} wickets</span></div>
+              <div class="fow-grid">${inn.fallOfWickets.map((item, wi) => {
+                const raw = String(item ?? '');
+                const parsed = raw.match(/^(\d+)\s*[-–]\s*(\d+)\s+(.+?)\s*\(([^)]+)\)$/);
+                if (!parsed) return `<div class="fow-item"><span class="fow-wicket">${wi + 1} WKT</span><span class="fow-batter">${esc(raw)}</span></div>`;
+                return `<div class="fow-item">
+                  <span class="fow-wicket">${esc(parsed[1])} WKT</span>
+                  <strong class="fow-score">${esc(parsed[2])}</strong>
+                  <span class="fow-batter">${esc(parsed[3])}</span>
+                  <span class="fow-over">${esc(parsed[4])} ov</span>
+                </div>`;
+              }).join('')}</div>
+            </div>` : '';
         return `<section class="innings-panel"${i === 0 ? '' : ' hidden'} data-innings-panel="${i}" role="tabpanel">
           <div class="innings-score-heading">${esc(innLabel)} innings — ${esc(teamName)}${esc(score)}${inn.declared ? ' (declared)' : ''}</div>
           <div class="modal-section-title">Batting</div>${playerTable(batting,'batting')}
