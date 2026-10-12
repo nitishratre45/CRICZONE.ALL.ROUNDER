@@ -140,6 +140,22 @@ body.modal-open{overflow:hidden}
  #closeScoreModal{font-size:11px;padding:8px}
  .modal-team-score{font-size:16px}
 }
+
+/* Separate ESPNcricinfo RSS live-score section */
+.rss-section{margin-top:30px;padding:clamp(15px,3vw,24px);border:1px solid #293d56;border-radius:22px;background:linear-gradient(150deg,#101f33,#0a1424);box-shadow:0 16px 45px #0002}
+.rss-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:17px}
+.rss-heading h2{font-size:clamp(19px,3vw,25px);letter-spacing:-.45px;margin:4px 0 7px}
+.rss-heading .eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--green);margin:0}
+.rss-subtitle{font-size:13px;line-height:1.5;color:var(--muted);margin:0}
+.rss-status{padding:13px 15px;border:1px solid #2c4059;background:#112137;border-radius:14px;color:#b5c3d5;font-size:13px;line-height:1.6}
+.rss-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:12px}
+.rss-item{display:block;min-width:0;padding:15px;border:1px solid #2a3e57;border-radius:15px;background:#122239;color:#e9f1fb;text-decoration:none;transition:border-color .2s,transform .2s}
+.rss-item:hover{border-color:#38c99b;transform:translateY(-1px)}
+.rss-item-title{font-size:14px;font-weight:750;line-height:1.5;overflow-wrap:anywhere}
+.rss-item-meta{display:flex;align-items:center;gap:8px;margin-top:10px;color:#8fa3bc;font-size:11px;line-height:1.5}
+.rss-live-dot{width:7px;height:7px;border-radius:50%;background:#fb5470;box-shadow:0 0 0 4px #fb54701a;flex:0 0 auto}
+.rss-source{font-size:11px;color:#778ba5;margin:14px 0 0}.rss-source a{color:#78e5bf;text-decoration:none}
+@media(max-width:520px){.rss-section{padding:14px;border-radius:17px}.rss-heading{align-items:flex-start;flex-direction:column}.rss-heading .refresh{width:100%}.rss-list{grid-template-columns:1fr;gap:9px}.rss-item{padding:13px}.rss-item-title{font-size:13px}}
 </style>
 </head>
 <body>
@@ -172,6 +188,15 @@ body.modal-open{overflow:hidden}
   </div>
   <div class="section-heading"><h2 id="listTitle">All matches</h2><span class="count" id="matchCount">Loading…</span></div>
   <section class="grid" id="matchesGrid"><div class="empty">Loading match data…</div></section>
+  <section class="rss-section" aria-labelledby="rssHeading">
+    <div class="rss-heading">
+      <div><p class="eyebrow">ESPNCRICINFO RSS</p><h2 id="rssHeading">Live Scores — RSS Feed</h2><p class="rss-subtitle">A separate live-score feed from ESPNcricinfo.</p></div>
+      <button class="refresh" id="refreshRss" type="button">↻ Refresh RSS</button>
+    </div>
+    <div class="rss-status" id="rssStatus" role="status">Loading ESPNcricinfo live scores…</div>
+    <div class="rss-list" id="rssList"></div>
+    <p class="rss-source">Source: <a href="https://static.espncricinfo.com/rss/livescores.xml" target="_blank" rel="noopener noreferrer">ESPNcricinfo livescores.xml</a></p>
+  </section>
   <div class="footer">Cricket Live Score Centre · Match data: live_matches.json · <span id="metadataStatus">Connecting site metadata…</span></div>
 </main>
 
@@ -377,7 +402,44 @@ body.modal-open{overflow:hidden}
   $('sortFilter').addEventListener('change', render);
   $('refreshBtn').addEventListener('click', loadData);
   loadSiteMetadata();
-  loadData();
+
+  const RSS_URL = 'https://static.espncricinfo.com/rss/livescores.xml';
+  const rssList = $('rssList');
+  const rssStatus = $('rssStatus');
+  async function loadRssScores() {
+    rssStatus.textContent = 'Refreshing ESPNcricinfo live scores…';
+    const sources = [RSS_URL, 'https://proxy.cors.dev/' + RSS_URL];
+    let lastError = null;
+    for (const url of sources) {
+      try {
+        const response = await fetch(url, { cache: 'no-store', credentials: 'omit' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const xmlText = await response.text();
+        const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+        if (xml.querySelector('parsererror')) throw new Error('Invalid RSS XML');
+        const items = [...xml.querySelectorAll('rss channel item, channel item')].map(item => {
+          const get = name => item.querySelector(name)?.textContent?.trim() || '';
+          return { title: get('title') || get('description'), link: get('link') || get('guid'), date: get('pubDate') };
+        }).filter(item => item.title);
+        if (!items.length) throw new Error('Feed has no match items');
+        rssList.innerHTML = items.map(item => {
+          const href = /^https?:\/\//i.test(item.link) ? item.link : RSS_URL;
+          const date = item.date ? new Date(item.date) : null;
+          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : 'ESPNcricinfo RSS';
+          return '<a class="rss-item" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"><div class="rss-item-title">' + esc(item.title) + '</div><div class="rss-item-meta"><span class="rss-live-dot"></span><span>' + esc(dateText) + '</span></div></a>';
+        }).join('');
+        rssStatus.textContent = items.length + ' match updates loaded · Last refreshed ' + new Date().toLocaleTimeString();
+        return;
+      } catch (error) { lastError = error; }
+    }
+    rssList.innerHTML = '';
+    rssStatus.textContent = 'RSS feed could not be loaded in the browser (' + (lastError?.message || 'network error') + '). Open the source link below or try Refresh RSS.';
+  }
+  $('refreshRss')?.addEventListener('click', loadRssScores);
+  loadRssScores();
+  setInterval(loadRssScores, 120000);
+
+    loadData();
   // Refresh the local JSON periodically; this does not itself update the source data.
   setInterval(loadData, 60000);
 })();
