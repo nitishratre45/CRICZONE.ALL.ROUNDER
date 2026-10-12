@@ -175,7 +175,7 @@ body.modal-open{overflow:hidden}
     }
     const fallback = esc((t.abbreviation || t.name || '?').slice(0,3));
     return url
-      ? `<img src="${esc(url)}" alt="${esc(t.abbreviation || t.name || 'Team logo')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=''${fallback}'">`
+      ? `<img src="${esc(url)}" alt="${esc(t.abbreviation || t.name || 'Team logo')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${fallback}'">`
       : fallback;
   }
   function formatName(format) {
