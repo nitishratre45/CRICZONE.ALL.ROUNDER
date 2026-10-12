@@ -427,9 +427,16 @@ body.modal-open{overflow:hidden}
   async function loadData() {
     const btn = $('refreshBtn');
     btn.disabled = true; btn.textContent = '↻ Loading…';
+    grid.innerHTML = '<div class="empty">Connecting to match data…</div>';
+    $('matchCount').textContent = 'Loading…';
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
     try {
-      const response = await fetch(DATA_URL + '?t=' + Date.now(), {cache:'no-store'});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const response = await fetch(DATA_URL + '?t=' + Date.now(), {
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error('HTTP ' + response.status + ' while loading ' + DATA_URL);
       const json = await response.json();
       const list = Array.isArray(json) ? json : json.matches;
       if (!Array.isArray(list)) throw new Error('JSON must contain a "matches" array.');
@@ -437,9 +444,21 @@ body.modal-open{overflow:hidden}
       $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
       render();
     } catch (error) {
-      grid.innerHTML = `<div class="error"><strong>Could not load live_matches.json</strong><br>${esc(error.message)}<br><br>Keep <code>index.html</code> and <code>live_matches.json</code> in the same folder and open the page through a local web server (not by double-clicking the HTML file).</div>`;
+      const message = error.name === 'AbortError'
+        ? 'Request timed out after 12 seconds. Check that live_matches.json is published at ' + DATA_URL + '.'
+        : error.message || 'Network error';
+      matches = [];
+      $('liveCount').textContent = '—';
+      $('upcomingCount').textContent = '—';
+      $('completedCount').textContent = '—';
       $('matchCount').textContent = 'Data unavailable';
+      $('listTitle').textContent = 'Match data error';
+      grid.innerHTML = '<div class="error"><strong>Could not load match data</strong><br>' +
+        esc(message) + '<br><br><button type="button" class="refresh" id="retryMatchData">↻ Try again</button></div>';
+      $('retryMatchData')?.addEventListener('click', loadData);
+      console.error('[CricZone] Match data load failed:', error);
     } finally {
+      clearTimeout(timeoutId);
       btn.disabled = false; btn.textContent = '↻ Refresh scores';
     }
   }
