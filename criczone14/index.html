@@ -163,12 +163,13 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
     const dateValue = m.startTime || m.startDate;
     const date = dateValue ? new Date(dateValue).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '';
     const badge = status === 'live' ? '<span class="badge badge-live">● LIVE</span>' : status === 'upcoming' ? '<span class="badge badge-upcoming">UPCOMING</span>' : '<span class="badge badge-result">RESULT</span>';
+    const scoreUrl = scorecardUrl(m);
     return `<article class="card">
       <div class="card-top"><div class="series" title="${esc(series)}">${esc(series)}</div><span class="format">${esc(formatName(m.format))}</span></div>
       <div class="card-body"><div class="match-title">${esc(title)}${date ? ' · ' + esc(date) : ''}</div>
       ${teamRow(teams[0])}${teamRow(teams[1])}
       <div class="divider"></div><div class="status ${status === 'live' ? 'live' : ''}">${esc(statusText || 'Match information unavailable')}</div></div>
-      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span><span style="display:flex;align-items:center;gap:8px">${badge}${scoreUrl ? `<a class="scorecard-link" href="${esc(scoreUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full scorecard for ${esc(title)}">Scorecard ↗</a>` : '`'}</span></div>
+      <div class="card-bottom"><span class="venue" title="${esc(venue)}">📍 ${esc(venue)}</span><span style="display:flex;align-items:center;gap:8px">${badge}${scoreUrl ? `<a class="scorecard-link" href="${esc(scoreUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open full scorecard for ${esc(title)}">Scorecard ↗</a>` : ''}</span></div>
     </article>`;
   }
   function render() {
