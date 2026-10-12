@@ -3,7 +3,7 @@
   "sourceUrl": "https://www.cricinfo.com/series/afghanistan-v-bangladesh-2026-27-1555106/afghanistan-vs-bangladesh-only-test-1555116/live-cricket-score",
   "matchId": 1555116,
   "seriesId": 1555106,
-  "generatedAt": "2026-10-12T17:45:16.392Z",
+  "generatedAt": "2026-10-12T17:48:17.434Z",
   "match": {
     "_uid": 129711,
     "id": 129711,
@@ -249,5 +249,189 @@
     "generatedAt": "2026-10-12T15:52:42.202Z",
     "scorecardSource": "feedback",
     "ballByBallSource": "feedback"
+  },
+  "scorecardSnapshot": {
+    "note": "Cricinfo page returned HTTP 403 in this environment. This snapshot combines match metadata from live_matches.json with publicly indexed scorecard details; it is not a direct successful scrape of the Cricinfo HTML.",
+    "scorecardSources": [
+      "https://www.cricketaddictor.com/livescore/afghanistan-vs-bangladesh-1st-match-afg-vs-ban-2026/",
+      "https://mlb.cricbuzz.com/live-cricket-scorecard/172671/afg-vs-ban-one-off-test-afghanistan-vs-bangladesh-in-uae-2026"
+    ],
+    "scoreAtRepoSnapshot": {
+      "status": "Day 4 - Afghanistan need 347 runs.",
+      "venue": "Zayed Cricket Stadium, Abu Dhabi",
+      "innings": [
+        {
+          "team": "Bangladesh",
+          "innings": 1,
+          "runs": 346,
+          "wickets": 10,
+          "overs": "92.3"
+        },
+        {
+          "team": "Afghanistan",
+          "innings": 1,
+          "runs": 240,
+          "wickets": 10,
+          "overs": "89.1"
+        },
+        {
+          "team": "Bangladesh",
+          "innings": 2,
+          "runs": 372,
+          "wickets": 7,
+          "overs": "105.2",
+          "declared": true
+        },
+        {
+          "team": "Afghanistan",
+          "innings": 2,
+          "runs": 132,
+          "wickets": 3,
+          "overs": "50.0",
+          "target": 479
+        }
+      ]
+    },
+    "bangladeshFirstInningsBatting": [
+      {
+        "name": "Shadman Islam",
+        "dismissal": "c Zia-ur-Rehman b Saleem Safi",
+        "runs": 67,
+        "balls": 111,
+        "fours": 7,
+        "sixes": 0,
+        "strikeRate": 60.36
+      },
+      {
+        "name": "Tanzid Hasan Tamim",
+        "dismissal": "c Ikram Alikhil b Ismat Alam",
+        "runs": 83,
+        "balls": 71,
+        "fours": 8,
+        "sixes": 4,
+        "strikeRate": 116.9
+      },
+      {
+        "name": "Mominul Haque",
+        "dismissal": "c Rahmat Shah b Ahmadzai",
+        "runs": 39,
+        "balls": 70,
+        "fours": 4,
+        "sixes": 0,
+        "strikeRate": 55.71
+      },
+      {
+        "name": "Najmul Hossain Shanto",
+        "dismissal": "c (sub) Rahmanullah b Qais Ahmad",
+        "runs": 29,
+        "balls": 42,
+        "fours": 1,
+        "sixes": 2,
+        "strikeRate": 69.05
+      },
+      {
+        "name": "Mushfiqur Rahim",
+        "dismissal": "b Ahmadzai",
+        "runs": 0,
+        "balls": 7,
+        "fours": 0,
+        "sixes": 0,
+        "strikeRate": 0
+      },
+      {
+        "name": "Litton Das",
+        "dismissal": "c Ahmadzai b Saleem Safi",
+        "runs": 53,
+        "balls": 89,
+        "fours": 4,
+        "sixes": 0,
+        "strikeRate": 59.55
+      },
+      {
+        "name": "Mehidy Hasan Miraz",
+        "dismissal": "b Ismat Alam",
+        "runs": 24,
+        "balls": 67,
+        "fours": 1,
+        "sixes": 0,
+        "strikeRate": 35.82
+      },
+      {
+        "name": "Nayeem Hasan",
+        "dismissal": "not out",
+        "runs": 35,
+        "balls": 67,
+        "fours": 4,
+        "sixes": 0,
+        "strikeRate": 52.24
+      },
+      {
+        "name": "Hasan Mahmud",
+        "dismissal": "b Saleem Safi",
+        "runs": 2,
+        "balls": 5,
+        "fours": 0,
+        "sixes": 0,
+        "strikeRate": 40
+      },
+      {
+        "name": "Taijul Islam",
+        "dismissal": "c Ikram Alikhil b Saleem Safi",
+        "runs": 9,
+        "balls": 20,
+        "fours": 0,
+        "sixes": 0,
+        "strikeRate": 45
+      },
+      {
+        "name": "Ebadot Hossain",
+        "dismissal": "c Zia-ur-Rehman b Ahmadzai",
+        "runs": 0,
+        "balls": 7,
+        "fours": 0,
+        "sixes": 0,
+        "strikeRate": 0
+      }
+    ],
+    "afghanistanSecondInningsSnapshot": {
+      "capturedAt": "2026-10-12T15:52:42.202Z",
+      "score": "132/3",
+      "overs": "50.0",
+      "target": 479,
+      "status": "Day 4 - Afghanistan need 347 runs.",
+      "batters": [
+        {
+          "name": "Hashmatullah Shahidi",
+          "runs": 19,
+          "balls": 27,
+          "fours": 0,
+          "sixes": 0,
+          "strikeRate": 70.37,
+          "notOut": true
+        },
+        {
+          "name": "Sediqullah Atal",
+          "runs": 35,
+          "balls": 126,
+          "fours": 0,
+          "sixes": 0,
+          "strikeRate": 27.78
+        }
+      ],
+      "bowlers": [
+        {
+          "name": "Hasan Mahmud",
+          "overs": 12,
+          "runs": 31,
+          "wickets": 1
+        },
+        {
+          "name": "Ebadot Hossain",
+          "overs": 10,
+          "runs": 32,
+          "wickets": 2
+        }
+      ]
+    }
   }
 }
