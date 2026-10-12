@@ -335,9 +335,13 @@ body.modal-open{overflow:hidden}
     $('scoreModalContent').innerHTML = '<div class="modal-note">Loading detailed scorecard…</div>';
 
     let detail = null;
-    if (String(matchId) === '1555116') {
+    const dedicatedJson = {
+      '1555116': './afg_ban_test_1555116.json',
+      '1525659': './aus_sa_test_1525659.json'
+    }[String(matchId)];
+    if (dedicatedJson) {
       try {
-        const response = await fetch('./afg_ban_test_1555116.json?ts=' + Date.now(), {cache:'no-store'});
+        const response = await fetch(dedicatedJson + '?ts=' + Date.now(), {cache:'no-store'});
         if (response.ok) detail = await response.json();
       } catch (error) { console.warn('Dedicated scorecard JSON could not be loaded', error); }
     }
@@ -347,7 +351,7 @@ body.modal-open{overflow:hidden}
       return `<div class="modal-team"><div class="modal-team-name">${esc(t.longName || t.name || 'Team')}</div><div class="modal-team-score">${esc(team?.score || 'Score unavailable')}</div><div class="modal-team-info">${esc(team?.scoreInfo || (Array.isArray(team?.inningNumbers) && team.inningNumbers.length ? 'Innings ' + team.inningNumbers.join(', ') : 'Score details not provided'))}</div></div>`;
     }).join('');
 
-    const innings = Array.isArray(detail?.scorecard?.innings) ? detail.scorecard.innings :
+    const innings = Array.isArray(detail?.scorecard?.innings) && detail.scorecard.innings.length ? detail.scorecard.innings :
       Array.isArray(match.innings) ? match.innings : Array.isArray(match.scorecard?.innings) ? match.scorecard.innings : [];
 
     function playerTable(players, type) {
@@ -369,7 +373,7 @@ body.modal-open{overflow:hidden}
       }).join('')}</tbody></table></div>`;
     }
 
-    const inningsMarkup = innings.length ? innings.map((inn,i) => {
+    let inningsMarkup = innings.length ? innings.map((inn,i) => {
       const batting = inn.batting || inn.batsmen || [];
       const bowling = inn.bowling || inn.bowlers || [];
       const innLabel = inn.innings || (i + 1);
@@ -377,7 +381,16 @@ body.modal-open{overflow:hidden}
       const fow = Array.isArray(inn.fallOfWickets) && inn.fallOfWickets.length
         ? `<div class="modal-section-title">Fall of wickets</div><p class="modal-note">${inn.fallOfWickets.map(esc).join(' · ')}</p>` : '';
       return `<div class="modal-section-title">${esc(innLabel)} innings — ${esc(inn.teamName || inn.team || inn.team?.name || '')}${esc(score)}${inn.declared ? ' (declared)' : ''}</div><div class="modal-section-title">Batting</div>${playerTable(batting,'batting')}<div class="modal-section-title">Bowling</div>${playerTable(bowling,'bowling')}${fow}`;
-    }).join('') : '<div class="modal-note">Detailed batting/bowling card is not present in the available JSON.</div>';
+    }).join('') : '';
+    if (!inningsMarkup && Array.isArray(detail?.inningsSummary) && detail.inningsSummary.length) {
+      inningsMarkup = `<div class="score-table-wrap"><table class="score-table"><thead><tr><th>Innings</th><th>Team</th><th>Score</th><th>Overs</th><th>Note</th></tr></thead><tbody>${detail.inningsSummary.map(inn => `<tr><td>${esc(inn.innings)}</td><td>${esc(inn.team)}</td><td>${esc(inn.display || (inn.runs + '/' + inn.wickets))}</td><td>${esc(inn.overs || '—')}</td><td>${esc(inn.declared ? 'Declared' : inn.target ? 'Target ' + inn.target : '')}</td></tr>`).join('')}</tbody></table></div>`;
+      const current = detail.currentInningsSnapshot;
+      if (current?.batters?.length) {
+        inningsMarkup += `<div class="modal-section-title">Available current-innings batters</div><div class="score-table-wrap"><table class="score-table"><thead><tr><th>Batter</th><th>Status</th><th>Runs</th><th>Balls</th></tr></thead><tbody>${current.batters.map(p => `<tr><td>${esc(p.player)}</td><td>${esc(p.status || '—')}</td><td>${esc(p.runs ?? '—')}</td><td>${esc(p.balls ?? '—')}</td></tr>`).join('')}</tbody></table></div>`;
+      }
+      if (detail.scorecardDetails?.note) inningsMarkup += `<p class="modal-note">${esc(detail.scorecardDetails.note)}</p>`;
+    }
+    if (!inningsMarkup) inningsMarkup = '<div class="modal-note">Detailed batting/bowling card is not present in the available JSON.</div>';
 
     $('scoreModalContent').innerHTML = `
       <div class="modal-teams">${teamCards || '<div class="modal-note">Team score details are unavailable for this match.</div>'}</div>
