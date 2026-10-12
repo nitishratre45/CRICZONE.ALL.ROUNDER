@@ -839,3 +839,44 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
 </script>
 </body>
 </html>
+
+/* Phone scorecard: fit the selected innings on one screen without scrolling */
+@media(max-width:600px){
+ .score-modal{padding:0!important;align-items:stretch!important}
+ .score-modal-panel{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+ .score-modal-head{padding:7px 10px!important;min-height:39px!important;gap:6px!important}
+ .score-modal-head h2{font-size:13px!important;line-height:1.1!important}
+ .score-modal-head p{font-size:9px!important;margin-top:2px!important}
+ #closeScoreModal{min-height:26px!important;padding:4px 7px!important;font-size:10px!important;border-radius:8px!important}
+ .score-modal-content{padding:5px 7px!important;overflow:hidden!important;min-height:0!important;flex:1 1 auto!important;display:flex!important;flex-direction:column!important;gap:3px!important}
+ .modal-teams,.modal-status,.modal-extra,.scorecard-section-heading{display:none!important}
+ .innings-tabs{position:static!important;flex:0 0 auto!important;gap:3px!important;padding:0 0 3px!important;margin:0!important;overflow:hidden!important}
+ .innings-tab{flex:1 1 0!important;min-width:0!important;padding:5px 2px!important;font-size:8px!important;line-height:1.1!important;border-radius:6px!important;text-align:center!important}
+ .innings-panel{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto 1fr!important;gap:2px 5px!important;min-height:0!important;overflow:hidden!important;flex:1 1 auto!important}
+ .innings-panel[hidden]{display:none!important}
+ .innings-score-heading{grid-column:1/-1!important;font-size:10px!important;line-height:1.15!important;margin:0 0 2px!important;padding:4px 5px!important;background:#13243a;border-radius:5px!important}
+ .innings-panel>.modal-section-title{font-size:9px!important;line-height:1!important;margin:2px 0!important}
+ .innings-panel>.modal-section-title:nth-of-type(1){grid-column:1!important}
+ .innings-panel>.modal-section-title:nth-of-type(2){grid-column:2!important}
+ .innings-panel>.score-table-wrap{min-width:0!important;width:100%!important;overflow:hidden!important;margin:0!important;border-radius:5px!important;align-self:start!important}
+ .innings-panel>.score-table-wrap:nth-of-type(2){grid-column:1!important}
+ .innings-panel>.score-table-wrap:nth-of-type(4){grid-column:2!important}
+ .score-table{width:100%!important;min-width:0!important;table-layout:fixed!important;font-size:7px!important;line-height:1.05!important}
+ .score-table th{position:static!important;font-size:6px!important;letter-spacing:0!important;padding:3px 1px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+ .score-table td{padding:3px 1px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+ .score-table td:first-child{min-width:0!important;font-weight:700!important}
+ .score-table td:nth-child(2){min-width:0!important}
+ .score-table td:nth-child(n+3),.score-table th:nth-child(n+3){text-align:center!important}
+ .fow-block{grid-column:1/-1!important;margin:2px 0 0!important;padding:4px!important;border-radius:7px!important;min-height:0!important;overflow:hidden!important}
+ .fow-heading{font-size:9px!important;gap:4px!important;margin:0 0 3px!important}
+ .fow-heading-icon{width:18px!important;height:18px!important;font-size:10px!important}
+ .fow-count{font-size:7px!important;padding:2px 4px!important}
+ .fow-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important}
+ .fow-item{min-width:0!important;padding:4px!important;gap:2px!important;border-radius:5px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important}
+ .fow-wicket{font-size:6px!important;line-height:1!important}
+ .fow-score{font-size:9px!important;line-height:1!important}
+ .fow-batter{font-size:7px!important;line-height:1.05!important;overflow-wrap:anywhere!important}
+ .fow-over{font-size:6px!important;padding:2px!important;position:static!important;align-self:flex-end!important}
+ .fow-unavailable,.fow-note{font-size:8px!important;line-height:1.2!important;padding:5px!important;margin:2px 0 0!important}
+ .modal-note{font-size:8px!important;padding:5px!important;line-height:1.2!important}
+}
