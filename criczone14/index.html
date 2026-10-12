@@ -81,7 +81,10 @@ h1{font-size:clamp(28px,4vw,42px);margin:7px 0 8px;letter-spacing:-1.4px}
 .modal-extra small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .modal-extra strong{font-size:12px;overflow-wrap:anywhere}
 body.modal-open{overflow:hidden}
-@media(max-width:470px){.score-modal{padding:8px}.score-modal-panel{border-radius:15px}.score-modal-content{padding:13px}.score-modal-head{padding:15px}.modal-teams{grid-template-columns:1fr 1fr;gap:8px}.modal-team{padding:11px}.modal-team-score{font-size:20px}.modal-extra{grid-template-columns:1fr}}\n.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}\n.scorecard-link:hover{background:#195443;border-color:#42a982}\n@media(max-width:390px){.card-bottom{align-items:flex-start;flex-wrap:wrap}.scorecard-link{margin-left:auto}}
+@media(max-width:470px){.score-modal{padding:8px}.score-modal-panel{border-radius:15px}.score-modal-content{padding:13px}.score-modal-head{padding:15px}.modal-teams{grid-template-columns:1fr 1fr;gap:8px}.modal-team{padding:11px}.modal-team-score{font-size:20px}.modal-extra{grid-template-columns:1fr}}
+.scorecard-link{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 10px;border:1px solid #2e785f;border-radius:9px;background:#123a31;color:#b9ffe0;text-decoration:none;font-size:11px;font-weight:800}
+.scorecard-link:hover{background:#195443;border-color:#42a982}
+@media(max-width:390px){.card-bottom{align-items:flex-start;flex-wrap:wrap}.scorecard-link{margin-left:auto}}
 .venue{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .badge{font-size:10px;letter-spacing:.5px;font-weight:900;border-radius:6px;padding:5px 7px;white-space:nowrap}
 .badge-live{color:#ff9aa4;background:#4a1c2a}
@@ -127,11 +130,14 @@ body.modal-open{overflow:hidden}
 </main>
 <script>
 (() => {
-  const DATA_URL = './live_matches.json';\n  const METADATA_URL = './site_metadata.json';
+  const DATA_URL = './live_matches.json';
+  const METADATA_URL = './site_metadata.json';
   const grid = document.getElementById('matchesGrid');
   const $ = id => document.getElementById(id);
   let matches = [];
-  let activeTab = 'all';\n  let siteMetadata = null;\n  const modal = $('scorecardModal');
+  let activeTab = 'all';
+  let siteMetadata = null;
+  const modal = $('scorecardModal');
 
   function esc(value) {
     return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
