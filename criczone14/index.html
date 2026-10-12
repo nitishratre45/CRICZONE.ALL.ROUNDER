@@ -307,7 +307,7 @@ body.modal-open{overflow:hidden}
     $('matchCount').textContent = `${list.length} match${list.length === 1 ? '' : 'es'}`;
     grid.innerHTML = list.length ? list.map(card).join('') : '<div class="empty">No matches found. Try changing the status, format or search.</div>';
   }
-  function openScorecard(matchId) {
+  async function openScorecard(matchId) {
     const match = matches.find(m => scorecardId(m) === String(matchId));
     if (!match) return;
     const teams = Array.isArray(match.teams) ? match.teams : [];
@@ -319,35 +319,68 @@ body.modal-open{overflow:hidden}
     const status = match.statusText || match.status || match.scheduleNote || 'Match status unavailable';
     $('scoreModalTitle').textContent = title + ' — Scorecard';
     $('scoreModalSub').textContent = series;
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+    $('scoreModalContent').innerHTML = '<div class="modal-note">Loading detailed scorecard…</div>';
+
+    let detail = null;
+    if (String(matchId) === '1555116') {
+      try {
+        const response = await fetch('./afg_ban_test_1555116.json?ts=' + Date.now(), {cache:'no-store'});
+        if (response.ok) detail = await response.json();
+      } catch (error) { console.warn('Dedicated scorecard JSON could not be loaded', error); }
+    }
+
     const teamCards = teams.slice(0,2).map(team => {
       const t = team?.team || {};
       return `<div class="modal-team"><div class="modal-team-name">${esc(t.longName || t.name || 'Team')}</div><div class="modal-team-score">${esc(team?.score || 'Score unavailable')}</div><div class="modal-team-info">${esc(team?.scoreInfo || (Array.isArray(team?.inningNumbers) && team.inningNumbers.length ? 'Innings ' + team.inningNumbers.join(', ') : 'Score details not provided'))}</div></div>`;
     }).join('');
-    const innings = Array.isArray(match.innings) ? match.innings : Array.isArray(match.scorecard?.innings) ? match.scorecard.innings : [];
-    let inningsMarkup = '';
-    if (innings.length) {
-      inningsMarkup = innings.map((inn,i) => {
-        const batting = inn.batting || inn.batsmen || [];
-        const bowling = inn.bowling || inn.bowlers || [];
-        const rows = list => list.length ? `<div class="modal-extra">${list.map(p => `<div><small>${esc(p.name || p.playerName || 'Player')}</small><strong>${esc(p.runs != null ? 'Runs ' + p.runs + (p.balls != null ? ' (' + p.balls + ' balls)' : '') : p.wickets != null ? 'Wickets ' + p.wickets : p.overs != null ? 'Overs ' + p.overs : p.figures || 'Stats unavailable')}</strong></div>`).join('')}</div>` : '<div class="modal-note">Detailed player data is not included in this JSON.</div>';
-        return `<div class="modal-section-title">Innings ${i+1} — ${esc(inn.teamName || inn.team?.name || '')}</div>${rows(batting)}<div class="modal-section-title">Bowling</div>${rows(bowling)}`;
-      }).join('');
-    } else {
-      inningsMarkup = '<div class="modal-note"><strong>Detailed batting/bowling card is not present in the current live_matches.json.</strong><br>This in-site scorecard is connected to your local match data and will show full innings tables when the source JSON includes them. No external scoreboard page is opened.</div>';
+
+    const innings = Array.isArray(detail?.scorecard?.innings) ? detail.scorecard.innings :
+      Array.isArray(match.innings) ? match.innings : Array.isArray(match.scorecard?.innings) ? match.scorecard.innings : [];
+
+    function playerTable(players, type) {
+      if (!Array.isArray(players) || !players.length) return '<div class="modal-note">No player rows available.</div>';
+      if (type === 'batting') {
+        return `<div class="score-table-wrap"><table class="score-table"><thead><tr><th>Batter</th><th>Dismissal</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead><tbody>${players.map(p => {
+          const balls = Number(p.balls);
+          const runs = Number(p.runs);
+          const sr = Number.isFinite(runs) && Number.isFinite(balls) && balls > 0 ? (runs * 100 / balls).toFixed(2) : '—';
+          return `<tr><td>${esc(p.player || p.name || p.playerName || '—')}</td><td>${esc(p.dismissal || p.howOut || '—')}</td><td>${p.runs == null ? '—' : esc(p.runs)}</td><td>${p.balls == null ? '—' : esc(p.balls)}</td><td>${p.fours == null ? '—' : esc(p.fours)}</td><td>${p.sixes == null ? '—' : esc(p.sixes)}</td><td>${sr}</td></tr>`;
+        }).join('')}</tbody></table></div>`;
+      }
+      return `<div class="score-table-wrap"><table class="score-table"><thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr></thead><tbody>${players.map(p => {
+        const overs = String(p.overs ?? '');
+        const overParts = overs.split('.');
+        const balls = Number(overParts[0] || 0) * 6 + Number(overParts[1] || 0);
+        const economy = balls > 0 && Number.isFinite(Number(p.runs)) ? (Number(p.runs) * 6 / balls).toFixed(2) : '—';
+        return `<tr><td>${esc(p.player || p.name || p.playerName || '—')}</td><td>${esc(p.overs ?? '—')}</td><td>${esc(p.maidens ?? '—')}</td><td>${esc(p.runs ?? '—')}</td><td>${esc(p.wickets ?? '—')}</td><td>${economy}</td></tr>`;
+      }).join('')}</tbody></table></div>`;
     }
+
+    const inningsMarkup = innings.length ? innings.map((inn,i) => {
+      const batting = inn.batting || inn.batsmen || [];
+      const bowling = inn.bowling || inn.bowlers || [];
+      const innLabel = inn.innings || (i + 1);
+      const score = inn.total != null ? ` — ${inn.total}/${inn.wickets ?? '?'} (${inn.overs ?? '?'} ov)` : '';
+      const fow = Array.isArray(inn.fallOfWickets) && inn.fallOfWickets.length
+        ? `<div class="modal-section-title">Fall of wickets</div><p class="modal-note">${inn.fallOfWickets.map(esc).join(' · ')}</p>` : '';
+      return `<div class="modal-section-title">${esc(innLabel)} innings — ${esc(inn.teamName || inn.team || inn.team?.name || '')}${esc(score)}${inn.declared ? ' (declared)' : ''}</div><div class="modal-section-title">Batting</div>${playerTable(batting,'batting')}<div class="modal-section-title">Bowling</div>${playerTable(bowling,'bowling')}${fow}`;
+    }).join('') : '<div class="modal-note">Detailed batting/bowling card is not present in the available JSON.</div>';
+
     $('scoreModalContent').innerHTML = `
       <div class="modal-teams">${teamCards || '<div class="modal-note">Team score details are unavailable for this match.</div>'}</div>
-      <div class="modal-status">${esc(status)}</div>
+      <div class="modal-status">${esc(detail?.matchInfo?.statusText || status)}</div>
       <div class="modal-extra">
         <div><small>Format</small><strong>${esc(formatName(match.format))}</strong></div>
         <div><small>Date / time</small><strong>${esc(date)}</strong></div>
-        <div><small>Venue</small><strong>${esc(venue)}</strong></div>
+        <div><small>Venue</small><strong>${esc(detail?.matchInfo?.venue || venue)}</strong></div>
         <div><small>Series</small><strong>${esc(series)}</strong></div>
       </div>
-      <div class="modal-section-title">Innings & player scorecard</div>${inningsMarkup}`;
-    modal.classList.add('open');
-    document.body.classList.add('modal-open');
-    $('closeScoreModal').focus();
+      <div class="modal-section-title">Full innings scorecard</div>${inningsMarkup}
+      ${detail?.sourceUrl ? `<p class="modal-note">Scorecard snapshot · <a href="${esc(detail.sourceUrl)}" target="_blank" rel="noopener noreferrer">Original match page</a></p>` : ''}`;
+  }
+  $('closeScoreModal').focus();
   }
   function closeScorecard() {
     modal.classList.remove('open');
