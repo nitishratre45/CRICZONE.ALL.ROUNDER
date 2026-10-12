@@ -403,8 +403,7 @@ body.modal-open{overflow:hidden}
       </div>
       <div class="modal-section-title">Full innings scorecard</div>${inningsMarkup}
       ${detail?.sourceUrl ? `<p class="modal-note">Scorecard snapshot · <a href="${esc(detail.sourceUrl)}" target="_blank" rel="noopener noreferrer">Original match page</a></p>` : ''}`;
-  }
-  $('closeScoreModal').focus();
+    $('closeScoreModal').focus();
   }
   function closeScorecard() {
     modal.classList.remove('open');
