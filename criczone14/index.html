@@ -94,6 +94,52 @@ body.modal-open{overflow:hidden}
 .footer{text-align:center;color:#6f829b;font-size:12px;margin-top:35px}
 @media(max-width:760px){main{padding:22px 14px 38px}.nav{padding:12px 14px}.hero{align-items:flex-start}.grid{grid-template-columns:1fr}.summary{gap:8px}.stat{padding:13px}.stat-number{font-size:24px}.stat-label{font-size:10px}.nav-right .updated{display:none}}
 @media(max-width:470px){.brand{font-size:17px}.brand-icon{width:34px;height:34px}.hero{display:block}.refresh{margin-top:16px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.tabs{grid-column:1/-1;overflow:auto}.tab{padding:9px 11px}.search{grid-column:1/-1}.toolbar select{width:100%;min-width:0}.team-name{font-size:13px}.score{font-size:17px}.logo{width:34px;height:34px;flex-basis:34px}.team-info{gap:8px}}
+
+/* Scorecard modal polish */
+.score-modal{padding:clamp(8px,2.5vw,24px);align-items:center;overscroll-behavior:contain}
+.score-modal-panel{width:min(820px,100%);max-height:min(88dvh,920px);border-radius:22px;background:linear-gradient(155deg,#101f33 0%,#0b1728 68%);border-color:#344a64;box-shadow:0 28px 100px #000b;scrollbar-width:thin;scrollbar-color:#3a506a transparent}
+.score-modal-head{padding:clamp(15px,3vw,24px);align-items:center;gap:14px;background:rgba(17,33,54,.96);backdrop-filter:blur(12px)}
+.score-modal-head h2{font-size:clamp(18px,3vw,25px);line-height:1.25;letter-spacing:-.35px}
+.score-modal-head p{font-size:13px;line-height:1.5;margin-top:7px}
+#closeScoreModal{flex:0 0 auto;margin:0;padding:10px 14px;min-height:42px;border-radius:13px;font-size:13px;white-space:nowrap}
+.score-modal-content{padding:clamp(13px,3vw,24px)}
+.modal-teams{gap:12px}
+.modal-team{padding:clamp(12px,2.5vw,19px);border-radius:17px;background:linear-gradient(145deg,#172a43,#112137);box-shadow:inset 0 1px #ffffff08}
+.modal-team-name{font-size:clamp(12px,2vw,15px);line-height:1.4}
+.modal-team-score{font-size:clamp(18px,4vw,29px);line-height:1.25;letter-spacing:-.4px;margin-top:10px}
+.modal-team-info{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.modal-status{margin-top:15px;padding:14px 16px;border-radius:15px;font-size:14px;line-height:1.65}
+.modal-extra{gap:10px;margin-top:15px}
+.modal-extra div{padding:15px;border:1px solid #ffffff05;border-radius:14px;background:#122137}
+.modal-extra small{font-size:10px;letter-spacing:.9px;margin-bottom:7px}
+.modal-extra strong{font-size:13px;line-height:1.55;display:block}
+.modal-section-title{font-size:16px;line-height:1.4;margin:24px 0 12px}
+.modal-note{padding:16px;border-radius:15px;font-size:13px;line-height:1.8}
+@media(max-width:520px){
+ .score-modal{padding:0;align-items:flex-end}
+ .score-modal-panel{width:100%;max-height:91dvh;border-radius:22px 22px 0 0;border-left:0;border-right:0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+ .score-modal-head{padding:17px 16px;gap:10px}
+ .score-modal-head h2{font-size:19px}
+ .score-modal-head p{font-size:12px}
+ #closeScoreModal{padding:9px 11px;min-height:40px;font-size:12px}
+ .score-modal-content{padding:14px 14px 22px}
+ .modal-teams{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .modal-team{padding:12px 11px;border-radius:15px}
+ .modal-team-score{font-size:clamp(17px,4.6vw,22px);overflow-wrap:anywhere}
+ .modal-team-info{font-size:11px}
+ .modal-status{font-size:13px;padding:12px 13px}
+ .modal-extra{grid-template-columns:1fr;gap:8px;margin-top:12px}
+ .modal-extra div{padding:12px 13px}
+ .modal-extra strong{font-size:13px}
+ .modal-section-title{font-size:15px;margin-top:21px}
+ .modal-note{font-size:12px;padding:13px;line-height:1.75}
+}
+@media(max-width:360px){
+ .score-modal-head{align-items:flex-start}
+ .score-modal-head h2{font-size:17px}
+ #closeScoreModal{font-size:11px;padding:8px}
+ .modal-team-score{font-size:16px}
+}
 </style>
 </head>
 <body>
