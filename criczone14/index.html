@@ -434,6 +434,9 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
 }
 @media(max-width:340px){.fow-grid{grid-template-columns:1fr}}
 
+
+.fow-unavailable{margin:0;padding:10px 12px;border:1px dashed #3a526e;border-radius:10px;background:#101f33;color:#a9bdd4;font-size:12px;line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -675,10 +678,20 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
         </section>`;
       }).join('')}` : '';
     if (!inningsMarkup && Array.isArray(detail?.inningsSummary) && detail.inningsSummary.length) {
-      inningsMarkup = `<div class="score-table-wrap"><table class="score-table"><thead><tr><th>Innings</th><th>Team</th><th>Score</th><th>Overs</th><th>Note</th></tr></thead><tbody>${detail.inningsSummary.map(inn => `<tr><td>${esc(inn.innings)}</td><td>${esc(inn.team)}</td><td>${esc(inn.display || (inn.runs + '/' + inn.wickets))}</td><td>${esc(inn.overs || '—')}</td><td>${esc(inn.declared ? 'Declared' : inn.target ? 'Target ' + inn.target : '')}</td></tr>`).join('')}</tbody></table></div>`;
+      inningsMarkup = `
+        <div class="innings-tabs" role="tablist" aria-label="Choose innings">
+          ${detail.inningsSummary.map((inn,i) => `<button class="innings-tab${i === 0 ? ' active' : ''}" type="button" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-innings-tab="${i}">${esc(String(inn.team || 'Team').split(' ').map(w=>w[0]).join('').slice(0,3))} ${['1st','2nd','3rd','4th'][i] || (i+1)+'th'} Inn</button>`).join('')}
+        </div>
+        ${detail.inningsSummary.map((inn,i) => `<section class="innings-panel"${i === 0 ? '' : ' hidden'} data-innings-panel="${i}" role="tabpanel">
+          <div class="innings-score-heading">${esc(inn.team || 'Team')} — ${esc(inn.display || ((inn.runs ?? '—') + '/' + (inn.wickets ?? '—')))}${inn.overs ? ' ('+esc(inn.overs)+' ov)' : ''}${inn.declared ? ' · Declared' : ''}</div>
+          <div class="fow-block">
+            <div class="fow-heading"><span class="fow-heading-icon">🏏</span><span>Fall of wickets</span></div>
+            <p class="modal-note fow-unavailable">Fall-of-wickets details are not present in this match's saved JSON yet.</p>
+          </div>
+        </section>`).join('')}`;
       const current = detail.currentInningsSnapshot;
       if (current?.batters?.length) {
-        inningsMarkup += `<div class="modal-section-title">Available current-innings batters</div><div class="score-table-wrap"><table class="score-table"><thead><tr><th>Batter</th><th>Status</th><th>Runs</th><th>Balls</th></tr></thead><tbody>${current.batters.map(p => `<tr><td>${esc(p.player)}</td><td>${esc(p.status || '—')}</td><td>${esc(p.runs ?? '—')}</td><td>${esc(p.balls ?? '—')}</td></tr>`).join('')}</tbody></table></div>`;
+        inningsMarkup += `<div class="modal-section-title">Current innings batters</div><div class="score-table-wrap"><table class="score-table"><thead><tr><th>Batter</th><th>Status</th><th>Runs</th><th>Balls</th><th>4s</th><th>6s</th></tr></thead><tbody>${current.batters.map(p => `<tr><td>${esc(p.player)}</td><td>${esc(p.status || '—')}</td><td>${esc(p.runs ?? '—')}</td><td>${esc(p.balls ?? '—')}</td><td>${esc(p.fours ?? '—')}</td><td>${esc(p.sixes ?? '—')}</td></tr>`).join('')}</tbody></table></div>`;
       }
       if (detail.scorecardDetails?.note) inningsMarkup += `<p class="modal-note">${esc(detail.scorecardDetails.note)}</p>`;
     }
