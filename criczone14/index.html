@@ -128,6 +128,17 @@ body.modal-open{overflow:hidden}
   <section class="grid" id="matchesGrid"><div class="empty">Loading match data…</div></section>
   <div class="footer">Cricket Live Score Centre · Match data: live_matches.json · <span id="metadataStatus">Connecting site metadata…</span></div>
 </main>
+
+<div class="score-modal" id="scorecardModal" role="dialog" aria-modal="true" aria-labelledby="scoreModalTitle">
+  <div class="score-modal-panel">
+    <div class="score-modal-head">
+      <div><h2 id="scoreModalTitle">Match Scorecard</h2><p id="scoreModalSub">Match details</p></div>
+      <button class="refresh" id="closeScoreModal" type="button" aria-label="Close scorecard">✕ Close</button>
+    </div>
+    <div class="score-modal-content" id="scoreModalContent"></div>
+  </div>
+</div>
+
 <script>
 (() => {
   const DATA_URL = './live_matches.json';
@@ -312,6 +323,7 @@ body.modal-open{overflow:hidden}
   $('formatFilter').addEventListener('change', render);
   $('sortFilter').addEventListener('change', render);
   $('refreshBtn').addEventListener('click', loadData);
+  loadSiteMetadata();
   loadData();
   // Refresh the local JSON periodically; this does not itself update the source data.
   setInterval(loadData, 60000);
