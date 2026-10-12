@@ -167,9 +167,16 @@ body.modal-open{overflow:hidden}
   }
   function teamLogo(team) {
     const t = team?.team || {};
-    let url = t.imageUrl || t.image?.url || '';
-    if (url && url.startsWith('/')) url = 'https://img1.hscicdn.com' + url;
-    return url ? `<img src="${esc(url)}" alt="" loading="lazy" onerror="this.remove()">` : esc((t.abbreviation || t.name || '?').slice(0,3));
+    let url = t.imageUrl || t.image?.url || t.logoUrl || '';
+    if (url && url.startsWith('/lsci/')) {
+      url = 'https://img1.hscicdn.com/image/upload/f_auto,t_s_100' + url;
+    } else if (url && url.startsWith('/')) {
+      url = 'https://img1.hscicdn.com' + url;
+    }
+    const fallback = esc((t.abbreviation || t.name || '?').slice(0,3));
+    return url
+      ? `<img src="${esc(url)}" alt="${esc(t.abbreviation || t.name || 'Team logo')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=''${fallback}'">`
+      : fallback;
   }
   function formatName(format) {
     const f = String(format || 'CRICKET').toUpperCase();
