@@ -331,6 +331,54 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+
+/* Ultra-compact scorecard: fit more on screen and remove internal scrolling */
+.score-modal-panel{height:min(94dvh,900px);max-height:94dvh}
+.score-modal-content{overflow:hidden!important;padding:9px 12px 12px!important}
+.score-modal-head{padding:11px 14px!important}
+.score-modal-head h2{font-size:17px!important}
+.score-modal-head p{margin-top:3px!important;font-size:11px!important}
+#closeScoreModal{min-height:34px!important;padding:7px 10px!important;font-size:11px!important}
+.modal-teams{gap:7px!important}
+.modal-team{padding:8px 10px!important;border-radius:12px!important}
+.modal-team-name{font-size:11px!important}
+.modal-team-score{font-size:18px!important;margin-top:5px!important}
+.modal-team-info{font-size:10px!important}
+.modal-status{margin-top:7px!important;padding:8px 10px!important;font-size:11px!important;line-height:1.35!important}
+.modal-extra{display:none!important}
+.scorecard-section-heading{margin:10px 0 6px!important;font-size:13px!important}
+.innings-tabs{padding:2px 0 6px!important;margin:0 0 5px!important;gap:5px!important}
+.innings-tab{padding:7px 5px!important;font-size:11px!important;border-radius:9px!important}
+.innings-score-heading{font-size:12px!important;line-height:1.3!important;padding:7px 9px!important;margin:4px 0 6px!important;border-radius:9px!important}
+.innings-panel .modal-section-title{font-size:12px!important;margin:7px 0 4px!important}
+.score-table-wrap{margin:4px 0 6px!important;border-radius:8px!important}
+.score-table{font-size:10px!important}
+.score-table th{font-size:9px!important;padding:6px 4px!important}
+.score-table td{font-size:10px!important;padding:5px 4px!important;line-height:1.2!important}
+.score-table td:first-child{font-weight:700!important}
+.fow-note{padding:7px 9px!important;font-size:10px!important;line-height:1.35!important;margin:5px 0!important}
+.modal-note{padding:8px!important;font-size:10px!important;line-height:1.4!important}
+@media(max-width:700px){
+ .score-modal{padding:0!important;align-items:stretch!important}
+ .score-modal-panel{height:calc(100dvh - env(safe-area-inset-top,0px));max-height:100dvh;border-radius:0!important;padding-bottom:env(safe-area-inset-bottom,0px)!important}
+ .score-modal-head{padding:9px 12px!important}
+ .score-modal-content{padding:7px 9px 9px!important}
+ .modal-teams{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .modal-team-score{font-size:16px!important}
+ .innings-tabs{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ .innings-tab{font-size:10px!important;padding:7px 3px!important}
+ .score-table:has(th:nth-child(7)) th:nth-child(5),
+ .score-table:has(th:nth-child(7)) td:nth-child(5),
+ .score-table:has(th:nth-child(7)) th:nth-child(6),
+ .score-table:has(th:nth-child(7)) td:nth-child(6),
+ .score-table:has(th:nth-child(7)) th:nth-child(7),
+ .score-table:has(th:nth-child(7)) td:nth-child(7){display:none!important}
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(6),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(6){display:none!important}
+}
+
 </style>
 </head>
 <body>
