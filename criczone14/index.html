@@ -379,6 +379,37 @@ main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
  .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(6){display:none!important}
 }
 
+
+/* Scorecard: allow natural vertical scrolling and show every batting stat */
+.score-modal{overflow-y:auto!important;align-items:flex-start!important}
+.score-modal-panel{height:auto!important;max-height:calc(100dvh - 20px)!important;overflow-y:auto!important;overscroll-behavior:contain}
+.score-modal-content{overflow:visible!important;overflow-y:visible!important;overflow-x:hidden!important}
+.score-table-wrap{overflow-x:auto!important;overflow-y:hidden!important;max-width:100%!important}
+.score-table{width:max-content!important;min-width:660px!important;table-layout:auto!important}
+.score-table th,.score-table td{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important}
+.score-table td:first-child{min-width:135px!important}
+.score-table td:nth-child(2){min-width:175px!important}
+.innings-tabs{position:sticky!important;top:0!important;z-index:3!important;background:#0d192a!important}
+@media(max-width:700px){
+ .score-modal{padding:0!important;align-items:flex-start!important}
+ .score-modal-panel{height:auto!important;max-height:100dvh!important;width:100%!important;overflow-y:auto!important;border-radius:0!important}
+ .score-modal-head{position:sticky!important;top:0!important;z-index:5!important}
+ .score-modal-content{padding:10px!important;overflow:visible!important}
+ .score-table-wrap{overflow-x:auto!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important}
+ .score-table{min-width:660px!important;table-layout:auto!important}
+ .score-table th,.score-table td{display:table-cell!important}
+ .score-table:has(th:nth-child(7)) th:nth-child(5),
+ .score-table:has(th:nth-child(7)) td:nth-child(5),
+ .score-table:has(th:nth-child(7)) th:nth-child(6),
+ .score-table:has(th:nth-child(7)) td:nth-child(6),
+ .score-table:has(th:nth-child(7)) th:nth-child(7),
+ .score-table:has(th:nth-child(7)) td:nth-child(7){display:table-cell!important}
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(6),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(6){display:table-cell!important}
+}
+
 </style>
 </head>
 <body>
