@@ -188,6 +188,149 @@ body.modal-open{overflow:hidden}
  .score-modal-content{padding:12px 12px 20px}
  .score-modal-panel{max-height:94dvh}
 }
+
+/* CRICZONE premium responsive pass — no horizontal page/table scrolling */
+:root{--bg:#070f1d;--panel:#0e1b2d;--panel2:#13253b;--line:#263b55;--text:#f2f6ff;--muted:#9cacc2;--green:#45e0aa;--blue:#70b6ff;--gold:#ffc978}
+html{scroll-behavior:smooth;scrollbar-gutter:stable}
+body{background:radial-gradient(ellipse at 12% -8%,#163653 0,transparent 34%),radial-gradient(ellipse at 100% 16%,#102944 0,transparent 30%),var(--bg);overflow-x:hidden}
+main{width:min(1240px,100%);padding-top:clamp(18px,3vw,32px)}
+.topbar{box-shadow:0 8px 28px #0002}
+.nav{padding-top:13px;padding-bottom:13px}
+.brand-icon{box-shadow:0 8px 24px #31d68b25}
+.hero{align-items:center}
+.hero h1{font-weight:900;line-height:1.08}
+.refresh,.tab,.scorecard-link,.innings-tab{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.refresh{border-radius:13px;box-shadow:0 5px 18px #0002}
+.refresh:hover,.scorecard-link:hover{transform:translateY(-1px);box-shadow:0 7px 20px #0003}
+.summary{gap:12px}
+.stat{border:1px solid #ffffff0b;background:linear-gradient(145deg,#13253b,#0e1a2b);border-radius:18px;box-shadow:0 12px 30px #00015;min-width:0}
+.stat-label{letter-spacing:.55px}
+.stat-number{line-height:1.1}
+.toolbar{padding:13px;border:1px solid #ffffff0b;border-radius:18px;background:#0e1b2de8;box-shadow:0 12px 30px #00012}
+.tabs{gap:7px}
+.tab{border-radius:11px}
+.tab.active{box-shadow:0 5px 16px #45e0aa18}
+.search input,.toolbar select{border-radius:12px;border-color:#2b405a;background:#101f33;min-width:0}
+.section-heading{margin-top:25px}
+.section-heading h2{font-size:clamp(18px,2vw,23px);letter-spacing:-.3px}
+.count{border-radius:999px;padding:7px 11px;background:#13263d;border:1px solid #263b55}
+.grid{gap:14px}
+.card{border:1px solid #293e58;border-radius:19px;background:linear-gradient(155deg,#112239,#0c1728 78%);box-shadow:0 10px 28px #00018;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-2px);border-color:#42617e;box-shadow:0 16px 34px #0002}
+.card-top{padding:15px 16px 10px}
+.card-body{padding:8px 16px 14px}
+.card-bottom{padding:12px 16px;gap:10px;flex-wrap:wrap}
+.team-row{padding:10px 0}
+.team-name{line-height:1.35}
+.status{line-height:1.5}
+.badge{border-radius:999px;padding:6px 9px;font-size:10px;letter-spacing:.3px}
+.scorecard-link{border-radius:10px;padding:8px 10px}
+.empty,.error{border:1px dashed #344b67;border-radius:18px;background:#101f33;padding:24px;line-height:1.7}
+.rss-section{border-color:#2a405a;box-shadow:0 18px 48px #0002}
+.rss-item{transition:transform .18s,border-color .18s,background .18s}
+.rss-item:hover{background:#172b43}
+.footer{padding:24px 8px;color:#7f93ac;line-height:1.8}
+.score-modal{overflow:hidden}
+.score-modal-panel{display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:contain}
+.score-modal-head{flex:0 0 auto;box-shadow:0 8px 18px #00012}
+.score-modal-content{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#344e6c transparent}
+.modal-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.modal-team{min-width:0;border:1px solid #ffffff0b}
+.modal-extra{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.modal-extra div{min-width:0;overflow-wrap:anywhere;border:1px solid #ffffff08}
+.innings-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;overflow:visible;position:static;padding:5px 0 10px;background:transparent}
+.innings-tab{min-width:0;white-space:normal;line-height:1.3;padding:10px 8px;border-radius:12px;overflow-wrap:anywhere}
+.innings-tab.active{box-shadow:0 5px 16px #07558a38}
+.innings-score-heading{padding:12px 14px;border:1px solid #2a405a;border-radius:14px;background:linear-gradient(100deg,#142840,#101e31);margin:8px 0 12px}
+.scorecard-section-heading{margin-top:18px}
+.score-table-wrap{width:100%;max-width:100%;overflow:visible;border-radius:13px;border-color:#2a405a;background:#0b1727}
+.score-table{width:100%;min-width:0;table-layout:fixed;border-collapse:separate;border-spacing:0;font-size:12px}
+.score-table th{white-space:normal;line-height:1.25;padding:11px 7px;font-size:10px}
+.score-table td{padding:10px 7px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.score-table td:first-child{min-width:0;width:auto}
+.score-table td:nth-child(2){min-width:0}
+.score-table tr:last-child td:first-child{border-bottom-left-radius:12px}
+.score-table tr:last-child td:last-child{border-bottom-right-radius:12px}
+.modal-section-title{letter-spacing:-.15px}
+.fow-note{overflow-wrap:anywhere}
+@media(min-width:800px){
+ .score-modal-panel{max-height:88dvh}
+ .score-modal-content{padding:20px 24px 26px}
+ .score-table{font-size:13px}
+ .score-table th{font-size:11px;padding:12px 10px}
+ .score-table td{padding:11px 10px}
+}
+@media(max-width:700px){
+ main{padding:18px 14px 30px}
+ .hero{align-items:flex-start;flex-direction:column;gap:14px;margin-bottom:19px}
+ .hero .refresh{width:100%}
+ .summary{gap:8px}
+ .stat{padding:13px 11px}
+ .stat-label{font-size:11px;line-height:1.4}
+ .stat-number{font-size:25px}
+ .toolbar{padding:10px;gap:9px}
+ .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%}
+ .tab{min-width:0;padding:10px 4px;font-size:11px;white-space:normal;line-height:1.25}
+ .search,.toolbar select{width:100%;min-width:0}
+ .grid{grid-template-columns:1fr}
+ .card{border-radius:16px}
+ .rss-list{grid-template-columns:1fr}
+ .score-modal{padding:0;align-items:flex-end}
+ .score-modal-panel{width:100%;max-height:94dvh;border-radius:20px 20px 0 0;border-left:0;border-right:0;border-bottom:0}
+ .score-modal-head{padding:14px;align-items:center}
+ .score-modal-content{padding:12px 12px 20px}
+ .modal-extra{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .modal-extra div{padding:11px}
+ .modal-extra strong{font-size:12px}
+ .innings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .innings-tab{font-size:12px;padding:10px 7px}
+ .score-table-wrap{margin:7px 0 11px}
+ /* Keep essential batting columns visible; no horizontal table scroll. */
+ .score-table:has(th:nth-child(7)) th:nth-child(5),
+ .score-table:has(th:nth-child(7)) td:nth-child(5),
+ .score-table:has(th:nth-child(7)) th:nth-child(6),
+ .score-table:has(th:nth-child(7)) td:nth-child(6),
+ .score-table:has(th:nth-child(7)) th:nth-child(7),
+ .score-table:has(th:nth-child(7)) td:nth-child(7){display:none}
+ /* Bowling: omit maidens/economy on narrow screens, retain O/R/W. */
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(3),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(6),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) td:nth-child(6){display:none}
+ .score-table th{font-size:10px;padding:9px 5px}
+ .score-table td{font-size:11px;padding:9px 5px}
+ .score-table td:first-child{font-weight:750}
+ .score-table td:nth-child(2){color:var(--muted)}
+ .score-table:has(th:nth-child(7)) th:nth-child(1){width:35%}
+ .score-table:has(th:nth-child(7)) th:nth-child(2){width:auto}
+ .score-table:has(th:nth-child(7)) th:nth-child(3),
+ .score-table:has(th:nth-child(7)) th:nth-child(4){width:42px}
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(1){width:48%}
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(2),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(4),
+ .score-table:has(th:nth-child(6)):not(:has(th:nth-child(7))) th:nth-child(5){width:17%}
+}
+@media(max-width:390px){
+ main{padding-left:10px;padding-right:10px}
+ .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .stat{padding:11px 8px}
+ .stat-label{font-size:10px}
+ .stat-number{font-size:22px}
+ .nav{padding-left:13px;padding-right:13px}
+ .nav-right{font-size:11px}
+ .score-modal-head h2{font-size:17px}
+ #closeScoreModal{min-height:36px;padding:8px}
+ .modal-teams{gap:7px}
+ .modal-team{padding:10px}
+ .modal-team-score{font-size:17px}
+ .modal-extra{grid-template-columns:1fr}
+ .score-table th{font-size:9px}
+ .score-table td{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
 </style>
 </head>
 <body>
