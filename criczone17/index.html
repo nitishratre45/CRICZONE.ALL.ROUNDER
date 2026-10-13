@@ -42,7 +42,7 @@ a{color:inherit}.wrap{max-width:1160px;margin:auto;padding:22px 16px 52px}.top{d
  </div>
  <button class="refresh" id="refreshBtn">↻ Refresh</button>
 </section>
-<div class="statusline"><span id="resultText">Loading matches…</span><span>Screen checks every 10 seconds</span></div>
+<div class="statusline"><span id="resultText">Loading matches…</span><span>Screen checks every 20 seconds</span></div>
 <section class="grid" id="matchGrid" aria-live="polite"><div class="empty"><span class="spinner"></span> Loading cricket scores…</div></section>
 <footer class="footer">CricZone17 · Data via <a href="https://cricketdata.org/" target="_blank" rel="noopener">CricketData API</a> · Use the source provider's terms and quota.</footer>
 </main>
@@ -161,7 +161,7 @@ document.querySelectorAll("[data-filter]").forEach(button => button.addEventList
 }));
 $("refreshBtn").addEventListener("click", loadScores);
 loadScores();
-setInterval(loadScores, 10000);
+setInterval(loadScores, 20000);
 </script>
 </body>
 </html>
