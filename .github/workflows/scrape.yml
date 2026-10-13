@@ -2,8 +2,8 @@ name: Cricinfo Live Scraper
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Har 5 minute me automatically run hoga
-  workflow_dispatch: # Manual test button
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -26,6 +26,8 @@ jobs:
           pip install curl_cffi beautifulsoup4
 
       - name: Run Scraper Script
+        env:
+          CRICINFO_COOKIE: ${{ secrets.CRICINFO_COOKIE }}
         run: python score.py
 
       - name: Commit and Push Results
