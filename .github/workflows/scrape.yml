@@ -3,13 +3,13 @@ name: Cricinfo Live Scraper
 on:
   schedule:
     - cron: '*/5 * * * *' # Har 5 minute me automatically run hoga
-  workflow_dispatch: # GitHub website par 'Run workflow' button se manually chalane ke liye
+  workflow_dispatch: # Manual test ke liye button
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Repository me changes commit aur push karne ki permission
+      contents: write # Repo me file push karne ki permission
 
     steps:
       - name: Checkout Repository
@@ -27,6 +27,8 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Run Scraper Script
+        env:
+          CRICINFO_COOKIE: ${{ secrets.CRICINFO_COOKIE }}
         run: python score.py
 
       - name: Commit and Push Results
