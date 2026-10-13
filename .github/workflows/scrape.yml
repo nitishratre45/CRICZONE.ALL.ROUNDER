@@ -1,0 +1,38 @@
+name: Cricinfo Live Scraper
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Har 5 minute me automatically run hoga
+  workflow_dispatch: # GitHub website par 'Run workflow' button se manually chalane ke liye
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Repository me changes commit aur push karne ki permission
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Run Scraper Script
+        run: python score.py
+
+      - name: Commit and Push Results
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.bots'
+          git add scorecard.json scorecard_backups/
+          git diff --staged --quiet || git commit -m "Auto-update scorecard: $(date -u)"
+          git push
