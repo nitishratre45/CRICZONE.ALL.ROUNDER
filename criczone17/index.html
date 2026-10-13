@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<title>CricZone17 — Live Cricket Centre</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#101e30;--panel2:#13243a;--line:#253952;--text:#edf5ff;--muted:#92a6bf;--green:#47e1a0;--blue:#6ea8ff;--amber:#ffcb70;--red:#ff7185}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% -10%,#17395a 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+a{color:inherit}.wrap{max-width:1160px;margin:auto;padding:22px 16px 52px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#49e2a1,#66a8ff);color:#061421;font-weight:1000;font-size:22px;box-shadow:0 8px 30px #45dca522}.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);font-weight:800}.brand h1{font-size:22px;letter-spacing:-.04em;margin:0}.brand p{margin:0;color:var(--muted);font-size:12px}.livepill{display:flex;align-items:center;gap:8px;border:1px solid #315442;background:#0b2b26;color:#9af4cc;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:750;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px #47e1a022}
+.hero{border:1px solid #28435f;background:linear-gradient(110deg,#122a40,#102036 60%,#13253a);border-radius:24px;padding:25px;margin-bottom:20px;position:relative;overflow:hidden}.hero:after{content:"🏏";position:absolute;right:26px;top:4px;font-size:100px;opacity:.08;transform:rotate(-16deg)}.hero h2{margin:0 0 6px;font-size:clamp(25px,4vw,38px);letter-spacing:-.045em;line-height:1.12;max-width:640px}.hero p{color:#a7bad0;margin:0;max-width:620px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.stat{padding:9px 13px;border:1px solid #2b435e;background:#07182788;border-radius:12px;min-width:105px}.stat strong{display:block;font-size:20px}.stat span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0}.search{flex:1;min-width:190px;background:#0d1a2b;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;font:inherit;outline:none}.search:focus{border-color:var(--blue)}.filters{display:flex;gap:6px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:#0d1a2b;color:var(--muted);padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:700}.filter.active{background:#d9fff0;color:#08261c;border-color:#d9fff0}.refresh{border:1px solid #31634f;background:#102c25;color:#a2f5d1;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:800}
+.statusline{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:10px 2px 14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.match{background:linear-gradient(160deg,#13243a,#0d1a2b);border:1px solid var(--line);border-radius:19px;padding:17px;min-width:0;transition:transform .16s,border-color .16s}.match:hover{transform:translateY(-2px);border-color:#456787}.matchhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.type{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.badge{font-size:10px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:7px;background:#1e3047;color:#a9bed6;white-space:nowrap}.badge.live{background:#123c30;color:#81f3be}.teams{font-size:17px;font-weight:850;letter-spacing:-.025em;margin:13px 0 5px}.scores{display:grid;gap:8px;margin:13px 0}.score{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:11px;background:#071522;border:1px solid #1c3046}.score .innings{color:#a6bad0;font-size:12px;min-width:0;overflow-wrap:anywhere}.score strong{font-size:17px;white-space:nowrap}.status{color:#b9cbe0;font-size:13px;margin:10px 0 12px}.meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px}.meta span{border:1px solid #263a51;border-radius:7px;padding:4px 7px}.cardfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #24374e;margin-top:14px;padding-top:12px}.source{font-size:11px;color:var(--muted)}.details{font-size:12px;color:#9fc3ff;text-decoration:none;font-weight:800}.details:hover{text-decoration:underline}
+.notice{border:1px solid #4e4228;background:#2b2418;color:#ffdf9c;border-radius:14px;padding:14px 16px;margin:14px 0}.notice a{color:#c0d8ff}.empty{grid-column:1/-1;text-align:center;border:1px dashed #314762;padding:35px 18px;border-radius:18px;color:var(--muted)}.footer{text-align:center;color:#7087a2;font-size:11px;margin-top:28px}.footer a{color:#9bb9dc}.spinner{display:inline-block;width:12px;height:12px;border:2px solid #49627d;border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:720px){.grid{grid-template-columns:1fr}.hero{padding:21px}.hero:after{right:5px;font-size:74px}.top{align-items:flex-start}.brand h1{font-size:19px}.livepill{font-size:10px;padding:7px 9px}.wrap{padding:16px 12px 40px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top">
+ <div class="brand"><div class="logo">CZ</div><div><div class="eyebrow">CRICZONE NETWORK</div><h1>CricZone17</h1><p>Live Cricket Centre</p></div></div>
+ <div class="livepill"><span class="dot"></span><span id="connection">CONNECTING</span></div>
+</header>
+<section class="hero">
+ <div class="eyebrow">THE GAME, LIVE</div>
+ <h2>Every match.<br>One cricket centre.</h2>
+ <p>Live scores, match status and innings details in one clean dashboard. Score data is provided by CricketData API.</p>
+ <div class="stats">
+  <div class="stat"><strong id="totalCount">—</strong><span>Matches</span></div>
+  <div class="stat"><strong id="liveCount">—</strong><span>Live now</span></div>
+  <div class="stat"><strong id="updateClock">—</strong><span>Last API update</span></div>
+ </div>
+</section>
+<div id="apiNotice" class="notice" hidden></div>
+<section class="toolbar" aria-label="Match filters">
+ <input class="search" id="search" type="search" placeholder="Search team, series, venue…" aria-label="Search matches">
+ <div class="filters">
+  <button class="filter active" data-filter="all">All</button>
+  <button class="filter" data-filter="live">Live</button>
+  <button class="filter" data-filter="upcoming">Upcoming</button>
+  <button class="filter" data-filter="completed">Completed</button>
+ </div>
+ <button class="refresh" id="refreshBtn">↻ Refresh</button>
+</section>
+<div class="statusline"><span id="resultText">Loading matches…</span><span>Screen checks every 10 seconds</span></div>
+<section class="grid" id="matchGrid" aria-live="polite"><div class="empty"><span class="spinner"></span> Loading cricket scores…</div></section>
+<footer class="footer">CricZone17 · Data via <a href="https://cricketdata.org/" target="_blank" rel="noopener">CricketData API</a> · Use the source provider's terms and quota.</footer>
+</main>
+<script>
+const API_PATH = "/api/matches";
+let allMatches = [];
+let activeFilter = "all";
+let apiState = null;
+const $ = (id) => document.getElementById(id);
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = String(text);
+  return node;
+}
+function isLive(m) {
+  if (m.matchEnded) return false;
+  return !!m.matchStarted || /live|in progress|stumps|innings break|day \d/i.test(m.status || "");
+}
+function isUpcoming(m) {
+  return !m.matchStarted && !m.matchEnded && !/won by|drawn|no result|abandoned|match tied/i.test(m.status || "");
+}
+function category(m) {
+  if (m.matchEnded || /won by|drawn|no result|abandoned|match tied/i.test(m.status || "")) return "completed";
+  if (isLive(m)) return "live";
+  return isUpcoming(m) ? "upcoming" : "completed";
+}
+function makeScore(score) {
+  const row = el("div", "score");
+  row.append(el("span", "innings", score.innings || "Innings"));
+  let value = (score.runs === null || score.runs === undefined) ? "—" : String(score.runs);
+  if (score.wickets !== null && score.wickets !== undefined) value += "/" + score.wickets;
+  if (score.overs !== null && score.overs !== undefined && score.overs !== "") value += " (" + score.overs + " ov)";
+  row.append(el("strong", "", value));
+  return row;
+}
+function makeCard(m) {
+  const card = el("article", "match");
+  const head = el("div", "matchhead");
+  const type = el("div", "type", (m.matchType || "Cricket match") + (m.date ? " · " + m.date.slice(0,10) : ""));
+  const badge = el("span", "badge " + (category(m) === "live" ? "live" : ""), category(m) === "live" ? "● LIVE" : category(m).toUpperCase());
+  head.append(type, badge); card.append(head);
+  card.append(el("div", "teams", (m.teams && m.teams.length ? m.teams.join("  vs  ") : m.name) || "Cricket match"));
+  if (m.name && m.teams && m.teams.length) card.append(el("div", "type", m.name));
+  const scores = el("div", "scores");
+  if (m.score && m.score.length) m.score.forEach(s => scores.append(makeScore(s)));
+  else scores.append(el("div", "score", "Score not available yet"));
+  card.append(scores);
+  card.append(el("p", "status", m.status || "Status unavailable"));
+  const meta = el("div", "meta");
+  if (m.venue) meta.append(el("span", "", "⌖ " + m.venue));
+  if (m.matchEnded) meta.append(el("span", "", "Final"));
+  card.append(meta);
+  const foot = el("div", "cardfoot");
+  foot.append(el("span", "source", "CricketData API"));
+  const link = el("a", "details", "Match info ↗");
+  link.href = "https://cricketdata.org/"; link.target = "_blank"; link.rel = "noopener";
+  foot.append(link); card.append(foot);
+  return card;
+}
+function render() {
+  const query = $("search").value.trim().toLowerCase();
+  const filtered = allMatches.filter(m => {
+    const matchesFilter = activeFilter === "all" || category(m) === activeFilter;
+    const text = [m.name, m.status, m.venue, ...(m.teams || [])].join(" ").toLowerCase();
+    return matchesFilter && text.includes(query);
+  });
+  $("totalCount").textContent = allMatches.length;
+  $("liveCount").textContent = allMatches.filter(isLive).length;
+  $("resultText").textContent = filtered.length + " match" + (filtered.length === 1 ? "" : "es") + " shown";
+  const grid = $("matchGrid"); grid.replaceChildren();
+  if (!filtered.length) {
+    const empty = el("div", "empty", allMatches.length ? "No matches match this filter. Try another tab or search." : "No matches returned yet. Check the API key or try refreshing.");
+    grid.append(empty); return;
+  }
+  filtered.forEach(m => grid.append(makeCard(m)));
+}
+function showNotice(state) {
+  const notice = $("apiNotice");
+  if (!state.configured) {
+    notice.hidden = false;
+    notice.textContent = "Setup needed: add your CricketData API key in config.json. Get a key from cricketdata.org, then restart server.py.";
+    const link = el("a", "", " Open CricketData signup");
+    link.href = "https://cricketdata.org/"; link.target = "_blank"; link.rel = "noopener";
+    notice.append(link);
+  } else if (state.error) {
+    notice.hidden = false;
+    notice.textContent = state.error + " — showing the last successful data, if available.";
+  } else {
+    notice.hidden = true; notice.replaceChildren();
+  }
+}
+async function loadScores() {
+  $("connection").textContent = "UPDATING";
+  try {
+    const response = await fetch(API_PATH + "?t=" + Date.now(), {cache:"no-store"});
+    if (!response.ok) throw new Error("Local server returned HTTP " + response.status);
+    const state = await response.json();
+    apiState = state;
+    allMatches = Array.isArray(state.matches) ? state.matches : [];
+    $("connection").textContent = state.error ? "CHECK SETUP" : "CONNECTED";
+    $("updateClock").textContent = state.updatedAt ? state.updatedAt.slice(11,16) : "—";
+    showNotice(state); render();
+  } catch (err) {
+    $("connection").textContent = "OFFLINE";
+    $("apiNotice").hidden = false;
+    $("apiNotice").textContent = "Python server is not reachable. Start server.py and open this page at http://127.0.0.1:8765/ . Details: " + err.message;
+    $("resultText").textContent = "Waiting for local Python server";
+  }
+}
+$("search").addEventListener("input", render);
+document.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click", () => {
+  activeFilter = button.dataset.filter;
+  document.querySelectorAll("[data-filter]").forEach(b => b.classList.toggle("active", b === button));
+  render();
+}));
+$("refreshBtn").addEventListener("click", loadScores);
+loadScores();
+setInterval(loadScores, 10000);
+</script>
+</body>
+</html>
