@@ -1,0 +1,9 @@
+{
+  "provider": "CricketData API",
+  "sourceUrl": "https://cricketdata.org/",
+  "updatedAt": null,
+  "nextRefreshSeconds": 900,
+  "matches": [],
+  "error": "Waiting for first successful API update. Add your API key to config.json.",
+  "configured": false
+}
