@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""CricZone17: local Python server backed by the CricketData API.
+"""CricZone17: local cricket dashboard with JSON persistence.
 
-The browser UI refreshes its local JSON endpoint every 10 seconds. The
-upstream API refresh interval is configurable and defaults to 15 minutes to
-avoid exhausting the free API quota.
+The browser checks the local server every 20 seconds. Upstream API polling is
+configurable (default 15 minutes) to avoid exhausting the provider quota.
 """
 import json
 import os
@@ -18,6 +17,7 @@ import urllib.request
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
+JSON_PATH = BASE_DIR / "live_scores.json"
 API_URL = "https://api.cricapi.com/v1/currentMatches"
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("PORT", "8765"))
@@ -48,6 +48,31 @@ STATE = {
     "error": "API key missing. Add your key to config.json.",
     "configured": bool(CONFIG["api_key"]),
 }
+
+def load_saved_json():
+    """Restore the last saved data so the dashboard can show it after restart."""
+    if not JSON_PATH.exists():
+        return
+    try:
+        saved = json.loads(JSON_PATH.read_text(encoding="utf-8"))
+        if isinstance(saved, dict) and isinstance(saved.get("matches"), list):
+            STATE.update(saved)
+            STATE["nextRefreshSeconds"] = CONFIG["poll_seconds"]
+            if not CONFIG["api_key"]:
+                STATE["configured"] = False
+                STATE["error"] = "API key missing. Showing last saved JSON data, if available."
+    except (OSError, json.JSONDecodeError) as exc:
+        print("Saved live_scores.json could not be read:", exc)
+
+def save_state_json():
+    """Atomically write the current dashboard state to live_scores.json."""
+    with STATE_LOCK:
+        snapshot = dict(STATE)
+        snapshot["nextRefreshSeconds"] = CONFIG["poll_seconds"]
+        content = json.dumps(snapshot, ensure_ascii=False, indent=2)
+    temp_path = JSON_PATH.with_suffix(".json.tmp")
+    temp_path.write_text(content + "\n", encoding="utf-8")
+    temp_path.replace(JSON_PATH)
 
 def normalise_match(item):
     if not isinstance(item, dict):
@@ -84,6 +109,10 @@ def refresh_from_api():
         with STATE_LOCK:
             STATE["configured"] = False
             STATE["error"] = "API key missing. Add your key to config.json."
+        try:
+            save_state_json()
+        except OSError as exc:
+            print("Could not save live_scores.json:", exc)
         return
     query = urllib.parse.urlencode({"apikey": CONFIG["api_key"], "offset": 0})
     request = urllib.request.Request(
@@ -103,12 +132,19 @@ def refresh_from_api():
             STATE["updatedAt"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             STATE["error"] = None
             STATE["configured"] = True
+            STATE["provider"] = "CricketData API"
+            STATE["sourceUrl"] = "https://cricketdata.org/"
             STATE["nextRefreshSeconds"] = CONFIG["poll_seconds"]
-        print("Updated", len(matches), "matches at", STATE["updatedAt"])
+        save_state_json()
+        print("Saved", len(matches), "matches to live_scores.json at", STATE["updatedAt"])
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, RuntimeError, OSError) as exc:
         with STATE_LOCK:
             STATE["error"] = "API update failed: " + str(exc)
             STATE["configured"] = True
+        try:
+            save_state_json()
+        except OSError as save_exc:
+            print("Could not save live_scores.json:", save_exc)
         print(STATE["error"])
 
 def background_updater():
@@ -127,14 +163,20 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = urlparse(self.path).path
-        if path == "/api/matches":
-            with STATE_LOCK:
-                body = json.dumps(STATE, ensure_ascii=False).encode("utf-8")
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
+        if path == "/api/matches" or path == "/live_scores.json":
+            try:
+                if path == "/live_scores.json" and JSON_PATH.exists():
+                    body = JSON_PATH.read_bytes()
+                else:
+                    with STATE_LOCK:
+                        body = json.dumps(STATE, ensure_ascii=False, indent=2).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except OSError as exc:
+                self.send_error(500, "Could not read saved JSON: " + str(exc))
             return
         if path == "/":
             self.path = "/index.html"
@@ -144,10 +186,12 @@ class Handler(SimpleHTTPRequestHandler):
         print("[HTTP]", fmt % args)
 
 if __name__ == "__main__":
+    load_saved_json()
     print("CricZone17 server: http://127.0.0.1:" + str(PORT))
-    print("UI refresh: every 10 seconds | API refresh: every " + str(CONFIG["poll_seconds"]) + " seconds")
+    print("JSON file: " + str(JSON_PATH))
+    print("Dashboard refresh: every 20 seconds | API refresh: every " + str(CONFIG["poll_seconds"]) + " seconds")
     if not CONFIG["api_key"]:
-        print("Add your CricketData API key to criczone17/config.json before expecting live scores.")
+        print("Add your CricketData API key to criczone17/config.json before expecting fresh scores.")
     threading.Thread(target=background_updater, daemon=True).start()
     try:
         ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
