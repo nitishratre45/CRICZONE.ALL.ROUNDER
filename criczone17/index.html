@@ -109,17 +109,17 @@ function normaliseUploadedMatch(item) {
   const title = heading.split("|")[1]?.trim() || heading;
   const scoreLine = heading.split("|")[0]?.trim() || "";
   const text = [item.matchText || "", title].join(" ");
-  const teams = title.split(" - ")[0].replace(/\\b(1st|2nd|3rd|\\d+th|One-off)\\s+(Test|ODI|T20).*$/i, "").split(/\\s+vs\\s+/i);
-  const scoreMatch = scoreLine.match(/([^:]+):\\s*(\\d+\\/\\d+)(?:\\(([^)]+)\\))?/);
+  const teams = title.split(" - ")[0].replace(/\b(1st|2nd|3rd|\d+th|One-off)\s+(Test|ODI|T20).*$/i, "").split(/\s+vs\s+/i);
+  const scoreMatch = scoreLine.match(/([^:]+):\s*(\d+\/\d+)(?:\(([^)]+)\))?/);
   const isUpcoming = /Upcoming Match/i.test(item.matchText || "");
   const isCompleted = /Result:|beat |Match Abandoned|drawn|no result/i.test(item.matchText || "");
   return {
     id: item.url || title,
     url: item.url || "",
     name: title,
-    matchType: (title.match(/\\b(Test|ODI|T20)\\b/i) || [])[0] || "Cricket",
+    matchType: (title.match(/\b(Test|ODI|T20)\b/i) || [])[0] || "Cricket",
     status: item.matchText || "Scorecard available",
-    venue: (heading.match(/Full Scorecard,\\s*([^|]+)/i) || [])[1]?.trim() || "",
+    venue: (heading.match(/Full Scorecard,\s*([^|]+)/i) || [])[1]?.trim() || "",
     date: "",
     teams: teams.length === 2 ? teams.map(s => s.trim()) : [],
     score: scoreMatch ? [{innings: scoreMatch[1].trim(), runs: Number(scoreMatch[2].split("/")[0]), wickets: Number(scoreMatch[2].split("/")[1]), overs: scoreMatch[3] || ""}] : [],
