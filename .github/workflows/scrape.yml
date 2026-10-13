@@ -1,8 +1,8 @@
-name: Cricinfo Live Scraper
+name: Cricbuzz Live Scraper
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/5 * * * *' # Har 5 minute me automatically run hoga
   workflow_dispatch:
 
 jobs:
@@ -26,8 +26,6 @@ jobs:
           pip install curl_cffi beautifulsoup4
 
       - name: Run Scraper Script
-        env:
-          CRICINFO_COOKIE: ${{ secrets.CRICINFO_COOKIE }}
         run: python score.py
 
       - name: Commit and Push Results
@@ -35,5 +33,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.bots'
           git add scorecard.json scorecard_backups/
-          git diff --staged --quiet || git commit -m "Auto-update scorecard: $(date -u)"
+          git diff --staged --quiet || git commit -m "Auto-update live scores: $(date -u)"
           git push
