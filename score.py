@@ -1,5 +1,5 @@
 """
-Cricinfo Next.js Extractor Scraper for GitHub Actions (Single Run)
+Cricinfo Next.js Extractor Scraper for GitHub Actions (Stealth Enabled)
 """
 
 from datetime import datetime
@@ -21,13 +21,18 @@ def fetch_and_save_scorecard():
   Path(CONFIG["BACKUP_DIR"]).mkdir(parents=True, exist_ok=True)
 
   with sync_playwright() as p:
-    # GitHub Actions ke liye headless=True zaroori hai
+    # Cloudflare bypass karne ke liye advanced browser arguments
     browser = p.chromium.launch(
         headless=True,
         args=[
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-infobars",
+            "--window-size=1920,1080",
             "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--lang=en-US,en",
         ],
     )
 
@@ -37,14 +42,28 @@ def fetch_and_save_scorecard():
             " (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
         ),
         viewport={"width": 1920, "height": 1080},
+        locale="en-US",
+        timezone_id="Asia/Kolkata",
     )
+
     page = context.new_page()
+
+    # Automation flags ko hide karne ke liye JavaScript injection
+    page.add_init_script(
+        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+    )
 
     try:
       print("Opening Cricinfo scorecard page...")
       page.goto(
           CONFIG["WEB_URL"], timeout=60000, wait_until="domcontentloaded"
       )
+
+      # Cloudflare ko cross karne ke liye thoda wait aur human-like movement
+      print("Waiting for page to bypass Cloudflare security...")
+      page.wait_for_timeout(6000)
+      page.mouse.wheel(0, 400)
+      page.wait_for_timeout(2000)
 
       print("Waiting for Next.js data element to attach...")
       page.wait_for_selector("#__NEXT_DATA__", state="attached", timeout=30000)
