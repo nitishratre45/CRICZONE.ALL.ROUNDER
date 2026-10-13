@@ -24,7 +24,7 @@ a{color:inherit}.wrap{max-width:1160px;margin:auto;padding:22px 16px 52px}.top{d
 <section class="hero">
  <div class="eyebrow">THE GAME, LIVE</div>
  <h2>Every match.<br>One cricket centre.</h2>
- <p>Live scores, match status and innings details in one clean dashboard. Score data is provided by CricketData API.</p>
+ <p>Live scores, match status and innings details in one clean dashboard. Scores are loaded from live_scores.json.</p>
  <div class="stats">
   <div class="stat"><strong id="totalCount">—</strong><span>Matches</span></div>
   <div class="stat"><strong id="liveCount">—</strong><span>Live now</span></div>
@@ -42,12 +42,12 @@ a{color:inherit}.wrap{max-width:1160px;margin:auto;padding:22px 16px 52px}.top{d
  </div>
  <button class="refresh" id="refreshBtn">↻ Refresh</button>
 </section>
-<div class="statusline"><span id="resultText">Loading matches…</span><span>Screen checks every 20 seconds</span></div>
+<div class="statusline"><span id="resultText">Loading matches…</span><span>JSON file checks every 20 seconds</span></div>
 <section class="grid" id="matchGrid" aria-live="polite"><div class="empty"><span class="spinner"></span> Loading cricket scores…</div></section>
 <footer class="footer">CricZone17 · Data via <a href="https://cricketdata.org/" target="_blank" rel="noopener">CricketData API</a> · Use the source provider's terms and quota.</footer>
 </main>
 <script>
-const API_PATH = "/api/matches";
+const API_PATH = "./live_scores.json";
 let allMatches = [];
 let activeFilter = "all";
 let apiState = null;
@@ -124,7 +124,7 @@ function showNotice(state) {
   const notice = $("apiNotice");
   if (!state.configured) {
     notice.hidden = false;
-    notice.textContent = "Setup needed: add your CricketData API key in config.json. Get a key from cricketdata.org, then restart server.py.";
+    notice.textContent = "API key missing: JSON can load, but fresh scores require the Python server/API key and a refreshed deployed JSON file.";
     const link = el("a", "", " Open CricketData signup");
     link.href = "https://cricketdata.org/"; link.target = "_blank"; link.rel = "noopener";
     notice.append(link);
@@ -139,7 +139,7 @@ async function loadScores() {
   $("connection").textContent = "UPDATING";
   try {
     const response = await fetch(API_PATH + "?t=" + Date.now(), {cache:"no-store"});
-    if (!response.ok) throw new Error("Local server returned HTTP " + response.status);
+    if (!response.ok) throw new Error("JSON file returned HTTP " + response.status);
     const state = await response.json();
     apiState = state;
     allMatches = Array.isArray(state.matches) ? state.matches : [];
@@ -150,7 +150,7 @@ async function loadScores() {
     $("connection").textContent = "OFFLINE";
     $("apiNotice").hidden = false;
     $("apiNotice").textContent = "Python server is not reachable. Start server.py and open this page at http://127.0.0.1:8765/ . Details: " + err.message;
-    $("resultText").textContent = "Waiting for local Python server";
+    $("resultText").textContent = "Waiting for saved JSON data";
   }
 }
 $("search").addEventListener("input", render);
