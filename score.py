@@ -1,5 +1,5 @@
 """
-Cricbuzz Live Score Extractor for GitHub Actions
+Cricbuzz Next.js Data Extractor for GitHub Actions
 """
 
 from datetime import datetime
@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 
 CONFIG = {
-    "WEB_URL": "https://www.cricbuzz.com/live-cricket-scores",
+    # Cricbuzz ka live scores page URL
+    "WEB_URL": "https://www.cricbuzz.com/cricket-match/live-scores",
     "OUTPUT_FILE": "scorecard.json",
     "BACKUP_DIR": "scorecard_backups",
 }
@@ -24,12 +25,14 @@ def fetch_and_save_scorecard():
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
           " (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
       ),
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept": (
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+      ),
       "Accept-Language": "en-US,en;q=0.5",
   }
 
   try:
-    print("Fetching live cricket scores from Cricbuzz...")
+    print("Fetching Cricbuzz live scores page...")
     response = requests.get(
         CONFIG["WEB_URL"], headers=headers, impersonate="chrome", timeout=30
     )
@@ -38,23 +41,22 @@ def fetch_and_save_scorecard():
       print(f"Server returned status code: {response.status_code}")
       return False
 
+    print("Parsing HTML to extract Next.js data...")
     soup = BeautifulSoup(response.text, "html.parser")
-    match_elements = soup.find_all("div", class_="cb-col-live")
+    next_data_script = soup.find("script", id="__NEXT_DATA__")
 
-    matches_data = []
-    for match in match_elements:
-      title = match.text.strip()
-      matches_data.append({"match_info": title})
+    if not next_data_script:
+      print("Error: __NEXT_DATA__ tag not found on Cricbuzz.")
+      return False
 
-    data = {
-        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "matches": matches_data,
-        "raw_html_snippet": response.text[:5000],
-    }
+    # Poora raw JSON data extract kar rahe hain
+    data = json.loads(next_data_script.string)
 
+    # Save primary JSON file
     with open(CONFIG["OUTPUT_FILE"], "w", encoding="utf-8") as f:
       json.dump(data, f, ensure_ascii=False, indent=4)
 
+    # Save timestamped backup file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = os.path.join(
         CONFIG["BACKUP_DIR"], f"scorecard_{timestamp}.json"
@@ -62,7 +64,7 @@ def fetch_and_save_scorecard():
     with open(backup_path, "w", encoding="utf-8") as f:
       json.dump(data, f, ensure_ascii=False, indent=4)
 
-    print("SUCCESS: Cricbuzz live score successfully saved!")
+    print("SUCCESS: Cricbuzz Next.js JSON successfully saved!")
     return True
 
   except Exception as e:
