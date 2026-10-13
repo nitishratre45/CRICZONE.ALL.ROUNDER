@@ -1,5 +1,5 @@
 """
-Cricinfo Next.js Extractor using curl_cffi & BeautifulSoup for GitHub Actions
+Cricinfo Next.js Extractor using curl_cffi & BeautifulSoup with Cookie Support
 """
 
 from datetime import datetime
@@ -33,13 +33,24 @@ def fetch_and_save_scorecard():
       "Referer": "https://www.espncricinfo.com/",
   }
 
+  # GitHub Secret se cookie utha kar request me daal rahe hain
+  cookies = {}
+  cookie_value = os.environ.get("CRICINFO_COOKIE", "1")
+  if cookie_value:
+    cookies["_dcf1"] = cookie_value
+    print(f"Using Cricinfo cookie value: {cookie_value}")
+
   try:
-    print("Fetching Cricinfo webpage using TLS impersonation...")
-    # impersonate="chrome" real browser fingerprint spoof karta hai
+    print("Fetching Cricinfo webpage using TLS impersonation and cookies...")
     response = requests.get(
-        CONFIG["WEB_URL"], headers=headers, impersonate="chrome", timeout=30
+        CONFIG["WEB_URL"],
+        headers=headers,
+        cookies=cookies,
+        impersonate="chrome",
+        timeout=30,
     )
 
+    print(f"Response Status Code: {response.status_code}")
     if response.status_code != 200:
       print(f"Server returned status code: {response.status_code}")
       return False
@@ -49,7 +60,7 @@ def fetch_and_save_scorecard():
     next_data_script = soup.find("script", id="__NEXT_DATA__")
 
     if not next_data_script:
-      print("Error: __NEXT_DATA__ tag not found. Blocked by Cloudflare.")
+      print("Error: __NEXT_DATA__ tag not found.")
       return False
 
     data = json.loads(next_data_script.string)
