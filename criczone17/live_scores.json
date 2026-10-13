@@ -1,9 +1,63 @@
 {
-  "provider": "CricketData API",
-  "sourceUrl": "https://cricketdata.org/",
-  "updatedAt": null,
-  "nextRefreshSeconds": 900,
-  "matches": [],
-  "error": "Waiting for first successful API update. Add your API key to config.json.",
-  "configured": false
+  "source": "https://indianexpress.com/section/sports/cricket/live-score/",
+  "fetchedAt": "2026-10-13T04:46:38.906971+00:00",
+  "matchesFound": 8,
+  "matches": [
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/south-africa-vs-australia-1st-test-live-score-full-scorecard-highlights-australia-in-south-africa-3-test-series-2026-saau10092026269790/",
+      "matchText": "South Africa need 319 runs to win with 6 wickets remaining View Scorecard",
+      "scorecardText": [
+        "South Africa: 102/4(41.0) | SA vs AUS 1st Test Match - Live Cricket Score, Full Scorecard, Kingsmead, Durban | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/afghanistan-vs-bangladesh-one-off-test-live-score-full-scorecard-highlights-afghanistan-and-bangladesh-in-uae-one-off-test-2026-afba10092026274655/",
+      "matchText": "Afghanistan need 347 runs to win with 7 wickets remaining View Scorecard",
+      "scorecardText": [
+        "Afghanistan: 132/3(50.0) | AFG vs BAN One-off Test Match - Live Cricket Score, Full Scorecard, Zayed Cricket Stadium, Abu Dhabi | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/oman-vs-nepal-135-odi-live-score-full-scorecard-highlights-icc-cwc-league-2-2023-27-omnp10132026273762/",
+      "matchText": "Tue 13 Oct '26 11:00 AM IST Upcoming Match 135 Oman Oman VS Nepal View Scorecard",
+      "scorecardText": [
+        "OMA vs NEP 135 ODI Match - Live Cricket Score, Full Scorecard, Al Amerat Cricket Ground Oman Cricket (Ministry Turf 1), Oman | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/mongolia-vs-qatar-16-t20-live-score-full-scorecard-highlights-icc-mens-t20-world-cup-asia-sub-regional-qualifier-a-2026-mglqt10122026274975/",
+      "matchText": "MNG vs QAT Match 16 Result: Match Abandoned View Scorecard",
+      "scorecardText": [
+        "HIGHLIGHTS MNG vs QAT ICC Men's T20 World Cup Asia Sub Regional Qualifier A, 2026 16 T20 Result, Scorecard | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/kuwait-vs-bhutan-18-t20-live-score-full-scorecard-highlights-icc-mens-t20-world-cup-asia-sub-regional-qualifier-a-2026-kwtbtn10122026274974/",
+      "matchText": "KUW vs BHU Match 18 Result: Kuwait beat Bhutan by 8 wickets View Scorecard",
+      "scorecardText": [
+        "HIGHLIGHTS KUW vs BHU ICC Men's T20 World Cup Asia Sub Regional Qualifier A, 2026 18 T20 Result, Scorecard | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/hong-kong-china-vs-maldives-11-t20-live-score-full-scorecard-highlights-icc-mens-t20-world-cup-asia-sub-regional-qualifier-b-2026-hkmld10122026274914/",
+      "matchText": "HK vs MDV Match 11 Result: Match Abandoned View Scorecard",
+      "scorecardText": [
+        "HIGHLIGHTS HK vs MDV ICC Men's T20 World Cup Asia Sub Regional Qualifier B, 2026 11 T20 Result, Scorecard | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/china-vs-saudi-arabia-12-t20-live-score-full-scorecard-highlights-icc-mens-t20-world-cup-asia-sub-regional-qualifier-b-2026-chisab10122026274915/",
+      "matchText": "CHN vs KSA Match 12 Result: Saudi Arabia beat China by 64 runs View Scorecard",
+      "scorecardText": [
+        "HIGHLIGHTS CHN vs KSA ICC Men's T20 World Cup Asia Sub Regional Qualifier B, 2026 12 T20 Result, Scorecard | The Indian Express"
+      ]
+    },
+    {
+      "url": "https://indianexpress.com/section/sports/cricket/live-score/usa-vs-united-arab-emirates-134-odi-live-score-full-scorecard-highlights-icc-cwc-league-2-2023-27-usua10112026275015/",
+      "matchText": "USA vs UAE Match 134 Result: USA beat United Arab Emirates by 5 wickets View Scorecard",
+      "scorecardText": [
+        "HIGHLIGHTS USA vs UAE ICC CWC League 2, 2023-27 134 ODI Result, Scorecard | The Indian Express"
+      ]
+    }
+  ]
 }
