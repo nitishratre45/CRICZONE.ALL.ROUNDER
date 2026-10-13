@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests
 
 CONFIG = {
-    # Cricbuzz ka live match / scorecard URL
     "WEB_URL": "https://www.cricbuzz.com/live-cricket-scores",
     "OUTPUT_FILE": "scorecard.json",
     "BACKUP_DIR": "scorecard_backups",
@@ -40,8 +39,6 @@ def fetch_and_save_scorecard():
       return False
 
     soup = BeautifulSoup(response.text, "html.parser")
-
-    # Live matches ki list nikal rahe hain
     match_elements = soup.find_all("div", class_="cb-col-live")
 
     matches_data = []
@@ -49,23 +46,20 @@ def fetch_and_save_scorecard():
       title = match.text.strip()
       matches_data.append({"match_info": title})
 
-    # Agar koi specific match data banana ho toh poora page text ya JSON save kar sakte hain
     data = {
         "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "matches": matches_data,
-        "raw_html_snippet": response.text[:5000],  # Sample data
+        "raw_html_snippet": response.text[:5000],
     }
 
-    # Save primary JSON file
     with open(CONFIG["OUTPUT_FILE"], "w", encoding="utf-8") as f:
       json.dump(data, f, ensure_ascii=False, indent=4)
 
-    # Save timestamped backup file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = os.path.join(
         CONFIG["BACKUP_DIR"], f"scorecard_{timestamp}.json"
     )
-    with open(backup_path, "w", encoding="utf-8) as f:
+    with open(backup_path, "w", encoding="utf-8") as f:
       json.dump(data, f, ensure_ascii=False, indent=4)
 
     print("SUCCESS: Cricbuzz live score successfully saved!")
