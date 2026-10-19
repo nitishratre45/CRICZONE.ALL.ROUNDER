@@ -1,0 +1,47 @@
+/* CricZone shared premium UI layer — visual-only overrides */
+:root{
+  color-scheme:dark;
+  --cz-bg:#06101f;--cz-panel:#0d1c31;--cz-panel-2:#112744;
+  --cz-line:rgba(143,184,230,.2);--cz-text:#f2f7ff;--cz-muted:#9fb2ca;
+  --cz-blue:#1c67d7;--cz-cyan:#74e0f5;--cz-orange:#ff986e;
+  --cz-radius:18px;
+}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{
+  background-color:var(--cz-bg);
+  background-image:radial-gradient(ellipse at 8% 0%,rgba(28,103,215,.13),transparent 34rem),radial-gradient(ellipse at 100% 20%,rgba(0,190,210,.07),transparent 30rem);
+  color:var(--cz-text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility
+}
+img,video,iframe{max-width:100%}
+button,[role=button],input,select,textarea{font:inherit}
+button:not(.shaka-control-button):not(.plyr__control),[role=button]{
+  transition:transform .18s ease,filter .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+button:not(.shaka-control-button):not(.plyr__control):hover,[role=button]:hover{filter:brightness(1.08)}
+button:not(.shaka-control-button):not(.plyr__control):active,[role=button]:active{transform:translateY(1px)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[role=button]:focus-visible{
+  outline:2px solid var(--cz-cyan);outline-offset:3px
+}
+input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{
+  max-width:100%;border-color:var(--cz-line);border-radius:12px
+}
+a{transition:color .18s ease}
+hr{border-color:var(--cz-line);opacity:1}
+table{max-width:100%;border-collapse:separate;border-spacing:0}
+th{font-weight:800}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:#071323}
+::-webkit-scrollbar-thumb{background:#29476a;border:2px solid #071323;border-radius:99px}
+@media(max-width:700px){
+  html{scroll-padding-top:72px}
+  body{overflow-wrap:anywhere}
+  button:not(.shaka-control-button):not(.plyr__control){max-width:100%}
+  table{display:block;overflow-x:auto;white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+/* Shared card surfaces across the different CricZone builds */
+.card,.panel,.match-card,.match-card-container,.channel-card,.score-card,.scorecard,.fixture-card,.game-card,.stream-card,.channel-item,.match-item,.competition-card{
+  border-color:var(--cz-line);
+}
