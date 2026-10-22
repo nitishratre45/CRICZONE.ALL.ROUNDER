@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Star Sports 1 Hindi HD - Shaka Player</title>
+  <title>Star Sports 1 Hindi HD</title>
   
-  <!-- Shaka Player UI compiled library and CSS -->
+  <!-- Shaka Player CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.ui.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/controls.css" crossorigin="anonymous">
   
@@ -15,23 +15,19 @@
       color: #ffffff;
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
     }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
     .video-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 960px;
       aspect-ratio: 16 / 9;
       background: #000;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
       border-radius: 8px;
       overflow: hidden;
     }
@@ -43,8 +39,6 @@
 </head>
 <body>
 
-  <h2>STAR SPORTS 1 Hindi HD</h2>
-
   <div class="video-container" data-shaka-player-container>
     <video data-shaka-player id="video" poster="https://img.media.jio.com/tvpimages/5/6/301982_1749665314605_l_medium.jpg" autoplay controls></video>
   </div>
@@ -52,12 +46,20 @@
   <script>
     const manifestUri = 'https://livetv.hotstar.com/mp1/gec-india-1540065788/fa6a4f0005ef4f90ab24484d165b0aaf/index.mpd';
     
-    // Public CORS Proxy (No setup required)
-    const proxyUrl = 'https://corsproxy.io/?';
-    
-    // ClearKey DRM Configuration
+    // ClearKey DRM Key Pair
     const keyId = '81872faa1d6b45fa9045cdeb2e310000';
     const key = '9b88168e61274587a471962c46b94675';
+
+    // Headers & Auth Cookie
+    const headers = {
+      'User-Agent': 'Virat Kohli',
+      'Referer': 'https://www.hotstar.com/',
+      'Origin': 'https://www.hotstar.com',
+      'Cookie': 'hdntl=exp=1792582023~acl=%2f*~id=fcae02712aa6d7b4c882e43566d9fb58~data=hdntl~hmac=48cfc623b7e21c1b13b00ead5d8de137814fe0c9aedb56d59a695a7dcc82bff3'
+    };
+
+    // Global Working Proxy
+    const proxyUrl = 'https://api.allorigins.win/raw?url=';
 
     async function initPlayer() {
       shaka.polyfill.installAll();
@@ -70,9 +72,7 @@
       const video = document.getElementById('video');
       const player = new shaka.Player(video);
 
-      window.player = player;
-
-      // Configure DRM ClearKey
+      // Configure DRM
       player.configure({
         drm: {
           clearKeys: {
@@ -81,22 +81,28 @@
         }
       });
 
-      // Route all requests through the public proxy
+      // Intercept and rewrite network requests
       player.getNetworkingEngine().registerRequestFilter((type, request) => {
-        if (!request.uri.startsWith('https://corsproxy.io/?')) {
+        // Apply custom headers
+        for (const [header, value] of Object.entries(headers)) {
+          request.headers[header] = value;
+        }
+
+        // Pass request through working proxy to resolve 1006 / CORS
+        if (!request.uri.includes('api.allorigins.win')) {
           request.uri = proxyUrl + encodeURIComponent(request.uri);
         }
       });
 
-      player.addEventListener('error', (event) => {
-        console.error('Error code', event.detail.code, 'object', event.detail);
+      player.addEventListener('error', (e) => {
+        console.error('Player error code:', e.detail.code, e.detail);
       });
 
       try {
         await player.load(proxyUrl + encodeURIComponent(manifestUri));
-        console.log('Stream loaded successfully!');
-      } catch (e) {
-        console.error('Error loading stream', e);
+        console.log('Stream successfully loaded!');
+      } catch (error) {
+        console.error('Failed to load stream:', error);
       }
     }
 
