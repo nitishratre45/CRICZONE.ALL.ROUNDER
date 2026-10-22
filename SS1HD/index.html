@@ -19,14 +19,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
     h2 {
       margin-bottom: 20px;
+      font-size: 22px;
     }
     .video-container {
       width: 100%;
       max-width: 900px;
       aspect-ratio: 16 / 9;
+      background: #000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      border-radius: 8px;
+      overflow: hidden;
     }
     video {
       width: 100%;
@@ -45,18 +52,14 @@
   <script>
     const manifestUri = 'https://livetv.hotstar.com/mp1/gec-india-1540065788/fa6a4f0005ef4f90ab24484d165b0aaf/index.mpd';
     
-    // ClearKey configuration (Hex format conversion)
+    // Public CORS Proxy (No setup required)
+    const proxyUrl = 'https://corsproxy.io/?';
+    
+    // ClearKey DRM Configuration
     const keyId = '81872faa1d6b45fa9045cdeb2e310000';
     const key = '9b88168e61274587a471962c46b94675';
-    
-    // Custom Headers and Cookie
-    const userAgent = 'Virat Kohli';
-    const referer = 'https://www.hotstar.com/';
-    const origin = 'https://www.hotstar.com';
-    const cookie = 'hdntl=exp=1792582023~acl=%2f*~id=fcae02712aa6d7b4c882e43566d9fb58~data=hdntl~hmac=48cfc623b7e21c1b13b00ead5d8de137814fe0c9aedb56d59a695a7dcc82bff3';
 
     async function initPlayer() {
-      // Install built-in polyfills
       shaka.polyfill.installAll();
 
       if (!shaka.Player.isBrowserSupported()) {
@@ -67,7 +70,6 @@
       const video = document.getElementById('video');
       const player = new shaka.Player(video);
 
-      // Attach player to window for debugging
       window.player = player;
 
       // Configure DRM ClearKey
@@ -79,23 +81,20 @@
         }
       });
 
-      // Intercept network requests to append custom headers and cookie
+      // Route all requests through the public proxy
       player.getNetworkingEngine().registerRequestFilter((type, request) => {
-        request.headers['Referer'] = referer;
-        request.headers['Origin'] = origin;
-        request.headers['User-Agent'] = userAgent;
-        request.headers['Cookie'] = cookie;
+        if (!request.uri.startsWith('https://corsproxy.io/?')) {
+          request.uri = proxyUrl + encodeURIComponent(request.uri);
+        }
       });
 
-      // Error handling
       player.addEventListener('error', (event) => {
         console.error('Error code', event.detail.code, 'object', event.detail);
       });
 
-      // Load stream
       try {
-        await player.load(manifestUri);
-        console.log('The video has been loaded successfully!');
+        await player.load(proxyUrl + encodeURIComponent(manifestUri));
+        console.log('Stream loaded successfully!');
       } catch (e) {
         console.error('Error loading stream', e);
       }
