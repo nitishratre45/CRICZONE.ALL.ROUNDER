@@ -5,8 +5,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>criczone</title>
-<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<!-- Removed unwanted ad-network script to prevent pop-under ads and redirects. -->
 <meta name="referrer" content="no-referrer">
+
+<!-- Block unsolicited JavaScript pop-under windows. Normal links and Telegram button remain usable. -->
+<script>
+(function () {
+  try {
+    const blockedOpen = function () {
+      console.warn('CRICZONE: blocked unsolicited popup window.');
+      return null;
+    };
+    Object.defineProperty(window, 'open', {
+      value: blockedOpen,
+      writable: false,
+      configurable: false
+    });
+  } catch (e) {
+    try { window.open = function () { return null; }; } catch (_) {}
+  }
+})();
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
