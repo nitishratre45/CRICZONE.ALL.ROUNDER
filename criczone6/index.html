@@ -16,6 +16,49 @@
 </head>
 
 <body>
+<!-- CRICZONE anti-popunder guard: block unsolicited script-opened tabs/windows -->
+<script>
+(() => {
+  const blockedOpen = function() {
+    console.warn('[CRICZONE] Blocked unsolicited popup/redirect.');
+    return null;
+  };
+  try { window.open = blockedOpen; } catch (_) {}
+  try {
+    Object.defineProperty(window, 'open', { value: blockedOpen, writable: false, configurable: false });
+  } catch (_) {}
+  // Block scripted popup handlers attached to taps/clicks, while preserving normal site controls and links.
+  document.addEventListener('click', event => {
+    const link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (link && link.target === '_blank') {
+      const href = link.getAttribute('href') || '';
+      if (/^(javascript:|data:)/i.test(href.trim())) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }
+  }, true);
+  // Sandboxed iframes must not be granted allow-popups; this observer removes it if added later.
+  const sandboxFrames = root => {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll('iframe').forEach(frame => {
+      if (frame.hasAttribute('sandbox')) {
+        const tokens = frame.getAttribute('sandbox').split(/\s+/).filter(Boolean).filter(token => token !== 'allow-popups' && token !== 'allow-popups-to-escape-sandbox');
+        frame.setAttribute('sandbox', tokens.join(' '));
+      }
+    });
+  };
+  const watch = () => {
+    const host = document.querySelector('criczone-ui');
+    if (!host || !host.shadowRoot) return;
+    sandboxFrames(host.shadowRoot);
+    new MutationObserver(() => sandboxFrames(host.shadowRoot)).observe(host.shadowRoot, { childList: true, subtree: true, attributes: true, attributeFilter: ['sandbox'] });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch, { once: true });
+  else watch();
+})();
+</script>
+
 
     <criczone-ui></criczone-ui>
 
