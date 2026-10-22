@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/criczone6/style.css?v=criczone5-brand1">
+  
   <link rel="stylesheet" href="../site-polish.css?v=20261022-criczone5">
   <style>
     html, body { margin:0; min-height:100%; background:#050609; }
@@ -45,14 +45,26 @@
     customElements.whenDefined('criczone-ui').then(() => {
       const host = document.querySelector('criczone-ui');
       if (!host || !host.shadowRoot) return;
+
+      // Styles inside a Shadow DOM must be linked inside that Shadow Root.
+      // A normal <link> in the page head cannot style the player's internal UI.
+      const shadow = host.shadowRoot;
+      if (!shadow.querySelector('link[data-criczone-theme]')) {
+        const theme = document.createElement('link');
+        theme.rel = 'stylesheet';
+        theme.href = '/criczone6/style.css?v=criczone5-shadow-ui2';
+        theme.dataset.criczoneTheme = 'true';
+        shadow.prepend(theme);
+      }
+
       const applyPlayerSandbox = () => {
-        const frame = host.shadowRoot.querySelector('iframe#player');
+        const frame = shadow.querySelector('iframe#player');
         if (frame && !frame.hasAttribute('sandbox')) {
           frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
         }
       };
       const observer = new MutationObserver(applyPlayerSandbox);
-      observer.observe(host.shadowRoot, { childList: true, subtree: true });
+      observer.observe(shadow, { childList: true, subtree: true });
       applyPlayerSandbox();
     });
   </script>
