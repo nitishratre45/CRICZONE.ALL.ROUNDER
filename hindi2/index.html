@@ -301,30 +301,55 @@
                     hls.attachMedia(video);
 
                     hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        // Get quality levels
-                        const levels = hls.levels
-                            .map(l => l.height)
-                            .filter(Boolean)
-                            .sort((a, b) => a - b);
+                        // Build quality choices only from renditions that actually exist.
+                        // A fake [360, 480, 720, 1080] list makes the menu look functional
+                        // even when the stream offers no matching variants.
+                        const levelsByHeight = new Map();
+                        hls.levels.forEach((level, index) => {
+                            const height = Number(level.height);
+                            if (!Number.isFinite(height) || height <= 0) return;
+                            const prior = levelsByHeight.get(height);
+                            const bitrate = Number(level.bitrate || level.maxBitrate || 0);
+                            const priorBitrate = prior ? Number(prior.level.bitrate || prior.level.maxBitrate || 0) : -1;
+                            // For duplicate resolutions, choose the highest-bitrate rendition.
+                            if (!prior || bitrate >= priorBitrate) {
+                                levelsByHeight.set(height, { index, level });
+                            }
+                        });
+                        const qualityEntries = [...levelsByHeight.entries()]
+                            .sort((a, b) => a[0] - b[0]);
+                        const qualities = qualityEntries.map(([height]) => height);
+                        const qualityIndexByHeight = new Map(
+                            qualityEntries.map(([height, entry]) => [height, entry.index])
+                        );
 
-                        // Init Plyr
-                        plyrInstance = new Plyr(video, {
+                        const playerOptions = {
                             controls: [
                                 'play-large', 'play', 'progress', 'current-time',
                                 'mute', 'volume', 'settings', 'fullscreen'
                             ],
-                            settings: ['quality'],
+                            settings: qualities.length ? ['quality'] : [],
                             quality: {
-                                default: levels[levels.length - 1] || 720,
-                                options: levels.length ? levels : [360, 480, 720, 1080],
+                                default: qualities.length ? qualities[qualities.length - 1] : undefined,
+                                options: qualities,
                                 forced: true,
                                 onChange: (newQuality) => {
-                                    hls.levels.forEach((level, index) => {
-                                        if (level.height === newQuality) hls.currentLevel = index;
-                                    });
+                                    const targetIndex = qualityIndexByHeight.get(Number(newQuality));
+                                    if (targetIndex === undefined || !hls.levels[targetIndex]) {
+                                        console.warn('CRICZONE: selected quality is not available in this stream:', newQuality);
+                                        return;
+                                    }
+                                    // currentLevel switches immediately and disables ABR auto selection
+                                    // until the viewer picks another quality.
+                                    hls.currentLevel = targetIndex;
                                 }
                             }
-                        });
+                        };
+                        if (!qualities.length) {
+                            console.warn('CRICZONE: HLS manifest exposed no selectable resolution levels.');
+                            delete playerOptions.quality;
+                        }
+                        plyrInstance = new Plyr(video, playerOptions);
 
                         // ========== KEY CHANGE: Start with pause but unmuted ==========
                         // First ensure video is unmuted
