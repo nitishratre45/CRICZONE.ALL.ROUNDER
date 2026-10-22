@@ -422,6 +422,105 @@
     })();
 </script>
 
+
+<!-- CRICZONE live channel directory: reuses the repository's channel feed -->
+<button id="czLiveOpen" class="cz-live-open" type="button"><span class="cz-live-pulse"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm6 4v6l5-3-5-3Z"/></svg><span>LIVE CHANNELS</span></button>
+<div id="czLiveDirectory" class="cz-live-directory" aria-hidden="true">
+  <section class="cz-live-panel" role="dialog" aria-modal="true" aria-labelledby="czLiveTitle">
+    <header class="cz-live-head"><div><span class="cz-live-kicker">CRICZONE BROADCAST</span><h2 id="czLiveTitle">Live Channels</h2><p>Select a channel to start watching.</p></div><button id="czLiveClose" type="button" aria-label="Close channels">×</button></header>
+    <div id="czLiveStatus" class="cz-live-status"><span class="cz-live-spinner"></span>Loading channel list…</div>
+    <div id="czLiveGrid" class="cz-live-grid"></div>
+  </section>
+</div>
+<div id="czLiveFrameLayer" class="cz-live-frame-layer" aria-hidden="true">
+  <header class="cz-live-frame-head"><button id="czLiveBack" type="button">← All Channels</button><strong id="czLiveNow">CRICZONE LIVE</strong><button id="czLiveFrameClose" type="button" aria-label="Close player">×</button></header>
+  <iframe id="czLiveFrame" title="CRICZONE live channel player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
+</div>
+<style>
+.cz-live-open{position:absolute;z-index:35;left:50%;bottom:max(22px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:9px;min-height:47px;padding:0 19px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:linear-gradient(110deg,#ff512f,#f09819);box-shadow:0 10px 35px rgba(255,81,47,.27);color:#fff;font:850 11px system-ui,sans-serif;letter-spacing:1px;white-space:nowrap;cursor:pointer;transition:filter .2s,transform .2s}
+.cz-live-open:hover{filter:brightness(1.1);transform:translateX(-50%) translateY(-2px)}
+.cz-live-open svg{width:17px;height:17px;fill:currentColor}
+.cz-live-pulse{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.16);animation:czLiveBeat 1.6s infinite}
+.cz-live-directory{position:fixed;inset:0;z-index:100100;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(2,5,11,.82);backdrop-filter:blur(10px);visibility:hidden;opacity:0;transition:opacity .22s,visibility .22s}
+.cz-live-directory.cz-live-visible{visibility:visible;opacity:1}
+.cz-live-panel{width:min(850px,100%);max-height:min(82vh,780px);overflow:auto;border:1px solid rgba(255,255,255,.12);border-radius:22px;background:#0a111d;color:#f8fafc;box-shadow:0 30px 100px rgba(0,0,0,.6);padding:24px}
+.cz-live-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:20px}
+.cz-live-kicker{font-size:9px;font-weight:900;letter-spacing:2px;color:#ff9a62}
+.cz-live-head h2{margin:7px 0;font-size:27px;font-weight:900;letter-spacing:-.8px}
+.cz-live-head p{color:#9aa9be;font-size:12px}
+#czLiveClose,#czLiveFrameClose{width:36px;height:36px;flex:0 0 36px;border:1px solid rgba(255,255,255,.13);border-radius:50%;background:#141e2d;color:#fff;font-size:24px;cursor:pointer}
+.cz-live-status{display:flex;align-items:center;gap:10px;padding:18px;color:#9fb0c5;font-size:12px}
+.cz-live-spinner{width:17px;height:17px;border:2px solid #334155;border-top-color:#ff7547;border-radius:50%;animation:czLiveSpin .8s linear infinite}
+.cz-live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cz-live-card{display:flex;align-items:center;gap:12px;min-width:0;padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:linear-gradient(145deg,#111d2d,#0d1522);color:#f8fafc;text-align:left;cursor:pointer;transition:border-color .2s,transform .2s}
+.cz-live-card:hover{border-color:rgba(255,123,76,.7);transform:translateY(-2px)}
+.cz-live-card-icon{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:linear-gradient(135deg,#ff512f,#f09819);font-size:13px;font-weight:950}
+.cz-live-card-copy{min-width:0}
+.cz-live-card-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800}
+.cz-live-card-copy small{display:block;margin-top:5px;color:#40df9a;font-size:9px;font-weight:800;letter-spacing:1px}
+.cz-live-error{padding:20px;border:1px solid rgba(255,110,110,.2);border-radius:12px;background:rgba(255,80,80,.06);color:#ffb4b4;font-size:12px;line-height:1.7}
+.cz-live-frame-layer{position:fixed;inset:0;z-index:100050;display:none;flex-direction:column;background:#03060b}
+.cz-live-frame-layer.cz-frame-visible{display:flex}
+.cz-live-frame-head{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;background:#0b111d;border-bottom:1px solid rgba(255,255,255,.1);color:#fff}
+#czLiveBack{padding:9px 12px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:#151f2e;color:#fff;font:700 11px system-ui;cursor:pointer}
+#czLiveNow{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:850}
+#czLiveFrame{width:100%;height:100%;flex:1;border:0;background:#000}
+@keyframes czLiveSpin{to{transform:rotate(360deg)}}@keyframes czLiveBeat{50%{opacity:.55;box-shadow:0 0 0 7px rgba(255,255,255,.06)}}
+@media(max-width:620px){.cz-live-open{bottom:max(16px,env(safe-area-inset-bottom));min-height:43px;font-size:10px}.cz-live-panel{padding:17px;border-radius:18px;max-height:86vh}.cz-live-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.cz-live-card{padding:10px;gap:9px}.cz-live-card-icon{width:35px;height:35px;flex-basis:35px}.cz-live-card-copy strong{font-size:11px}.cz-live-head h2{font-size:23px}}
+@media(max-width:360px){.cz-live-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.cz-live-open,.cz-live-directory,.cz-live-card{transition:none}.cz-live-pulse,.cz-live-spinner{animation:none}}
+</style>
+<script>
+(function(){
+  const openBtn=document.getElementById('czLiveOpen');
+  const modal=document.getElementById('czLiveDirectory');
+  const closeBtn=document.getElementById('czLiveClose');
+  const status=document.getElementById('czLiveStatus');
+  const grid=document.getElementById('czLiveGrid');
+  const frameLayer=document.getElementById('czLiveFrameLayer');
+  const frame=document.getElementById('czLiveFrame');
+  const now=document.getElementById('czLiveNow');
+  const back=document.getElementById('czLiveBack');
+  const frameClose=document.getElementById('czLiveFrameClose');
+  if(!openBtn||!modal)return;
+  let channels=[];
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const open=()=>{modal.classList.add('cz-live-visible');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';if(!channels.length)loadChannels();};
+  const close=()=>{modal.classList.remove('cz-live-visible');modal.setAttribute('aria-hidden','true');if(!frameLayer.classList.contains('cz-frame-visible'))document.body.style.overflow='';};
+  async function loadChannels(){
+    status.style.display='flex';status.innerHTML='<span class="cz-live-spinner"></span>Loading channel list…';grid.innerHTML='';
+    try{
+      const res=await fetch('/api/channels?feed=directory',{cache:'no-store'});
+      if(!res.ok)throw new Error('Channel feed returned HTTP '+res.status);
+      const data=await res.json();
+      channels=Array.isArray(data)?data:(Array.isArray(data.iframes)?data.iframes:Array.isArray(data.channels)?data.channels:[]);
+      channels=channels.filter(ch=>ch&&typeof(ch.iframeSrc||ch.stream_url||ch.url)==='string'&&(ch.iframeSrc||ch.stream_url||ch.url).trim());
+      if(!channels.length)throw new Error('The feed returned no playable channels.');
+      status.style.display='none';
+      grid.innerHTML=channels.map((ch,i)=>'<button class="cz-live-card" type="button" data-channel="'+i+'"><span class="cz-live-card-icon">CZ</span><span class="cz-live-card-copy"><strong>'+esc(ch.name||ch.title||('Live Channel '+(i+1)))+'</strong><small>● AVAILABLE TO OPEN</small></span></button>').join('');
+    }catch(err){
+      status.style.display='block';
+      status.innerHTML='<div class="cz-live-error"><strong>Could not load channels.</strong><br>'+esc(err.message||'Please try again later.')+'<br><button id="czLiveRetry" type="button" style="margin-top:12px;padding:9px 13px;border:0;border-radius:9px;background:#ff653b;color:white;font-weight:800;cursor:pointer">Try again</button></div>';
+      const retry=document.getElementById('czLiveRetry');if(retry)retry.addEventListener('click',loadChannels);
+    }
+  }
+  function playChannel(ch){
+    const src=ch.iframeSrc||ch.stream_url||ch.url;
+    if(!src)return;
+    let safe;try{safe=new URL(src,location.href);if(!['http:','https:'].includes(safe.protocol))throw new Error();}catch(e){status.style.display='block';status.textContent='This channel has an invalid player URL.';return;}
+    now.textContent=ch.name||ch.title||'CRICZONE LIVE';
+    frame.src=safe.href;
+    frameLayer.classList.add('cz-frame-visible');frameLayer.setAttribute('aria-hidden','false');
+    close();document.body.style.overflow='hidden';
+  }
+  grid.addEventListener('click',e=>{const card=e.target.closest('[data-channel]');if(card)playChannel(channels[Number(card.dataset.channel)]);});
+  function closeFrame(){frame.src='about:blank';frameLayer.classList.remove('cz-frame-visible');frameLayer.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+  openBtn.addEventListener('click',open);closeBtn.addEventListener('click',close);back.addEventListener('click',()=>{closeFrame();open();});frameClose.addEventListener('click',closeFrame);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(frameLayer.classList.contains('cz-frame-visible'))closeFrame();else if(modal.classList.contains('cz-live-visible'))close();}});
+})();
+</script>
+
 <!-- CRICZONE Telegram welcome popup -->
 <div class="cz-tg-overlay" id="czTgOverlay" aria-hidden="true">
   <section class="cz-tg-modal" role="dialog" aria-modal="true" aria-labelledby="czTgTitle">
