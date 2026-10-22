@@ -45,3 +45,21 @@ th{font-weight:800}
 .card,.panel,.match-card,.match-card-container,.channel-card,.score-card,.scorecard,.fixture-card,.game-card,.stream-card,.channel-item,.match-item,.competition-card{
   border-color:var(--cz-line);
 }
+
+
+/* Telegram community modal */
+.cz-telegram-backdrop{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:20px;background:rgba(2,8,18,.78);backdrop-filter:blur(10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s ease}
+.cz-telegram-backdrop.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+.cz-telegram-modal{position:relative;box-sizing:border-box;width:min(100%,440px);padding:34px 28px 26px;overflow:hidden;text-align:center;color:#f5f8ff;background:radial-gradient(ellipse at 50% -15%,rgba(42,132,255,.30),transparent 58%),linear-gradient(155deg,#102541,#071321 72%);border:1px solid rgba(120,190,255,.32);border-radius:25px;box-shadow:0 28px 90px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.07);transform:translateY(14px) scale(.98);transition:transform .25s ease}
+.cz-telegram-backdrop.is-visible .cz-telegram-modal{transform:translateY(0) scale(1)}
+.cz-telegram-close{position:absolute;top:12px;right:14px;width:36px;height:36px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:rgba(255,255,255,.07);color:#eaf3ff;font-size:25px;line-height:1;cursor:pointer}
+.cz-telegram-icon{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 17px;border-radius:20px;background:linear-gradient(145deg,#35baf2,#1674db);color:#fff;font-size:30px;box-shadow:0 10px 30px rgba(26,142,230,.3)}
+.cz-telegram-kicker{margin:0 0 9px;color:#75d7ff;font:700 11px/1.4 'DM Mono',monospace;letter-spacing:2.2px}
+.cz-telegram-modal h2{margin:0 auto 12px;max-width:330px;font:800 clamp(23px,5vw,30px)/1.2 'Space Grotesk',sans-serif;letter-spacing:-.7px}
+.cz-telegram-modal h2 span{color:#66d5ff}
+.cz-telegram-copy{max-width:330px;margin:0 auto 23px;color:#b7c7dc;font:500 14px/1.7 'Manrope',sans-serif}
+.cz-telegram-join{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;box-sizing:border-box;padding:15px 18px;border-radius:14px;background:linear-gradient(100deg,#1688e9,#21b7df);color:#fff;text-decoration:none;font:800 15px 'Manrope',sans-serif;box-shadow:0 10px 26px rgba(20,139,218,.25)}
+.cz-telegram-join span{font-size:19px}
+.cz-telegram-later{margin-top:15px;padding:8px 14px;border:0;background:transparent;color:#9eb3cd;font:600 13px 'Manrope',sans-serif;cursor:pointer}
+@media(max-width:480px){.cz-telegram-modal{padding:30px 21px 22px;border-radius:22px}.cz-telegram-copy{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.cz-telegram-backdrop,.cz-telegram-modal{transition:none}}
