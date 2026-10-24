@@ -1,0 +1,789 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d18">
+
+  <title>Sky Sports NZ | CricZone</title>
+
+  <style>
+    :root {
+      --bg: #080d18;
+      --panel: #111a2b;
+      --blue: #168bea;
+      --cyan: #38b6f5;
+      --muted: #9aabc3;
+      --border: rgba(145, 177, 220, .17);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% -15%, #142b4b 0%, transparent 55%),
+        var(--bg);
+      color: #fff;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    button, a {
+      font: inherit;
+    }
+
+    header {
+      height: 68px;
+      padding: 0 clamp(16px, 5vw, 65px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(8, 13, 24, .88);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 1.3px;
+    }
+
+    .brand span {
+      color: var(--cyan);
+    }
+
+    .header-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #b9c8dc;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #35d68a;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #35d68a88;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1250px;
+      margin: auto;
+      padding: 30px 20px 45px;
+    }
+
+    .channel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+
+    h1 {
+      font-size: clamp(25px, 4vw, 36px);
+      line-height: 1.15;
+      font-weight: 850;
+      letter-spacing: -.8px;
+    }
+
+    .subtitle {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .channel-badge {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff06;
+      color: #d5e5f8;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .player {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid #34435b;
+      border-radius: 16px;
+      box-shadow: 0 24px 70px #0006;
+    }
+
+    .player iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    .player-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      padding: 20px;
+      text-align: center;
+      background: #080d18;
+    }
+
+    .player-overlay.hidden {
+      display: none;
+    }
+
+    .spinner {
+      width: 43px;
+      height: 43px;
+      border: 3px solid #263750;
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    .player-overlay h2 {
+      font-size: 18px;
+    }
+
+    .player-overlay p {
+      max-width: 350px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+      margin-top: 19px;
+    }
+
+    .action-btn {
+      min-height: 45px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 17px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #131e30;
+      color: #edf5ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .action-btn:hover {
+      border-color: #398fda;
+      background: #1a2b43;
+      transform: translateY(-1px);
+    }
+
+    .action-btn.primary {
+      border-color: transparent;
+      background: linear-gradient(110deg, #0877db, #28a6ed);
+      color: #fff;
+    }
+
+    .info-panel {
+      margin-top: 25px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #111b2c, #0c1422);
+    }
+
+    .info-panel h2 {
+      font-size: 15px;
+      margin-bottom: 9px;
+    }
+
+    .info-panel p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    footer {
+      padding: 22px 15px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: #788ba6;
+      font-size: 12px;
+    }
+
+    /* TELEGRAM POPUP */
+
+    .tg-popup,
+    .tg-popup * {
+      box-sizing: border-box;
+    }
+
+    .tg-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+
+      background: rgba(2, 6, 16, .80);
+      backdrop-filter: blur(0);
+      -webkit-backdrop-filter: blur(0);
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transition:
+        opacity .35s ease,
+        visibility .35s ease,
+        backdrop-filter .35s ease;
+    }
+
+    .tg-popup.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .tg-card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      width: 100%;
+      max-width: 390px;
+      padding: 36px 27px 25px;
+      text-align: center;
+      color: #f8fbff;
+
+      background:
+        radial-gradient(
+          ellipse at 50% -15%,
+          rgba(41, 157, 255, .27),
+          transparent 60%
+        ),
+        linear-gradient(155deg, #17243a, #0b1120 68%, #080d18);
+
+      border: 1px solid rgba(106, 173, 255, .25);
+      border-radius: 25px;
+
+      box-shadow:
+        0 30px 100px #0009,
+        0 0 45px #1885ff15,
+        inset 0 1px 0 #ffffff12;
+
+      transform: translateY(28px) scale(.94);
+      opacity: 0;
+
+      transition:
+        transform .4s cubic-bezier(.2, .8, .2, 1),
+        opacity .35s ease;
+    }
+
+    .tg-popup.show .tg-card {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .tg-card::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(
+        90deg, transparent, #45b6ff, #b0e4ff, transparent
+      );
+      box-shadow: 0 0 18px #36aaff99;
+    }
+
+    .tg-close {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      border: 1px solid #ffffff12;
+      border-radius: 50%;
+      background: #ffffff0a;
+      color: #c6d3e6;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .tg-close:hover {
+      background: #ef4444;
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .tg-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 23px;
+      border: 1px solid #ffffff44;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #43c5ff, #1685e7);
+      color: #fff;
+      font-size: 34px;
+      box-shadow:
+        0 12px 30px #188ee64d,
+        inset 0 1px 1px #ffffff66;
+      animation: tgFloat 3s ease-in-out infinite;
+    }
+
+    .tg-icon::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border: 1px solid #34aaff3b;
+      border-radius: 29px;
+      animation: tgPulse 2.5s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes tgFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @keyframes tgPulse {
+      0% { transform: scale(.96); opacity: .7; }
+      100% { transform: scale(1.12); opacity: 0; }
+    }
+
+    .tg-card h2 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: clamp(23px, 5vw, 28px);
+      font-weight: 850;
+      line-height: 1.2;
+      letter-spacing: -.7px;
+    }
+
+    .tg-card p {
+      max-width: 290px;
+      margin: 0 auto 24px;
+      color: #a9b8ce;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .tg-join {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 52px;
+      padding: 15px 18px;
+      border: 1px solid #ffffff33;
+      border-radius: 13px;
+      background: linear-gradient(110deg, #168be8, #229ed9 55%, #38b6f5);
+      color: #fff !important;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: .5px;
+      box-shadow: 0 8px 24px #148be83d;
+      transition: transform .2s ease, filter .2s ease;
+    }
+
+    .tg-join:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 12px 30px #148be855;
+    }
+
+    .tg-join:active {
+      transform: scale(.98);
+    }
+
+    .tg-later {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 9px 16px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: #8fa1bb;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .tg-later:hover {
+      background: #ffffff0d;
+      color: #fff;
+    }
+
+    .tg-close:focus-visible,
+    .tg-join:focus-visible,
+    .tg-later:focus-visible,
+    .action-btn:focus-visible {
+      outline: 2px solid #65c4ff;
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 600px) {
+      header { height: 60px; }
+      .brand { font-size: 20px; }
+
+      main {
+        padding: 23px 12px 32px;
+      }
+
+      .player {
+        aspect-ratio: 16 / 9;
+        border-radius: 11px;
+      }
+
+      .channel-badge {
+        font-size: 11px;
+      }
+
+      .actions > * {
+        flex: 1 1 calc(50% - 8px);
+      }
+
+      .tg-card {
+        max-width: 360px;
+        padding: 33px 22px 23px;
+        border-radius: 22px;
+      }
+
+      .tg-icon {
+        width: 69px;
+        height: 69px;
+        margin-bottom: 21px;
+        border-radius: 22px;
+      }
+
+      .tg-card p {
+        font-size: 13px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">CRIC<span>ZONE</span></div>
+    <div class="header-tag">
+      <span class="status-dot"></span>
+      SPORTS CHANNEL
+    </div>
+  </header>
+
+  <main>
+    <section class="channel-heading">
+      <div>
+        <div class="eyebrow">Live Sports Experience</div>
+        <h1>Sky Sports NZ</h1>
+        <p class="subtitle">
+          Watch through the available channel source.
+        </p>
+      </div>
+
+      <div class="channel-badge">🇳🇿 NEW ZEALAND</div>
+    </section>
+
+    <section class="player" id="player">
+      <div class="player-overlay" id="playerOverlay">
+        <div class="spinner" id="spinner"></div>
+        <h2 id="playerStatus">Loading channel...</h2>
+        <p id="playerMessage">
+          Connecting to the channel source.
+        </p>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="action-btn primary" id="reloadBtn">
+        ↻ Reload Player
+      </button>
+
+      <button class="action-btn" id="fullscreenBtn">
+        ⛶ Fullscreen
+      </button>
+
+      <a
+        class="action-btn"
+        href="https://ntg-cwd.pages.dev/nz"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        ↗ Open Source
+      </a>
+    </div>
+
+    <section class="info-panel">
+      <h2>📺 Channel Information</h2>
+      <p>
+        The player loads the configured channel source.
+        Playback depends on source availability and its embedding
+        permissions. If the video does not appear, use Open Source
+        to test the original page.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    © CricZone · Sports Channel Interface
+  </footer>
+
+  <!-- TELEGRAM POPUP -->
+  <div
+    class="tg-popup"
+    id="tgPopup"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tgTitle"
+    aria-describedby="tgDescription"
+    aria-hidden="true"
+  >
+    <div class="tg-card">
+      <button
+        class="tg-close"
+        id="tgClose"
+        aria-label="Close Telegram popup"
+      >&times;</button>
+
+      <div class="tg-icon" aria-hidden="true">✈</div>
+
+      <h2 id="tgTitle">Join Our Telegram!</h2>
+
+      <p id="tgDescription">
+        Join the CricZone community for cricket updates,
+        match notifications and the latest sports news.
+      </p>
+
+      <a
+        class="tg-join"
+        href="https://t.me/+v8_IrHXnIik0Y2U1"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="tgJoin"
+      >
+        ✈ JOIN TELEGRAM
+      </a>
+
+      <button class="tg-later" id="tgLater">
+        Maybe Later
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SOURCE = "https://ntg-cwd.pages.dev/nz";
+      const TELEGRAM_DELAY = 60000;
+
+      const player = document.getElementById("player");
+      const overlay = document.getElementById("playerOverlay");
+      const spinner = document.getElementById("spinner");
+      const playerStatus = document.getElementById("playerStatus");
+      const playerMessage = document.getElementById("playerMessage");
+
+      const popup = document.getElementById("tgPopup");
+      const closeBtn = document.getElementById("tgClose");
+      const laterBtn = document.getElementById("tgLater");
+      const joinBtn = document.getElementById("tgJoin");
+
+      let loadTimer;
+
+      // PLAYER
+      function loadPlayer() {
+        clearTimeout(loadTimer);
+
+        const oldFrame = document.getElementById("channelFrame");
+        if (oldFrame) oldFrame.remove();
+
+        overlay.classList.remove("hidden");
+        spinner.style.display = "block";
+        playerStatus.textContent = "Loading channel...";
+        playerMessage.textContent =
+          "Waiting for the channel source to respond.";
+
+        const frame = document.createElement("iframe");
+        frame.id = "channelFrame";
+        frame.title = "Sky Sports NZ";
+        frame.src = SOURCE;
+        frame.allow = "autoplay; fullscreen; picture-in-picture";
+        frame.allowFullscreen = true;
+        frame.referrerPolicy = "strict-origin-when-cross-origin";
+
+        loadTimer = setTimeout(() => {
+          if (!frame.isConnected) return;
+
+          spinner.style.display = "none";
+          playerStatus.textContent = "Check channel playback";
+          playerMessage.textContent =
+            "The source may block embedding or video playback. " +
+            "Try opening the source directly.";
+        }, 10000);
+
+        frame.addEventListener("load", () => {
+          clearTimeout(loadTimer);
+          spinner.style.display = "none";
+          playerStatus.textContent = "Source page loaded";
+          playerMessage.textContent =
+            "If video is not visible, open the source directly.";
+
+          setTimeout(() => {
+            if (overlay.isConnected) {
+              overlay.classList.add("hidden");
+            }
+          }, 1500);
+        });
+
+        player.appendChild(frame);
+      }
+
+      document.getElementById("reloadBtn").addEventListener(
+        "click", loadPlayer
+      );
+
+      document.getElementById("fullscreenBtn").addEventListener(
+        "click", async () => {
+          try {
+            if (!document.fullscreenElement) {
+              await player.requestFullscreen();
+            } else {
+              await document.exitFullscreen();
+            }
+          } catch {
+            playerStatus.textContent = "Fullscreen unavailable";
+            playerMessage.textContent =
+              "Use the fullscreen control inside the source player.";
+            spinner.style.display = "none";
+            overlay.classList.remove("hidden");
+          }
+        }
+      );
+
+      // TELEGRAM POPUP
+      function showPopup() {
+        popup.classList.add("show");
+        popup.setAttribute("aria-hidden", "false");
+        closeBtn.focus();
+      }
+
+      function hidePopup() {
+        popup.classList.remove("show");
+        popup.setAttribute("aria-hidden", "true");
+
+        try {
+          sessionStorage.setItem("criczoneTgDismissed", "1");
+        } catch {}
+      }
+
+      let dismissed = false;
+
+      try {
+        dismissed =
+          sessionStorage.getItem("criczoneTgDismissed") === "1";
+      } catch {}
+
+      if (!dismissed) {
+        setTimeout(() => {
+          let stillDismissed = false;
+
+          try {
+            stillDismissed =
+              sessionStorage.getItem("criczoneTgDismissed") === "1";
+          } catch {}
+
+          if (!stillDismissed) showPopup();
+        }, TELEGRAM_DELAY);
+      }
+
+      closeBtn.addEventListener("click", hidePopup);
+      laterBtn.addEventListener("click", hidePopup);
+
+      popup.addEventListener("click", event => {
+        if (event.target === popup) hidePopup();
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && popup.classList.contains("show")) {
+          hidePopup();
+        }
+      });
+
+      joinBtn.addEventListener("click", () => {
+        try {
+          sessionStorage.setItem("criczoneTgDismissed", "1");
+        } catch {}
+      });
+
+      loadPlayer();
+    })();
+  </script>
+</body>
+</html>
