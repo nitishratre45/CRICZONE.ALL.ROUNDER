@@ -9,13 +9,12 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<meta
-    name="referrer"
-    content="no-referrer"
->
+<meta name="referrer" content="no-referrer">
 
-<title>TG_@Cricinsider365</title>
-<script>(function(s){s.dataset.zone='11621694',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<title>CRICZONE | Live Cricket</title>
+<meta name="theme-color" content="#070b12">
+<meta name="description" content="CRICZONE live cricket player">
+<meta name="referrer" content="no-referrer">
 
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.1.10/dist/shaka-player.ui.min.js"></script>
 
@@ -489,6 +488,69 @@ window.addEventListener(
     }
 );
 
+</script>
+
+
+<style>
+/* CRICZONE premium player ambience + Telegram community popup */
+:root{color-scheme:dark;--cz-accent:#27d7a1;--cz-blue:#50b7ff}
+.shaka-video-container{background:radial-gradient(ellipse at top,#101b30 0%,#02040a 58%,#000 100%)}
+.shaka-controls-container .shaka-overflow-menu,.shaka-controls-container .shaka-settings-menu{border:1px solid rgba(90,190,255,.18);border-radius:14px;backdrop-filter:blur(18px)}
+.cz-tg-backdrop{position:fixed;inset:0;z-index:1000000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,16,.76);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease}
+.cz-tg-backdrop.cz-show{opacity:1;visibility:visible}
+.cz-tg-card{position:relative;width:min(100%,420px);overflow:hidden;padding:34px 28px 28px;text-align:center;color:#f6fbff;border:1px solid rgba(133,206,255,.24);border-radius:24px;background:linear-gradient(150deg,rgba(17,35,59,.98),rgba(6,12,24,.98));box-shadow:0 28px 90px rgba(0,0,0,.65),0 0 48px rgba(39,166,255,.12);transform:translateY(18px) scale(.97);transition:transform .3s cubic-bezier(.2,.8,.2,1);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.cz-tg-backdrop.cz-show .cz-tg-card{transform:translateY(0) scale(1)}
+.cz-tg-card:before{content:"";position:absolute;top:0;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--cz-accent),var(--cz-blue),transparent)}
+.cz-tg-close{position:absolute;top:12px;right:13px;width:35px;height:35px;border:1px solid rgba(255,255,255,.13);border-radius:50%;color:#dceeff;background:rgba(255,255,255,.06);font-size:24px;cursor:pointer}
+.cz-tg-icon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 18px;border-radius:21px;color:#fff;font-size:31px;background:linear-gradient(145deg,#36c8ff,#177ce7);box-shadow:0 12px 35px rgba(34,157,255,.3)}
+.cz-tg-tag{margin:0 0 10px;color:#76edc6;font-size:11px;font-weight:800;letter-spacing:2.5px}
+.cz-tg-card h2{margin:0 0 12px;font-size:clamp(23px,6vw,30px);line-height:1.18;letter-spacing:-.7px}
+.cz-tg-card h2 span{color:#55c9ff}
+.cz-tg-copy{margin:0 auto 24px;max-width:310px;color:#aebed1;font-size:14px;line-height:1.7}
+.cz-tg-join{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;border-radius:14px;color:#04111c;background:linear-gradient(100deg,#65edc3,#55caff);font-weight:900;text-decoration:none;box-shadow:0 10px 28px rgba(56,205,217,.2);transition:transform .2s,filter .2s}
+.cz-tg-join:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.cz-tg-later{display:inline-block;margin-top:16px;padding:8px 12px;border:0;color:#94a8bd;background:transparent;font:600 13px system-ui,sans-serif;cursor:pointer}
+.cz-tg-later:hover{color:#fff}
+@media(max-width:480px){.cz-tg-card{padding:31px 21px 22px;border-radius:21px}.cz-tg-copy{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.cz-tg-backdrop,.cz-tg-card,.cz-tg-join{transition:none}}
+</style>
+
+<!-- CRICZONE Telegram popup, using the existing community link from other site folder -->
+<div class="cz-tg-backdrop" id="czTelegramPopup" aria-hidden="true">
+  <section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="czTgTitle">
+    <button class="cz-tg-close" id="czTgClose" type="button" aria-label="Close popup">×</button>
+    <div class="cz-tg-icon" aria-hidden="true">➤</div>
+    <p class="cz-tg-tag">CRICZONE COMMUNITY</p>
+    <h2 id="czTgTitle">Match updates. <span>One place.</span></h2>
+    <p class="cz-tg-copy">Join our Telegram community for match updates and important announcements.</p>
+    <a class="cz-tg-join" href="https://t.me/+5hrS9VoLS8tjOTM1" target="_blank" rel="noopener noreferrer">✈ Join Telegram</a>
+    <button class="cz-tg-later" id="czTgLater" type="button">Maybe later</button>
+  </section>
+</div>
+<script>
+(function(){
+  const popup=document.getElementById('czTelegramPopup');
+  if(!popup)return;
+  const closeBtn=document.getElementById('czTgClose');
+  const laterBtn=document.getElementById('czTgLater');
+  let showTimer;
+  function closePopup(){
+    popup.classList.remove('cz-show');
+    popup.setAttribute('aria-hidden','true');
+    try{sessionStorage.setItem('czTelegramDismissed','1')}catch(e){}
+  }
+  function showPopup(){
+    try{if(sessionStorage.getItem('czTelegramDismissed')==='1')return}catch(e){}
+    popup.classList.add('cz-show');
+    popup.setAttribute('aria-hidden','false');
+  }
+  closeBtn.addEventListener('click',closePopup);
+  laterBtn.addEventListener('click',closePopup);
+  popup.addEventListener('click',e=>{if(e.target===popup)closePopup()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&popup.classList.contains('cz-show'))closePopup()});
+  try{if(sessionStorage.getItem('czTelegramDismissed')!=='1')showTimer=setTimeout(showPopup,12000)}catch(e){showTimer=setTimeout(showPopup,12000)}
+  window.addEventListener('pagehide',()=>clearTimeout(showTimer));
+})();
 </script>
 
 </body>
