@@ -112,8 +112,11 @@
   widget.setAttribute("data-onauth", "onCriczoneTelegramAuth(user)");
   gate.querySelector("#czmg-login").appendChild(widget);
 
-  // If a previously verified tab is reopened, require fresh verification instead of trusting local storage.
-  window.addEventListener("pageshow", () => {
-    if (!verified && !document.getElementById(ROOT_ID)) return;
+  // If the browser restores this page from its back-forward cache after a Telegram
+  // login/navigation, make sure the gate is mounted again rather than leaving a blank page.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted && !document.getElementById(ROOT_ID)) {
+      window.location.reload();
+    }
   });
 })();
