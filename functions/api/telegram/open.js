@@ -19,7 +19,7 @@ export async function onRequestGet({ request, env }) {
     return json({ ok: false, error: "This channel link is not allowed." }, 403);
   }
   try {
-    const canonical = uid + "\\n" + String(exp) + "\\n" + target.href;
+    const canonical = uid + "\n" + String(exp) + "\n" + target.href;
     const expected = await sign(env.BOT_TOKEN, canonical);
     if (!constantTimeEqual(expected, signature)) return json({ ok: false, error: "Invalid channel access signature." }, 403);
 
@@ -62,7 +62,7 @@ async function sign(secret, value) {
   const bytes = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value)));
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 async function createSessionCookie(secret, id, expiresAtMs) {
   const payload = base64UrlEncode(new TextEncoder().encode(JSON.stringify({ id, exp: Math.floor(expiresAtMs / 1000) })));
@@ -73,7 +73,7 @@ async function createSessionCookie(secret, id, expiresAtMs) {
 function base64UrlEncode(bytes) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 function constantTimeEqual(a, b) {
   if (a.length !== b.length) return false;
