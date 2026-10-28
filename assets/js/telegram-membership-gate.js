@@ -99,7 +99,9 @@
     const botTab = window.open("about:blank", "_blank");
     try {
       const response = await fetch("/api/telegram/start", {
-        method: "POST", credentials: "same-origin", cache: "no-store"
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ return_url: window.location.href })
       });
       const result = await response.json();
       if (!response.ok || !result.ok || !result.nonce || !result.bot_url) {
