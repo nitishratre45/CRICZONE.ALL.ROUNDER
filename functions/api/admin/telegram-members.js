@@ -16,7 +16,7 @@ export async function onRequestGet({ request, env }) {
       "SELECT telegram_id, first_name, username, membership_status, verified_at FROM telegram_members ORDER BY verified_at DESC LIMIT 500"
     ).all();
     const botStartSummary = await env.TELEGRAM_DB.prepare(
-      "SELECT COUNT(*) AS started_users, MAX(started_at) AS last_started FROM telegram_bot_starts"
+      "SELECT COUNT(*) AS total_starts, COUNT(DISTINCT telegram_id) AS unique_starters, MAX(started_at) AS last_started FROM telegram_bot_starts"
     ).first();
     const botStarts = await env.TELEGRAM_DB.prepare(
       "SELECT telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type FROM telegram_bot_starts ORDER BY started_at DESC LIMIT 500"
