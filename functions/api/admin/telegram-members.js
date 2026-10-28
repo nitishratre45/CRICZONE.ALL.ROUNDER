@@ -23,7 +23,17 @@ export async function onRequestGet({ request, env }) {
         if (tg.ok && data.ok) channelMembers = data.result;
       } catch {}
     }
-    return json({ ok: true, summary: summary || {}, channel_members: channelMembers, users: rows.results || [] }, 200);
+    return json({
+      ok: true,
+      summary: summary || {},
+      channel_members: channelMembers,
+      bot_configured: Boolean(env.BOT_TOKEN),
+      configuration_warnings: [
+        ...(!env.BOT_TOKEN ? ["BOT_TOKEN is missing in Cloudflare Production secrets; channel member count cannot be fetched."] : []),
+        ...((summary?.unique_users || 0) === 0 ? ["No successful membership verifications have been saved yet. Existing Telegram subscribers are not automatically imported into this database."] : [])
+      ],
+      users: rows.results || []
+    }, 200);
   } catch (error) {
     return json({ ok: false, error: "Could not read dashboard data. Check that schema.sql has been applied." }, 500);
   }
