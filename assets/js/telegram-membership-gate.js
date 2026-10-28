@@ -41,7 +41,7 @@
     #${ROOT_ID} .czmg-secondary{background:#152b41;border:1px solid #35536e;color:#e7f4ff;box-shadow:none}
     #${ROOT_ID} .czmg-divider{display:flex;align-items:center;gap:10px;margin:15px 0;color:#7189a2;font-size:11px}
     #${ROOT_ID} .czmg-divider:before,#${ROOT_ID} .czmg-divider:after{content:"";height:1px;flex:1;background:#263e55}
-    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:46px;margin:10px 0 4px}
+    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:64px;margin:10px 0 4px;padding:12px 8px;border:1px solid #345b7b;border-radius:15px;background:linear-gradient(90deg,rgba(4,13,26,.78),rgba(4,13,26,.6)),url("/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat;box-shadow:inset 0 0 24px #0007}
     #${ROOT_ID} .czmg-status{min-height:22px;margin-top:10px;font-size:12px;line-height:1.5;color:#ffd38a;overflow-wrap:anywhere}
     #${ROOT_ID} .czmg-note{font-size:11px;line-height:1.5;color:#849ab2;margin-top:15px}
     #${ROOT_ID} .czmg-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;color:#78c9a7;font-size:11px}
