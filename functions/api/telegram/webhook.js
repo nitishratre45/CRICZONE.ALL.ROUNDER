@@ -29,7 +29,58 @@ export async function onRequestPost({ request, env }) {
 
   const callback = update?.callback_query;
   if (callback?.id) {
-    try { await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({callback_query_id:callback.id}) }); } catch {}
+    const callbackData = String(callback.data || "");
+    const verifyMatch = callbackData.match(/^verify_join:([a-f0-9-]{36})$/i);
+    try {
+      await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: callback.id, text: "Checking channel membership…" })
+      });
+    } catch {}
+    if (verifyMatch && callback.from?.id && callback.message?.chat?.id) {
+      const nonce = verifyMatch[1];
+      const chatId = callback.message.chat.id;
+      const userId = callback.from.id;
+      try {
+        const pending = await env.TELEGRAM_DB.prepare(
+          "SELECT nonce, return_url FROM telegram_login_requests WHERE nonce = ? AND status IN ('pending','not_member') AND expires_at > ?"
+        ).bind(nonce, Date.now()).first();
+        if (!pending) {
+          await sendMessage(env.BOT_TOKEN, chatId, "This sign-in link expired. Return to CRICZONE and tap Continue with Telegram Bot again.");
+          return json({ ok: true });
+        }
+        const memberResponse = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHANNEL, user_id: Number(userId) })
+        });
+        const memberData = await memberResponse.json();
+        if (!memberResponse.ok || !memberData.ok || !memberData.result) {
+          await sendMessage(env.BOT_TOKEN, chatId, "I couldn't check membership right now. Please tap Verify membership again in a moment.");
+          return json({ ok: true });
+        }
+        const memberStatus = memberData.result.status;
+        const isMember = ["creator", "administrator", "member"].includes(memberStatus) ||
+          (memberStatus === "restricted" && memberData.result.is_member === true);
+        if (!isMember) {
+          await sendMessage(env.BOT_TOKEN, chatId, "I still can't see that you've joined @criczonelive. Join the channel first, then tap “I've Joined — Verify” below.", {
+            inline_keyboard: [
+              [{ text: "📢 Join @criczonelive", url: "https://t.me/criczonelive" }],
+              [{ text: "✅ I've Joined — Verify", callback_data: "verify_join:" + nonce }]
+            ]
+          });
+          return json({ ok: true });
+        }
+        await env.TELEGRAM_DB.prepare(
+          "UPDATE telegram_login_requests SET status = 'verified', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status IN ('pending','not_member')"
+        ).bind(String(userId), Date.now(), nonce).run();
+        await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; the website will unlock automatically.", pending.return_url ? {
+          inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]]
+        } : undefined);
+      } catch (error) {
+        console.error("Telegram join verification callback failed:", error?.message || error);
+        await sendMessage(env.BOT_TOKEN, chatId, "Verification couldn't finish right now. Please try again.");
+      }
+    }
     return json({ ok: true });
   }
 
@@ -100,7 +151,12 @@ export async function onRequestPost({ request, env }) {
       await env.TELEGRAM_DB.prepare(
         "UPDATE telegram_login_requests SET status = 'not_member', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status = 'pending'"
       ).bind(String(userId), Date.now(), nonce).run();
-      await sendMessage(env.BOT_TOKEN, chatId, "Please join @criczonelive first, then return to CRICZONE and check again.");
+      await sendMessage(env.BOT_TOKEN, chatId, "Please join @criczonelive first. After joining, tap “I've Joined — Verify” below; I'll check your membership and send you back to CRICZONE.", {
+        inline_keyboard: [
+          [{ text: "📢 Join @criczonelive", url: "https://t.me/criczonelive" }],
+          [{ text: "✅ I've Joined — Verify", callback_data: "verify_join:" + nonce }]
+        ]
+      });
       return json({ ok: true });
     }
     await env.TELEGRAM_DB.prepare(
