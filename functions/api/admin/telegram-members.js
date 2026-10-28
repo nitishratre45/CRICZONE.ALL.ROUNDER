@@ -15,6 +15,12 @@ export async function onRequestGet({ request, env }) {
     const rows = await env.TELEGRAM_DB.prepare(
       "SELECT telegram_id, first_name, username, membership_status, verified_at FROM telegram_members ORDER BY verified_at DESC LIMIT 500"
     ).all();
+    const botStartSummary = await env.TELEGRAM_DB.prepare(
+      "SELECT COUNT(*) AS started_users, MAX(started_at) AS last_started FROM telegram_bot_starts"
+    ).first();
+    const botStarts = await env.TELEGRAM_DB.prepare(
+      "SELECT telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type FROM telegram_bot_starts ORDER BY started_at DESC LIMIT 500"
+    ).all();
     let channelMembers = null;
     if (env.BOT_TOKEN) {
       try {
@@ -32,7 +38,9 @@ export async function onRequestGet({ request, env }) {
         ...(!env.BOT_TOKEN ? ["BOT_TOKEN is missing in Cloudflare Production secrets; channel member count cannot be fetched."] : []),
         ...((summary?.unique_users || 0) === 0 ? ["No successful membership verifications have been saved yet. Existing Telegram subscribers are not automatically imported into this database."] : [])
       ],
-      users: rows.results || []
+      users: rows.results || [],
+      bot_start_summary: botStartSummary || {},
+      bot_starts: botStarts.results || []
     }, 200);
   } catch (error) {
     return json({ ok: false, error: "Could not read dashboard data. Check that schema.sql has been applied." }, 500);
