@@ -133,14 +133,23 @@
   widget.setAttribute("data-onauth", "onCriczoneTelegramAuth(user)");
   gate.querySelector("#czmg-login").appendChild(widget);
 
-  // If this browser already has a valid, server-signed session, verify membership
-  // without displaying the login popup again. The server rechecks Telegram membership.
+  // Fail open to the visible login gate if the session endpoint is slow or unreachable.
+  // A valid session still closes the gate as soon as the server confirms membership.
+  let sessionResolved = false;
+  const showGateFallback = window.setTimeout(() => {
+    if (!sessionResolved && document.getElementById(ROOT_ID)) {
+      gate.style.visibility = "visible";
+    }
+  }, 1800);
+
   fetch("/api/telegram/session", {
     method: "GET",
     credentials: "same-origin",
     cache: "no-store"
   }).then(async (response) => {
     const result = await response.json().catch(() => ({}));
+    sessionResolved = true;
+    window.clearTimeout(showGateFallback);
     if (response.ok && result.ok && result.member) {
       verified = true;
       gate.remove();
@@ -150,6 +159,8 @@
     }
     gate.style.visibility = "visible";
   }).catch(() => {
+    sessionResolved = true;
+    window.clearTimeout(showGateFallback);
     gate.style.visibility = "visible";
   });
 
