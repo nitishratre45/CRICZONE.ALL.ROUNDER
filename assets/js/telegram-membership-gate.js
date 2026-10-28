@@ -104,7 +104,7 @@
       }
       verified = true;
       gate.remove();
-      style.remove();
+      // Keep this stylesheet active so legacy timed popups stay suppressed after verification.
       // This only unlocks the page UI; it does not secure a stream URL that is public elsewhere.
       document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { user: result.user } }));
     } catch {
@@ -155,7 +155,7 @@
     if (response.ok && result.ok && result.member) {
       verified = true;
       gate.remove();
-      style.remove();
+      // Keep this stylesheet active so legacy timed popups stay suppressed after verification.
       document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
     }
     gate.style.visibility = "visible";
