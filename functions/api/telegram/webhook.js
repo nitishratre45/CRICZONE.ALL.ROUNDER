@@ -122,7 +122,7 @@ export async function onRequestPost({ request, env }) {
           await sendCategoryMenu(env.BOT_TOKEN, chatId);
         } else {
           await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; the website will unlock automatically.", {
-            inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]]
+            inline_keyboard: [[{ text: "↩️ Return to the website", url: addLoginNonce(pending.return_url, nonce) }]]
           });
         }
       } catch (error) {
@@ -263,6 +263,16 @@ async function sendMessage(token, chatId, text, replyMarkup) {
     body: JSON.stringify({ chat_id: chatId, text, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) })
   });
 }
+function addLoginNonce(returnUrl, nonce) {
+  try {
+    const url = new URL(returnUrl);
+    url.searchParams.set("cz_tg_login_nonce", nonce);
+    return url.href;
+  } catch {
+    return returnUrl;
+  }
+}
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: {
     "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"
