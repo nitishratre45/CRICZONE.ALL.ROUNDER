@@ -27,8 +27,14 @@
     #${ROOT_ID} h2{font-size:clamp(25px,6vw,31px);line-height:1.1;letter-spacing:-.9px;margin:0 0 10px;color:#fff;text-wrap:balance;text-shadow:0 3px 18px #000b}
     #${ROOT_ID} .czmg-lead{font-size:13px;line-height:1.55;color:#e0eaf7;text-shadow:0 2px 8px #000;margin:0 auto 2px;max-width:330px}
     #${ROOT_ID} .czmg-step{backdrop-filter:blur(10px);background:linear-gradient(110deg,#10243be8,#0a1728e8);border-color:#34516d}
-    #${ROOT_ID} .czmg-btn{min-height:52px;border-radius:15px;font-size:14px;letter-spacing:.1px}
-    #${ROOT_ID} #czmg-join{background:linear-gradient(105deg,#62efc2,#57d4ff);box-shadow:0 8px 28px #32d5c52b}
+    #${ROOT_ID} .czmg-btn{min-height:54px;border-radius:16px;font-size:14px;letter-spacing:.15px;font-weight:850;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+    #${ROOT_ID} .czmg-join-display{cursor:default;user-select:none;-webkit-user-select:none;background:linear-gradient(110deg,#61f0c3 0%,#4fd8ee 58%,#59cfff 100%);color:#031724;border:1px solid #a4ffeb70;box-shadow:0 10px 30px #32d5c52b,inset 0 1px #ffffff75;position:relative;overflow:hidden}
+    #${ROOT_ID} .czmg-join-display:before{content:"";position:absolute;inset:1px;border-radius:15px;background:linear-gradient(110deg,#ffffff20,transparent 45%);pointer-events:none}
+    #${ROOT_ID} .czmg-join-display span{font-size:17px;filter:drop-shadow(0 2px 3px #0002)}
+    #${ROOT_ID} #czmg-bot-login{background:linear-gradient(110deg,#162b42,#102137);color:#eaf7ff;border:1px solid #345879;box-shadow:inset 0 1px #ffffff0b}
+    #${ROOT_ID} #czmg-bot-login:hover{border-color:#58c8ed;box-shadow:0 0 22px #31b7ff19}
+    #${ROOT_ID} .czmg-secondary{border:1px solid #345879;color:#d9efff;box-shadow:inset 0 1px #ffffff0b}
+    #${ROOT_ID} .czmg-btn:focus-visible{outline:3px solid #8be8ff;outline-offset:3px}
     #${ROOT_ID} .czmg-secondary{background:linear-gradient(135deg,#173652,#10263c);border:1px solid #3e6484;color:#f1f8ff}
     #${ROOT_ID} .czmg-steps{display:grid;gap:8px;margin:0 0 15px;text-align:left}
     #${ROOT_ID} .czmg-step{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;border:1px solid #27445f;border-radius:15px;background:linear-gradient(110deg,rgba(17,39,62,.92),rgba(9,22,37,.92));box-shadow:inset 0 1px #ffffff07}
@@ -67,7 +73,7 @@
         <div class="czmg-step"><div class="czmg-num">2</div><div><strong>Verify your Telegram</strong><span>Open our Telegram bot and press Start. No phone number is entered on this website.</span></div></div>
         <div class="czmg-step"><div class="czmg-num">3</div><div><strong>Start watching</strong><span>We check your channel membership and unlock the player automatically.</span></div></div>
       </div>
-      <a class="czmg-btn" href="${CHANNEL_URL}" target="_blank" rel="noopener noreferrer" id="czmg-join"><span aria-hidden="true">✈️</span> Join @criczonelive</a>
+      <div class="czmg-btn czmg-join-display" id="czmg-join" aria-label="Official channel: @criczonelive"><span aria-hidden="true">✈️</span> Join @criczonelive</div>
       <div class="czmg-divider">ALREADY A MEMBER?</div>
       <div class="czmg-login" id="czmg-login"><button class="czmg-btn" id="czmg-bot-login" type="button">✈️ Continue with Telegram Bot</button></div>
       <div class="czmg-status" id="czmg-status" role="status" aria-live="polite"></div>
