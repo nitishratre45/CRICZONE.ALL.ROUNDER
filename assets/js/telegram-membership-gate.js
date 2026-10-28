@@ -65,7 +65,8 @@
       <div class="czmg-secure"><span aria-hidden="true">✓</span> Membership checked securely with Telegram</div>
       <div class="czmg-note">Just joined? Wait a few seconds, sign in above, then check again. Keep this page open while you join.</div>
     </section>`;
-  gate.style.visibility = "hidden";\n  document.body.appendChild(gate);
+  gate.style.visibility = "hidden";
+  document.body.appendChild(gate);
 
   const status = gate.querySelector("#czmg-status");
   const retry = gate.querySelector("#czmg-retry");
