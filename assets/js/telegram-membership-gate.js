@@ -59,8 +59,8 @@
       <div class="czmg-hero">
         <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
         
-        <h2>Join Telegram to Watch</h2>
-        <p class="czmg-lead">Join our official public channel first, then sign in with Telegram so we can confirm your membership and unlock the player.</p>
+        <h2>Unlock Stream for 12 Hours</h2>
+        <p class="czmg-lead">Join our official Telegram channel to unlock the stream for 12 hours. Sign in with Telegram so we can confirm your membership.</p>
       </div>
       <div class="czmg-steps" aria-label="How to unlock the player">
         <div class="czmg-step"><div class="czmg-num">1</div><div><strong>Join the channel</strong><span>Tap the button below and join the channel in Telegram.</span></div></div>
@@ -226,7 +226,7 @@
   const showGateAfterDelay = window.setTimeout(() => {
     gateDelayElapsed = true;
     revealGateIfDue();
-  }, 60 * 1000);
+  }, 5 * 1000);
 
   ["fullscreenchange", "webkitfullscreenchange", "orientationchange", "pageshow", "visibilitychange"].forEach((eventName) => {
     document.addEventListener(eventName, () => {
