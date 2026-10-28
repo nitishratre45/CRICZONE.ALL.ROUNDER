@@ -63,85 +63,113 @@
         <p class="czmg-lead">Join our official public channel first, then sign in with Telegram so we can confirm your membership and unlock the player.</p>
       </div>
       <div class="czmg-steps" aria-label="How to unlock the player">
-        <div class="czmg-step"><div class="czmg-num">1</div><div><strong>Join the channel</strong><span>Tap the blue button below and press Join in Telegram.</span></div></div>
-        <div class="czmg-step"><div class="czmg-num">2</div><div><strong>Verify your Telegram</strong><span>Come back here and use the Telegram login button.</span></div></div>
-        <div class="czmg-step"><div class="czmg-num">3</div><div><strong>Start watching</strong><span>Once membership is confirmed, this popup closes automatically.</span></div></div>
+        <div class="czmg-step"><div class="czmg-num">1</div><div><strong>Join the channel</strong><span>Tap the button below and join the channel in Telegram.</span></div></div>
+        <div class="czmg-step"><div class="czmg-num">2</div><div><strong>Verify your Telegram</strong><span>Open our Telegram bot and press Start. No phone number is entered on this website.</span></div></div>
+        <div class="czmg-step"><div class="czmg-num">3</div><div><strong>Start watching</strong><span>We check your channel membership and unlock the player automatically.</span></div></div>
       </div>
       <a class="czmg-btn" href="${CHANNEL_URL}" target="_blank" rel="noopener noreferrer" id="czmg-join"><span aria-hidden="true">✈️</span> Join @criczonelive</a>
       <div class="czmg-divider">ALREADY A MEMBER?</div>
-      <div class="czmg-login" id="czmg-login"></div>
+      <div class="czmg-login" id="czmg-login"><button class="czmg-btn" id="czmg-bot-login" type="button">✈️ Continue with Telegram Bot</button></div>
       <div class="czmg-status" id="czmg-status" role="status" aria-live="polite"></div>
       <button class="czmg-btn czmg-secondary" id="czmg-retry" type="button">↻ Check membership again</button>
       <div class="czmg-secure"><span aria-hidden="true">✓</span> Membership checked securely with Telegram</div>
-      <div class="czmg-note">Just joined? Wait a few seconds, sign in above, then check again. Keep this page open while you join.</div>
+      <div class="czmg-note">Telegram will open in a new tab or app. Press Start in the bot and keep this page open while we verify your membership.</div>
     </section>`;
   gate.style.visibility = "hidden";
   document.body.appendChild(gate);
 
   const status = gate.querySelector("#czmg-status");
   const retry = gate.querySelector("#czmg-retry");
-  let lastTelegramUser = null;
   let verified = false;
+  let activeNonce = null;
+  let pollTimer = null;
+  const loginButton = gate.querySelector("#czmg-bot-login");
 
   function setStatus(message, isError = true) {
     status.textContent = message;
     status.style.color = isError ? "#ffd38a" : "#70f0bb";
   }
 
-  async function verify(user) {
-    if (!user) {
-      setStatus("Sign in with the Telegram button first.");
-      return;
-    }
-    lastTelegramUser = user;
-    retry.disabled = true;
-    retry.textContent = "Checking…";
-    setStatus("Checking your membership with Telegram…", false);
+  async function startBotVerification() {
+    if (loginButton.disabled) return;
+    loginButton.disabled = true;
+    loginButton.textContent = "Preparing Telegram…";
+    setStatus("Creating a secure sign-in request…", false);
+    // Open a blank tab synchronously to avoid popup blockers; navigate it after the API responds.
+    const botTab = window.open("about:blank", "_blank");
     try {
-      const response = await fetch(VERIFY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-        credentials: "same-origin",
-        body: JSON.stringify(user)
+      const response = await fetch("/api/telegram/start", {
+        method: "POST", credentials: "same-origin", cache: "no-store"
       });
       const result = await response.json();
-      if (!response.ok || !result.ok || !result.member) {
-        setStatus(result.error || "Membership could not be verified. Join the channel and retry.");
+      if (!response.ok || !result.ok || !result.nonce || !result.bot_url) {
+        if (botTab) botTab.close();
+        setStatus(result.error || "Could not start Telegram verification.");
         return;
       }
-      verified = true;
-      gate.remove();
-      // Keep this stylesheet active so legacy timed popups stay suppressed after verification.
-      // This only unlocks the page UI; it does not secure a stream URL that is public elsewhere.
-      document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { user: result.user } }));
+      activeNonce = result.nonce;
+      try { sessionStorage.setItem("cz_tg_login_nonce", activeNonce); } catch {}
+      if (botTab) botTab.location.href = result.bot_url;
+      else window.location.href = result.bot_url;
+      setStatus("Telegram opened. Press Start in the bot; this page will verify your membership automatically.", false);
+      beginPolling(activeNonce);
     } catch {
-      setStatus("Could not reach verification service. Check your connection and retry.");
+      if (botTab) botTab.close();
+      setStatus("Could not reach the verification service. Please retry.");
     } finally {
-      retry.disabled = false;
-      retry.textContent = "Check membership again";
+      loginButton.disabled = false;
+      loginButton.textContent = "✈️ Continue with Telegram Bot";
     }
   }
 
-  window.onCriczoneTelegramAuth = function(user) {
-    verify(user);
-  };
+  function beginPolling(nonce) {
+    if (pollTimer) clearInterval(pollTimer);
+    const startedAt = Date.now();
+    pollTimer = setInterval(async () => {
+      if (!document.getElementById(ROOT_ID)) { clearInterval(pollTimer); return; }
+      if (Date.now() - startedAt > 5 * 60 * 1000) {
+        clearInterval(pollTimer);
+        setStatus("Sign-in link expired. Tap Continue with Telegram Bot to try again.");
+        return;
+      }
+      try {
+        const response = await fetch("/api/telegram/status?nonce=" + encodeURIComponent(nonce), {
+          method: "GET", credentials: "same-origin", cache: "no-store"
+        });
+        const result = await response.json();
+        if (result.status === "verified" && response.ok && result.ok) {
+          clearInterval(pollTimer);
+          verified = true;
+          try { sessionStorage.removeItem("cz_tg_login_nonce"); } catch {}
+          gate.remove();
+          document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { bot: true } }));
+        } else if (result.status === "not_member") {
+          clearInterval(pollTimer);
+          setStatus("You haven't joined @criczonelive yet. Join the channel, then tap Continue with Telegram Bot again.");
+        } else if (result.status === "expired") {
+          clearInterval(pollTimer);
+          setStatus("Sign-in link expired. Tap Continue with Telegram Bot to try again.");
+        } else if (!response.ok && response.status !== 503) {
+          clearInterval(pollTimer);
+          setStatus(result.error || "Verification failed. Please try again.");
+        } else if (result.error) {
+          setStatus(result.error);
+        }
+      } catch {
+        // Temporary network failures are retried until the challenge expires.
+      }
+    }, 1800);
+  }
 
+  loginButton.addEventListener("click", startBotVerification);
   retry.addEventListener("click", () => {
-    if (lastTelegramUser) verify(lastTelegramUser);
-    else setStatus("Use the Telegram Login button first.");
+    if (activeNonce) {
+      setStatus("Waiting for Telegram bot confirmation. Open Telegram and press Start.", false);
+      beginPolling(activeNonce);
+    } else {
+      startBotVerification();
+    }
   });
-
-  // The Telegram Login Widget must be enabled for this domain in @BotFather (/setdomain).
-  const widget = document.createElement("script");
-  widget.async = true;
-  widget.src = "https://telegram.org/js/telegram-widget.js?22";
-  widget.setAttribute("data-telegram-login", "CRICZONE_ADMIN_BOT");
-  widget.setAttribute("data-size", "large");
-  widget.setAttribute("data-userpic", "false");
-  widget.setAttribute("data-request-access", "write");
-  widget.setAttribute("data-onauth", "onCriczoneTelegramAuth(user)");
-  gate.querySelector("#czmg-login").appendChild(widget);
 
   // Fail open to the visible login gate if the session endpoint is slow or unreachable.
   // A valid session still closes the gate as soon as the server confirms membership.
