@@ -14,11 +14,35 @@ export async function onRequestPost({ request, env }) {
   try { update = await request.json(); } catch { return json({ ok: false }, 400); }
   const message = update?.message;
   const chatId = message?.chat?.id;
-  const userId = message?.from?.id;
+  const from = message?.from;
+  const userId = from?.id;
   const text = String(message?.text || "");
-  const match = text.match(/^\/start\s+([a-f0-9-]{36})$/i);
-  if (!chatId || !userId || !match) return json({ ok: true });
+  if (!chatId || !userId) return json({ ok: true });
 
+  // Save every /start event, even when it was not launched from the website.
+  const startMatch = text.match(/^\/start(?:\s+(.+))?$/i);
+  if (startMatch && env.TELEGRAM_DB) {
+    try {
+      await env.TELEGRAM_DB.prepare(
+        "INSERT INTO telegram_bot_starts (telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+        "ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, last_name=excluded.last_name, username=excluded.username, language_code=excluded.language_code, start_payload=excluded.start_payload, started_at=excluded.started_at, chat_type=excluded.chat_type"
+      ).bind(
+        String(userId),
+        String(from.first_name || "").slice(0, 80),
+        String(from.last_name || "").slice(0, 80),
+        String(from.username || "").slice(0, 80),
+        String(from.language_code || "").slice(0, 20),
+        String(startMatch[1] || "").slice(0, 100),
+        new Date().toISOString(),
+        String(message.chat.type || "").slice(0, 30)
+      ).run();
+    } catch (error) {
+      console.error("Telegram bot-start audit write failed:", error?.message || error);
+    }
+  }
+
+  const match = text.match(/^\/start\s+([a-f0-9-]{36})$/i);
+  if (!match) return json({ ok: true });
   const nonce = match[1];
   try {
     const pending = await env.TELEGRAM_DB.prepare(
