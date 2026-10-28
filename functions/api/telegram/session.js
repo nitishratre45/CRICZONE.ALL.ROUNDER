@@ -21,7 +21,7 @@ export async function onRequestGet({ request, env }) {
     if (!constantTimeEqual(expected, signature)) return expired();
     const payload = JSON.parse(base64UrlDecode(payloadPart));
     const now = Math.floor(Date.now() / 1000);
-    if (!payload.id || !Number.isFinite(payload.exp) || payload.exp <= now || payload.exp > now + 8 * 60 * 60 + 60) {
+    if (!payload.id || !Number.isFinite(payload.exp) || payload.exp <= now || payload.exp > now + 12 * 60 * 60 + 60) {
       return expired();
     }
 
