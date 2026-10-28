@@ -12,6 +12,27 @@ export async function onRequestPost({ request, env }) {
   }
   let update;
   try { update = await request.json(); } catch { return json({ ok: false }, 400); }
+  // Record channel membership changes when Telegram sends chat_member updates.
+  const memberUpdate = update?.chat_member;
+  if (memberUpdate && String(memberUpdate.chat?.username || "").toLowerCase() === "criczonelive") {
+    const from = memberUpdate.new_chat_member?.user || memberUpdate.from;
+    const oldStatus = String(memberUpdate.old_chat_member?.status || "");
+    const newStatus = String(memberUpdate.new_chat_member?.status || "");
+    const joined = ["member", "administrator", "creator"].includes(newStatus) || (newStatus === "restricted" && memberUpdate.new_chat_member?.is_member === true);
+    const wasMember = ["member", "administrator", "creator"].includes(oldStatus) || (oldStatus === "restricted" && memberUpdate.old_chat_member?.is_member === true);
+    try {
+      await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_channel_activity (id INTEGER PRIMARY KEY AUTOINCREMENT, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, event_type TEXT NOT NULL, event_at TEXT NOT NULL, old_status TEXT, new_status TEXT)").run();
+      await env.TELEGRAM_DB.prepare("INSERT INTO telegram_channel_activity (telegram_id, first_name, last_name, username, event_type, event_at, old_status, new_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(String(from?.id || memberUpdate.new_chat_member?.user?.id || ""), String(from?.first_name || "").slice(0,80), String(from?.last_name || "").slice(0,80), String(from?.username || "").slice(0,80), joined && !wasMember ? "joined" : (!joined && wasMember ? "left" : "membership_changed"), new Date().toISOString(), oldStatus, newStatus).run();
+    } catch (error) { console.error("Channel membership audit write failed:", error?.message || error); }
+    return json({ ok: true });
+  }
+
+  const callback = update?.callback_query;
+  if (callback?.id) {
+    try { await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({callback_query_id:callback.id}) }); } catch {}
+    return json({ ok: true });
+  }
+
   const message = update?.message;
   const chatId = message?.chat?.id;
   const from = message?.from;
@@ -21,7 +42,7 @@ export async function onRequestPost({ request, env }) {
 
   // Save every /start event, even when it was not launched from the website.
   const startMatch = text.match(/^\/start(?:\s+(.+))?$/i);
-  if (startMatch && env.TELEGRAM_DB) {
+  if (startMatch && !startMatch[1] && env.TELEGRAM_DB) {
     try {
       await env.TELEGRAM_DB.prepare(
         "INSERT INTO telegram_bot_starts (telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
@@ -41,7 +62,17 @@ export async function onRequestPost({ request, env }) {
   }
 
   const match = text.match(/^\/start\s+([a-f0-9-]{36})$/i);
-  if (!match) return json({ ok: true });
+  if (!match) {
+    if (startMatch && !startMatch[1]) {
+      try {
+        await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_channel_click_tokens (token TEXT PRIMARY KEY, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, created_at TEXT NOT NULL, clicked_at TEXT)").run();
+        const token = crypto.randomUUID();
+        await env.TELEGRAM_DB.prepare("INSERT INTO telegram_channel_click_tokens (token, telegram_id, first_name, last_name, username, created_at, clicked_at) VALUES (?, ?, ?, ?, ?, ?, NULL)").bind(token, String(userId), String(from.first_name || "").slice(0,80), String(from.last_name || "").slice(0,80), String(from.username || "").slice(0,80), new Date().toISOString()).run();
+        await sendMessage(env.BOT_TOKEN, chatId, "Welcome to CRICZONE! Tap below to open our official channel.", { inline_keyboard: [[{ text: "📢 Join @criczonelive", url: "https://criczone.pages.dev/api/telegram/channel-click?t=" + token }]] });
+      } catch (error) { console.error("Telegram start welcome failed:", error?.message || error); }
+    }
+    return json({ ok: true });
+  }
   const nonce = match[1];
   try {
     const pending = await env.TELEGRAM_DB.prepare(
