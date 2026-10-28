@@ -15,7 +15,15 @@ export async function onRequestGet({ request, env }) {
     const rows = await env.TELEGRAM_DB.prepare(
       "SELECT telegram_id, first_name, username, membership_status, verified_at FROM telegram_members ORDER BY verified_at DESC LIMIT 500"
     ).all();
-    return json({ ok: true, summary: summary || {}, users: rows.results || [] }, 200);
+    let channelMembers = null;
+    if (env.BOT_TOKEN) {
+      try {
+        const tg = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMemberCount?chat_id=%40criczonelive");
+        const data = await tg.json();
+        if (tg.ok && data.ok) channelMembers = data.result;
+      } catch {}
+    }
+    return json({ ok: true, summary: summary || {}, channel_members: channelMembers, users: rows.results || [] }, 200);
   } catch (error) {
     return json({ ok: false, error: "Could not read dashboard data. Check that schema.sql has been applied." }, 500);
   }
