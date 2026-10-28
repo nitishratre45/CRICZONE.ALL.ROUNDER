@@ -5,6 +5,25 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
+    let returnUrl = "";
+    try {
+      const body = await request.json();
+      const candidate = new URL(String(body?.return_url || ""));
+      const currentOrigin = new URL(request.url).origin;
+      if (candidate.protocol === "https:" && candidate.origin === currentOrigin) {
+        returnUrl = candidate.href.slice(0, 1500);
+      }
+    } catch {}
+
+    // Add the return_url column for existing D1 databases; ignore only duplicate-column errors.
+    try {
+      await env.TELEGRAM_DB.prepare("ALTER TABLE telegram_login_requests ADD COLUMN return_url TEXT").run();
+    } catch (schemaError) {
+      if (!String(schemaError?.message || schemaError).toLowerCase().includes("duplicate column")) {
+        throw schemaError;
+      }
+    }
+
     const webhookSecret = await deriveWebhookSecret(env.BOT_TOKEN);
     const hook = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/setWebhook", {
       method: "POST",
