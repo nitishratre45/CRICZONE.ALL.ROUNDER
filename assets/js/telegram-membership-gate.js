@@ -19,10 +19,10 @@
     #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,7,18,.88);backdrop-filter:blur(14px);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     #${ROOT_ID} [hidden]{display:none!important}
-    #${ROOT_ID} .czmg-card{position:relative;width:min(100%,460px);max-height:calc(100dvh - 24px);overflow:auto;padding:14px 18px 20px;text-align:center;border:1px solid rgba(119,190,255,.34);border-radius:26px;background:linear-gradient(155deg,#0d1b2c,#050b14 78%);box-shadow:0 28px 90px #000d,0 0 34px #168bff22;scrollbar-width:thin;scrollbar-color:#31536f transparent}
-    #${ROOT_ID} .czmg-hero{position:relative;isolation:isolate;overflow:hidden;margin:-14px -18px 18px;padding:23px 18px 20px;border-radius:25px 25px 18px 18px;background:linear-gradient(180deg,rgba(3,12,25,.18),rgba(3,12,25,.55) 58%,#081321 100%),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg") center 28%/cover no-repeat;border-bottom:1px solid #4b9fff55;min-height:250px;display:flex;flex-direction:column;justify-content:flex-end;animation:czmgHeroIn .55s ease both}
+    #${ROOT_ID} .czmg-card{position:relative;width:min(100%,390px);max-height:calc(100dvh - 24px);overflow:auto;padding:16px 18px 20px;text-align:center;border:1px solid #29445d;border-radius:20px;background:#0b1726;box-shadow:0 20px 60px #000a;scrollbar-width:thin;scrollbar-color:#31536f transparent}
+    #${ROOT_ID} .czmg-hero{position:relative;overflow:hidden;margin:-16px -18px 18px;padding:24px 18px 20px;border-radius:19px 19px 0 0;background:linear-gradient(135deg,#12324a,#0d1b2c);border-bottom:1px solid #29445d;display:flex;flex-direction:column;justify-content:center;min-height:0}
     #${ROOT_ID} .czmg-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 30%,#42b8ff22,transparent 60%)}
-    #${ROOT_ID} .czmg-brand{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;padding:7px 11px;border:1px solid #284c6a;border-radius:999px;background:#10243a;color:#b8e7ff;font-size:11px;font-weight:800;letter-spacing:1.3px}
+    #${ROOT_ID} .czmg-brand{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin:0 auto 12px;padding:6px 10px;border:1px solid #284c6a;border-radius:999px;background:#10243a;color:#b8e7ff;font-size:10px;font-weight:800;letter-spacing:1px}
     #${ROOT_ID} .czmg-icon{display:none!important} @keyframes czmgHeroIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} #${ROOT_ID} .czmg-card{animation:czmgCardIn .32s cubic-bezier(.2,.8,.2,1) both} @keyframes czmgCardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
     #${ROOT_ID} h2{font-size:clamp(23px,6vw,29px);line-height:1.16;letter-spacing:-.6px;margin:0 0 11px;color:#fff}
     #${ROOT_ID} .czmg-lead{font-size:14px;line-height:1.6;color:#e0eaf7;text-shadow:0 2px 8px #000;margin:0 auto 2px;max-width:340px}
@@ -41,7 +41,7 @@
     #${ROOT_ID} .czmg-secondary{background:#152b41;border:1px solid #35536e;color:#e7f4ff;box-shadow:none}
     #${ROOT_ID} .czmg-divider{display:flex;align-items:center;gap:10px;margin:15px 0;color:#7189a2;font-size:11px}
     #${ROOT_ID} .czmg-divider:before,#${ROOT_ID} .czmg-divider:after{content:"";height:1px;flex:1;background:#263e55}
-    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:64px;margin:10px 0 4px;padding:12px 8px;border:1px solid #345b7b;border-radius:15px;background:linear-gradient(90deg,rgba(4,13,26,.78),rgba(4,13,26,.6)),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat;box-shadow:inset 0 0 24px #0007}
+    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:54px;margin:10px 0 4px;padding:8px;border:1px solid #34516d;border-radius:12px;background:#10243b}
     #${ROOT_ID} .czmg-status{min-height:22px;margin-top:10px;font-size:12px;line-height:1.5;color:#ffd38a;overflow-wrap:anywhere}
     #${ROOT_ID} .czmg-note{font-size:11px;line-height:1.5;color:#849ab2;margin-top:15px}
     #${ROOT_ID} .czmg-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;color:#78c9a7;font-size:11px}
@@ -59,21 +59,14 @@
       <div class="czmg-hero">
         <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
         
-        <h2>Join Telegram to Watch</h2>
-        <p class="czmg-lead">Join our official public channel first, then sign in with Telegram so we can confirm your membership and unlock the player.</p>
+        <h2>Unlock CRICZONE</h2>
       </div>
-      <div class="czmg-steps" aria-label="How to unlock the player">
-        <div class="czmg-step"><div class="czmg-num">1</div><div><strong>Join the channel</strong><span>Tap the blue button below and press Join in Telegram.</span></div></div>
-        <div class="czmg-step"><div class="czmg-num">2</div><div><strong>Verify your Telegram</strong><span>Come back here and use the Telegram login button.</span></div></div>
-        <div class="czmg-step"><div class="czmg-num">3</div><div><strong>Start watching</strong><span>Once membership is confirmed, this popup closes automatically.</span></div></div>
-      </div>
-      <a class="czmg-btn" href="${CHANNEL_URL}" target="_blank" rel="noopener noreferrer" id="czmg-join"><span aria-hidden="true">✈️</span> Join @criczonelive</a>
-      <div class="czmg-divider">ALREADY A MEMBER?</div>
+      <p class="czmg-lead">Join the Telegram channel and sign in to unlock live channels.</p>
+      <a class="czmg-btn" href="${CHANNEL_URL}" target="_blank" rel="noopener noreferrer" id="czmg-join">✈️ Join Telegram</a>
+      <div class="czmg-divider">THEN SIGN IN</div>
       <div class="czmg-login" id="czmg-login"></div>
       <div class="czmg-status" id="czmg-status" role="status" aria-live="polite"></div>
-      <button class="czmg-btn czmg-secondary" id="czmg-retry" type="button">↻ Check membership again</button>
-      <div class="czmg-secure"><span aria-hidden="true">✓</span> Membership checked securely with Telegram</div>
-      <div class="czmg-note">Just joined? Wait a few seconds, sign in above, then check again. Keep this page open while you join.</div>
+      <button class="czmg-btn czmg-secondary" id="czmg-retry" type="button">Check membership</button>
     </section>`;
   gate.style.visibility = "hidden";
   document.body.appendChild(gate);
