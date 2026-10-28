@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricXCrate Live Stream</title>
+    <title>CRICZONE — Live Channels</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
     <style>
         :root {
-            --bg-cream: #FBF2DA;
-            --bg-olive: #6A7357;
-            --card-white: #FFFFFF;
-            --text-main: #1A1A1A;
-            --text-muted: #555555;
-            --accent-teal: #0088cc;
-            --border-color: rgba(0, 0, 0, 0.08);
+            --bg-cream: #07111f;
+            --bg-olive: #0b192a;
+            --card-white: #101f32;
+            --text-main: #f4f8ff;
+            --text-muted: #9fb0c5;
+            --accent-teal: #43d9c5;
+            --border-color: rgba(151, 188, 222, 0.16);
         }
 
         * {
@@ -25,7 +25,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-cream);
+            background: radial-gradient(ellipse at top,#142b43 0%,#07111f 52%,#050a12 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -34,7 +34,7 @@
         }
 
         .hero-section {
-            background-color: var(--bg-cream);
+            background: transparent;
             padding: 20px 5% 10px 5%;
             display: flex;
             flex-direction: column;
@@ -96,7 +96,7 @@
         }
 
         .video-card {
-            background: var(--card-white);
+            background: linear-gradient(145deg,#102238,#091321);
             border-radius: 20px;
             overflow: hidden;
             border: 1px solid rgba(0,0,0,0.06);
@@ -163,7 +163,7 @@
         }
 
         .content-board-section {
-            background-color: var(--bg-olive);
+            background: transparent;
             padding: 40px 5%;
             width: 100%;
             border-top-left-radius: 24px;
@@ -179,13 +179,13 @@
         .section-header h2 {
             font-size: 22px;
             font-weight: 700;
-            color: #FFFFFF;
+            color: #f4f8ff;
             margin-bottom: 4px;
         }
 
         .section-header p {
             font-size: 13px;
-            color: rgba(255,255,255,0.8);
+            color: #a8bdd3;
         }
 
         .cards-grid {
@@ -197,7 +197,7 @@
         }
 
         .info-card {
-            background-color: var(--card-white);
+            background: linear-gradient(145deg,#12253a,#0b1726);
             padding: 18px;
             border-radius: 14px;
             display: flex;
@@ -272,7 +272,7 @@
             visibility: visible;
         }
         .popup-card {
-            background: #FFFFFF;
+            background: #101f32;
             border-radius: 28px;
             padding: 36px 28px;
             width: 100%;
@@ -352,15 +352,60 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        .hero-section{padding-top:24px;padding-bottom:16px}
+        .brand{font-size:clamp(22px,4vw,30px);letter-spacing:-1px;color:#f4f8ff}
+        .brand:before{content:"🏏";margin-right:9px}
+        .live-badge{background:#102a35;color:#6ef0cf;border-color:#245e60}
+        .main-content-grid{max-width:1180px;gap:20px}
+        .video-card{border-color:#28415b;box-shadow:0 20px 60px #0005}
+        .iframe-wrap{background:radial-gradient(circle,#102b43,#02060c 70%)}
+        .video-details{gap:14px;flex-wrap:wrap}
+        .video-title-block h3{font-size:clamp(17px,3vw,22px);color:#f4f8ff}
+        .share-btn{background:#123044;color:#6ef0cf;border-color:#28616a}
+        .share-btn svg{fill:#6ef0cf}
+        .channel-section{width:min(100% - 32px,1120px);margin:12px auto 42px}
+        .channel-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:20px}
+        .eyebrow{font-size:10px;letter-spacing:2px;font-weight:800;color:#53e4ce}
+        .channel-heading h2{font-size:clamp(24px,4vw,34px);margin:7px 0;color:#f4f8ff}
+        .channel-heading p{font-size:13px;color:#91a8bf}
+        .channel-search{display:flex;align-items:center;gap:9px;min-width:min(100%,290px);padding:0 14px;border:1px solid #2a425c;border-radius:14px;background:#0b1929;color:#90a9c0}
+        .channel-search span{font-size:23px}
+        .channel-search input{width:100%;min-width:0;padding:13px 0;background:transparent;border:0;outline:0;color:#f4f8ff;font:inherit}
+        .channel-search input::placeholder{color:#748ba3}
+        .channel-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;color:#89a1ba;font-size:12px}
+        #reload-channels{padding:9px 12px;background:#10263a;border:1px solid #2a465f;border-radius:10px;color:#dcecff;font-weight:700;cursor:pointer}
+        .channel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+        .channel-card{display:flex;align-items:center;gap:12px;min-width:0;text-align:left;padding:14px;border:1px solid #203952;border-radius:16px;background:linear-gradient(145deg,#102238,#0a1625);color:#f4f8ff;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease;box-shadow:0 8px 22px #0002}
+        .channel-card:hover{transform:translateY(-2px);border-color:#4c9caa}
+        .channel-card.selected{border-color:#52e3ca;background:linear-gradient(145deg,#123b42,#102338);box-shadow:0 0 0 1px #52e3ca25,0 10px 30px #0003}
+        .channel-logo{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:13px;background:linear-gradient(145deg,#194c62,#12283e);border:1px solid #2c6679;color:#8cefe0;font-size:11px;font-weight:900}
+        .channel-meta{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+        .channel-meta strong{font-size:13px;overflow-wrap:anywhere}
+        .channel-meta small{font-size:10px;color:#829ab2;letter-spacing:1px}
+        .channel-arrow{font-size:13px;color:#65e9d2}
+        .channel-empty{grid-column:1/-1;padding:24px;border:1px dashed #29435b;border-radius:14px;text-align:center;color:#9eb1c6}
+        .content-board-section{padding:26px 5% 40px;border-top:1px solid #1b3047}
+        .section-header h2{font-size:21px}
+        .info-card{border:1px solid #233b54}
+        .info-card h3{color:#f4f8ff}
+        .info-card p{color:#9fb0c5}
+        .card-meta{color:#839ab1}
+        .custom-toast{background:#102238;border-color:#34516d}
+        .tg-card-btn{background:linear-gradient(120deg,#4ee4c6,#53cfff);color:#06131c}
+        @media(max-width:760px){.channel-heading{align-items:stretch;flex-direction:column}.channel-search{width:100%}.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.main-content-grid{padding-left:16px;padding-right:16px}.video-details{padding:14px}.content-board-section{border-radius:20px 20px 0 0}}
+        @media(max-width:420px){.channel-grid{grid-template-columns:1fr}.channel-card{padding:12px}.channel-section{width:calc(100% - 24px)}.hero-section{padding:18px 16px 10px}.live-badge{font-size:9px;padding:5px 8px}}
+        @media(prefers-reduced-motion:reduce){.channel-card,.live-dot{animation:none;transition:none}}
+
     </style>
 </head>
 <body>
 
     <div class="hero-section">
         <div class="top-bar">
-            <div class="brand">CricXCrate</div>
+            <div class="brand">CRICZONE</div>
             <div class="live-badge">
-                <div class="live-dot"></div> FREE LIVE STREAM
+                <div class="live-dot"></div> LIVE CHANNELS
             </div>
         </div>
     </div>
@@ -373,7 +418,7 @@
             <div class="video-details">
                 <div class="video-title-block">
                     <h3 id="stream-title">Live Stream</h3>
-                    <p>Free Live Streaming • HD Quality Engine</p>
+                    <p id="stream-subtitle">Select a channel below to start playback</p>
                 </div>
                 <button class="share-btn" id="share-stream-btn" title="Share Stream Link">
                     <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
@@ -383,6 +428,15 @@
         </div>
     </div>
 
+
+    <section class="channel-section" aria-labelledby="channels-heading">
+      <div class="channel-heading">
+        <div><span class="eyebrow">WATCH YOUR WAY</span><h2 id="channels-heading">All Channels</h2><p>Search, select a channel, and load it in the player.</p></div>
+        <label class="channel-search"><span aria-hidden="true">⌕</span><input id="channel-search" type="search" placeholder="Search channels…" autocomplete="off" aria-label="Search channels"></label>
+      </div>
+      <div class="channel-toolbar"><span id="channel-count">Loading channels…</span><button id="reload-channels" type="button">↻ Refresh list</button></div>
+      <div id="channel-grid" class="channel-grid" aria-live="polite"><div class="channel-empty">Loading available channels…</div></div>
+    </section>
     <div class="content-board-section">
         <div class="section-header">
             <h2>Community Hub</h2>
@@ -412,95 +466,115 @@
         </div>
     </div>
 
-    <div class="overlay" id="telegram-overlay-1">
-        <div class="popup-card">
-            <h3>Join Our Telegram</h3>
-            <p>Get instant access to free high-definition streams, live match updates, and exclusive backup links without buffering.</p>
-            <div class="popup-actions">
-                <button class="popup-btn-cancel" id="popup-1-cancel">Later</button>
-                <button class="popup-btn popup-btn-join" id="popup-1-join">Join Channel →</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="overlay" id="telegram-overlay-2">
-        <div class="popup-card">
-            <h3>Don't Miss Out! 🔥</h3>
-            <p>Join our exclusive VIP Telegram network right now to unlock ultra-fast servers, HD streams, and special community requests without any interruptions.</p>
-            <div class="popup-actions">
-                <button class="popup-btn-cancel" id="popup-2-cancel">Close</button>
-                <button class="popup-btn popup-btn-join" id="popup-2-join">Join VIP Channel Now →</button>
-            </div>
-        </div>
-    </div>
-
     <div class="custom-toast" id="custom-toast-alert">Link copied to clipboard!</div>
+
 
     <script src="stream.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const pathParts = window.location.pathname.split('/');
-            let currentKey = pathParts[pathParts.length - 1].toLowerCase();
-
-            if (!currentKey || !streamsData[currentKey]) {
-                currentKey = 'xy1';
-            }
-
-            const streamInfo = streamsData[currentKey];
-            const iframe = document.getElementById('stream-iframe');
-            const titleEl = document.getElementById('stream-title');
-
-            if (iframe && streamInfo) iframe.src = streamInfo.url;
-            if (titleEl && streamInfo) titleEl.textContent = streamInfo.name;
-
-            const shareBtn = document.getElementById('share-stream-btn');
-            const toast = document.getElementById('custom-toast-alert');
-
-            shareBtn.onclick = () => {
-                const shareUrl = window.location.href;
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareUrl).then(() => {
-                        toast.classList.add('show');
-                        setTimeout(() => { toast.classList.remove('show'); }, 3000);
-                    });
-                }
-            };
-
-            setTimeout(() => {
-                const overlay1 = document.getElementById('telegram-overlay-1');
-                if (overlay1) overlay1.classList.add('show');
-            }, 3500);
-
-            const closePopup1 = () => {
-                const overlay1 = document.getElementById('telegram-overlay-1');
-                if (overlay1) overlay1.classList.remove('show');
-                setTimeout(() => {
-                    const overlay2 = document.getElementById('telegram-overlay-2');
-                    if (overlay2) overlay2.classList.add('show');
-                }, 300);
-            };
-
-            const closePopup2 = () => {
-                const overlay2 = document.getElementById('telegram-overlay-2');
-                if (overlay2) overlay2.classList.remove('show');
-            };
-
-            const openTelegram = () => {
-                window.open("https://t.me/+B-0UtpcqY3QxYTll", "_blank");
-                const overlay1 = document.getElementById('telegram-overlay-1');
-                const overlay2 = document.getElementById('telegram-overlay-2');
-                if (overlay1) overlay1.classList.remove('show');
-                if (overlay2) overlay2.classList.remove('show');
-            };
-
-            document.getElementById('popup-1-cancel').onclick = closePopup1;
-            document.getElementById('popup-1-join').onclick = openTelegram;
-            document.getElementById('popup-2-cancel').onclick = closePopup2;
-            document.getElementById('popup-2-join').onclick = openTelegram;
-
-            document.getElementById('btn-banner-tg').onclick = openTelegram;
-            document.getElementById('btn-req-tg').onclick = openTelegram;
+      window.addEventListener('DOMContentLoaded', () => {
+        const iframe = document.getElementById('stream-iframe');
+        const title = document.getElementById('stream-title');
+        const subtitle = document.getElementById('stream-subtitle');
+        const grid = document.getElementById('channel-grid');
+        const search = document.getElementById('channel-search');
+        const count = document.getElementById('channel-count');
+        const toast = document.getElementById('custom-toast-alert');
+        const available = Object.entries(window.streamsData || {}).filter(([key, item]) =>
+          item && item.name && item.url && /^https?:\/\//i.test(item.url) &&
+          !/\/player\/drm\?/i.test(item.url)
+        );
+        let selectedKey = '';
+        function showToast(message) {
+          toast.textContent = message;
+          toast.classList.add('show');
+          window.setTimeout(() => toast.classList.remove('show'), 2400);
+        }
+        function chooseChannel(key) {
+          const item = available.find(([id]) => id === key);
+          if (!item) return;
+          selectedKey = key;
+          const info = item[1];
+          title.textContent = info.name;
+          subtitle.textContent = 'Selected channel • Loading player…';
+          iframe.src = info.url;
+          grid.querySelectorAll('.channel-card').forEach(card => {
+            const active = card.dataset.key === key;
+            card.classList.toggle('selected', active);
+            card.setAttribute('aria-pressed', String(active));
+          });
+          const url = new URL(window.location.href);
+          url.searchParams.set('channel', key);
+          history.replaceState({}, '', url);
+          document.title = 'CRICZONE — ' + info.name;
+          subtitle.textContent = 'Selected channel • If playback does not start, try another available channel.';
+          document.querySelector('.video-card').scrollIntoView({behavior:'smooth',block:'start'});
+        }
+        function renderChannels() {
+          const term = (search.value || '').trim().toLowerCase();
+          const filtered = available.filter(([key, item]) => (key + ' ' + item.name).toLowerCase().includes(term));
+          count.textContent = filtered.length + ' channels available';
+          grid.replaceChildren();
+          if (!filtered.length) {
+            const empty = document.createElement('div');
+            empty.className = 'channel-empty';
+            empty.textContent = 'No matching channels found. Try a different search.';
+            grid.appendChild(empty);
+            return;
+          }
+          filtered.forEach(([key, item], index) => {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'channel-card' + (key === selectedKey ? ' selected' : '');
+            card.dataset.key = key;
+            card.setAttribute('aria-pressed', String(key === selectedKey));
+            const badge = document.createElement('span');
+            badge.className = 'channel-logo';
+            badge.textContent = item.name.replace(/[^a-z0-9]/gi,'').slice(0,3).toUpperCase() || 'TV';
+            const meta = document.createElement('span');
+            meta.className = 'channel-meta';
+            const name = document.createElement('strong');
+            name.textContent = item.name;
+            const hint = document.createElement('small');
+            hint.textContent = key.toUpperCase();
+            meta.append(name,hint);
+            const arrow = document.createElement('span');
+            arrow.className = 'channel-arrow';
+            arrow.textContent = key === selectedKey ? '✓' : '▶';
+            card.append(badge,meta,arrow);
+            card.addEventListener('click', () => chooseChannel(key));
+            grid.appendChild(card);
+          });
+        }
+        search.addEventListener('input', renderChannels);
+        document.getElementById('reload-channels').addEventListener('click', () => {
+          renderChannels();
+          showToast('Channel list refreshed');
         });
+        document.getElementById('share-stream-btn').addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            showToast('Page link copied');
+          } catch {
+            showToast('Copy is unavailable in this browser');
+          }
+        });
+        document.getElementById('btn-banner-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
+        document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
+        grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
+        renderChannels();
+        const params = new URLSearchParams(location.search);
+        const requested = params.get('channel');
+        const pathKey = location.pathname.split('/').filter(Boolean).pop();
+        const initial = available.some(([key]) => key === requested) ? requested :
+          (available.some(([key]) => key === pathKey) ? pathKey : available[0]?.[0]);
+        if (initial) chooseChannel(initial);
+        else {
+          grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
+          count.textContent = '0 channels available';
+          subtitle.textContent = 'No channel source is configured.';
+        }
+      });
     </script>
+    <script src="../assets/js/telegram-membership-gate.js?v=20261028-criczone10" defer></script>
 </body>
 </html>
