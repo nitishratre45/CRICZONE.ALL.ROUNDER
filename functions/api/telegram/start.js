@@ -31,7 +31,7 @@ export async function onRequestPost({ request, env }) {
       body: JSON.stringify({
         url: "https://criczone.pages.dev/api/telegram/webhook",
         secret_token: webhookSecret,
-        allowed_updates: ["message"],
+        allowed_updates: ["message", "chat_member", "callback_query"],
         drop_pending_updates: false
       })
     });
