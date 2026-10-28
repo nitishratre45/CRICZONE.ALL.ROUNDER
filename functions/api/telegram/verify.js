@@ -67,6 +67,25 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: false, member: false, error: "Join @criczonelive, then verify again." }, 403);
     }
 
+    // Persist successful verifications when a Cloudflare D1 binding named TELEGRAM_DB is configured.
+    // Never log bot tokens or raw Telegram login hashes.
+    if (env.TELEGRAM_DB) {
+      try {
+        await env.TELEGRAM_DB.prepare(
+          "INSERT INTO telegram_members (telegram_id, first_name, username, membership_status, verified_at, auth_date) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, username=excluded.username, membership_status=excluded.membership_status, verified_at=excluded.verified_at, auth_date=excluded.auth_date"
+        ).bind(
+          String(user.id),
+          String(user.first_name || "").slice(0, 80),
+          String(user.username || "").slice(0, 80),
+          status,
+          new Date().toISOString(),
+          authDate
+        ).run();
+      } catch (error) {
+        console.error("Telegram verification audit write failed", error && error.message);
+      }
+    }
+
     return json({
       ok: true,
       member: true,
