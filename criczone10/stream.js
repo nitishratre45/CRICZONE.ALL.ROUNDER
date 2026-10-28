@@ -1,15 +1,15 @@
-const streamsData = {
+window.streamsData = {
     "xy1": { name: "Sony ten 1", url: "https://ntg-cwd.pages.dev/sony1" },
     "xy2": { name: "Sony ten 2", url: "https://ntg-cwd.pages.dev/sony2" },
     "xy3": { name: "sony hindi", url: "https://ntg-cwd.pages.dev/sony3" },
-    "xy4": { name: "sony ten 4", url: "Https://ntg-cwd.pages.dev/sony4" },
-    "xy5": { name: "sony ten 5", url: "Https://ntg-cwd.pages.dev/sony5" },
-    "xy6": { name: "sony 1hd", url: "Https://ntg-cwd.pages.dev/sony1hd" },
-    "xy7": { name: "sony 2hd", url: "Https://ntg-cwd.pages.dev/sony2hd" },
-    "xy8": { name: "sony 3hd", url: "Https://ntg-cwd.pages.dev/sony3hd" },
-    "xy9": { name: "sony 4 hd", url: "Https://ntg-cwd.pages.dev/sony4hd" },
-    "xy10": { name: "sony 5 hd", url: "Https://ntg-cwd.pages.dev/sony5hd" },
-    "veto": { name: "veto stream", url: "Https://ntg-cwd.pages.dev/sony11" },
+    "xy4": { name: "sony ten 4", url: "https://ntg-cwd.pages.dev/sony4" },
+    "xy5": { name: "sony ten 5", url: "https://ntg-cwd.pages.dev/sony5" },
+    "xy6": { name: "sony 1hd", url: "https://ntg-cwd.pages.dev/sony1hd" },
+    "xy7": { name: "sony 2hd", url: "https://ntg-cwd.pages.dev/sony2hd" },
+    "xy8": { name: "sony 3hd", url: "https://ntg-cwd.pages.dev/sony3hd" },
+    "xy9": { name: "sony 4 hd", url: "https://ntg-cwd.pages.dev/sony4hd" },
+    "xy10": { name: "sony 5 hd", url: "https://ntg-cwd.pages.dev/sony5hd" },
+    "veto": { name: "veto stream", url: "https://ntg-cwd.pages.dev/sony11" },
     "xy12": { name: "prime stream", url: "https://cricbox.pages.dev/player/drm?url=https://akamaii.lovable.app/api/public/px/geobypass?url=https://otte.live.fly.ww.aiv-cdn.net/lhr-nitro/live/clients/dash/enc/hu8ca5x8fj/out/v1/7196c8b3a05c499ca529bda04fe41320/cenc.mpd&keys=a77685fa6fc536a900103805a49e5ba4:79f1344da3be2171f8b64fb333c71e98" },
     "ios": { name: "Willow", url: "https://ntg-cwd.pages.dev/willowios" },
     "so1hd": { name: "sony 1 hd", url: "https://sonyxy.pages.dev/?id=ten1-hd" },
@@ -47,6 +47,6 @@ const streamsData = {
     "xy46": { name: "Live Stream 46", url: "" },
     "xy47": { name: "Live Stream 47", url: "" },
     "xy48": { name: "fancode 4k", url: "https://cinefancodeww1.pages.dev/" },
-    "nz": { name: "sky sports nz", url: "Https://ntg-cwd.pages.dev/nz" },
+    "nz": { name: "sky sports nz", url: "https://ntg-cwd.pages.dev/nz" },
     "tnt1": { name: "tnt uk", url: "https://cricbox.pages.dev/player/drm?url=https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/rhf2dwosdt/out/v1/ee550d2a68d846c797e6ce4de2e8b76d/cenc.mpd&keys=69a5aa835a061ce64a630d1046727e40:d02feac8a999bd06bf4059bf33411749" }
 };
