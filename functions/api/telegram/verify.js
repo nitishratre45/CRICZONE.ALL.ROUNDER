@@ -84,6 +84,27 @@ export async function onRequestPost({ request, env }) {
       } catch (error) {
         console.error("Telegram verification audit write failed", error && error.message);
       }
+
+      // Keep the Admin Dashboard's verified-members table in sync with the
+      // Telegram Login Widget flow as well as the bot-based verification flow.
+      try {
+        await env.TELEGRAM_DB.prepare(
+          "CREATE TABLE IF NOT EXISTS telegram_verified_members (telegram_id TEXT PRIMARY KEY, first_name TEXT, last_name TEXT, username TEXT, verified_at TEXT NOT NULL, channel_status TEXT NOT NULL, return_url TEXT)"
+        ).run();
+        await env.TELEGRAM_DB.prepare(
+          "INSERT INTO telegram_verified_members (telegram_id, first_name, last_name, username, verified_at, channel_status, return_url) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, username=excluded.username, verified_at=excluded.verified_at, channel_status=excluded.channel_status"
+        ).bind(
+          String(user.id),
+          String(user.first_name || "").slice(0, 80),
+          String(user.last_name || "").slice(0, 80),
+          String(user.username || "").slice(0, 80),
+          new Date().toISOString(),
+          status,
+          ""
+        ).run();
+      } catch (error) {
+        console.error("Admin verified-members sync failed", error && error.message);
+      }
     }
 
     const response = json({
