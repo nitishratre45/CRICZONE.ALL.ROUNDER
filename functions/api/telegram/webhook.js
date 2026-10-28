@@ -30,6 +30,26 @@ export async function onRequestPost({ request, env }) {
   const callback = update?.callback_query;
   if (callback?.id) {
     const callbackData = String(callback.data || "");
+    if (callbackData === "back:categories" && callback.from?.id && callback.message?.chat?.id) {
+      const userId = callback.from.id;
+      const chatId = callback.message.chat.id;
+      try {
+        await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callback_query_id: callback.id, text: "Opening categories…" })
+        });
+        const session = await env.TELEGRAM_DB.prepare("SELECT expires_at FROM telegram_category_sessions WHERE telegram_id = ?").bind(String(userId)).first();
+        if (!session || Number(session.expires_at) <= Date.now()) {
+          await sendMessage(env.BOT_TOKEN, chatId, "Your CRICZONE bot session expired. Send /start to verify again.");
+        } else {
+          await sendCategoryMenu(env.BOT_TOKEN, chatId, env);
+        }
+      } catch (error) {
+        console.error("Telegram category back navigation failed:", error?.message || error);
+        await sendMessage(env.BOT_TOKEN, chatId, "Categories load nahi ho paayi. Please try again.");
+      }
+      return json({ ok: true });
+    }
     const categoryMatch = callbackData.match(/^category:([a-z0-9]+(?:-[a-z0-9]+)*)$/);
     if (categoryMatch && callback.from?.id && callback.message?.chat?.id) {
       const userId = callback.from.id;
@@ -69,7 +89,10 @@ export async function onRequestPost({ request, env }) {
           await sendMessage(env.BOT_TOKEN, chatId, categoryInfo.name + " ke links abhi Admin Page se add nahi kiye gaye.");
         } else {
           await sendMessage(env.BOT_TOKEN, chatId, "✅ Verified member · " + categoryInfo.name + "\\nAapke selected category ke links:", {
-            inline_keyboard: await Promise.all(links.map(async item => [{ text: String(item.channel_name).slice(0, 60), url: await createChannelAccessUrl(env.BOT_TOKEN, userId, Number(session.expires_at), item.url) }]))
+            inline_keyboard: [
+              ...(await Promise.all(links.map(async item => [{ text: String(item.channel_name).slice(0, 60), url: await createChannelAccessUrl(env.BOT_TOKEN, userId, Number(session.expires_at), item.url) }]))),
+              [{ text: "⬅️ Back to Categories", callback_data: "back:categories" }]
+            ]
           });
         }
       } catch (error) {
