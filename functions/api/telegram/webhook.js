@@ -250,7 +250,7 @@ async function createCategorySession(env, userId) {
   await env.TELEGRAM_DB.prepare("INSERT INTO telegram_category_sessions (telegram_id, created_at, expires_at) VALUES (?, ?, ?) ON CONFLICT(telegram_id) DO UPDATE SET created_at=excluded.created_at, expires_at=excluded.expires_at").bind(String(userId), now, now + 12 * 60 * 60 * 1000).run();
 }
 async function sendCategoryMenu(token, chatId) {
-  await sendMessage(token, chatId, "Membership verified ✅\\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {
+  await sendMessage(token, chatId, "Membership verified ✅\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {
     inline_keyboard: [
       [{ text: "📺 Sony", callback_data: "category:sony" }, { text: "🏏 FanCode", callback_data: "category:fancode" }],
       [{ text: "⭐ Star Sports", callback_data: "category:star-sports" }, { text: "🇺🇸 Willow", callback_data: "category:willow" }]
