@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
   const targetValue = url.searchParams.get("target") || "";
   const signature = url.searchParams.get("sig") || "";
   const now = Math.floor(Date.now() / 1000);
-  if (!/^\\d{1,24}$/.test(uid) || !Number.isSafeInteger(exp) || exp <= now || exp > now + 10 * 60 || !signature) {
+  if (!/^\d{1,24}$/.test(uid) || !Number.isSafeInteger(exp) || exp <= now || exp > now + 10 * 60 || !signature) {
     return json({ ok: false, error: "This channel link expired. Send /start to the bot again." }, 401);
   }
   let target;
