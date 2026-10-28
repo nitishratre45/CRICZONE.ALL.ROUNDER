@@ -45,7 +45,7 @@ export async function onRequestPost({ request, env }) {
   const nonce = match[1];
   try {
     const pending = await env.TELEGRAM_DB.prepare(
-      "SELECT nonce FROM telegram_login_requests WHERE nonce = ? AND status = 'pending' AND expires_at > ?"
+      "SELECT nonce, return_url FROM telegram_login_requests WHERE nonce = ? AND status = 'pending' AND expires_at > ?"
     ).bind(nonce, Date.now()).first();
     if (!pending) {
       await sendMessage(env.BOT_TOKEN, chatId, "This sign-in link expired. Return to CRICZONE and try again.");
@@ -75,17 +75,17 @@ export async function onRequestPost({ request, env }) {
     await env.TELEGRAM_DB.prepare(
       "UPDATE telegram_login_requests SET status = 'verified', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status = 'pending'"
     ).bind(String(userId), Date.now(), nonce).run();
-    await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; your player access will unlock automatically.");
+    await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; your player access will unlock automatically.", pending.return_url ? { inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]] } : undefined);
     return json({ ok: true });
   } catch {
     return json({ ok: false }, 500);
   }
 }
 
-async function sendMessage(token, chatId, text) {
+async function sendMessage(token, chatId, text, replyMarkup) {
   await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text })
+    body: JSON.stringify({ chat_id: chatId, text, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) })
   });
 }
 function json(body, status = 200) {
