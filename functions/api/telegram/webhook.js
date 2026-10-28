@@ -74,5 +74,5 @@ function json(body, status = 200) {
 async function webhookSecret(token) {
   const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("criczone-telegram-webhook-v1:" + token)));
   let binary = ""; for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
