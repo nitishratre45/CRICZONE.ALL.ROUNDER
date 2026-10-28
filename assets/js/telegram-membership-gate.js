@@ -19,11 +19,17 @@
     #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,7,18,.88);backdrop-filter:blur(14px);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     #${ROOT_ID} [hidden]{display:none!important}
-    #${ROOT_ID} .czmg-card{position:relative;width:min(100%,440px);max-height:calc(100dvh - 32px);overflow:auto;padding:26px 22px 22px;text-align:center;border:1px solid rgba(119,172,220,.28);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,rgba(36,126,180,.2),transparent 55%),linear-gradient(145deg,#12243b,#070d18 76%);box-shadow:0 28px 90px #000b}
+    #${ROOT_ID} .czmg-card{position:relative;width:min(100%,460px);max-height:calc(100dvh - 24px);overflow:auto;padding:14px 18px 20px;text-align:center;border:1px solid rgba(119,190,255,.34);border-radius:26px;background:linear-gradient(155deg,#0d1b2c,#050b14 78%);box-shadow:0 28px 90px #000d,0 0 34px #168bff22;scrollbar-width:thin;scrollbar-color:#31536f transparent}
+    #${ROOT_ID} .czmg-hero{position:relative;isolation:isolate;overflow:hidden;margin:-14px -18px 18px;padding:23px 18px 20px;border-radius:25px 25px 18px 18px;background:linear-gradient(180deg,rgba(3,12,25,.38),rgba(3,12,25,.74) 58%,#081321 100%),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg") center 28%/cover no-repeat;border-bottom:1px solid #4b9fff55}
+    #${ROOT_ID} .czmg-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 30%,#42b8ff22,transparent 60%)}
     #${ROOT_ID} .czmg-brand{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;padding:7px 11px;border:1px solid #284c6a;border-radius:999px;background:#10243a;color:#b8e7ff;font-size:11px;font-weight:800;letter-spacing:1.3px}
-    #${ROOT_ID} .czmg-icon{display:grid;place-items:center;width:66px;height:66px;margin:0 auto 16px;border:1px solid #2b5875;border-radius:21px;background:linear-gradient(145deg,#163e59,#0c2238);font-size:32px;box-shadow:0 10px 32px #0005}
+    #${ROOT_ID} .czmg-icon{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 13px;border:1px solid #a8dcff70;border-radius:19px;background:linear-gradient(145deg,#102d48d9,#061526e8);font-size:29px;box-shadow:0 10px 32px #0008,0 0 25px #2fafff22}
     #${ROOT_ID} h2{font-size:clamp(23px,6vw,29px);line-height:1.16;letter-spacing:-.6px;margin:0 0 11px;color:#fff}
-    #${ROOT_ID} .czmg-lead{font-size:14px;line-height:1.65;color:#b9cadd;margin:0 auto 20px;max-width:340px}
+    #${ROOT_ID} .czmg-lead{font-size:14px;line-height:1.6;color:#e0eaf7;text-shadow:0 2px 8px #000;margin:0 auto 2px;max-width:340px}
+    #${ROOT_ID} .czmg-step{backdrop-filter:blur(10px);background:linear-gradient(110deg,#10243be8,#0a1728e8);border-color:#34516d}
+    #${ROOT_ID} .czmg-btn{min-height:52px;border-radius:15px;font-size:14px;letter-spacing:.1px}
+    #${ROOT_ID} #czmg-join{background:linear-gradient(105deg,#62efc2,#57d4ff);box-shadow:0 8px 28px #32d5c52b}
+    #${ROOT_ID} .czmg-secondary{background:linear-gradient(135deg,#173652,#10263c);border:1px solid #3e6484;color:#f1f8ff}
     #${ROOT_ID} .czmg-steps{display:grid;gap:10px;margin:0 0 18px;text-align:left}
     #${ROOT_ID} .czmg-step{display:flex;align-items:flex-start;gap:11px;padding:12px;border:1px solid #203b54;border-radius:14px;background:rgba(11,26,43,.75)}
     #${ROOT_ID} .czmg-num{flex:0 0 26px;display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#173a53;color:#8be4ff;font-size:12px;font-weight:900}
@@ -39,7 +45,7 @@
     #${ROOT_ID} .czmg-status{min-height:22px;margin-top:10px;font-size:12px;line-height:1.5;color:#ffd38a;overflow-wrap:anywhere}
     #${ROOT_ID} .czmg-note{font-size:11px;line-height:1.5;color:#849ab2;margin-top:15px}
     #${ROOT_ID} .czmg-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;color:#78c9a7;font-size:11px}
-    @media(max-width:380px){#${ROOT_ID}{padding:10px}#${ROOT_ID} .czmg-card{padding:21px 15px 18px;max-height:calc(100dvh - 20px);border-radius:20px}#${ROOT_ID} .czmg-icon{width:56px;height:56px;font-size:28px}#${ROOT_ID} .czmg-step{padding:10px}}
+    @media(max-width:380px){#${ROOT_ID}{padding:8px}#${ROOT_ID} .czmg-card{padding:12px 13px 16px;max-height:calc(100dvh - 16px);border-radius:21px}#${ROOT_ID} .czmg-hero{margin:-12px -13px 15px;padding:20px 13px 17px}#${ROOT_ID} .czmg-icon{width:52px;height:52px;font-size:26px}#${ROOT_ID} .czmg-step{padding:10px}}
     @media(prefers-reduced-motion:reduce){#${ROOT_ID} .czmg-btn{transition:none}}
   `;
   document.head.appendChild(style);
@@ -50,10 +56,12 @@
   gate.setAttribute("aria-modal", "true");
   gate.innerHTML = `
     <section class="czmg-card">
-      <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
-      <div class="czmg-icon" aria-hidden="true">✈️</div>
-      <h2>Join Telegram to Watch</h2>
-      <p class="czmg-lead">Join our official public channel first, then sign in with Telegram so we can confirm your membership and unlock the player.</p>
+      <div class="czmg-hero">
+        <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
+        <div class="czmg-icon" aria-hidden="true">🏏</div>
+        <h2>Join Telegram to Watch</h2>
+        <p class="czmg-lead">Join our official public channel first, then sign in with Telegram so we can confirm your membership and unlock the player.</p>
+      </div>
       <div class="czmg-steps" aria-label="How to unlock the player">
         <div class="czmg-step"><div class="czmg-num">1</div><div><strong>Join the channel</strong><span>Tap the blue button below and press Join in Telegram.</span></div></div>
         <div class="czmg-step"><div class="czmg-num">2</div><div><strong>Verify your Telegram</strong><span>Come back here and use the Telegram login button.</span></div></div>
