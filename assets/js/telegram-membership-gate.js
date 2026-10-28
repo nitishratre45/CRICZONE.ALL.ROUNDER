@@ -194,15 +194,43 @@
     }
   });
 
-  // Keep the website usable first; show the membership gate after 60 seconds.
-  // Validate any existing session immediately in the background.
-  let sessionResolved = false;
+  // Start the 60-second delay on page load. If the user is watching fullscreen,
+  // wait until fullscreen ends and then show the gate immediately if the minute elapsed.
   let hasValidSession = false;
+  let gateDelayElapsed = false;
+
+  function isVideoFullscreen() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return true;
+    return Array.from(document.querySelectorAll("video")).some((video) =>
+      video.webkitDisplayingFullscreen === true ||
+      video.webkitPresentationMode === "fullscreen"
+    );
+  }
+
+  function revealGateIfDue() {
+    if (!gateDelayElapsed || hasValidSession || !document.getElementById(ROOT_ID)) return;
+    if (isVideoFullscreen()) return;
+    gate.style.visibility = "visible";
+  }
+
   const showGateAfterDelay = window.setTimeout(() => {
-    if (!hasValidSession && document.getElementById(ROOT_ID)) {
-      gate.style.visibility = "visible";
-    }
+    gateDelayElapsed = true;
+    revealGateIfDue();
   }, 60 * 1000);
+
+  ["fullscreenchange", "webkitfullscreenchange", "orientationchange", "pageshow", "visibilitychange"].forEach((eventName) => {
+    document.addEventListener(eventName, () => {
+      if (eventName === "pageshow" || eventName === "visibilitychange" || eventName === "orientationchange") {
+        window.setTimeout(revealGateIfDue, 150);
+      } else {
+        revealGateIfDue();
+      }
+    });
+  });
+  document.querySelectorAll("video").forEach((video) => {
+    video.addEventListener("webkitpresentationmodechanged", revealGateIfDue);
+    video.addEventListener("webkitendfullscreen", revealGateIfDue);
+  });
 
   fetch("/api/telegram/session", {
     method: "GET",
@@ -210,17 +238,14 @@
     cache: "no-store"
   }).then(async (response) => {
     const result = await response.json().catch(() => ({}));
-    sessionResolved = true;
     if (response.ok && result.ok && result.member) {
       hasValidSession = true;
       window.clearTimeout(showGateAfterDelay);
       gate.remove();
-      // Keep this stylesheet active so legacy timed popups stay suppressed after verification.
       document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
     }
   }).catch(() => {
-    sessionResolved = true;
-    // The delayed gate remains available if session verification is unreachable.
+    // If session verification fails, the delayed gate still works.
   });
 
   // If the browser restores this page from its back-forward cache after a Telegram
