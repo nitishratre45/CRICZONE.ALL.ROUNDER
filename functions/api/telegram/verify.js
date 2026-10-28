@@ -49,13 +49,13 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    const response = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
+    const telegramResponse = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: CHANNEL, user_id: Number(user.id) })
     });
-    const result = await response.json();
-    if (!response.ok || !result.ok || !result.result) {
+    const result = await telegramResponse.json();
+    if (!telegramResponse.ok || !result.ok || !result.result) {
       return json({ ok: false, error: "Telegram membership check failed. Please try again." }, 502);
     }
 
