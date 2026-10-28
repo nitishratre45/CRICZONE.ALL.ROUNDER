@@ -15,6 +15,8 @@
   const style = document.createElement("style");
   style.id = STYLE_ID;
   style.textContent = `
+    /* Hide legacy page-specific Telegram overlays; use one shared membership gate. */
+    #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,7,18,.88);backdrop-filter:blur(14px);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     #${ROOT_ID} [hidden]{display:none!important}
     #${ROOT_ID} .czmg-card{position:relative;width:min(100%,440px);max-height:calc(100dvh - 32px);overflow:auto;padding:26px 22px 22px;text-align:center;border:1px solid rgba(119,172,220,.28);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,rgba(36,126,180,.2),transparent 55%),linear-gradient(145deg,#12243b,#070d18 76%);box-shadow:0 28px 90px #000b}
