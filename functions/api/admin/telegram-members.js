@@ -1,7 +1,9 @@
+import { validSession } from "./session.js";
 // GET /api/admin/telegram-members - private bot/channel activity dashboard (no website login records).
 export async function onRequestGet({ request, env }) {
   const supplied = request.headers.get("Authorization") || "";
-  if (!env.ADMIN_DASHBOARD_KEY || !safeEqual(supplied, "Bearer " + env.ADMIN_DASHBOARD_KEY)) return json({ ok:false, error:"Unauthorized. Configure ADMIN_DASHBOARD_KEY in Cloudflare Production secrets." },401);
+  const authorized = !!env.ADMIN_DASHBOARD_KEY && (safeEqual(supplied, "Bearer " + env.ADMIN_DASHBOARD_KEY) || await validSession(request, env.ADMIN_DASHBOARD_KEY));
+  if (!authorized) return json({ ok:false, error:"Unauthorized. Sign in again or check the Production admin key." },401);
   if (!env.TELEGRAM_DB) return json({ ok:false, error:"TELEGRAM_DB database binding is missing." },503);
   try {
     await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_bot_starts (id INTEGER PRIMARY KEY AUTOINCREMENT, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, language_code TEXT, start_payload TEXT, started_at TEXT NOT NULL, chat_type TEXT)").run();
