@@ -65,7 +65,7 @@ export async function onRequestPost({ request, env }) {
           await sendMessage(env.BOT_TOKEN, chatId, labels[category] + " ke links abhi Admin Page se add nahi kiye gaye.");
         } else {
           await sendMessage(env.BOT_TOKEN, chatId, "✅ Verified member · " + labels[category] + "\\nAapke selected category ke links:", {
-            inline_keyboard: links.map(item => [{ text: String(item.channel_name).slice(0, 60), url: item.url }])
+            inline_keyboard: await Promise.all(links.map(async item => [{ text: String(item.channel_name).slice(0, 60), url: await createChannelAccessUrl(env.BOT_TOKEN, userId, Number(session.expires_at), item.url) }]))
           });
         }
       } catch (error) {
@@ -241,6 +241,32 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: true });
   } catch {
     return json({ ok: false }, 500);
+  }
+}
+
+async function createChannelAccessUrl(token, userId, sessionExpiresAt, targetValue) {
+  try {
+    const target = new URL(String(targetValue));
+    if (target.protocol !== "https:" || !["criczone.pages.dev", "criczone.online", "www.criczone.online"].includes(target.hostname.toLowerCase())) {
+      return targetValue;
+    }
+    const now = Math.floor(Date.now() / 1000);
+    const expires = Math.min(Math.floor(Number(sessionExpiresAt) / 1000), now + 10 * 60);
+    if (!Number.isFinite(expires) || expires <= now) return targetValue;
+    const canonical = String(userId) + "\\n" + String(expires) + "\\n" + target.href;
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(token), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    const bytes = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(canonical)));
+    let binary = "";
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    const signature = btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+    const bridge = new URL("https://criczone.pages.dev/api/telegram/open");
+    bridge.searchParams.set("uid", String(userId));
+    bridge.searchParams.set("exp", String(expires));
+    bridge.searchParams.set("target", target.href);
+    bridge.searchParams.set("sig", signature);
+    return bridge.href;
+  } catch {
+    return targetValue;
   }
 }
 
