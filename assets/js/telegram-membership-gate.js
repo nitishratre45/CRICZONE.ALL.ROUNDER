@@ -71,7 +71,7 @@
       <div class="czmg-divider">ALREADY A MEMBER?</div>
       <div class="czmg-login" id="czmg-login"><button class="czmg-btn" id="czmg-bot-login" type="button">✈️ Continue with Telegram Bot</button></div>
       <div class="czmg-status" id="czmg-status" role="status" aria-live="polite"></div>
-      <button class="czmg-btn czmg-secondary" id="czmg-retry" type="button">↻ Check membership again</button>
+      <button class="czmg-btn czmg-secondary" id="czmg-retry" type="button">✓ I am a member</button>
       <div class="czmg-secure"><span aria-hidden="true">✓</span> Membership checked securely with Telegram</div>
       <div class="czmg-note">Telegram will open in a new tab or app. Press Start in the bot and keep this page open while we verify your membership.</div>
     </section>`;
@@ -164,12 +164,33 @@
   }
 
   loginButton.addEventListener("click", startBotVerification);
-  retry.addEventListener("click", () => {
-    if (activeNonce) {
-      setStatus("Waiting for Telegram bot confirmation. Open Telegram and press Start.", false);
-      beginPolling(activeNonce);
-    } else {
-      startBotVerification();
+  retry.addEventListener("click", async () => {
+    if (retry.disabled) return;
+    retry.disabled = true;
+    retry.textContent = "Checking membership…";
+    setStatus("Checking your existing CRICZONE session…", false);
+    try {
+      const response = await fetch("/api/telegram/session", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok && result.member) {
+        verified = true;
+        if (pollTimer) clearInterval(pollTimer);
+        gate.remove();
+        document.dispatchEvent(new CustomEvent("criczone:membership-verified", {
+          detail: { session: true, manualCheck: true }
+        }));
+      } else {
+        setStatus("Membership cannot be checked until this browser is verified with Telegram. Use “Continue with Telegram Bot” once, then this button will check here without opening Telegram.");
+      }
+    } catch {
+      setStatus("Could not check membership right now. Please try again.");
+    } finally {
+      retry.disabled = false;
+      retry.textContent = "✓ I am a member";
     }
   });
 
