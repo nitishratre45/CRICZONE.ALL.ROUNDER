@@ -194,14 +194,15 @@
     }
   });
 
-  // Fail open to the visible login gate if the session endpoint is slow or unreachable.
-  // A valid session still closes the gate as soon as the server confirms membership.
+  // Keep the website usable first; show the membership gate after 60 seconds.
+  // Validate any existing session immediately in the background.
   let sessionResolved = false;
-  const showGateFallback = window.setTimeout(() => {
-    if (!sessionResolved && document.getElementById(ROOT_ID)) {
+  let hasValidSession = false;
+  const showGateAfterDelay = window.setTimeout(() => {
+    if (!hasValidSession && document.getElementById(ROOT_ID)) {
       gate.style.visibility = "visible";
     }
-  }, 1800);
+  }, 60 * 1000);
 
   fetch("/api/telegram/session", {
     method: "GET",
@@ -210,18 +211,16 @@
   }).then(async (response) => {
     const result = await response.json().catch(() => ({}));
     sessionResolved = true;
-    window.clearTimeout(showGateFallback);
     if (response.ok && result.ok && result.member) {
-      verified = true;
+      hasValidSession = true;
+      window.clearTimeout(showGateAfterDelay);
       gate.remove();
       // Keep this stylesheet active so legacy timed popups stay suppressed after verification.
       document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
     }
-    gate.style.visibility = "visible";
   }).catch(() => {
     sessionResolved = true;
-    window.clearTimeout(showGateFallback);
-    gate.style.visibility = "visible";
+    // The delayed gate remains available if session verification is unreachable.
   });
 
   // If the browser restores this page from its back-forward cache after a Telegram
