@@ -148,6 +148,7 @@
         if (result.status === "verified" && response.ok && result.ok) {
           clearInterval(pollTimer);
           verified = true;
+          hasValidSession = true;
           try { sessionStorage.removeItem("cz_tg_login_nonce"); } catch {}
           gate.remove();
           document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { bot: true } }));
@@ -184,6 +185,7 @@
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.ok && result.member) {
         verified = true;
+        hasValidSession = true;
         if (pollTimer) clearInterval(pollTimer);
         gate.remove();
         document.dispatchEvent(new CustomEvent("criczone:membership-verified", {
@@ -282,6 +284,49 @@
     }
   }).catch(() => {
     // If session verification fails, the delayed gate still works.
+  });
+
+  // Recheck membership while playback is open. If the user leaves the channel,
+  // stop page playback and put the membership gate back on screen.
+  let membershipHeartbeatBusy = false;
+  async function enforceLiveMembership() {
+    if (!hasValidSession || membershipHeartbeatBusy || document.visibilityState === "hidden") return;
+    membershipHeartbeatBusy = true;
+    try {
+      const response = await fetch("/api/telegram/session", {
+        method: "GET", credentials: "same-origin", cache: "no-store"
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok && result.member) return;
+      hasValidSession = false;
+      verified = false;
+      if (pollTimer) clearInterval(pollTimer);
+      // Stop native media and common embedded players on this page.
+      document.querySelectorAll("video, audio").forEach((media) => {
+        try { media.pause(); } catch {}
+        try { media.removeAttribute("src"); media.querySelectorAll("source").forEach((source) => source.removeAttribute("src")); media.load(); } catch {}
+      });
+      document.querySelectorAll("iframe").forEach((frame) => {
+        try {
+          const src = frame.getAttribute("src") || "";
+          if (/youtube|youtu\.be|player|stream|embed|hls|dash/i.test(src)) {
+            frame.setAttribute("src", "about:blank");
+          }
+        } catch {}
+      });
+      if (gate.parentElement !== document.body) document.body.appendChild(gate);
+      gate.style.visibility = "visible";
+      setStatus("Channel membership is no longer active. Playback stopped. Rejoin @criczonelive and verify again.");
+      document.dispatchEvent(new CustomEvent("criczone:membership-lost"));
+    } catch {
+      // Network errors do not revoke access by themselves; retry on the next heartbeat.
+    } finally {
+      membershipHeartbeatBusy = false;
+    }
+  }
+  window.setInterval(enforceLiveMembership, 30000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") enforceLiveMembership();
   });
 
   // If the browser restores this page from its back-forward cache after a Telegram
