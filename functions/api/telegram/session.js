@@ -7,7 +7,7 @@ export async function onRequestGet({ request, env }) {
     return json({ ok: false, error: "Membership verification is not configured." }, 503);
   }
   const cookieHeader = request.headers.get("Cookie") || "";
-  const match = cookieHeader.match(/(?:^|;\\s*)cz_tg_session=([^;]+)/);
+  const match = cookieHeader.match(/(?:^|;\s*)cz_tg_session=([^;]+)/);
   if (!match) return json({ ok: false, member: false }, 401);
 
   const token = match[1];
@@ -59,7 +59,7 @@ async function signSession(secret, value) {
 function base64UrlEncode(bytes) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
+  return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 function base64UrlDecode(value) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
