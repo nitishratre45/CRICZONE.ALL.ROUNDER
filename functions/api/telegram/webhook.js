@@ -24,8 +24,7 @@ export async function onRequestPost({ request, env }) {
   if (startMatch && env.TELEGRAM_DB) {
     try {
       await env.TELEGRAM_DB.prepare(
-        "INSERT INTO telegram_bot_starts (telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-        "ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, last_name=excluded.last_name, username=excluded.username, language_code=excluded.language_code, start_payload=excluded.start_payload, started_at=excluded.started_at, chat_type=excluded.chat_type"
+        "INSERT INTO telegram_bot_starts (telegram_id, first_name, last_name, username, language_code, start_payload, started_at, chat_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
       ).bind(
         String(userId),
         String(from.first_name || "").slice(0, 80),
