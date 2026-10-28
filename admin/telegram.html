@@ -72,7 +72,7 @@ function renderCategories(){
   const nameInput=document.createElement("input");nameInput.value=cat.name;nameInput.maxLength=50;nameInput.placeholder="e.g. Live Cricket";
   const emojiWrap=document.createElement("div"),emojiLabel=document.createElement("label");emojiLabel.className="label";emojiLabel.textContent="Icon / emoji";
   const emojiInput=document.createElement("input");emojiInput.value=cat.emoji||"📁";emojiInput.maxLength=8;emojiInput.placeholder="📁";
-  nameInput.addEventListener("input",()=>{cat.name=nameInput.value;cat.slug=slugify(cat.name);heading.textContent=(cat.emoji||"📁")+" "+(cat.name||"Untitled category")});
+  nameInput.addEventListener("input",()=>{const oldSlug=cat.slug,newSlug=slugify(nameInput.value);cat.name=nameInput.value;cat.slug=newSlug;if(oldSlug!==newSlug){if(categoryLinks[oldSlug]!==undefined){categoryLinks[newSlug]=categoryLinks[oldSlug];delete categoryLinks[oldSlug]}}heading.textContent=(cat.emoji||"📁")+" "+(cat.name||"Untitled category")});
   emojiInput.addEventListener("input",()=>{cat.emoji=emojiInput.value||"📁";heading.textContent=(cat.emoji||"📁")+" "+(cat.name||"Untitled category")});
   nameWrap.append(nameLabel,nameInput);emojiWrap.append(emojiLabel,emojiInput);fields.append(nameWrap,emojiWrap);panel.append(fields);
   const linkLabel=document.createElement("label");linkLabel.className="label";linkLabel.textContent="Links (one per line: Channel name | https://criczone.pages.dev/page)";
