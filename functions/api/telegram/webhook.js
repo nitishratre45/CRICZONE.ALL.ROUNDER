@@ -30,6 +30,50 @@ export async function onRequestPost({ request, env }) {
   const callback = update?.callback_query;
   if (callback?.id) {
     const callbackData = String(callback.data || "");
+    const categoryMatch = callbackData.match(/^category:(sony|fancode|star-sports|willow)$/);
+    if (categoryMatch && callback.from?.id && callback.message?.chat?.id) {
+      const userId = callback.from.id;
+      const chatId = callback.message.chat.id;
+      const category = categoryMatch[1];
+      try {
+        await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callback_query_id: callback.id, text: "Checking your membership…" })
+        });
+        const check = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHANNEL, user_id: Number(userId) })
+        });
+        const data = await check.json();
+        const s = data?.result?.status;
+        const member = check.ok && data.ok && data.result &&
+          (["creator", "administrator", "member"].includes(s) || (s === "restricted" && data.result.is_member === true));
+        if (!member) {
+          await env.TELEGRAM_DB.prepare("DELETE FROM telegram_category_sessions WHERE telegram_id = ?").bind(String(userId)).run();
+          await sendMessage(env.BOT_TOKEN, chatId, "Membership is not active. Join @criczonelive and use /start to verify again.");
+          return json({ ok: true });
+        }
+        const session = await env.TELEGRAM_DB.prepare("SELECT expires_at FROM telegram_category_sessions WHERE telegram_id = ?").bind(String(userId)).first();
+        if (!session || Number(session.expires_at) <= Date.now()) {
+          await sendMessage(env.BOT_TOKEN, chatId, "Your CRICZONE bot session expired. Send /start to verify again.");
+          return json({ ok: true });
+        }
+        const rows = await env.TELEGRAM_DB.prepare("SELECT channel_name, url FROM telegram_category_links WHERE category = ? ORDER BY channel_name").bind(category).all();
+        const labels = { sony: "Sony", fancode: "FanCode", "star-sports": "Star Sports", willow: "Willow" };
+        const links = rows.results || [];
+        if (!links.length) {
+          await sendMessage(env.BOT_TOKEN, chatId, labels[category] + " ke links abhi Admin Page se add nahi kiye gaye.");
+        } else {
+          await sendMessage(env.BOT_TOKEN, chatId, "✅ Verified member · " + labels[category] + "\\nAapke selected category ke links:", {
+            inline_keyboard: links.map(item => [{ text: String(item.channel_name).slice(0, 60), url: item.url }])
+          });
+        }
+      } catch (error) {
+        console.error("Telegram category request failed:", error?.message || error);
+        await sendMessage(env.BOT_TOKEN, chatId, "Membership check ya links load nahi ho paaye. Thodi der baad try karein.");
+      }
+      return json({ ok: true });
+    }
     const verifyMatch = callbackData.match(/^verify_join:([a-f0-9-]{36})$/i);
     try {
       await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
@@ -73,9 +117,14 @@ export async function onRequestPost({ request, env }) {
         await env.TELEGRAM_DB.prepare(
           "UPDATE telegram_login_requests SET status = 'verified', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status IN ('pending','not_member')"
         ).bind(String(userId), Date.now(), nonce).run();
-        await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; the website will unlock automatically.", pending.return_url ? {
-          inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]]
-        } : undefined);
+        if (!pending.return_url) {
+          await createCategorySession(env, userId);
+          await sendCategoryMenu(env.BOT_TOKEN, chatId);
+        } else {
+          await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; the website will unlock automatically.", {
+            inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]]
+          });
+        }
       } catch (error) {
         console.error("Telegram join verification callback failed:", error?.message || error);
         await sendMessage(env.BOT_TOKEN, chatId, "Verification couldn't finish right now. Please try again.");
@@ -117,10 +166,33 @@ export async function onRequestPost({ request, env }) {
     if (startMatch && !startMatch[1]) {
       try {
         await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_channel_click_tokens (token TEXT PRIMARY KEY, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, created_at TEXT NOT NULL, clicked_at TEXT)").run();
+        await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_category_sessions (telegram_id TEXT PRIMARY KEY, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)").run();
+        await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_category_links (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT NOT NULL, channel_name TEXT NOT NULL, url TEXT NOT NULL, updated_at TEXT NOT NULL)").run();
         const token = crypto.randomUUID();
         await env.TELEGRAM_DB.prepare("INSERT INTO telegram_channel_click_tokens (token, telegram_id, first_name, last_name, username, created_at, clicked_at) VALUES (?, ?, ?, ?, ?, ?, NULL)").bind(token, String(userId), String(from.first_name || "").slice(0,80), String(from.last_name || "").slice(0,80), String(from.username || "").slice(0,80), new Date().toISOString()).run();
-        await sendMessage(env.BOT_TOKEN, chatId, "Welcome to CRICZONE! Tap below to open our official channel.", { inline_keyboard: [[{ text: "📢 Join @criczonelive", url: "https://criczone.pages.dev/api/telegram/channel-click?t=" + token }]] });
-      } catch (error) { console.error("Telegram start welcome failed:", error?.message || error); }
+        const check = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHANNEL, user_id: Number(userId) })
+        });
+        const data = await check.json();
+        const s = data?.result?.status;
+        const member = check.ok && data.ok && data.result &&
+          (["creator", "administrator", "member"].includes(s) || (s === "restricted" && data.result.is_member === true));
+        if (member) {
+          await createCategorySession(env, userId);
+          await sendCategoryMenu(env.BOT_TOKEN, chatId);
+        } else {
+          const nonce = crypto.randomUUID();
+          const now = Date.now();
+          await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at, return_url) VALUES (?, 'not_member', ?, ?, ?, ?, NULL)").bind(nonce, String(userId), now, now, now + 10 * 60 * 1000).run();
+          await sendMessage(env.BOT_TOKEN, chatId, "Welcome to CRICZONE! Join @criczonelive, then tap Verify membership. Once verified, you'll get the four channel categories.", {
+            inline_keyboard: [
+              [{ text: "📢 Join @criczonelive", url: "https://t.me/criczonelive" }],
+              [{ text: "✅ Verify membership", callback_data: "verify_join:" + nonce }]
+            ]
+          });
+        }
+      } catch (error) { console.error("Telegram ordinary start failed:", error?.message || error); await sendMessage(env.BOT_TOKEN, chatId, "CRICZONE verification is temporarily unavailable. Please try /start again."); }
     }
     return json({ ok: true });
   }
@@ -172,6 +244,19 @@ export async function onRequestPost({ request, env }) {
   }
 }
 
+async function createCategorySession(env, userId) {
+  await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_category_sessions (telegram_id TEXT PRIMARY KEY, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)").run();
+  const now = Date.now();
+  await env.TELEGRAM_DB.prepare("INSERT INTO telegram_category_sessions (telegram_id, created_at, expires_at) VALUES (?, ?, ?) ON CONFLICT(telegram_id) DO UPDATE SET created_at=excluded.created_at, expires_at=excluded.expires_at").bind(String(userId), now, now + 12 * 60 * 60 * 1000).run();
+}
+async function sendCategoryMenu(token, chatId) {
+  await sendMessage(token, chatId, "Membership verified ✅\\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {
+    inline_keyboard: [
+      [{ text: "📺 Sony", callback_data: "category:sony" }, { text: "🏏 FanCode", callback_data: "category:fancode" }],
+      [{ text: "⭐ Star Sports", callback_data: "category:star-sports" }, { text: "🇺🇸 Willow", callback_data: "category:willow" }]
+    ]
+  });
+}
 async function sendMessage(token, chatId, text, replyMarkup) {
   await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
     method: "POST", headers: { "Content-Type": "application/json" },
