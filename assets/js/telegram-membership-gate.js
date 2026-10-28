@@ -65,7 +65,7 @@
       <div class="czmg-secure"><span aria-hidden="true">✓</span> Membership checked securely with Telegram</div>
       <div class="czmg-note">Just joined? Wait a few seconds, sign in above, then check again. Keep this page open while you join.</div>
     </section>`;
-  document.body.appendChild(gate);
+  gate.style.visibility = "hidden";\n  document.body.appendChild(gate);
 
   const status = gate.querySelector("#czmg-status");
   const retry = gate.querySelector("#czmg-retry");
@@ -131,6 +131,26 @@
   widget.setAttribute("data-request-access", "write");
   widget.setAttribute("data-onauth", "onCriczoneTelegramAuth(user)");
   gate.querySelector("#czmg-login").appendChild(widget);
+
+  // If this browser already has a valid, server-signed session, verify membership
+  // without displaying the login popup again. The server rechecks Telegram membership.
+  fetch("/api/telegram/session", {
+    method: "GET",
+    credentials: "same-origin",
+    cache: "no-store"
+  }).then(async (response) => {
+    const result = await response.json().catch(() => ({}));
+    if (response.ok && result.ok && result.member) {
+      verified = true;
+      gate.remove();
+      style.remove();
+      document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
+      return;
+    }
+    gate.style.visibility = "visible";
+  }).catch(() => {
+    gate.style.visibility = "visible";
+  });
 
   // If the browser restores this page from its back-forward cache after a Telegram
   // login/navigation, make sure the gate is mounted again rather than leaving a blank page.
