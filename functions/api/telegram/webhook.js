@@ -106,6 +106,9 @@ export async function onRequestPost({ request, env }) {
     await env.TELEGRAM_DB.prepare(
       "UPDATE telegram_login_requests SET status = 'verified', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status = 'pending'"
     ).bind(String(userId), Date.now(), nonce).run();
+    // Store successful membership verification for the private admin's verified-member list.
+    await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_verified_members (telegram_id TEXT PRIMARY KEY, first_name TEXT, last_name TEXT, username TEXT, verified_at TEXT NOT NULL, channel_status TEXT NOT NULL, return_url TEXT)").run();
+    await env.TELEGRAM_DB.prepare("INSERT INTO telegram_verified_members (telegram_id, first_name, last_name, username, verified_at, channel_status, return_url) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, last_name=excluded.last_name, username=excluded.username, verified_at=excluded.verified_at, channel_status=excluded.channel_status, return_url=excluded.return_url").bind(String(userId), String(from.first_name || "").slice(0,80), String(from.last_name || "").slice(0,80), String(from.username || "").slice(0,80), new Date().toISOString(), String(status), pending.return_url || "").run();
     await sendMessage(env.BOT_TOKEN, chatId, "Membership verified ✅ Return to CRICZONE; your player access will unlock automatically.", pending.return_url ? { inline_keyboard: [[{ text: "↩️ Return to the website", url: pending.return_url }]] } : undefined);
     return json({ ok: true });
   } catch {
