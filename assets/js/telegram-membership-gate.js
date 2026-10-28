@@ -209,7 +209,7 @@
 
   function revealGateIfDue() {
     if (!gateDelayElapsed || hasValidSession || !document.getElementById(ROOT_ID)) return;
-    if (isVideoFullscreen()) return;
+    // Intentionally show the membership popup even while the video is fullscreen.
     gate.style.visibility = "visible";
   }
 
