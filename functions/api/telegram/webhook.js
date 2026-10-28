@@ -4,10 +4,10 @@
 const CHANNEL = "@criczonelive";
 
 export async function onRequestPost({ request, env }) {
-  if (!env.BOT_TOKEN || !env.TELEGRAM_WEBHOOK_SECRET || !env.TELEGRAM_DB) {
+  if (!env.BOT_TOKEN || !env.TELEGRAM_DB) {
     return json({ ok: false }, 503);
   }
-  if (request.headers.get("X-Telegram-Bot-Api-Secret-Token") !== env.TELEGRAM_WEBHOOK_SECRET) {
+  if (request.headers.get("X-Telegram-Bot-Api-Secret-Token") !== await webhookSecret(env.BOT_TOKEN)) {
     return json({ ok: false }, 401);
   }
   let update;
@@ -69,4 +69,10 @@ function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: {
     "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"
   }});
+}
+
+async function webhookSecret(token) {
+  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("criczone-telegram-webhook-v1:" + token)));
+  let binary = ""; for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
 }
