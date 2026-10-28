@@ -1,5 +1,5 @@
 // POST /api/telegram/start - create a short-lived Telegram bot sign-in challenge.
-export async function onRequestPost({ env }) {
+export async function onRequestPost({ request, env }) {
   if (!env.BOT_TOKEN || !env.TELEGRAM_DB) {
     return json({ ok: false, error: "Telegram sign-in is not configured yet." }, 503);
   }
@@ -25,8 +25,8 @@ export async function onRequestPost({ env }) {
     const nonce = crypto.randomUUID();
     const now = Date.now();
     await env.TELEGRAM_DB.prepare(
-      "INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at) VALUES (?, 'pending', NULL, ?, ?, ?)"
-    ).bind(nonce, now, now, now + 5 * 60 * 1000).run();
+      "INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at, return_url) VALUES (?, 'pending', NULL, ?, ?, ?, ?)"
+    ).bind(nonce, now, now, now + 5 * 60 * 1000, returnUrl || null).run();
 
     return json({
       ok: true,
