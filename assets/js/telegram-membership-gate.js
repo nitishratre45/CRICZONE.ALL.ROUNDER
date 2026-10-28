@@ -217,14 +217,38 @@
 
   function revealGateIfDue() {
     if (!gateDelayElapsed || hasValidSession || !document.getElementById(ROOT_ID)) return;
-    // A fullscreen browser only renders the fullscreen element and its descendants.
-    // Mount the shared gate inside that container where browser APIs allow it.
+
+    // Fullscreen mode renders only the fullscreen element and its descendants.
+    // Shaka's container can host the gate; native video/iframe fullscreen cannot.
     const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+    const nativeFullscreenVideo = Array.from(document.querySelectorAll("video")).find((video) =>
+      video.webkitDisplayingFullscreen === true ||
+      video.webkitPresentationMode === "fullscreen"
+    );
+    const fullscreenTag = fullscreenElement?.tagName || "";
+    const nativeOnlyFullscreen = fullscreenTag === "VIDEO" || fullscreenTag === "IFRAME" || Boolean(nativeFullscreenVideo);
+
+    if (nativeOnlyFullscreen) {
+      // Move the gate back to the document before leaving native fullscreen.
+      if (gate.parentElement !== document.body) document.body.appendChild(gate);
+      gate.style.visibility = "visible";
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch {}
+      try {
+        if (nativeFullscreenVideo && typeof nativeFullscreenVideo.webkitExitFullscreen === "function") {
+          nativeFullscreenVideo.webkitExitFullscreen();
+        }
+        if (nativeFullscreenVideo && nativeFullscreenVideo.webkitPresentationMode === "fullscreen") {
+          nativeFullscreenVideo.webkitSetPresentationMode("inline");
+        }
+      } catch {}
+      return;
+    }
+
     if (fullscreenElement && fullscreenElement !== gate) {
-      const tag = fullscreenElement.tagName;
-      if (tag !== "VIDEO" && tag !== "IFRAME" && gate.parentElement !== fullscreenElement) {
-        fullscreenElement.appendChild(gate);
-      }
+      if (gate.parentElement !== fullscreenElement) fullscreenElement.appendChild(gate);
     } else if (!fullscreenElement && gate.parentElement !== document.body) {
       document.body.appendChild(gate);
     }
