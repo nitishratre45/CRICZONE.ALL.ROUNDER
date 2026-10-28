@@ -1,3 +1,4 @@
+import { validSession } from "./session.js";
 // GET/POST /api/admin/telegram-categories
 // Admin-managed Telegram categories and their channel links.
 const DEFAULT_CATEGORIES = [
@@ -8,7 +9,8 @@ const DEFAULT_CATEGORIES = [
 ];
 export async function onRequest({ request, env }) {
   const supplied = request.headers.get("Authorization") || "";
-  if (!env.ADMIN_DASHBOARD_KEY || !safeEqual(supplied, "Bearer " + env.ADMIN_DASHBOARD_KEY)) return json({ ok: false, error: "Unauthorized." }, 401);
+  const authorized = !!env.ADMIN_DASHBOARD_KEY && (safeEqual(supplied, "Bearer " + env.ADMIN_DASHBOARD_KEY) || await validSession(request, env.ADMIN_DASHBOARD_KEY));
+  if (!authorized) return json({ ok:false, error:"Unauthorized. Sign in again or check the Production admin key." },401);
   if (!env.TELEGRAM_DB) return json({ ok: false, error: "TELEGRAM_DB database binding is missing." }, 503);
   try {
     await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_category_links (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT NOT NULL, channel_name TEXT NOT NULL, url TEXT NOT NULL, updated_at TEXT NOT NULL)").run();
