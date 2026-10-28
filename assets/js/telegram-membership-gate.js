@@ -248,6 +248,26 @@
     video.addEventListener("webkitendfullscreen", revealGateIfDue);
   });
 
+  // A bot return link may open in a fresh tab before the original tab's polling finishes.
+  // Exchange its short-lived nonce on this origin so this browser receives the HttpOnly session cookie.
+  const returnUrl = new URL(window.location.href);
+  const returnNonce = returnUrl.searchParams.get("cz_tg_login_nonce");
+  if (returnNonce && /^[a-f0-9-]{36}$/i.test(returnNonce)) {
+    fetch("/api/telegram/status?nonce=" + encodeURIComponent(returnNonce), {
+      method: "GET", credentials: "same-origin", cache: "no-store"
+    }).then(async (response) => {
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok && result.status === "verified") {
+        returnUrl.searchParams.delete("cz_tg_login_nonce");
+        window.history.replaceState({}, document.title, returnUrl.pathname + returnUrl.search + returnUrl.hash);
+        hasValidSession = true;
+        window.clearTimeout(showGateAfterDelay);
+        gate.remove();
+        document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true, botReturn: true } }));
+      }
+    }).catch(() => {});
+  }
+
   fetch("/api/telegram/session", {
     method: "GET",
     credentials: "same-origin",
