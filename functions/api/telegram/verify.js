@@ -86,11 +86,14 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    return json({
+    const response = json({
       ok: true,
       member: true,
       user: { id: Number(user.id), first_name: String(user.first_name || "").slice(0, 80) }
     }, 200);
+    // Short-lived, signed HttpOnly session avoids asking verified members to log in on every page load.
+    response.headers.append("Set-Cookie", await createSessionCookie(env.BOT_TOKEN, String(user.id)));
+    return response;
   } catch {
     return json({ ok: false, error: "Unable to contact Telegram. Please retry." }, 502);
   }
@@ -116,4 +119,29 @@ function json(body, status) {
       "X-Content-Type-Options": "nosniff"
     }
   });
+}
+
+
+async function createSessionCookie(botToken, telegramId) {
+  const payload = base64UrlEncode(new TextEncoder().encode(JSON.stringify({
+    id: telegramId,
+    exp: Math.floor(Date.now() / 1000) + 8 * 60 * 60
+  })));
+  const signature = await signSession(botToken, payload);
+  return "cz_tg_session=" + payload + "." + signature +
+    "; Max-Age=28800; Path=/; Secure; HttpOnly; SameSite=Lax";
+}
+
+async function signSession(secret, value) {
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const signature = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value)));
+  return base64UrlEncode(signature);
+}
+
+function base64UrlEncode(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/=/g, "").replace(/\\+/g, "-").replace(/\\//g, "_");
 }
