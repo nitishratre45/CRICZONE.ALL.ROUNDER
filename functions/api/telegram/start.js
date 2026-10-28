@@ -43,6 +43,8 @@ export async function onRequestPost({ request, env }) {
 
     const nonce = crypto.randomUUID();
     const now = Date.now();
+    // Prune expired challenges; verified rows remain available only until their 5-minute expiry.
+    await env.TELEGRAM_DB.prepare("DELETE FROM telegram_login_requests WHERE expires_at <= ?").bind(now).run();
     await env.TELEGRAM_DB.prepare(
       "INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at, return_url) VALUES (?, 'pending', NULL, ?, ?, ?, ?)"
     ).bind(nonce, now, now, now + 5 * 60 * 1000, returnUrl || null).run();
