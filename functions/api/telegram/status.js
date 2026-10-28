@@ -25,7 +25,8 @@ export async function onRequestGet({ request, env }) {
     if (!member) return json({ ok: true, status: "not_member", error: "Join @criczonelive first, then try again." });
 
     const cookie = await createSessionCookie(env.BOT_TOKEN, String(row.telegram_id));
-    await env.TELEGRAM_DB.prepare("DELETE FROM telegram_login_requests WHERE nonce = ?").bind(nonce).run();
+    // Keep the verified challenge briefly so a bot return link opened in a new tab
+    // can also exchange the nonce for its own browser session cookie.
     return new Response(JSON.stringify({ ok: true, status: "verified" }), { status: 200, headers: {
       "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
       "Set-Cookie": cookie
