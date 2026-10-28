@@ -152,9 +152,24 @@
     window.clearTimeout(showGateFallback);
     if (response.ok && result.ok && result.member) {
       verified = true;
-      gate.remove();
-      style.remove();
-      document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
+      // Keep the member gate visible in regular browsers too. A valid cookie must
+      // not make the login UI silently disappear when the user expects to see it.
+      setStatus("Your membership is already verified on this browser. Continue below, or sign in with another Telegram account.", false);
+      let continueButton = gate.querySelector("#czmg-continue");
+      if (!continueButton) {
+        continueButton = document.createElement("button");
+        continueButton.id = "czmg-continue";
+        continueButton.type = "button";
+        continueButton.className = "czmg-btn";
+        continueButton.textContent = "✓ Continue as verified member";
+        gate.querySelector("#czmg-retry").before(continueButton);
+        continueButton.addEventListener("click", () => {
+          gate.remove();
+          style.remove();
+          document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { session: true } }));
+        });
+      }
+      gate.style.visibility = "visible";
       return;
     }
     gate.style.visibility = "visible";
