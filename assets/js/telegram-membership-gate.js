@@ -209,7 +209,17 @@
 
   function revealGateIfDue() {
     if (!gateDelayElapsed || hasValidSession || !document.getElementById(ROOT_ID)) return;
-    // Intentionally show the membership popup even while the video is fullscreen.
+    // A fullscreen browser only renders the fullscreen element and its descendants.
+    // Mount the shared gate inside that container where browser APIs allow it.
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fullscreenElement && fullscreenElement !== gate) {
+      const tag = fullscreenElement.tagName;
+      if (tag !== "VIDEO" && tag !== "IFRAME" && gate.parentElement !== fullscreenElement) {
+        fullscreenElement.appendChild(gate);
+      }
+    } else if (!fullscreenElement && gate.parentElement !== document.body) {
+      document.body.appendChild(gate);
+    }
     gate.style.visibility = "visible";
   }
 
