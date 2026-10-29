@@ -20,7 +20,6 @@
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 0%,rgba(21,105,179,.24),transparent 52%),rgba(2,6,15,.88);backdrop-filter:blur(18px) saturate(125%);-webkit-backdrop-filter:blur(18px) saturate(125%);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     /* Mobile: full-screen membership sheet; keep the page behind it locked and blurred. */
     html.czmg-page-locked,html.czmg-page-locked body{overflow:hidden!important;overscroll-behavior:none!important}
-    html.czmg-page-locked body{touch-action:none}
     #${ROOT_ID}{overscroll-behavior:contain;touch-action:pan-y}
     @media(max-width:600px){
       #${ROOT_ID}{inset:0;width:100%;height:100%;height:100dvh;padding:0;align-items:stretch;justify-content:flex-start;overflow:hidden;background:rgba(2,6,15,.66);backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%)}
@@ -160,18 +159,15 @@
     rootClass: pageRoot.classList.contains("czmg-page-locked"),
     rootOverflow: pageRoot.style.overflow,
     bodyOverflow: document.body.style.overflow,
-    bodyTouchAction: document.body.style.touchAction
   };
   pageRoot.classList.add("czmg-page-locked");
   pageRoot.style.overflow = "hidden";
   document.body.style.overflow = "hidden";
-  document.body.style.touchAction = "none";
   const restorePageScroll = () => {
     if (document.getElementById(ROOT_ID)) return;
     if (!previousScrollLock.rootClass) pageRoot.classList.remove("czmg-page-locked");
     pageRoot.style.overflow = previousScrollLock.rootOverflow;
     document.body.style.overflow = previousScrollLock.bodyOverflow;
-    document.body.style.touchAction = previousScrollLock.bodyTouchAction;
     pageLockObserver.disconnect();
   };
   const pageLockObserver = new MutationObserver(restorePageScroll);
