@@ -24,6 +24,18 @@ export async function onRequestPost({ request, env }) {
       await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_channel_activity (id INTEGER PRIMARY KEY AUTOINCREMENT, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, event_type TEXT NOT NULL, event_at TEXT NOT NULL, old_status TEXT, new_status TEXT)").run();
       await env.TELEGRAM_DB.prepare("INSERT INTO telegram_channel_activity (telegram_id, first_name, last_name, username, event_type, event_at, old_status, new_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(String(from?.id || memberUpdate.new_chat_member?.user?.id || ""), String(from?.first_name || "").slice(0,80), String(from?.last_name || "").slice(0,80), String(from?.username || "").slice(0,80), joined && !wasMember ? "joined" : (!joined && wasMember ? "left" : "membership_changed"), new Date().toISOString(), oldStatus, newStatus).run();
     } catch (error) { console.error("Channel membership audit write failed:", error?.message || error); }
+
+    // On a new channel join, proactively DM the category menu when the user has
+    // already opened this bot. Telegram does not allow bots to initiate a new
+    // private conversation with users who have never pressed Start.
+    if (joined && !wasMember && from?.id) {
+      try {
+        await createCategorySession(env, from.id);
+        await sendCategoryMenu(env.BOT_TOKEN, from.id, env);
+      } catch (error) {
+        console.error("Auto-send category menu after channel join failed:", error?.message || error);
+      }
+    }
     return json({ ok: true });
   }
 
