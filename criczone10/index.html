@@ -643,14 +643,6 @@
           });
         }
         search.addEventListener('input', renderChannels);
-        document.getElementById('share-stream-btn').addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(window.location.href);
-            showToast('Page link copied');
-          } catch {
-            showToast('Copy is unavailable in this browser');
-          }
-        });
         document.getElementById('btn-banner-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
