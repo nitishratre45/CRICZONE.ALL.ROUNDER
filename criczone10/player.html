@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#11100b">
 <title>CRICZONE — Live Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +14,7 @@
 :root{color-scheme:dark;--gold:#ffd34e;--ink:#0b0b08;--panel:#17150e;--muted:#b9ad8e}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:#080807;color:#fffdf5;font-family:Inter,system-ui,sans-serif}
-body{min-height:100dvh}
+body{min-height:100vh;min-height:100dvh;min-height:100svh}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(14px,env(safe-area-inset-left));background:linear-gradient(110deg,#211b0c,#11110d);border-bottom:1px solid #5d4818}
 .brand{font-size:16px;font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}
 .actions{display:flex;gap:8px}.btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid #6d551c;border-radius:11px;background:#29220f;color:#ffe38a;font:700 12px Inter, sans-serif;text-decoration:none;cursor:pointer}
@@ -20,8 +23,8 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
 .player-card{overflow:hidden;border:1px solid #5d4818;border-radius:16px;background:#090908;box-shadow:0 20px 70px #0008}
 .player-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:linear-gradient(110deg,#211b0c,#11110d);border-bottom:1px solid #3d3218}
 .kicker{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--gold);margin-bottom:5px}.channel-name{font-size:19px;font-weight:850;overflow-wrap:anywhere}
-.frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
-.frame iframe{position:absolute;inset:0;width:100%;height:100%;display:block;border:0;background:#000}
+.frame{position:relative;width:100%;aspect-ratio:16/9;min-height:0;background:#000;overflow:hidden}.frame:before{content:"";display:block;padding-top:56.25%}.frame{aspect-ratio:auto}.frame:before{display:none}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;display:block;border:0;background:#000;max-width:100%}
 .loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(circle,#30270f,#080807 72%);color:#fff0bd;font-size:13px;pointer-events:none}
 .loading.hidden{display:none}.spinner{width:30px;height:30px;border:3px solid #6e571b;border-top-color:#ffd34e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .telegram{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(110deg,#1d190d,#11110d);border-top:1px solid #5d4818}
@@ -30,6 +33,16 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
 .hint{padding:14px 4px 4px;text-align:center;color:#9f967e;font-size:11px}
 @media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.telegram{padding:12px;gap:9px;flex-wrap:wrap}.tg-icon{width:36px;height:36px;flex-basis:36px;font-size:18px}.tg-copy{min-width:calc(100% - 60px)}.tg-copy strong{font-size:12px}.tg-copy span{font-size:10px}.telegram .btn{width:100%;min-height:42px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Cross-device fallbacks for Safari/iOS, Android WebView and narrow screens. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-y:auto}
+button,a{-webkit-appearance:none;appearance:none;touch-action:manipulation}
+.frame{height:auto;min-height:0}
+@supports not (aspect-ratio:16/9){.frame{height:0;padding-top:56.25%}.frame iframe,.frame .loading{height:100%}}
+@media(max-width:380px){.actions{gap:5px}.btn{padding:8px;font-size:10px}.channel-name{font-size:16px}main{padding-left:6px;padding-right:6px}}
+@media(orientation:landscape) and (max-height:500px){main{padding-top:8px}.top{padding-top:8px;padding-bottom:8px}.player-head{padding:8px 12px}.frame{max-height:calc(100vh - 120px)}.telegram{padding:8px 12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -40,39 +53,64 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
 <main>
   <section class="player-card" aria-label="Live channel player">
     <div class="player-head"><div><div class="kicker">NOW PLAYING</div><div class="channel-name" id="channel-name">Loading channel…</div></div><a class="btn" href="./" aria-label="Back to all channels">✕</a></div>
-    <div class="frame"><div class="loading" id="loading"><span class="spinner"></span><span>Connecting to channel…</span></div><iframe id="stream-frame" title="CRICZONE live channel" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe></div>
+    <div class="frame"><div class="loading" id="loading"><span class="spinner"></span><span>Connecting to channel…</span></div><iframe id="stream-frame" title="CRICZONE live channel" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen playsinline referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <aside class="telegram"><div class="tg-icon" aria-hidden="true">✈</div><div class="tg-copy"><strong>Join CRICZONE on Telegram</strong><span>Get live updates, channel news and backup links.</span></div><a class="btn primary" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join Channel ↗</a></aside>
   </section>
   <p class="hint">Refresh this page to reload the same selected channel.</p>
 </main>
-<script src="stream.js?v=20261029-playerpage"></script>
+<script src="stream.js?v=20261029-crossdevice1"></script>
 <script>
 (() => {
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(window.location.search);
   const channelId = params.get('channel');
   const name = document.getElementById('channel-name');
   const frame = document.getElementById('stream-frame');
   const loading = document.getElementById('loading');
-  function loadChannel() {
-    const data = window.streamsData || {};
-    const item = data[channelId];
-    if (!item || !item.url || !(item.url.startsWith('https://') || item.url.startsWith('http://'))) {
-      name.textContent = 'Channel unavailable';
-      loading.innerHTML = '<span>This channel ID is missing or has no configured stream.</span><a class="btn primary" href="./">Back to all channels</a>';
-      return;
-    }
-    name.textContent = item.name;
-    document.title = 'CRICZONE — ' + item.name;
-    loading.classList.remove('hidden');
-    frame.src = item.url;
+  const reload = document.getElementById('reload-player');
+  let currentUrl = '';
+  function showMessage(message) {
+    loading.replaceChildren();
+    const text = document.createElement('span');
+    text.textContent = message;
+    loading.appendChild(text);
   }
-  frame.addEventListener('load', () => loading.classList.add('hidden'));
-  document.getElementById('reload-player').addEventListener('click', () => {
+  function loadChannel() {
+    const item = (window.streamsData || {})[channelId];
+    if (!channelId || !item || !item.url || !(item.url.startsWith('https://') || item.url.startsWith('http://'))) {
+      name.textContent = 'Channel unavailable';
+      showMessage('This channel ID is missing or has no configured stream.');
+      const back = document.createElement('a');
+      back.className = 'btn primary';
+      back.href = './';
+      back.textContent = 'Back to all channels';
+      loading.appendChild(back);
+      return false;
+    }
+    currentUrl = item.url;
+    name.textContent = item.name || 'Live Channel';
+    document.title = 'CRICZONE — ' + name.textContent;
+    loading.classList.remove('hidden');
+    frame.src = currentUrl;
+    return true;
+  }
+  frame.addEventListener('load', () => {
+    // load fires for cross-origin frames too; hide the overlay after navigation has started.
+    loading.classList.add('hidden');
+  });
+  reload.addEventListener('click', () => {
+    if (!currentUrl) { loadChannel(); return; }
     loading.classList.remove('hidden');
     frame.src = 'about:blank';
-    setTimeout(() => { const data = (window.streamsData || {})[channelId]; if (data && data.url) frame.src = data.url; }, 80);
+    window.setTimeout(() => { frame.src = currentUrl; }, 100);
   });
-  loadChannel();
+  // stream.js is loaded synchronously above; retry briefly for slow Safari/WebView startup.
+  if (!loadChannel()) {
+    let tries = 0;
+    const retry = window.setInterval(() => {
+      tries += 1;
+      if (loadChannel() || tries >= 20) window.clearInterval(retry);
+    }, 250);
+  }
 })();
 </script>
 <script src="../assets/js/telegram-membership-gate.js?v=20261029-player-gate" defer></script>
