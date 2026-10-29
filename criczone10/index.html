@@ -396,6 +396,14 @@
         .player-placeholder strong{font-size:15px}
         .player-placeholder span{font-size:12px;color:#b9ad8e}
         .video-card.has-stream .player-placeholder{display:none}
+        .main-content-grid[hidden]{display:none!important}
+        body.player-mode .main-content-grid{order:1;margin-top:12px}
+        body.player-mode .channel-section{order:2}
+        body.player-mode .hero-section{order:0}
+        body.player-mode .content-board-section{order:3}
+        body.player-mode .channel-section{margin-top:18px}
+        @media(max-width:760px){body.player-mode .main-content-grid{padding-top:8px}}
+
         .content-board-section{padding:26px 5% 40px;border-top:1px solid #1b3047}
         .section-header h2{font-size:21px}
         .info-card{border:1px solid #4a3b18;background:linear-gradient(145deg,#201c10,#12110c)}
@@ -502,6 +510,13 @@
           toast.classList.add('show');
           window.setTimeout(() => toast.classList.remove('show'), 2400);
         }
+        const params = new URLSearchParams(location.search);
+        const requestedChannel = params.get('channel');
+        const playerMode = available.some(([key]) => key === requestedChannel);
+        document.body.classList.toggle('player-mode', playerMode);
+        const playerSection = document.querySelector('.main-content-grid');
+        if (!playerMode) playerSection.hidden = true;
+
         function chooseChannel(key) {
           const item = available.find(([id]) => id === key);
           if (!item) return;
@@ -555,7 +570,16 @@
             arrow.className = 'channel-arrow';
             arrow.textContent = key === selectedKey ? '✓' : '▶';
             card.append(badge,meta,arrow);
-            card.addEventListener('click', () => chooseChannel(key));
+            card.addEventListener('click', () => {
+              if (!playerMode) {
+                // Keep the channel directory clean; open the selected channel by its ID in a new tab.
+                const target = new URL(window.location.href);
+                target.searchParams.set('channel', key);
+                window.open(target.href, '_blank', 'noopener,noreferrer');
+                return;
+              }
+              chooseChannel(key);
+            });
             grid.appendChild(card);
           });
         }
@@ -576,13 +600,15 @@
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
         renderChannels();
-        // Show the complete channel list first. Do not load any stream until the visitor taps a channel.
+        // Directory view lists every channel without embedding a player. A channel ID opens player mode in a new tab.
         if (!available.length) {
           grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
           count.textContent = '0 channels available';
           subtitle.textContent = 'No channel source is configured.';
+        } else if (playerMode) {
+          chooseChannel(requestedChannel);
         } else {
-          subtitle.textContent = 'Choose any channel below to start playback.';
+          subtitle.textContent = 'Select a channel to open its player in a new tab.';
         }
       });
     </script>
