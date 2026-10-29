@@ -20,12 +20,12 @@
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 0%,rgba(21,105,179,.24),transparent 52%),rgba(2,6,15,.88);backdrop-filter:blur(18px) saturate(125%);-webkit-backdrop-filter:blur(18px) saturate(125%);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     #${ROOT_ID} [hidden]{display:none!important}
     #${ROOT_ID} .czmg-card{position:relative;width:min(100%,440px);max-height:calc(100dvh - 28px);overflow:auto;padding:14px 17px 19px;text-align:center;border:1px solid rgba(121,190,255,.32);border-radius:28px;background:linear-gradient(155deg,#101f33 0%,#07111e 55%,#050a12 100%);box-shadow:0 32px 100px #000e,0 0 0 1px #ffffff08,0 0 42px #168bff1b;scrollbar-width:thin;scrollbar-color:#31536f transparent}
-    #${ROOT_ID} .czmg-hero{position:relative;isolation:isolate;overflow:hidden;margin:-14px -17px 17px;padding:22px 16px 20px;border-radius:27px 27px 19px 19px;background:linear-gradient(180deg,rgba(2,9,20,.04) 0%,rgba(2,9,20,.18) 27%,rgba(3,10,20,.78) 68%,#081321 100%),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photos/photo_2026-10-28_14-52-23.jpg") center 28%/cover no-repeat;border-bottom:1px solid #4b9fff55;min-height:236px;display:flex;flex-direction:column;justify-content:flex-end;animation:czmgHeroIn .55s ease both}
+    #${ROOT_ID} .czmg-hero{position:relative;isolation:isolate;overflow:hidden;margin:-14px -17px 17px;padding:22px 16px 20px;border-radius:27px 27px 19px 19px;background:linear-gradient(180deg,rgba(2,9,20,.04) 0%,rgba(2,9,20,.18) 27%,rgba(3,10,20,.78) 68%,#081321 100%),url("https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg") center 28%/cover no-repeat;border-bottom:1px solid #4b9fff55;min-height:236px;display:flex;flex-direction:column;justify-content:flex-end;animation:czmgHeroIn .55s ease both}
     #${ROOT_ID} .czmg-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 30%,#42b8ff22,transparent 60%)}
     #${ROOT_ID} .czmg-brand{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;padding:7px 11px;border:1px solid #284c6a;border-radius:999px;background:#10243a;color:#b8e7ff;font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 8px 26px #0005}
     #${ROOT_ID} .czmg-icon{display:none!important} @keyframes czmgHeroIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} #${ROOT_ID} .czmg-card{animation:czmgCardIn .32s cubic-bezier(.2,.8,.2,1) both} @keyframes czmgCardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
     /* Premium profile header and blue-violet palette, consistent on desktop and mobile. */
-    #${ROOT_ID} .czmg-hero{min-height:292px;padding-top:112px;background-image:linear-gradient(180deg,rgba(3,8,22,.18) 0%,rgba(3,8,22,.42) 35%,rgba(3,8,22,.92) 72%,#081321 100%),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photos/photo_2026-10-28_14-52-23.jpg");background-position:center,center 28%;background-size:cover,cover}
+    #${ROOT_ID} .czmg-hero{min-height:292px;padding-top:112px;background-image:linear-gradient(180deg,rgba(3,8,22,.18) 0%,rgba(3,8,22,.42) 35%,rgba(3,8,22,.92) 72%,#081321 100%),url("https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg");background-position:center,center 28%;background-size:cover,cover}
     #${ROOT_ID} .czmg-profile{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:76px;height:76px;padding:4px;border-radius:50%;border:1px solid #9cbaff;box-shadow:0 0 0 5px rgba(102,126,234,.15),0 10px 32px #0009;background:linear-gradient(135deg,#8b5cf6,#38bdf8);z-index:2}
     #${ROOT_ID} .czmg-profile img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;border-radius:50%;border:2px solid #07111e}
     #${ROOT_ID} .czmg-brand{align-self:center;margin-bottom:13px;border-color:#415b91;background:rgba(15,27,52,.88);color:#d4dcff}
@@ -36,7 +36,7 @@
     #${ROOT_ID} #czmg-bot-login:hover{border-color:#a5b4fc;box-shadow:0 0 24px #818cf830}
     #${ROOT_ID} .czmg-secondary{background:linear-gradient(135deg,#1b3155,#13233e);border-color:#536b9b;color:#f4f6ff}
     #${ROOT_ID} .czmg-divider:before,#${ROOT_ID} .czmg-divider:after{background:#344567}
-    #${ROOT_ID} .czmg-login{border-color:#465b85;background:linear-gradient(90deg,rgba(4,10,25,.86),rgba(4,10,25,.72)),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photos/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat}
+    #${ROOT_ID} .czmg-login{border-color:#465b85;background:linear-gradient(90deg,rgba(4,10,25,.86),rgba(4,10,25,.72)),url("https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat}
     #${ROOT_ID} .czmg-secure{color:#a5b4fc}
     #${ROOT_ID} .czmg-num{background:linear-gradient(145deg,#465bb5,#263d70);color:#e0e7ff}
     #${ROOT_ID} .czmg-step{border-color:#34466d;background:linear-gradient(110deg,rgba(20,34,62,.95),rgba(9,19,38,.95))}
@@ -66,7 +66,7 @@
     #${ROOT_ID} .czmg-secondary{background:linear-gradient(135deg,#142d46,#0d2034);border:1px solid #345672;color:#e7f4ff;box-shadow:none}
     #${ROOT_ID} .czmg-divider{display:flex;align-items:center;gap:10px;margin:15px 0;color:#7189a2;font-size:11px}
     #${ROOT_ID} .czmg-divider:before,#${ROOT_ID} .czmg-divider:after{content:"";height:1px;flex:1;background:#263e55}
-    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:60px;margin:9px 0 4px;padding:7px 8px;border:1px solid #345b7b;border-radius:16px;background:linear-gradient(90deg,rgba(4,13,26,.78),rgba(4,13,26,.6)),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photos/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat;box-shadow:inset 0 0 24px #0007}
+    #${ROOT_ID} .czmg-login{display:flex;justify-content:center;align-items:center;min-height:60px;margin:9px 0 4px;padding:7px 8px;border:1px solid #345b7b;border-radius:16px;background:linear-gradient(90deg,rgba(4,13,26,.78),rgba(4,13,26,.6)),url("https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat;box-shadow:inset 0 0 24px #0007}
     #${ROOT_ID} .czmg-status{min-height:22px;margin-top:10px;font-size:12px;line-height:1.5;color:#ffd38a;overflow-wrap:anywhere}
     #${ROOT_ID} .czmg-note{font-size:11px;line-height:1.5;color:#849ab2;margin-top:15px}
     #${ROOT_ID} .czmg-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;color:#78c9a7;font-size:11px}
@@ -82,7 +82,7 @@
   gate.innerHTML = `
     <section class="czmg-card">
       <div class="czmg-hero">
-        <div class="czmg-profile" aria-label="CRICZONE community profile"><img src="https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE community profile" loading="eager"></div>
+        <div class="czmg-profile" aria-label="CRICZONE community profile"><img src="https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE community profile" loading="eager"></div>
         <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
         
         <h2>Unlock Stream for 12 Hours</h2>
