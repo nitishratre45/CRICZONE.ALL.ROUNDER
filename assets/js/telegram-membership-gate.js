@@ -71,6 +71,33 @@
     #${ROOT_ID} .czmg-note{font-size:11px;line-height:1.5;color:#849ab2;margin-top:15px}
     #${ROOT_ID} .czmg-secure{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;color:#78c9a7;font-size:11px}
     @media(max-width:600px){#${ROOT_ID}{padding:10px}#${ROOT_ID} .czmg-hero{min-height:205px;background-position:center 25%} #${ROOT_ID} .czmg-card{width:min(100%,440px);max-height:calc(100dvh - 20px)}} @media(max-width:380px){#${ROOT_ID}{padding:8px}#${ROOT_ID} .czmg-card{padding:12px 13px 16px;max-height:calc(100dvh - 16px);border-radius:21px}#${ROOT_ID} .czmg-hero{margin:-12px -13px 15px;padding:20px 13px 17px}#${ROOT_ID} .czmg-icon{width:52px;height:52px;font-size:26px}#${ROOT_ID} .czmg-step{padding:10px}}
+    /* Latest hero crop + compact mobile layout: keep the batter's helmet/head visible. */
+    #${ROOT_ID} .czmg-hero{background-position:center,center 48%}
+    @media(max-width:600px){
+      #${ROOT_ID}{padding:8px;align-items:center}
+      #${ROOT_ID} .czmg-card{width:100%;max-width:440px;max-height:calc(100dvh - 16px);padding:11px 12px 14px;border-radius:22px;overscroll-behavior:contain}
+      #${ROOT_ID} .czmg-hero{min-height:218px;margin:-11px -12px 12px;padding:84px 12px 14px;background-position:center,center 52%;border-radius:21px 21px 16px 16px}
+      #${ROOT_ID} .czmg-profile{width:60px;height:60px;top:12px}
+      #${ROOT_ID} .czmg-brand{margin-bottom:9px;padding:6px 9px;font-size:9px;letter-spacing:1.1px}
+      #${ROOT_ID} h2{font-size:clamp(22px,6vw,27px);line-height:1.12;margin-bottom:7px;letter-spacing:-.6px}
+      #${ROOT_ID} .czmg-lead{font-size:12px;line-height:1.42}
+      #${ROOT_ID} .czmg-steps{gap:6px;margin-bottom:10px}
+      #${ROOT_ID} .czmg-step{gap:9px;padding:9px 10px;border-radius:13px}
+      #${ROOT_ID} .czmg-num{flex-basis:24px;width:24px;height:24px}
+      #${ROOT_ID} .czmg-step strong{font-size:12px}
+      #${ROOT_ID} .czmg-step span{font-size:11px;line-height:1.38}
+      #${ROOT_ID} .czmg-btn{min-height:44px;padding:10px 12px;margin:7px 0;font-size:13px;border-radius:12px}
+      #${ROOT_ID} .czmg-divider{margin:10px 0;font-size:10px}
+      #${ROOT_ID} .czmg-login{min-height:52px;margin:7px 0 3px;padding:5px 7px}
+      #${ROOT_ID} .czmg-secure{margin-top:8px;font-size:10px}
+      #${ROOT_ID} .czmg-note{margin-top:9px;font-size:10px}
+    }
+    @media(max-width:380px){
+      #${ROOT_ID} .czmg-hero{min-height:202px;padding-top:78px;background-position:center,center 55%}
+      #${ROOT_ID} .czmg-profile{width:54px;height:54px;top:10px}
+      #${ROOT_ID} h2{font-size:22px}
+      #${ROOT_ID} .czmg-step span{font-size:10.5px}
+    }
     @media(prefers-reduced-motion:reduce){#${ROOT_ID} .czmg-btn,#${ROOT_ID} .czmg-card,#${ROOT_ID} .czmg-hero{transition:none;animation:none}}
   `;
   document.head.appendChild(style);
