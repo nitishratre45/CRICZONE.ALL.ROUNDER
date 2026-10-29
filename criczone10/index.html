@@ -490,9 +490,6 @@
     <script src="stream.js"></script>
     <script>
       window.addEventListener('DOMContentLoaded', () => {
-        const iframe = document.getElementById('stream-iframe');
-        const title = document.getElementById('stream-title');
-        const subtitle = document.getElementById('stream-subtitle');
         const grid = document.getElementById('channel-grid');
         const search = document.getElementById('channel-search');
         const count = document.getElementById('channel-count');
@@ -512,7 +509,6 @@
         const playerName = document.getElementById('modal-channel-name');
         const playerLoading = document.getElementById('modal-player-loading');
         const closePlayerButton = document.getElementById('close-player');
-        let selectedKey = '';
 
         function chooseChannel(key) {
           const item = available.find(([id]) => id === key);
@@ -610,8 +606,6 @@
         if (!available.length) {
           grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
           count.textContent = '0 channels available';
-        } else {
-          subtitle.textContent = 'Select a channel to start playback.';
         }
       });
     </script>
