@@ -561,6 +561,7 @@
           const url = new URL(window.location.href);
           url.searchParams.set('channel', key);
           history.replaceState({}, '', url);
+          try { sessionStorage.setItem('criczone10:last-channel', key); } catch {}
         }
 
         function closePlayer() {
@@ -573,6 +574,7 @@
           const url = new URL(window.location.href);
           url.searchParams.delete('channel');
           history.replaceState({}, '', url);
+          try { sessionStorage.removeItem('criczone10:last-channel'); } catch {}
         }
         closePlayerButton.addEventListener('click', closePlayer);
         // Do not close when the user taps the player backdrop or any other area; only the X closes it.
@@ -629,7 +631,11 @@
         document.getElementById('btn-banner-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
-        const requestedChannel = new URLSearchParams(window.location.search).get('channel');
+        // Restore the channel from the URL first; session storage is a fallback for browsers that drop query strings on reload.
+        let requestedChannel = new URLSearchParams(window.location.search).get('channel');
+        if (!requestedChannel) {
+          try { requestedChannel = sessionStorage.getItem('criczone10:last-channel'); } catch {}
+        }
         function syncChannelList() {
           refreshAvailableChannels();
           if (available.length) {
