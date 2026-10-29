@@ -88,7 +88,7 @@ export async function onRequestPost({ request, env }) {
         if (!links.length) {
           await sendMessage(env.BOT_TOKEN, chatId, categoryInfo.name + " ke links abhi Admin Page se add nahi kiye gaye.");
         } else {
-          await sendMessage(env.BOT_TOKEN, chatId, "✅ Verified member · " + categoryInfo.name + "\\nAapke selected category ke links:", {
+          await sendMessage(env.BOT_TOKEN, chatId, "✅ Verified member · " + categoryInfo.name + "\nAapke selected category ke links:", {
             inline_keyboard: [
               ...(await Promise.all(links.map(async item => [{ text: String(item.channel_name).slice(0, 60), url: await createChannelAccessUrl(env.BOT_TOKEN, userId, Number(session.expires_at), item.url) }]))),
               [{ text: "⬅️ Back to Categories", callback_data: "back:categories" }]
@@ -312,7 +312,7 @@ async function sendCategoryMenu(token, chatId, env) {
   ];
   const buttons = [];
   for (let i=0;i<categories.length;i+=2) buttons.push(categories.slice(i,i+2).map(c=>({text:(c.emoji||"📁")+" "+c.name,callback_data:"category:"+c.slug})));
-  await sendMessage(token, chatId, "Membership verified ✅\\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {inline_keyboard:buttons});
+  await sendMessage(token, chatId, "Membership verified ✅\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {inline_keyboard:buttons});
 }
 async function sendMessage(token, chatId, text, replyMarkup) {
   await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
