@@ -16,7 +16,7 @@
   style.id = STYLE_ID;
   style.textContent = `
     /* Hide legacy page-specific Telegram overlays; use one shared membership gate. */
-    #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup{display:none!important;visibility:hidden!important;pointer-events:none!important}
+    #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup,.cz-tg-backdrop,.tg-overlay,.telegram-popup-overlay,.telegram-modal-overlay{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 0%,rgba(21,105,179,.24),transparent 52%),rgba(2,6,15,.88);backdrop-filter:blur(18px) saturate(125%);-webkit-backdrop-filter:blur(18px) saturate(125%);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
     #${ROOT_ID} [hidden]{display:none!important}
     #${ROOT_ID} .czmg-card{position:relative;width:min(100%,440px);max-height:calc(100dvh - 28px);overflow:auto;padding:14px 17px 19px;text-align:center;border:1px solid rgba(121,190,255,.32);border-radius:28px;background:linear-gradient(155deg,#101f33 0%,#07111e 55%,#050a12 100%);box-shadow:0 32px 100px #000e,0 0 0 1px #ffffff08,0 0 42px #168bff1b;scrollbar-width:thin;scrollbar-color:#31536f transparent}
