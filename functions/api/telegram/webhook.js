@@ -25,15 +25,33 @@ export async function onRequestPost({ request, env }) {
       await env.TELEGRAM_DB.prepare("INSERT INTO telegram_channel_activity (telegram_id, first_name, last_name, username, event_type, event_at, old_status, new_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(String(from?.id || memberUpdate.new_chat_member?.user?.id || ""), String(from?.first_name || "").slice(0,80), String(from?.last_name || "").slice(0,80), String(from?.username || "").slice(0,80), joined && !wasMember ? "joined" : (!joined && wasMember ? "left" : "membership_changed"), new Date().toISOString(), oldStatus, newStatus).run();
     } catch (error) { console.error("Channel membership audit write failed:", error?.message || error); }
 
-    // On a new channel join, proactively DM the category menu when the user has
-    // already opened this bot. Telegram does not allow bots to initiate a new
-    // private conversation with users who have never pressed Start.
+    // Route website sign-ins back to the website after a new channel join.
+    // Only ordinary Telegram users should receive the category menu here.
     if (joined && !wasMember && from?.id) {
       try {
-        await createCategorySession(env, from.id);
-        await sendCategoryMenu(env.BOT_TOKEN, from.id, env);
+        const websiteLogin = await env.TELEGRAM_DB.prepare(
+          "SELECT nonce, return_url FROM telegram_login_requests WHERE telegram_id = ? AND status IN ('pending','not_member') AND expires_at > ? AND return_url IS NOT NULL AND return_url != '' ORDER BY created_at DESC LIMIT 1"
+        ).bind(String(from.id), Date.now()).first();
+
+        if (websiteLogin?.nonce && websiteLogin.return_url) {
+          await env.TELEGRAM_DB.prepare(
+            "UPDATE telegram_login_requests SET status = 'verified', telegram_id = ?, updated_at = ? WHERE nonce = ? AND status IN ('pending','not_member') AND expires_at > ?"
+          ).bind(String(from.id), Date.now(), websiteLogin.nonce, Date.now()).run();
+
+          await sendMessage(env.BOT_TOKEN, from.id,
+            "✅ Membership verified! Your CRICZONE website access is ready. Tap below to return to the website.",
+            { inline_keyboard: [[{
+              text: "↩️ Return to the website",
+              url: addLoginNonce(websiteLogin.return_url, websiteLogin.nonce)
+            }]] }
+          );
+        } else {
+          // Normal channel joiners keep the existing category-menu experience.
+          await createCategorySession(env, from.id);
+          await sendCategoryMenu(env.BOT_TOKEN, from.id, env);
+        }
       } catch (error) {
-        console.error("Auto-send category menu after channel join failed:", error?.message || error);
+        console.error("Auto-routing after channel join failed:", error?.message || error);
       }
     }
     return json({ ok: true });
