@@ -133,41 +133,61 @@
   function beginPolling(nonce) {
     if (pollTimer) clearInterval(pollTimer);
     const startedAt = Date.now();
-    pollTimer = setInterval(async () => {
-      if (!document.getElementById(ROOT_ID)) { clearInterval(pollTimer); return; }
+    let checkingStatus = false;
+
+    // Check immediately and whenever the user returns from Telegram/browser app.
+    // This avoids relying only on a throttled background-tab interval to set the
+    // HttpOnly session cookie and remove the membership gate.
+    const checkStatus = async () => {
+      if (!document.getElementById(ROOT_ID)) {
+        if (pollTimer) clearInterval(pollTimer);
+        return;
+      }
+      if (checkingStatus) return;
       if (Date.now() - startedAt > 5 * 60 * 1000) {
-        clearInterval(pollTimer);
+        if (pollTimer) clearInterval(pollTimer);
         setStatus("Sign-in link expired. Tap Continue with Telegram Bot to try again.");
         return;
       }
+      checkingStatus = true;
       try {
         const response = await fetch("/api/telegram/status?nonce=" + encodeURIComponent(nonce), {
           method: "GET", credentials: "same-origin", cache: "no-store"
         });
         const result = await response.json();
         if (result.status === "verified" && response.ok && result.ok) {
-          clearInterval(pollTimer);
+          if (pollTimer) clearInterval(pollTimer);
           verified = true;
           hasValidSession = true;
           try { sessionStorage.removeItem("cz_tg_login_nonce"); } catch {}
           gate.remove();
           document.dispatchEvent(new CustomEvent("criczone:membership-verified", { detail: { bot: true } }));
         } else if (result.status === "not_member") {
-          clearInterval(pollTimer);
+          if (pollTimer) clearInterval(pollTimer);
           setStatus("You haven't joined @criczonelive yet. Join the channel, then tap Continue with Telegram Bot again.");
         } else if (result.status === "expired") {
-          clearInterval(pollTimer);
+          if (pollTimer) clearInterval(pollTimer);
           setStatus("Sign-in link expired. Tap Continue with Telegram Bot to try again.");
         } else if (!response.ok && response.status !== 503) {
-          clearInterval(pollTimer);
+          if (pollTimer) clearInterval(pollTimer);
           setStatus(result.error || "Verification failed. Please try again.");
         } else if (result.error) {
           setStatus(result.error);
         }
       } catch {
         // Temporary network failures are retried until the challenge expires.
+      } finally {
+        checkingStatus = false;
       }
-    }, 1800);
+    };
+
+    checkStatus();
+    pollTimer = setInterval(checkStatus, 1800);
+    const resumeCheck = () => {
+      if (document.visibilityState === "visible") checkStatus();
+    };
+    document.addEventListener("visibilitychange", resumeCheck);
+    window.addEventListener("pageshow", resumeCheck);
   }
 
   loginButton.addEventListener("click", startBotVerification);
