@@ -144,10 +144,22 @@ export async function onRequestPost({ request, env }) {
       const userId = callback.from.id;
       try {
         const pending = await env.TELEGRAM_DB.prepare(
-          "SELECT nonce, return_url FROM telegram_login_requests WHERE nonce = ? AND status IN ('pending','not_member') AND expires_at > ?"
+          "SELECT nonce, status, telegram_id, return_url FROM telegram_login_requests WHERE nonce = ? AND expires_at > ?"
         ).bind(nonce, Date.now()).first();
         if (!pending) {
           await sendMessage(env.BOT_TOKEN, chatId, "This sign-in link expired. Return to CRICZONE and tap Continue with Telegram Bot again.");
+          return json({ ok: true });
+        }
+        // The channel-join event may already have verified this website login and
+        // sent the return button. Make repeated taps safe instead of saying expired.
+        if (pending.status === "verified" && pending.return_url && String(pending.telegram_id) === String(userId)) {
+          await sendMessage(env.BOT_TOKEN, chatId, "✅ Membership already verified. Return to your CRICZONE website:", {
+            inline_keyboard: [[{ text: "↩️ Return to the website", url: addLoginNonce(pending.return_url, nonce) }]]
+          });
+          return json({ ok: true });
+        }
+        if (!["pending", "not_member"].includes(pending.status)) {
+          await sendMessage(env.BOT_TOKEN, chatId, "This sign-in request is no longer active. Return to CRICZONE and try again.");
           return json({ ok: true });
         }
         const memberResponse = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
