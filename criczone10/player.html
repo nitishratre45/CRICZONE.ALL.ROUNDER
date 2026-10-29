@@ -91,6 +91,15 @@ body{background:radial-gradient(ellipse at top,#102746 0%,#070d17 58%,#05080e 10
 a{accent-color:#58a6ff}
 </style>
 
+<style id="criczone-live-watching">
+.live-watching{display:flex;align-items:center;gap:7px;margin-top:8px;min-height:20px;color:#a8bed8;font-size:11px;font-weight:700;letter-spacing:.25px}
+.live-watching-dot{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#38d996;box-shadow:0 0 10px #38d99688;animation:czLivePulse 1.5s ease-in-out infinite}
+#live-watching-count{color:#8fc5ff;font-variant-numeric:tabular-nums}
+.live-watching-label{color:#9bb0c8;letter-spacing:.8px;font-size:9px}
+@keyframes czLivePulse{50%{opacity:.45;transform:scale(.78)}}
+@media(prefers-reduced-motion:reduce){.live-watching-dot{animation:none}}
+</style>
+
 </head>
 <body>
 <header class="top">
@@ -99,7 +108,8 @@ a{accent-color:#58a6ff}
 </header>
 <main>
   <section class="player-card" aria-label="Live channel player">
-    <div class="player-head"><div><div class="kicker">NOW PLAYING</div><div class="channel-name" id="channel-name">Loading channel…</div></div><a class="btn" href="./" aria-label="Back to all channels">✕</a></div>
+    <div class="player-head"><div><div class="kicker">NOW PLAYING</div><div class="channel-name" id="channel-name">Loading channel…</div>
+<div class="live-watching" role="status" aria-live="polite"><span class="live-watching-dot"></span><span id="live-watching-count">Connecting…</span><span class="live-watching-label">WATCHING LIVE</span></div></div><a class="btn" href="./" aria-label="Back to all channels">✕</a></div>
     <div class="frame"><div class="loading" id="loading"><span class="spinner"></span><span>Connecting to channel…</span></div><iframe id="stream-frame" title="CRICZONE live channel" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen playsinline referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <aside class="telegram"><div class="tg-icon" aria-hidden="true">✈</div><div class="tg-copy"><strong>Join CRICZONE on Telegram</strong><span>Get live updates, channel news and backup links.</span></div><a class="btn primary" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join Channel ↗</a></aside>
   </section>
@@ -160,6 +170,74 @@ a{accent-color:#58a6ff}
   }
 })();
 </script>
+<script type="module">
+/* Realtime live-watching presence, using the existing CRICZONE Firebase project. */
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, onValue, onDisconnect, set, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+  authDomain: "cricket-live-39106.firebaseapp.com",
+  databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cricket-live-39106",
+  storageBucket: "cricket-live-39106.firebasestorage.app",
+  messagingSenderId: "841890143",
+  appId: "1:841890143:web:ca5b87c9395bdc19145eea",
+  measurementId: "G-ZNEZC8YVMX"
+};
+
+const countEl = document.getElementById("live-watching-count");
+const params = new URLSearchParams(location.search);
+const channelKey = params.get("channel");
+const safeKey = String(channelKey || "unknown").replace(/[.#$\[\]\/]/g, "_");
+let db, presenceRef, unsubscribeCount, presenceStarted = false;
+
+function showCount(value) {
+  if (countEl) countEl.textContent = Number(value).toLocaleString("en-IN");
+}
+
+async function startPresence() {
+  if (!channelKey || presenceStarted) {
+    if (!channelKey && countEl) countEl.textContent = "—";
+    return;
+  }
+  presenceStarted = true;
+  try {
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    const auth = getAuth(app);
+    await signInAnonymously(auth);
+    const viewerId = globalThis.crypto?.randomUUID?.() || (Date.now() + "_" + Math.random().toString(36).slice(2));
+    const channelPath = "liveViewers/" + safeKey;
+    presenceRef = ref(db, channelPath + "/" + viewerId);
+    await onDisconnect(presenceRef).remove();
+    await set(presenceRef, { online: true, joinedAt: Date.now(), page: "criczone10" });
+    unsubscribeCount = onValue(ref(db, channelPath), snapshot => {
+      const data = snapshot.val() || {};
+      showCount(Object.keys(data).length);
+    }, error => {
+      console.warn("CRICZONE live-watching count unavailable:", error);
+      if (countEl) countEl.textContent = "—";
+    });
+  } catch (error) {
+    console.warn("CRICZONE Firebase presence unavailable:", error);
+    if (countEl) countEl.textContent = "—";
+    presenceStarted = false;
+  }
+}
+
+async function leavePresence() {
+  if (unsubscribeCount) unsubscribeCount();
+  if (presenceRef) {
+    try { await remove(presenceRef); } catch (error) {}
+    presenceRef = null;
+  }
+}
+window.addEventListener("pagehide", leavePresence);
+startPresence();
+</script>
+
 <script src="../assets/js/telegram-membership-gate.js?v=20261029-player-gate" defer></script>
 </body>
 </html>
