@@ -396,14 +396,25 @@
         .player-placeholder strong{font-size:15px}
         .player-placeholder span{font-size:12px;color:#b9ad8e}
         .video-card.has-stream .player-placeholder{display:none}
-        .main-content-grid[hidden]{display:none!important}
-        body.player-mode .main-content-grid{order:1;margin-top:12px}
-        body.player-mode .channel-section{order:2}
-        body.player-mode .hero-section{order:0}
-        body.player-mode .content-board-section{order:3}
-        body.player-mode .channel-section{margin-top:18px}
-        @media(max-width:760px){body.player-mode .main-content-grid{padding-top:8px}}
-
+        /* Same-page live player modal, styled in the white + gold CRICZONE10 theme. */
+        .player-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(5,5,4,.84);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+        .player-overlay.is-open{opacity:1;visibility:visible;pointer-events:auto}
+        .player-modal{width:min(100%,1120px);max-height:calc(100dvh - 44px);overflow:auto;background:#11110d;border:1px solid #8d6b1b;border-radius:20px;box-shadow:0 30px 100px #000b,0 0 0 1px #ffd34e12;transform:translateY(12px) scale(.99);transition:transform .22s ease}
+        .player-overlay.is-open .player-modal{transform:translateY(0) scale(1)}
+        .modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 18px;border-bottom:1px solid #3d3218;background:linear-gradient(110deg,#201b0d,#12120e)}
+        .modal-kicker{display:block;margin-bottom:4px;color:#ffd34e;font-size:9px;font-weight:900;letter-spacing:2px}
+        .modal-head h2{margin:0;color:#fffdf5;font-size:clamp(16px,3vw,21px);font-weight:850}
+        .modal-close{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border:1px solid #6d551c;border-radius:12px;background:#2a220e;color:#ffe38a;font-size:28px;line-height:1;cursor:pointer}
+        .modal-close:hover{background:#3a2e12;border-color:#ffd34e}
+        .modal-frame-wrap{position:relative;width:100%;aspect-ratio:16/9;min-height:220px;background:#000}
+        .modal-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+        .modal-loading{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:11px;flex-direction:column;background:radial-gradient(circle,#2d250e,#080807 75%);color:#fff0bd;font-size:13px;pointer-events:none}
+        .modal-loading.is-hidden{display:none}
+        .loading-spinner{width:30px;height:30px;border:3px solid #6e571b;border-top-color:#ffd34e;border-radius:50%;animation:modalSpin .8s linear infinite}
+        @keyframes modalSpin{to{transform:rotate(360deg)}}
+        body.player-open{overflow:hidden}
+        @media(max-width:700px){.player-overlay{padding:0;align-items:stretch}.player-modal{width:100%;max-height:100dvh;height:100dvh;border-radius:0;border:0;display:flex;flex-direction:column}.modal-head{padding:calc(12px + env(safe-area-inset-top)) 13px 12px}.modal-frame-wrap{aspect-ratio:16/9;min-height:200px;flex:0 0 auto}.modal-close{width:40px;height:40px;flex-basis:40px}.player-modal{background:#090908}}
+        @media(max-width:420px){.modal-frame-wrap{min-height:190px}}
         .content-board-section{padding:26px 5% 40px;border-top:1px solid #1b3047}
         .section-header h2{font-size:21px}
         .info-card{border:1px solid #4a3b18;background:linear-gradient(145deg,#201c10,#12110c)}
@@ -438,26 +449,12 @@
       <div id="channel-grid" class="channel-grid" aria-live="polite"><div class="channel-empty">Loading available channels…</div></div>
     </section>
 
-    <div class="main-content-grid">
-        <div class="video-card">
-            <div class="iframe-wrap">
-                <div class="player-placeholder" id="player-placeholder"><div class="play-mark">▶</div><strong>Select a channel to start watching</strong><span>All available channels are listed below</span></div>
-                <iframe id="stream-iframe" title="CRICZONE channel player" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" referrerpolicy="no-referrer" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
-            </div>
-            <div class="video-details">
-                <div class="video-title-block">
-                    <h3 id="stream-title">Live Stream</h3>
-                    <p id="stream-subtitle">Select a channel below to start playback</p>
-                </div>
-                <button class="share-btn" id="share-stream-btn" title="Share Stream Link">
-                    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
-                    Share
-                </button>
-            </div>
-        </div>
+    <div class="player-overlay" id="player-overlay" aria-hidden="true">
+      <section class="player-modal" role="dialog" aria-modal="true" aria-label="Live channel player">
+        <div class="modal-head"><div><span class="modal-kicker">NOW PLAYING</span><h2 id="modal-channel-name">Live Channel</h2></div><button id="close-player" class="modal-close" type="button" aria-label="Close player">×</button></div>
+        <div class="modal-frame-wrap"><div id="modal-player-loading" class="modal-loading"><span class="loading-spinner"></span>Connecting to channel…</div><iframe id="modal-player" title="CRICZONE live player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe></div>
+      </section>
     </div>
-
-
     <div class="content-board-section">
         <div class="section-header">
             <h2>Community Hub</h2>
@@ -510,34 +507,52 @@
           toast.classList.add('show');
           window.setTimeout(() => toast.classList.remove('show'), 2400);
         }
-        const params = new URLSearchParams(location.search);
-        const requestedChannel = params.get('channel');
-        const playerMode = available.some(([key]) => key === requestedChannel);
-        document.body.classList.toggle('player-mode', playerMode);
-        const playerSection = document.querySelector('.main-content-grid');
-        if (!playerMode) playerSection.hidden = true;
+        const playerOverlay = document.getElementById('player-overlay');
+        const playerFrame = document.getElementById('modal-player');
+        const playerName = document.getElementById('modal-channel-name');
+        const playerLoading = document.getElementById('modal-player-loading');
+        const closePlayerButton = document.getElementById('close-player');
+        let selectedKey = '';
 
         function chooseChannel(key) {
           const item = available.find(([id]) => id === key);
           if (!item) return;
           selectedKey = key;
           const info = item[1];
-          title.textContent = info.name;
-          subtitle.textContent = 'Selected channel • Loading player…';
-          iframe.src = info.url;
-          document.querySelector('.video-card').classList.add('has-stream');
+          playerName.textContent = info.name;
+          playerLoading.classList.remove('is-hidden');
+          playerFrame.src = info.url;
+          playerOverlay.classList.add('is-open');
+          playerOverlay.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('player-open');
+          document.body.style.overflow = 'hidden';
           grid.querySelectorAll('.channel-card').forEach(card => {
             const active = card.dataset.key === key;
             card.classList.toggle('selected', active);
             card.setAttribute('aria-pressed', String(active));
           });
+          document.title = 'CRICZONE — ' + info.name;
           const url = new URL(window.location.href);
           url.searchParams.set('channel', key);
           history.replaceState({}, '', url);
-          document.title = 'CRICZONE — ' + info.name;
-          subtitle.textContent = 'Selected channel • If playback does not start, try another available channel.';
-          document.querySelector('.video-card').scrollIntoView({behavior:'smooth',block:'start'});
         }
+
+        function closePlayer() {
+          playerFrame.src = 'about:blank';
+          playerOverlay.classList.remove('is-open');
+          playerOverlay.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('player-open');
+          document.body.style.overflow = '';
+          document.title = 'CRICZONE — Live Channels';
+        }
+        closePlayerButton.addEventListener('click', closePlayer);
+        playerOverlay.addEventListener('click', event => {
+          if (event.target === playerOverlay) closePlayer();
+        });
+        document.addEventListener('keydown', event => {
+          if (event.key === 'Escape' && playerOverlay.classList.contains('is-open')) closePlayer();
+        });
+        playerFrame.addEventListener('load', () => playerLoading.classList.add('is-hidden'));
         function renderChannels() {
           const term = (search.value || '').trim().toLowerCase();
           const filtered = available.filter(([key, item]) => (key + ' ' + item.name).toLowerCase().includes(term));
@@ -570,16 +585,7 @@
             arrow.className = 'channel-arrow';
             arrow.textContent = key === selectedKey ? '✓' : '▶';
             card.append(badge,meta,arrow);
-            card.addEventListener('click', () => {
-              if (!playerMode) {
-                // Keep the channel directory clean; open the selected channel by its ID in a new tab.
-                const target = new URL(window.location.href);
-                target.searchParams.set('channel', key);
-                window.open(target.href, '_blank', 'noopener,noreferrer');
-                return;
-              }
-              chooseChannel(key);
-            });
+            card.addEventListener('click', () => chooseChannel(key));
             grid.appendChild(card);
           });
         }
@@ -600,15 +606,12 @@
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
         renderChannels();
-        // Directory view lists every channel without embedding a player. A channel ID opens player mode in a new tab.
+        // Show the full channel directory first. A tap opens that channel in the same-page player modal.
         if (!available.length) {
           grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
           count.textContent = '0 channels available';
-          subtitle.textContent = 'No channel source is configured.';
-        } else if (playerMode) {
-          chooseChannel(requestedChannel);
         } else {
-          subtitle.textContent = 'Select a channel to open its player in a new tab.';
+          subtitle.textContent = 'Select a channel to start playback.';
         }
       });
     </script>
