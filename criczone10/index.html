@@ -611,7 +611,9 @@
             arrow.className = 'channel-arrow';
             arrow.textContent = key === selectedKey ? '✓' : '▶';
             card.append(badge,meta,arrow);
-            card.addEventListener('click', () => chooseChannel(key));
+            card.addEventListener('click', () => {
+              window.location.href = 'player.html?channel=' + encodeURIComponent(key);
+            });
             grid.appendChild(card);
           });
         }
