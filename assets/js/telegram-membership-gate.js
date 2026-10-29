@@ -24,6 +24,25 @@
     #${ROOT_ID} .czmg-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 30%,#42b8ff22,transparent 60%)}
     #${ROOT_ID} .czmg-brand{display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;padding:7px 11px;border:1px solid #284c6a;border-radius:999px;background:#10243a;color:#b8e7ff;font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 8px 26px #0005}
     #${ROOT_ID} .czmg-icon{display:none!important} @keyframes czmgHeroIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} #${ROOT_ID} .czmg-card{animation:czmgCardIn .32s cubic-bezier(.2,.8,.2,1) both} @keyframes czmgCardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+    /* Premium profile header and blue-violet palette, consistent on desktop and mobile. */
+    #${ROOT_ID} .czmg-hero{min-height:292px;padding-top:112px;background-image:linear-gradient(180deg,rgba(3,8,22,.18) 0%,rgba(3,8,22,.42) 35%,rgba(3,8,22,.92) 72%,#081321 100%),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg");background-position:center,center 28%;background-size:cover,cover}
+    #${ROOT_ID} .czmg-profile{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:76px;height:76px;padding:4px;border-radius:50%;border:1px solid #9cbaff;box-shadow:0 0 0 5px rgba(102,126,234,.15),0 10px 32px #0009;background:linear-gradient(135deg,#8b5cf6,#38bdf8);z-index:2}
+    #${ROOT_ID} .czmg-profile img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;border-radius:50%;border:2px solid #07111e}
+    #${ROOT_ID} .czmg-brand{align-self:center;margin-bottom:13px;border-color:#415b91;background:rgba(15,27,52,.88);color:#d4dcff}
+    #${ROOT_ID} .czmg-join-display{background:linear-gradient(110deg,#7567f8 0%,#4b8cff 54%,#36bce8 100%);color:#fff;border-color:#9bb7ff80;box-shadow:0 10px 30px #526dff30,inset 0 1px #ffffff50}
+    #${ROOT_ID} .czmg-join-display:before{background:linear-gradient(110deg,#ffffff25,transparent 45%)}
+    #${ROOT_ID} .czmg-btn{box-shadow:0 8px 24px #536dff20}
+    #${ROOT_ID} #czmg-bot-login{background:linear-gradient(115deg,#1c2d50,#13243e);border-color:#536b9b;color:#f4f6ff}
+    #${ROOT_ID} #czmg-bot-login:hover{border-color:#a5b4fc;box-shadow:0 0 24px #818cf830}
+    #${ROOT_ID} .czmg-secondary{background:linear-gradient(135deg,#1b3155,#13233e);border-color:#536b9b;color:#f4f6ff}
+    #${ROOT_ID} .czmg-divider:before,#${ROOT_ID} .czmg-divider:after{background:#344567}
+    #${ROOT_ID} .czmg-login{border-color:#465b85;background:linear-gradient(90deg,rgba(4,10,25,.86),rgba(4,10,25,.72)),url("https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg") center 35%/cover no-repeat}
+    #${ROOT_ID} .czmg-secure{color:#a5b4fc}
+    #${ROOT_ID} .czmg-num{background:linear-gradient(145deg,#465bb5,#263d70);color:#e0e7ff}
+    #${ROOT_ID} .czmg-step{border-color:#34466d;background:linear-gradient(110deg,rgba(20,34,62,.95),rgba(9,19,38,.95))}
+    #${ROOT_ID} .czmg-card{border-color:#465b85;box-shadow:0 32px 100px #000e,0 0 0 1px #ffffff08,0 0 42px #536dff20;scrollbar-color:#465b85 transparent}
+    @media(max-width:600px){#${ROOT_ID} .czmg-hero{min-height:270px;padding-top:104px;background-position:center,center 25%}#${ROOT_ID} .czmg-profile{width:68px;height:68px;top:15px}}
+    @media(max-width:380px){#${ROOT_ID} .czmg-hero{min-height:252px;padding-top:94px}#${ROOT_ID} .czmg-profile{width:60px;height:60px;top:13px}}
     #${ROOT_ID} h2{font-size:clamp(25px,6vw,31px);line-height:1.1;letter-spacing:-.9px;margin:0 0 10px;color:#fff;text-wrap:balance;text-shadow:0 3px 18px #000b}
     #${ROOT_ID} .czmg-lead{font-size:13px;line-height:1.55;color:#e0eaf7;text-shadow:0 2px 8px #000;margin:0 auto 2px;max-width:330px}
     #${ROOT_ID} .czmg-step{backdrop-filter:blur(10px);background:linear-gradient(110deg,#10243be8,#0a1728e8);border-color:#34516d}
@@ -63,6 +82,7 @@
   gate.innerHTML = `
     <section class="czmg-card">
       <div class="czmg-hero">
+        <div class="czmg-profile" aria-label="CRICZONE community profile"><img src="https://raw.githubusercontent.com/nitishratre45/CRICZONE.ALL.ROUNDER/main/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE community profile" loading="eager"></div>
         <div class="czmg-brand"><span aria-hidden="true">●</span> CRICZONE COMMUNITY</div>
         
         <h2>Unlock Stream for 12 Hours</h2>
