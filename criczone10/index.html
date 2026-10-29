@@ -358,8 +358,9 @@
         }
 
         .hero-section{padding-top:24px;padding-bottom:16px}
-        .brand{font-size:clamp(22px,4vw,30px);letter-spacing:-1px;color:#f4f8ff}
-        .brand:before{content:"🏏";margin-right:9px}
+        .brand{display:flex;align-items:center;gap:11px;font-size:clamp(22px,4vw,30px);letter-spacing:-1px;color:#f4f8ff}
+        .brand-photo{width:48px;height:48px;flex:0 0 48px;object-fit:cover;object-position:center;border-radius:15px;border:1px solid #f7d66b;box-shadow:0 0 0 3px #ffd34e18,0 8px 22px #0006;background:#17150e}
+        @media(max-width:420px){.brand-photo{width:42px;height:42px;flex-basis:42px;border-radius:13px}}
         .live-badge{background:#33290e;color:#ffe28a;border-color:#8b6b20}
         .main-content-grid{max-width:1180px;gap:20px}
         .video-card{border-color:#69521b;box-shadow:0 20px 60px #0007,0 0 0 1px #f6c9450d}
@@ -495,7 +496,7 @@
 
     <div class="hero-section">
         <div class="top-bar">
-            <div class="brand">CRICZONE</div>
+            <div class="brand"><img class="brand-photo" src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE logo"><span>CRICZONE</span></div>
             <div class="live-badge">
                 <div class="live-dot"></div> LIVE CHANNELS
             </div>
