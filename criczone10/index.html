@@ -520,10 +520,14 @@
         const search = document.getElementById('channel-search');
         const count = document.getElementById('channel-count');
         const toast = document.getElementById('custom-toast-alert');
-        const available = Object.entries(window.streamsData || {}).filter(([key, item]) =>
-          item && item.name && item.url && /^https?:\/\//i.test(item.url) &&
-          !/\/player\/drm\?/i.test(item.url)
-        );
+        let available = [];
+        function refreshAvailableChannels() {
+          available = Object.entries(window.streamsData || {}).filter(([key, item]) =>
+            item && item.name && item.url && /^https?:\/\//i.test(item.url) &&
+            !/\/player\/drm\?/i.test(item.url)
+          );
+        }
+        refreshAvailableChannels();
         let selectedKey = '';
         function showToast(message) {
           toast.textContent = message;
@@ -566,14 +570,12 @@
           document.body.classList.remove('player-open');
           document.body.style.overflow = '';
           document.title = 'CRICZONE — Live Channels';
+          const url = new URL(window.location.href);
+          url.searchParams.delete('channel');
+          history.replaceState({}, '', url);
         }
         closePlayerButton.addEventListener('click', closePlayer);
-        playerOverlay.addEventListener('click', event => {
-          if (event.target === playerOverlay) closePlayer();
-        });
-        document.addEventListener('keydown', event => {
-          if (event.key === 'Escape' && playerOverlay.classList.contains('is-open')) closePlayer();
-        });
+        // Do not close when the user taps the player backdrop or any other area; only the X closes it.
         playerFrame.addEventListener('load', () => playerLoading.classList.add('is-hidden'));
         function renderChannels() {
           const term = (search.value || '').trim().toLowerCase();
@@ -613,6 +615,7 @@
         }
         search.addEventListener('input', renderChannels);
         document.getElementById('reload-channels').addEventListener('click', () => {
+          refreshAvailableChannels();
           renderChannels();
           showToast('Channel list refreshed');
         });
@@ -627,11 +630,28 @@
         document.getElementById('btn-banner-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
+        refreshAvailableChannels();
         renderChannels();
-        // Show the full channel directory first. A tap opens that channel in the same-page player modal.
-        if (!available.length) {
-          grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
-          count.textContent = '0 channels available';
+        // Restore the selected channel after reload; a plain directory refresh shows every channel.
+        const requestedChannel = new URLSearchParams(window.location.search).get('channel');
+        if (requestedChannel && available.some(([key]) => key === requestedChannel)) {
+          chooseChannel(requestedChannel);
+        } else if (!available.length) {
+          grid.innerHTML = '<div class="channel-empty">Loading channels…</div>';
+          count.textContent = 'Loading channels…';
+          // Retry briefly in case the stream data script has not populated yet.
+          let retries = 0;
+          const retryTimer = window.setInterval(() => {
+            refreshAvailableChannels();
+            if (available.length || ++retries >= 10) {
+              window.clearInterval(retryTimer);
+              renderChannels();
+              if (!available.length) {
+                grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
+                count.textContent = '0 channels available';
+              }
+            }
+          }, 250);
         }
       });
     </script>
