@@ -18,6 +18,31 @@
     /* Hide legacy page-specific Telegram overlays; use one shared membership gate. */
     #telegramPopup,#tgOverlay,#telegramModal,#czTelegramPopup,.cz-tg-backdrop,.tg-overlay,.telegram-popup-overlay,.telegram-modal-overlay{display:none!important;visibility:hidden!important;pointer-events:none!important}
     #${ROOT_ID}{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 0%,rgba(21,105,179,.24),transparent 52%),rgba(2,6,15,.88);backdrop-filter:blur(18px) saturate(125%);-webkit-backdrop-filter:blur(18px) saturate(125%);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f4f8ff;overflow-y:auto}
+    /* Mobile: full-screen membership sheet; keep the page behind it locked and blurred. */
+    html.czmg-page-locked,html.czmg-page-locked body{overflow:hidden!important;overscroll-behavior:none!important}
+    html.czmg-page-locked body{touch-action:none}
+    #${ROOT_ID}{overscroll-behavior:contain;touch-action:pan-y}
+    @media(max-width:600px){
+      #${ROOT_ID}{inset:0;width:100%;height:100%;height:100dvh;padding:0;align-items:stretch;justify-content:flex-start;overflow:hidden;background:rgba(2,6,15,.66);backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%)}
+      #${ROOT_ID} .czmg-card{width:100%;max-width:none;height:100%;height:100dvh;max-height:100dvh;min-height:0;flex:1 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(12px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));border-radius:0;border-left:0;border-right:0;border-top:0;border-bottom:0}
+      #${ROOT_ID} .czmg-hero{margin:calc(-12px - env(safe-area-inset-top)) -14px 14px;padding:calc(94px + env(safe-area-inset-top)) 14px 18px;min-height:245px;border-radius:0 0 20px 20px;background-position:center,center 48%}
+      #${ROOT_ID} .czmg-profile{top:calc(15px + env(safe-area-inset-top));width:62px;height:62px}
+      #${ROOT_ID} .czmg-brand{margin-bottom:10px}
+      #${ROOT_ID} h2{font-size:clamp(23px,6.2vw,29px)}
+      #${ROOT_ID} .czmg-steps{gap:7px;margin-bottom:11px}
+      #${ROOT_ID} .czmg-step{padding:10px}
+      #${ROOT_ID} .czmg-btn{min-height:46px;margin:7px 0;padding:11px 12px}
+      #${ROOT_ID} .czmg-login{min-height:52px;margin:7px 0 3px}
+      #${ROOT_ID} .czmg-divider{margin:11px 0}
+      #${ROOT_ID} .czmg-secure{margin-top:9px}
+      #${ROOT_ID} .czmg-note{margin-top:10px;padding-bottom:4px}
+    }
+    @media(max-width:380px){
+      #${ROOT_ID} .czmg-hero{min-height:220px;padding-top:calc(84px + env(safe-area-inset-top));background-position:center,center 52%}
+      #${ROOT_ID} .czmg-profile{width:56px;height:56px;top:calc(12px + env(safe-area-inset-top))}
+      #${ROOT_ID} .czmg-card{padding-left:12px;padding-right:12px}
+      #${ROOT_ID} .czmg-hero{margin-left:-12px;margin-right:-12px}
+    }
     #${ROOT_ID} [hidden]{display:none!important}
     #${ROOT_ID} .czmg-card{position:relative;width:min(100%,440px);max-height:calc(100dvh - 28px);overflow:auto;padding:14px 17px 19px;text-align:center;border:1px solid rgba(121,190,255,.32);border-radius:28px;background:linear-gradient(155deg,#101f33 0%,#07111e 55%,#050a12 100%);box-shadow:0 32px 100px #000e,0 0 0 1px #ffffff08,0 0 42px #168bff1b;scrollbar-width:thin;scrollbar-color:#31536f transparent}
     #${ROOT_ID} .czmg-hero{position:relative;isolation:isolate;overflow:hidden;margin:-14px -17px 17px;padding:22px 16px 20px;border-radius:27px 27px 19px 19px;background:linear-gradient(180deg,rgba(2,9,20,.04) 0%,rgba(2,9,20,.18) 27%,rgba(3,10,20,.78) 68%,#081321 100%),url("https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg") center 28%/cover no-repeat;border-bottom:1px solid #4b9fff55;min-height:236px;display:flex;flex-direction:column;justify-content:flex-end;animation:czmgHeroIn .55s ease both}
@@ -129,6 +154,28 @@
       <div class="czmg-note">Telegram will open in a new tab or app. Press Start in the bot and keep this page open while we verify your membership.</div>
     </section>`;
   gate.style.visibility = "hidden";
+  // Freeze page scrolling while the membership overlay is open; restore exact prior styles when it closes.
+  const pageRoot = document.documentElement;
+  const previousScrollLock = {
+    rootClass: pageRoot.classList.contains("czmg-page-locked"),
+    rootOverflow: pageRoot.style.overflow,
+    bodyOverflow: document.body.style.overflow,
+    bodyTouchAction: document.body.style.touchAction
+  };
+  pageRoot.classList.add("czmg-page-locked");
+  pageRoot.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+  document.body.style.touchAction = "none";
+  const restorePageScroll = () => {
+    if (document.getElementById(ROOT_ID)) return;
+    if (!previousScrollLock.rootClass) pageRoot.classList.remove("czmg-page-locked");
+    pageRoot.style.overflow = previousScrollLock.rootOverflow;
+    document.body.style.overflow = previousScrollLock.bodyOverflow;
+    document.body.style.touchAction = previousScrollLock.bodyTouchAction;
+    pageLockObserver.disconnect();
+  };
+  const pageLockObserver = new MutationObserver(restorePageScroll);
+  pageLockObserver.observe(document.documentElement, { childList: true, subtree: true });
   document.body.appendChild(gate);
 
   const status = gate.querySelector("#czmg-status");
