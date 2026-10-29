@@ -56,7 +56,7 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
   function loadChannel() {
     const data = window.streamsData || {};
     const item = data[channelId];
-    if (!item || !item.url || !/^https?:\\/\\//i.test(item.url)) {
+    if (!item || !item.url || !(item.url.startsWith('https://') || item.url.startsWith('http://'))) {
       name.textContent = 'Channel unavailable';
       loading.innerHTML = '<span>This channel ID is missing or has no configured stream.</span><a class="btn primary" href="./">Back to all channels</a>';
       return;
