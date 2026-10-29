@@ -312,7 +312,7 @@ async function sendCategoryMenu(token, chatId, env) {
   ];
   const buttons = [];
   for (let i=0;i<categories.length;i+=2) buttons.push(categories.slice(i,i+2).map(c=>({text:(c.emoji||"📁")+" "+c.name,callback_data:"category:"+c.slug})));
-  await sendMessage(token, chatId, "Membership verified ✅\nYour CRICZONE bot session is active for 12 hours. Choose a category:", {inline_keyboard:buttons});
+  await sendMessage(token, chatId, "✅ MEMBERSHIP VERIFIED\n\n🎉 Your CRICZONE access is active for the next 12 hours.\n\n👇 Select your preferred channel category below:", {inline_keyboard:buttons});
 }
 async function sendMessage(token, chatId, text, replyMarkup) {
   await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
