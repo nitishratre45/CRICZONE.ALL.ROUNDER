@@ -648,25 +648,32 @@
           }
           return false;
         }
-        // Build the list immediately, then keep retrying while cached/network scripts finish loading.
+        // Build the channel directory automatically as soon as stream.js exposes its data.
         grid.innerHTML = '<div class="channel-empty">Loading available channels…</div>';
         count.textContent = 'Loading channels…';
-        if (!syncChannelList()) {
-          let retries = 0;
-          const retryTimer = window.setInterval(() => {
-            retries += 1;
-            if (syncChannelList() || retries >= 40) {
-              window.clearInterval(retryTimer);
-              if (!available.length) {
-                grid.innerHTML = '<div class="channel-empty">Could not load channels. Please reload the page.</div>';
-                count.textContent = 'Channel loading failed';
+        let channelRetryTimer = null;
+        function startChannelAutoLoad() {
+          if (syncChannelList()) {
+            if (channelRetryTimer) window.clearInterval(channelRetryTimer);
+            return true;
+          }
+          if (!channelRetryTimer) {
+            channelRetryTimer = window.setInterval(() => {
+              if (syncChannelList()) {
+                window.clearInterval(channelRetryTimer);
+                channelRetryTimer = null;
               }
-            }
-          }, 250);
+            }, 300);
+          }
+          return false;
         }
-        // Browser back/forward and tab restoration should rebuild the list without requiring Refresh list.
-        window.addEventListener('pageshow', syncChannelList);
-        window.addEventListener('focus', syncChannelList);
+        startChannelAutoLoad();
+        // Catch late script execution and browser restore; no manual Refresh list should be needed.
+        const streamScript = document.querySelector('script[src*="stream.js"]');
+        if (streamScript) streamScript.addEventListener('load', startChannelAutoLoad);
+        window.addEventListener('load', startChannelAutoLoad);
+        window.addEventListener('pageshow', startChannelAutoLoad);
+        window.addEventListener('focus', startChannelAutoLoad);
       });
     </script>
     <script src="../assets/js/telegram-membership-gate.js?v=20261028-criczone10" defer></script>
