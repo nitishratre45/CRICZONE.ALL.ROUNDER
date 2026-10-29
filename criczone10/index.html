@@ -513,7 +513,7 @@
     <div class="custom-toast" id="custom-toast-alert">Link copied to clipboard!</div>
 
 
-    <script src="stream.js"></script>
+    <script src="stream.js?v=20261029-autoload1"></script>
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         const grid = document.getElementById('channel-grid');
@@ -615,9 +615,8 @@
         }
         search.addEventListener('input', renderChannels);
         document.getElementById('reload-channels').addEventListener('click', () => {
-          refreshAvailableChannels();
-          renderChannels();
-          showToast('Channel list refreshed');
+          if (!syncChannelList()) showToast('Still loading channels…');
+          else showToast('Channel list refreshed');
         });
         document.getElementById('share-stream-btn').addEventListener('click', async () => {
           try {
@@ -630,29 +629,38 @@
         document.getElementById('btn-banner-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         document.getElementById('btn-req-tg').addEventListener('click', () => window.open('https://t.me/criczonelive','_blank','noopener,noreferrer'));
         grid.addEventListener('keydown', event => { if (event.key === 'Escape') search.focus(); });
-        refreshAvailableChannels();
-        renderChannels();
-        // Restore the selected channel after reload; a plain directory refresh shows every channel.
         const requestedChannel = new URLSearchParams(window.location.search).get('channel');
-        if (requestedChannel && available.some(([key]) => key === requestedChannel)) {
-          chooseChannel(requestedChannel);
-        } else if (!available.length) {
-          grid.innerHTML = '<div class="channel-empty">Loading channels…</div>';
-          count.textContent = 'Loading channels…';
-          // Retry briefly in case the stream data script has not populated yet.
+        function syncChannelList() {
+          refreshAvailableChannels();
+          if (available.length) {
+            renderChannels();
+            if (requestedChannel && available.some(([key]) => key === requestedChannel) &&
+                !playerOverlay.classList.contains('is-open')) {
+              chooseChannel(requestedChannel);
+            }
+            return true;
+          }
+          return false;
+        }
+        // Build the list immediately, then keep retrying while cached/network scripts finish loading.
+        grid.innerHTML = '<div class="channel-empty">Loading available channels…</div>';
+        count.textContent = 'Loading channels…';
+        if (!syncChannelList()) {
           let retries = 0;
           const retryTimer = window.setInterval(() => {
-            refreshAvailableChannels();
-            if (available.length || ++retries >= 10) {
+            retries += 1;
+            if (syncChannelList() || retries >= 40) {
               window.clearInterval(retryTimer);
-              renderChannels();
               if (!available.length) {
-                grid.innerHTML = '<div class="channel-empty">No configured channels are available right now.</div>';
-                count.textContent = '0 channels available';
+                grid.innerHTML = '<div class="channel-empty">Could not load channels. Please reload the page.</div>';
+                count.textContent = 'Channel loading failed';
               }
             }
           }, 250);
         }
+        // Browser back/forward and tab restoration should rebuild the list without requiring Refresh list.
+        window.addEventListener('pageshow', syncChannelList);
+        window.addEventListener('focus', syncChannelList);
       });
     </script>
     <script src="../assets/js/telegram-membership-gate.js?v=20261028-criczone10" defer></script>
