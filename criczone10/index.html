@@ -413,8 +413,16 @@
         .loading-spinner{width:30px;height:30px;border:3px solid #6e571b;border-top-color:#ffd34e;border-radius:50%;animation:modalSpin .8s linear infinite}
         @keyframes modalSpin{to{transform:rotate(360deg)}}
         body.player-open{overflow:hidden}
-        @media(max-width:700px){.player-overlay{padding:0;align-items:stretch}.player-modal{width:100%;max-height:100dvh;height:100dvh;border-radius:0;border:0;display:flex;flex-direction:column}.modal-head{padding:calc(12px + env(safe-area-inset-top)) 13px 12px}.modal-frame-wrap{aspect-ratio:16/9;min-height:200px;flex:0 0 auto}.modal-close{width:40px;height:40px;flex-basis:40px}.player-modal{background:#090908}}
-        @media(max-width:420px){.modal-frame-wrap{min-height:190px}}
+        @media(max-width:700px){
+          .player-overlay{padding:0;align-items:flex-start;justify-content:center}
+          .player-modal{width:100%;height:auto;max-height:100dvh;overflow:auto;border-radius:0 0 16px 16px;border:0;border-bottom:1px solid #8d6b1b;display:flex;flex-direction:column;align-self:flex-start}
+          .modal-head{padding:calc(10px + env(safe-area-inset-top)) 13px 10px;min-height:66px}
+          .modal-frame-wrap{width:100%;height:auto;aspect-ratio:16/9;min-height:0;max-height:calc(100dvh - 100px);flex:0 0 auto;overflow:hidden}
+          .modal-frame-wrap iframe{display:block;width:100%;height:100%;min-height:0}
+          .modal-close{width:40px;height:40px;flex-basis:40px}
+          .player-modal{background:#090908}
+        }
+        @media(max-width:420px){.modal-frame-wrap{min-height:0;aspect-ratio:16/9}}
         .content-board-section{padding:26px 5% 40px;border-top:1px solid #1b3047}
         .section-header h2{font-size:21px}
         .info-card{border:1px solid #4a3b18;background:linear-gradient(145deg,#201c10,#12110c)}
