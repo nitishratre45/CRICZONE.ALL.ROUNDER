@@ -254,7 +254,7 @@ export async function onRequestPost({ request, env }) {
           const nonce = crypto.randomUUID();
           const now = Date.now();
           await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at, return_url) VALUES (?, 'not_member', ?, ?, ?, ?, NULL)").bind(nonce, String(userId), now, now, now + 10 * 60 * 1000).run();
-          await sendMessage(env.BOT_TOKEN, chatId, "Welcome to CRICZONE! Join @criczonelive, then tap Verify membership. Once verified, you'll get the four channel categories.", {
+          await sendMessage(env.BOT_TOKEN, chatId, "Welcome to CRICZONE! Join @criczonelive, then tap Verify membership. Once verified, you'll get the channel categories.", {
             inline_keyboard: [
               [{ text: "📢 Join @criczonelive", url: "https://t.me/criczonelive" }],
               [{ text: "✅ Verify membership", callback_data: "verify_join:" + nonce }]
@@ -262,6 +262,40 @@ export async function onRequestPost({ request, env }) {
           });
         }
       } catch (error) { console.error("Telegram ordinary start failed:", error?.message || error); await sendMessage(env.BOT_TOKEN, chatId, "CRICZONE verification is temporarily unavailable. Please try /start again."); }
+    } else if (text.trim()) {
+      // Any ordinary text message should reopen the category flow, but only after
+      // checking current membership so a user who left the channel loses access.
+      try {
+        const check = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/getChatMember", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHANNEL, user_id: Number(userId) })
+        });
+        const data = await check.json();
+        const status = data?.result?.status;
+        const member = check.ok && data.ok && data.result &&
+          (["creator", "administrator", "member"].includes(status) || (status === "restricted" && data.result.is_member === true));
+        if (!check.ok || !data.ok || !data.result) {
+          await sendMessage(env.BOT_TOKEN, chatId, "Membership abhi check nahi ho paayi. Thodi der baad dobara message bhejein.");
+        } else if (member) {
+          await createCategorySession(env, userId);
+          await sendCategoryMenu(env.BOT_TOKEN, chatId, env);
+        } else {
+          await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_category_sessions (telegram_id TEXT PRIMARY KEY, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL)").run();
+          await env.TELEGRAM_DB.prepare("DELETE FROM telegram_category_sessions WHERE telegram_id = ?").bind(String(userId)).run();
+          const nonce = crypto.randomUUID();
+          const now = Date.now();
+          await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce, status, telegram_id, created_at, updated_at, expires_at, return_url) VALUES (?, 'not_member', ?, ?, ?, ?, NULL)").bind(nonce, String(userId), now, now, now + 10 * 60 * 1000).run();
+          await sendMessage(env.BOT_TOKEN, chatId, "Categories dekhne ke liye pehle @criczonelive join karein, phir membership verify karein.", {
+            inline_keyboard: [
+              [{ text: "📢 Join @criczonelive", url: "https://t.me/criczonelive" }],
+              [{ text: "✅ Verify membership", callback_data: "verify_join:" + nonce }]
+            ]
+          });
+        }
+      } catch (error) {
+        console.error("Telegram text-message membership check failed:", error?.message || error);
+        await sendMessage(env.BOT_TOKEN, chatId, "Membership check abhi nahi ho paayi. Please thodi der baad try karein.");
+      }
     }
     return json({ ok: true });
   }
