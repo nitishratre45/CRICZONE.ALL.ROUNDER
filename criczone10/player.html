@@ -16,7 +16,7 @@
 html,body{margin:0;min-height:100%;background:#080807;color:#fffdf5;font-family:Inter,system-ui,sans-serif}
 body{min-height:100vh;min-height:100dvh;min-height:100svh}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(14px,env(safe-area-inset-left));background:linear-gradient(110deg,#211b0c,#11110d);border-bottom:1px solid #5d4818}
-.brand{font-size:16px;font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}
+.brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}.brand-photo{width:38px;height:38px;flex:0 0 38px;object-fit:cover;object-position:center;border-radius:12px;border:1px solid #f7d66b;box-shadow:0 0 0 3px #ffd34e18,0 6px 16px #0007;background:#17150e}
 .actions{display:flex;gap:8px}.btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid #6d551c;border-radius:11px;background:#29220f;color:#ffe38a;font:700 12px Inter, sans-serif;text-decoration:none;cursor:pointer}
 .btn.primary{background:linear-gradient(120deg,#ffe37a,#f5bf32);color:#211805;border-color:#ffe37a}
 main{width:min(100%,1050px);margin:0 auto;padding:14px}
@@ -31,7 +31,7 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
 .tg-icon{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#ffe37a,#e8ad22);color:#211805;font-size:21px;font-weight:900}
 .tg-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.tg-copy strong{font-size:13px}.tg-copy span{font-size:11px;line-height:1.4;color:var(--muted)}
 .hint{padding:14px 4px 4px;text-align:center;color:#9f967e;font-size:11px}
-@media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.telegram{padding:12px;gap:9px;flex-wrap:wrap}.tg-icon{width:36px;height:36px;flex-basis:36px;font-size:18px}.tg-copy{min-width:calc(100% - 60px)}.tg-copy strong{font-size:12px}.tg-copy span{font-size:10px}.telegram .btn{width:100%;min-height:42px}}
+@media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.brand-photo{width:34px;height:34px;flex-basis:34px;border-radius:10px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.telegram{padding:12px;gap:9px;flex-wrap:wrap}.tg-icon{width:36px;height:36px;flex-basis:36px;font-size:18px}.tg-copy{min-width:calc(100% - 60px)}.tg-copy strong{font-size:12px}.tg-copy span{font-size:10px}.telegram .btn{width:100%;min-height:42px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* Cross-device fallbacks for Safari/iOS, Android WebView and narrow screens. */
@@ -52,7 +52,7 @@ button,a{-webkit-appearance:none;appearance:none;touch-action:manipulation}
 </head>
 <body>
 <header class="top">
-  <div class="brand">🏏 <span>CRICZONE</span></div>
+  <div class="brand"><img class="brand-photo" src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE logo"><span>CRICZONE</span></div>
   <div class="actions"><a class="btn" href="./">← All Channels</a><button class="btn primary" id="reload-player" type="button">↻ Reload</button></div>
 </header>
 <main>
