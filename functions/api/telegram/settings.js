@@ -1,0 +1,7 @@
+const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}});
+const authorized=(request,env)=>{const key=env.ADMIN_DASHBOARD_KEY||env.TELEGRAM_ADMIN_KEY;return !!key&&request.headers.get("X-Admin-Key")===key};
+async function init(db){await db.prepare("CREATE TABLE IF NOT EXISTS telegram_settings(key TEXT PRIMARY KEY,value TEXT NOT NULL,updated_at INTEGER NOT NULL)").run();await db.prepare("INSERT OR IGNORE INTO telegram_settings(key,value,updated_at) VALUES('popup_enabled','1',?)").bind(Math.floor(Date.now()/1000)).run();}
+export async function onRequest({request,env}){if(!env.TELEGRAM_DB)return json({error:"TELEGRAM_DB is not configured"},503);const db=env.TELEGRAM_DB;await init(db);
+if(request.method==="GET"){const row=await db.prepare("SELECT value FROM telegram_settings WHERE key='popup_enabled'").first();return json({ok:true,popup_enabled:row?.value!=="0"})}
+if(request.method==="PUT"){if(!authorized(request,env))return json({error:"Unauthorized"},401);let b;try{b=await request.json()}catch{return json({error:"Invalid JSON"},400)}if(typeof b.popup_enabled!=="boolean")return json({error:"popup_enabled boolean required"},400);await db.prepare("UPDATE telegram_settings SET value=?,updated_at=? WHERE key='popup_enabled'").bind(b.popup_enabled?"1":"0",Math.floor(Date.now()/1000)).run();return json({ok:true,popup_enabled:b.popup_enabled})}
+return json({error:"Method not allowed"},405)}
