@@ -243,3 +243,10 @@ export async function onRequestGet(context) {
         );
     }
       }
+
+// Explicit method dispatcher for Cloudflare Pages routing compatibility.
+export async function onRequest(context) {
+    if (context.request.method === "GET") return onRequestGet(context);
+    if (context.request.method === "OPTIONS") return onRequestOptions(context);
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+}
