@@ -1,5 +1,5 @@
 // POST /api/telegram/start - create a short-lived Telegram bot sign-in challenge.
-export async function onRequestPost({ request, env }) {
+async function handlePost({ request, env }) {
   if (!env.BOT_TOKEN || !env.TELEGRAM_DB) {
     return json({ ok: false, error: "Telegram sign-in is not configured yet." }, 503);
   }
@@ -83,6 +83,6 @@ function json(body, status = 200) {
 
 // Explicit method dispatcher for Cloudflare Pages routing compatibility.
 export async function onRequest(context) {
-  if (context.request.method === "POST") return onRequestPost(context);
+  if (context.request.method === "POST") return handlePost(context);
   return json({ ok: false, error: "Method not allowed" }, 405);
 }
