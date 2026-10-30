@@ -93,8 +93,24 @@ function json(body, status = 200) {
   });
 }
 
-// Explicit method dispatcher for Cloudflare Pages routing compatibility.
-export async function onRequest(context) {
-  if (context.request.method === "POST") return handlePost(context);
-  return json({ ok: false, error: "Method not allowed" }, 405);
+// Use the method-specific Pages handler so POST routing is explicit.
+export async function onRequestPost(context) {
+  return handlePost(context);
+}
+
+// Keep accidental GET requests explicit and JSON-formatted.
+export async function onRequestGet() {
+  return json({ ok: false, error: "Use POST to start Telegram sign-in." }, 405);
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Allow": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Cache-Control": "no-store"
+    }
+  });
 }
