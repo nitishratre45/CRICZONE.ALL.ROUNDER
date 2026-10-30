@@ -417,3 +417,9 @@ async function webhookSecret(token) {
   let binary = ""; for (const b of bytes) binary += String.fromCharCode(b);
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
+
+// Explicit method dispatcher for Cloudflare Pages routing compatibility.
+export async function onRequest(context) {
+  if (context.request.method === "POST") return onRequestPost(context);
+  return json({ ok: false }, 405);
+}
