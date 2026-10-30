@@ -15,7 +15,13 @@ async function handlePost({ request, env }) {
       }
     } catch {}
 
-    // Add the return_url column for existing D1 databases; ignore only duplicate-column errors.
+    // Ensure the challenge table exists before applying the backwards-compatible migration.
+    // This makes a fresh D1 database usable without requiring a manual SQL bootstrap.
+    await env.TELEGRAM_DB.prepare(
+      "CREATE TABLE IF NOT EXISTS telegram_login_requests (nonce TEXT PRIMARY KEY, status TEXT NOT NULL, telegram_id TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, return_url TEXT)"
+    ).run();
+
+    // Older installations may predate return_url. Ignore only the duplicate-column case.
     try {
       await env.TELEGRAM_DB.prepare("ALTER TABLE telegram_login_requests ADD COLUMN return_url TEXT").run();
     } catch (schemaError) {
