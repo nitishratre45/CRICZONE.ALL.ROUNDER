@@ -19,6 +19,12 @@ async function handlePost({ request, env }) {
     await env.TELEGRAM_DB.prepare(
       "CREATE TABLE IF NOT EXISTS telegram_login_requests (nonce TEXT PRIMARY KEY, status TEXT NOT NULL, telegram_id TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, return_url TEXT)"
     ).run();
+    // Upgrade databases created before website return links were added.
+    try {
+      await env.TELEGRAM_DB.prepare("ALTER TABLE telegram_login_requests ADD COLUMN return_url TEXT").run();
+    } catch (schemaError) {
+      if (!String(schemaError?.message || schemaError).toLowerCase().includes("duplicate column")) throw schemaError;
+    }
     await env.TELEGRAM_DB.prepare(
       "CREATE TABLE IF NOT EXISTS telegram_bot_starts (id INTEGER PRIMARY KEY AUTOINCREMENT, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, language_code TEXT, start_payload TEXT, started_at TEXT NOT NULL, chat_type TEXT)"
     ).run();
