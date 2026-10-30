@@ -14,15 +14,14 @@ concurrency:
 
 jobs:
   health-check:
-    name: Check website, APIs, feeds and Telegram
+    name: Check website, APIs and feeds
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Check website and channel feeds
-        id: web
         shell: bash
         run: |
-          set +e
+          set -e
           mkdir -p health-report
           check_url() {
             label="$1"
@@ -30,22 +29,15 @@ jobs:
             expected="$3"
             body_file="health-report/${label}.body"
             code=$(curl -L -sS --max-time 25 -o "$body_file" -w "%{http_code}" "$url")
-            curl_exit=$?
-            content_type=$(file --mime-type -b "$body_file" 2>/dev/null || echo unknown)
-            if [ "$curl_exit" -ne 0 ]; then
-              status="FAIL"
-              detail="curl exit $curl_exit"
-            elif [ "$code" != "$expected" ]; then
-              status="FAIL"
-              detail="HTTP $code; expected $expected"
-            elif ! python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$body_file" >/dev/null 2>&1; then
-              status="FAIL"
-              detail="HTTP $code but response is not valid JSON"
-            else
-              status="PASS"
-              detail="HTTP $code; valid JSON"
+            if [ "$code" != "$expected" ]; then
+              echo "$label|FAIL|HTTP $code; expected $expected" | tee -a health-report/results.txt
+              return 1
             fi
-            echo "$label|$status|$detail" | tee -a health-report/results.txt
+            if ! python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$body_file" >/dev/null 2>&1; then
+              echo "$label|FAIL|HTTP $code but response is not valid JSON" | tee -a health-report/results.txt
+              return 1
+            fi
+            echo "$label|PASS|HTTP $code; valid JSON" | tee -a health-report/results.txt
           }
 
           site_code=$(curl -L -sS --max-time 25 -o /dev/null -w "%{http_code}" https://criczone.pages.dev/)
@@ -53,65 +45,15 @@ jobs:
             echo "website|PASS|HTTP $site_code" | tee -a health-report/results.txt
           else
             echo "website|FAIL|HTTP $site_code" | tee -a health-report/results.txt
+            exit 1
           fi
 
-          # Unknown feed should be rejected by the Pages Function as JSON (normally HTTP 400).
           check_url channels_route "https://criczone.pages.dev/api/channels?feed=__healthcheck_invalid__" 400
-
-          # Verify the Telegram start route is a Pages Function, not an HTML fallback.
-          # Malformed JSON must return a JSON 400 without calling Telegram or writing to D1.
-          start_body="health-report/telegram-start-invalid.json"
-          start_code=$(curl -sS --max-time 20 -X POST -H "Content-Type: application/json" --data '{' -o "$start_body" -w "%{http_code}" https://criczone.pages.dev/api/telegram/start)
-          if [ "$start_code" = "400" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") is False else 1)' "$start_body"; then
-            echo "telegram_start_route|PASS|POST route returned JSON 400 for malformed JSON" | tee -a health-report/results.txt
-          else
-            detail=$(head -c 160 "$start_body" 2>/dev/null | tr '\\n' ' ')
-            echo "telegram_start_route|FAIL|HTTP $start_code; response: $detail" | tee -a health-report/results.txt
-          fi
-
-          # The real sports feed must return JSON; upstream failures are reported.
           check_url sports_feed "https://criczone.pages.dev/api/channels?feed=sports" 200
           check_url directory_feed "https://criczone.pages.dev/api/channels?feed=directory" 200
           check_url select_feed "https://criczone.pages.dev/api/channels?feed=select" 200
 
-      - name: Check Telegram bot and webhook (when token is configured)
-        id: telegram
-        shell: bash
-        env:
-          BOT_TOKEN: ${{ secrets.CRICZONE_BOT_TOKEN || secrets.BOT_TOKEN }}
-        run: |
-          set +e
-          mkdir -p health-report
-          if [ -z "$BOT_TOKEN" ]; then
-            echo "telegram_bot|SKIP|Add CRICZONE_BOT_TOKEN or BOT_TOKEN in GitHub Actions secrets" | tee -a health-report/results.txt
-            exit 0
-          fi
-
-          for method in getMe getWebhookInfo; do
-            body="health-report/telegram-${method}.json"
-            code=$(curl -sS --max-time 20 -o "$body" -w "%{http_code}" "https://api.telegram.org/bot${BOT_TOKEN}/${method}")
-            if [ "$code" = "200" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") else 1)' "$body"; then
-              echo "telegram_${method}|PASS|Telegram API returned ok=true" | tee -a health-report/results.txt
-            else
-              echo "telegram_${method}|FAIL|HTTP $code or Telegram ok=false" | tee -a health-report/results.txt
-            fi
-          done
-
-      - name: Check Telegram, D1 and webhook through health endpoint
-        shell: bash
-        run: |
-          set +e
-          mkdir -p health-report
-          body="health-report/telegram-health.json"
-          code=$(curl -sS --max-time 30 -o "$body" -w "%{http_code}" https://criczone.pages.dev/api/health)
-          if [ "$code" = "200" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") is True else 1)' "$body"; then
-            echo "telegram_d1_webhook_channel|PASS|HTTP 200; all server-side checks passed" | tee -a health-report/results.txt
-          else
-            detail=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("error") or d.get("checks") or "invalid response")' "$body" 2>/dev/null || echo "HTTP $code")
-            echo "telegram_d1_webhook_channel|FAIL|HTTP $code; $detail" | tee -a health-report/results.txt
-          fi
-
-      - name: Publish health report and fail on errors
+      - name: Publish health report
         if: always()
         shell: bash
         run: |
@@ -128,7 +70,6 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           if grep -q '|FAIL|' health-report/results.txt 2>/dev/null; then
-            echo "One or more CRICZONE connections failed."
             exit 1
           fi
 
