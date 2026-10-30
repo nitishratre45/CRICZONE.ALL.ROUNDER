@@ -4,8 +4,10 @@ const TTL = 5 * 60;
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
 const hex = bytes => [...new Uint8Array(bytes)].map(x => x.toString(16).padStart(2, "0")).join("");
 async function webhookSecret(token) { return hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token))); }
-export async function onRequestPost({ request, env }) {
-  if (!env.BOT_TOKEN || !env.TELEGRAM_DB) return json({ error: "Server configuration missing" }, 500);
+export async function onRequest(context) {
+  const { request, env } = context;
+  if (request.method !== "POST") return json({ error: "Method not allowed", allowed: ["POST"], received: request.method }, 405);
+  if (!env.BOT_TOKEN || !env.TELEGRAM_DB) return json({ error: "Server configuration missing", bot_token: !!env.BOT_TOKEN, telegram_db: !!env.TELEGRAM_DB }, 500);
   let body; try { body = await request.json(); } catch { return json({ error: "Invalid JSON" }, 400); }
   let target; try { target = new URL(body.return_url); } catch { return json({ error: "Invalid return URL" }, 400); }
   const origin = new URL(request.url).origin;
@@ -19,4 +21,3 @@ export async function onRequestPost({ request, env }) {
   if (!hook.ok || !hookData.ok) return json({ error: "Could not configure Telegram webhook", detail: hookData.description || "Telegram error" }, 502);
   return json({ ok: true, nonce, bot_url: `https://t.me/${BOT}?start=${nonce}`, expires_in: TTL });
 }
-export function onRequestGet() { return json({ error: "Method not allowed" }, 405); }
