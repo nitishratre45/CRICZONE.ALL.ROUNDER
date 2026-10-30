@@ -25,16 +25,16 @@
     try { const r = await fetch(API + "/session", { credentials: "same-origin", cache: "no-store" }); const d = await r.json(); return d.verified === true; } catch { return false; }
   };
   let verified = false, started = false;
-  check().then(ok => { verified = ok; });
   async function trigger() {
     if (verified || root.classList.contains("cz-open")) return;
     if (await check()) { verified = true; return; }
     show();
   }
-  // Show only on the visitor's first intentional interaction, not on page load.
-  const firstTouch = () => { window.removeEventListener("pointerdown", firstTouch, true); window.removeEventListener("keydown", firstTouch, true); trigger(); };
-  window.addEventListener("pointerdown", firstTouch, true);
-  window.addEventListener("keydown", firstTouch, true);
+  // Automatically show the membership popup 5 seconds after page load.
+  check().then(ok => {
+    verified = ok;
+    if (!ok) window.setTimeout(trigger, 5000);
+  });
   document.getElementById("cz-tg-continue").addEventListener("click", async () => {
     if (started) return;
     started = true;
