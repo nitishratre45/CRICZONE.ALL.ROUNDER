@@ -273,10 +273,10 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <meta name="description" content="CricZone live sports hubs">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
 <link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
-  <link rel="stylesheet" href="./site-polish.css?v=20261019-premium-ui">
+  <link rel="stylesheet" href="/site-polish.css?v=20261030-api-path-fix">
 </head>
 <body>
 <!-- CRICZONE anti-popunder guard: block unsolicited script-opened tabs/windows -->
@@ -352,7 +352,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
     </div>
 
 
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(e=>console.warn("CricZone PWA:",e)));}</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js",{scope:"/"}).catch(e=>console.warn("CricZone PWA:",e)));}</script>
 
 
 <script src="/assets/js/telegram-membership-gate.js?v=20261028-unified2" defer></script>
