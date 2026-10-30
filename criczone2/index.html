@@ -867,8 +867,11 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
             collect(payload);
 
             const isChannel = item => item && typeof item === "object" && (
-                item.name || item.title || item.channel || item.id ||
-                item.iframeSrc || item.stream_url || item.url || item.link
+                item.name || item.title || item.channel || item.channelName ||
+                item.id || item.channelId || item.iframeSrc || item.iframe_src ||
+                item.iframe_url || item.stream_url || item.streamUrl ||
+                item.embedUrl || item.embed_url || item.src || item.url ||
+                item.link || item.source
             );
 
             const found = candidates.find(list => list.some(isChannel));
@@ -877,10 +880,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
             return found.filter(isChannel).map((item, index) => ({
                 ...item,
                 id: String(item.id ?? item.channelId ?? item.key ?? index + 1),
-                name: item.name ?? item.title ?? item.channel ?? `Channel ${index + 1}`,
-                iframeSrc: item.iframeSrc ?? item.stream_url ?? item.streamUrl ??
-                    item.embed ?? item.iframe ?? item.url ?? item.link ?? ""
-            })).filter(item => item.iframeSrc);
+                name: item.name ?? item.title ?? item.channelName ?? item.channel ?? `Channel ${index + 1}`,
+                logo: item.logo ?? item.logoUrl ?? item.image ?? item.imageUrl ?? "",
+                iframeSrc: item.iframeSrc ?? item.iframe_src ?? item.iframe_url ??
+                    item.stream_url ?? item.streamUrl ?? item.embedUrl ?? item.embed_url ??
+                    item.embed ?? item.iframe ?? item.src ?? item.url ?? item.link ??
+                    item.source ?? ""
+            })).filter(item => typeof item.iframeSrc === "string" && item.iframeSrc.trim());
         }
         async function initializeApp() {
             try {
@@ -904,7 +910,8 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 }
 
             } catch (error) {
-                renderError("Connection Failed", "Could not fetch channel list. Please refresh or try again later.");
+                console.error("CRICZONE2 channel API error:", error);
+                renderError("Channel Loading Failed", error && error.message ? error.message : "Could not fetch channel list. Please refresh or try again later.");
             }
         }
 
