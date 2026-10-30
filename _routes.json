@@ -3,5 +3,22 @@
   "include": [
     "/*"
   ],
-  "exclude": []
+  "exclude": [
+    "/assets/*",
+    "/photos/*",
+    "/images/*",
+    "/fonts/*",
+    "/css/*",
+    "/js/*",
+    "/criczone/assets/*",
+    "/criczone/photos/*",
+    "/criczone/images/*",
+    "/criczone10/assets/*",
+    "/criczone10/photos/*",
+    "/criczone10/images/*",
+    "/favicon.ico",
+    "/manifest.json",
+    "/service-worker.js",
+    "/site-polish.css"
+  ]
 }
