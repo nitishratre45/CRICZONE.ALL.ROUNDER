@@ -26,7 +26,7 @@ export async function onRequestPost({ request, env }) {
     member = ["member", "administrator", "creator"].includes(info.status) || (info.status === "restricted" && info.is_member === true);
   } catch (e) { console.error("getChatMember failed", e); }
   if (!member) {
-    await tg(env.BOT_TOKEN, "sendMessage", { chat_id: msg.chat.id, text: "❌ Aap @criczonelive channel ke member nahi hain. Pehle channel join karein, phir yahan /start link dobara open karein.", reply_markup: { inline_keyboard: [[{ text: "Join @criczonelive", url: "https://t.me/criczonelive" }]] } });
+    await tg(env.BOT_TOKEN, "sendMessage", { chat_id: msg.chat.id, text: "❌ Aap @criczonelive channel ke member nahi hain. Pehle channel join karein, phir neeche Verify Membership button dabayein.", reply_markup: { inline_keyboard: [[{ text: "Join @criczonelive", url: "https://t.me/criczonelive" }], [{ text: "Verify Membership", url: `https://t.me/CRICZONE_ADMIN_BOT?start=${nonce}` }]] } });
     return json({ ok: true });
   }
   await env.TELEGRAM_DB.prepare("UPDATE telegram_login_requests SET status='verified', telegram_user_id=?, verified_at=? WHERE nonce=?").bind(String(msg.from.id), now, nonce).run();
