@@ -2742,35 +2742,43 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 await response.json();
 
 
-            if (
-                Array.isArray(data)
-            ) {
+            // Accept both a plain channel array and the common
+            // wrapped feed formats. Do not use "||" here: an empty
+            // array is truthy and can hide a populated channels array.
+            const payload =
+                data && typeof data === "object"
+                    ? (data.data && !Array.isArray(data.data) ? data.data : data)
+                    : data;
 
-                this.masterChannels =
-                    data;
+            const channelArrays = Array.isArray(data)
+                ? [data]
+                : [
+                    payload?.iframes,
+                    payload?.channels,
+                    payload?.streams,
+                    payload?.data,
+                    data?.iframes,
+                    data?.channels,
+                    data?.streams,
+                    data?.data
+                ].filter(Array.isArray);
 
-            } else {
+            let channelList =
+                channelArrays.find(list => list.length > 0) ||
+                channelArrays[0] ||
+                [];
 
-                this.masterChannels =
-                    data.iframes ||
-                    data.channels ||
-                    data.streams ||
-                    data.data ||
-                    [];
-
+            // Some feeds publish channels as an object keyed by ID.
+            if (!Array.isArray(channelList) && channelList && typeof channelList === "object") {
+                channelList = Object.entries(channelList).map(([id, channel]) => ({
+                    id,
+                    ...(channel && typeof channel === "object" ? channel : { url: channel })
+                }));
             }
 
-
-            if (
-                !Array.isArray(
-                    this.masterChannels
-                )
-            ) {
-
-                this.masterChannels =
-                    [];
-
-            }
+            this.masterChannels = Array.isArray(channelList)
+                ? channelList.filter(channel => channel && typeof channel === "object")
+                : [];
 
 
             this.renderChannels();
