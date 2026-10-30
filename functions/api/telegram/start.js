@@ -80,3 +80,9 @@ function json(body, status = 200) {
     }
   });
 }
+
+// Explicit method dispatcher for Cloudflare Pages routing compatibility.
+export async function onRequest(context) {
+  if (context.request.method === "POST") return onRequestPost(context);
+  return json({ ok: false, error: "Method not allowed" }, 405);
+}
