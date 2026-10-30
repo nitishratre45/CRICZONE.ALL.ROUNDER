@@ -86,25 +86,18 @@ jobs:
             fi
           done
 
-      - name: Check Telegram website sign-in endpoint
+      - name: Check Telegram, D1 and webhook through health endpoint
         shell: bash
         run: |
           set +e
           mkdir -p health-report
-          body="health-report/telegram-start.json"
-          code=$(curl -sS --max-time 25 -X POST \
-            -H "Content-Type: application/json" \
-            --data '{"return_url":"https://criczone.pages.dev/"}' \
-            -o "$body" -w "%{http_code}" \
-            https://criczone.pages.dev/api/telegram/start)
-          if [ "$code" = "200" ]; then
-            echo "telegram_start|PASS|HTTP 200; sign-in challenge created" | tee -a health-report/results.txt
-          elif [ "$code" = "503" ]; then
-            echo "telegram_start|FAIL|HTTP 503; BOT_TOKEN or TELEGRAM_DB is missing or Telegram setup failed" | tee -a health-report/results.txt
-          elif [ "$code" = "405" ]; then
-            echo "telegram_start|FAIL|HTTP 405; Pages POST route is not being dispatched" | tee -a health-report/results.txt
+          body="health-report/telegram-health.json"
+          code=$(curl -sS --max-time 30 -o "$body" -w "%{http_code}" https://criczone.pages.dev/api/health)
+          if [ "$code" = "200" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") is True else 1)' "$body"; then
+            echo "telegram_d1_webhook_channel|PASS|HTTP 200; all server-side checks passed" | tee -a health-report/results.txt
           else
-            echo "telegram_start|FAIL|HTTP $code" | tee -a health-report/results.txt
+            detail=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("error") or d.get("checks") or "invalid response")' "$body" 2>/dev/null || echo "HTTP $code")
+            echo "telegram_d1_webhook_channel|FAIL|HTTP $code; $detail" | tee -a health-report/results.txt
           fi
 
       - name: Publish health report and fail on errors
