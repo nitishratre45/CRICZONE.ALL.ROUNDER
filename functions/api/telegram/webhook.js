@@ -13,8 +13,8 @@ export async function onRequestPost({ request, env }) {
   let update; try { update = await request.json(); } catch { return json({ error: "Bad update" }, 400); }
   const msg = update.message; if (!msg?.text || !msg.from?.id || !msg.chat?.id) return json({ ok: true });
   const text = msg.text.trim();
-  const command = text.split(/\\s+/)[0].split("@")[0].toLowerCase();
-  const match = text.match(/^\/start\\s+([a-f0-9]{32})$/i);
+  const command = text.split(/\s+/)[0].split("@")[0].toLowerCase();
+  const match = text.match(/^\/start\s+([a-f0-9]{32})$/i);
 
   // Normal chat commands and messages should always receive a helpful reply.
   if (!match) {
