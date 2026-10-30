@@ -42,8 +42,15 @@
     btn.textContent = "Connecting to Telegram…"; btn.disabled = true; error.textContent = "";
     try {
       const r = await fetch(API + "/start", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ return_url: location.href }) });
-      const d = await r.json();
-      if (!r.ok || !d.bot_url) throw new Error(d.error || "Could not start Telegram verification");
+      const raw = await r.text();
+      let d = {};
+      if (raw.trim()) {
+        try { d = JSON.parse(raw); }
+        catch { throw new Error(`Telegram API returned invalid response (HTTP ${r.status}). Check Cloudflare deployment and Functions logs.`); }
+      } else {
+        throw new Error(`Telegram API returned an empty response (HTTP ${r.status}). Check that the latest Cloudflare Pages deployment is successful and the /api/telegram/start Function is deployed.`);
+      }
+      if (!r.ok || !d.bot_url) throw new Error(d.error || `Could not start Telegram verification (HTTP ${r.status})`);
       location.href = d.bot_url;
     } catch (e) { error.textContent = e.message || "Please try again."; btn.textContent = "Continue with Telegram Bot"; btn.disabled = false; started = false; }
   });
