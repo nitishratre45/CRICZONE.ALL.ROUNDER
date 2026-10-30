@@ -710,7 +710,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 (function(){
 "use strict";
 
-var API = "/api/channels?feed=sports";
+var API = "https://sonujson-v5.pages.dev/Data/sports.json";
 
 var $overlay = document.getElementById("overlay");
 var $loadMsg = document.getElementById("loadMsg");
@@ -770,10 +770,54 @@ function withCookie(u, r){
 
 async function loadData(){
   var r = await fetch(API, {cache:"no-store", headers:{Accept:"application/json"}});
-  if(!r.ok) throw new Error("HTTP " + r.status);
-  var d = await r.json();
-  if(!d || !Array.isArray(d.channels) || !d.channels.length) throw new Error("empty");
-  return d;
+  if(!r.ok) throw new Error("Channel feed HTTP " + r.status);
+  var body = await r.text();
+  if(/^\\s*<!doctype\\s+html|^\\s*<html/i.test(body)){
+    throw new Error("Sports feed returned HTML instead of JSON.");
+  }
+  var payload;
+  try { payload = JSON.parse(body); }
+  catch(e) { throw new Error("Invalid sports JSON: " + e.message); }
+  var channels = normalizeSportsChannels(payload);
+  if(!channels.length) throw new Error("Sports JSON loaded, but no playable channels were found.");
+  return {channels:channels};
+}
+
+function normalizeSportsChannels(payload){
+  var candidates = [], seen = new Set();
+  function collect(value, depth){
+    depth = depth || 0;
+    if(!value || typeof value !== "object" || depth > 5 || seen.has(value)) return;
+    seen.add(value);
+    if(Array.isArray(value)){ candidates.push(value); return; }
+    ["channels","streams","data","results","items","list","iframes","tv"].forEach(function(key){
+      if(value[key] !== undefined) collect(value[key], depth + 1);
+    });
+    var keys = Object.keys(value), vals = Object.values(value);
+    if(vals.length && vals.every(function(v){ return v && typeof v === "object" && !Array.isArray(v); })){
+      candidates.push(vals.map(function(v,i){
+        return Object.assign({id:v.id || v.channelId || v.key || keys[i]}, v);
+      }));
+    }
+  }
+  collect(payload, 0);
+  function hasStream(ch){
+    return ch && typeof ch === "object" && (ch.stream_url || ch.streamUrl || ch.url ||
+      ch.src || ch.manifest || ch.mpd || ch.m3u8 || ch.dash || ch.playUrl || ch.play_url);
+  }
+  var list = candidates.find(function(arr){ return arr.some(hasStream); }) || [];
+  return list.filter(hasStream).map(function(ch,i){
+    var url = ch.stream_url || ch.streamUrl || ch.manifest || ch.mpd || ch.m3u8 ||
+      ch.dash || ch.playUrl || ch.play_url || ch.src || ch.url;
+    return Object.assign({}, ch, {
+      id:String(ch.id || ch.channelId || ch.key || i + 1),
+      name:ch.name || ch.title || ch.channelName || ch.channel || ("Channel " + (i + 1)),
+      stream_url:url,
+      key_id:ch.key_id || ch.keyId || ch.kid || "",
+      key:ch.key || ch.drm_key || ch.drmKey || "",
+      cookie:ch.cookie || ch.token || ""
+    });
+  });
 }
 
 function renderList(channels){
