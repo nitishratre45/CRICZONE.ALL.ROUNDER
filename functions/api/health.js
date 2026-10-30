@@ -1,5 +1,5 @@
 // GET /api/health - non-mutating connection diagnostics for CRICZONE.
-export async function onRequestGet({ env }) {
+async function handleGet({ env }) {
   const checks = {
     telegram_bot_token: false,
     telegram_db: false,
@@ -65,7 +65,7 @@ export async function onRequestGet({ env }) {
 }
 
 export async function onRequest(context) {
-  if (context.request.method === "GET") return onRequestGet(context);
+  if (context.request.method === "GET") return handleGet(context);
   return json({ ok: false, error: "Method not allowed" }, 405);
 }
 
