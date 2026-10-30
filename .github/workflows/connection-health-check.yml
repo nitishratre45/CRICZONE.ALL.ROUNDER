@@ -58,6 +58,17 @@ jobs:
           # Unknown feed should be rejected by the Pages Function as JSON (normally HTTP 400).
           check_url channels_route "https://criczone.pages.dev/api/channels?feed=__healthcheck_invalid__" 400
 
+          # Verify the Telegram start route is a Pages Function, not an HTML fallback.
+          # Malformed JSON must return a JSON 400 without calling Telegram or writing to D1.
+          start_body="health-report/telegram-start-invalid.json"
+          start_code=$(curl -sS --max-time 20 -X POST -H "Content-Type: application/json" --data '{' -o "$start_body" -w "%{http_code}" https://criczone.pages.dev/api/telegram/start)
+          if [ "$start_code" = "400" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") is False else 1)' "$start_body"; then
+            echo "telegram_start_route|PASS|POST route returned JSON 400 for malformed JSON" | tee -a health-report/results.txt
+          else
+            detail=$(head -c 160 "$start_body" 2>/dev/null | tr '\\n' ' ')
+            echo "telegram_start_route|FAIL|HTTP $start_code; response: $detail" | tee -a health-report/results.txt
+          fi
+
           # The real sports feed must return JSON; upstream failures are reported.
           check_url sports_feed "https://criczone.pages.dev/api/channels?feed=sports" 200
           check_url directory_feed "https://criczone.pages.dev/api/channels?feed=directory" 200
