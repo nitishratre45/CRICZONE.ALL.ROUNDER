@@ -1,0 +1,138 @@
+name: CRICZONE Connection Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: criczone-connection-health
+  cancel-in-progress: true
+
+jobs:
+  health-check:
+    name: Check website, APIs, feeds and Telegram
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check website and channel feeds
+        id: web
+        shell: bash
+        run: |
+          set +e
+          mkdir -p health-report
+          check_url() {
+            label="$1"
+            url="$2"
+            expected="$3"
+            body_file="health-report/${label}.body"
+            code=$(curl -L -sS --max-time 25 -o "$body_file" -w "%{http_code}" "$url")
+            curl_exit=$?
+            content_type=$(file --mime-type -b "$body_file" 2>/dev/null || echo unknown)
+            if [ "$curl_exit" -ne 0 ]; then
+              status="FAIL"
+              detail="curl exit $curl_exit"
+            elif [ "$code" != "$expected" ]; then
+              status="FAIL"
+              detail="HTTP $code; expected $expected"
+            elif ! python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$body_file" >/dev/null 2>&1; then
+              status="FAIL"
+              detail="HTTP $code but response is not valid JSON"
+            else
+              status="PASS"
+              detail="HTTP $code; valid JSON"
+            fi
+            echo "$label|$status|$detail" | tee -a health-report/results.txt
+          }
+
+          site_code=$(curl -L -sS --max-time 25 -o /dev/null -w "%{http_code}" https://criczone.pages.dev/)
+          if [ "$site_code" -ge 200 ] && [ "$site_code" -lt 400 ]; then
+            echo "website|PASS|HTTP $site_code" | tee -a health-report/results.txt
+          else
+            echo "website|FAIL|HTTP $site_code" | tee -a health-report/results.txt
+          fi
+
+          # Unknown feed should be rejected by the Pages Function as JSON (normally HTTP 400).
+          check_url channels_route "https://criczone.pages.dev/api/channels?feed=__healthcheck_invalid__" 400
+
+          # The real sports feed must return JSON; upstream failures are reported.
+          check_url sports_feed "https://criczone.pages.dev/api/channels?feed=sports" 200
+          check_url directory_feed "https://criczone.pages.dev/api/channels?feed=directory" 200
+          check_url select_feed "https://criczone.pages.dev/api/channels?feed=select" 200
+
+      - name: Check Telegram bot and webhook (when token is configured)
+        id: telegram
+        shell: bash
+        env:
+          BOT_TOKEN: ${{ secrets.CRICZONE_BOT_TOKEN || secrets.BOT_TOKEN }}
+        run: |
+          set +e
+          mkdir -p health-report
+          if [ -z "$BOT_TOKEN" ]; then
+            echo "telegram_bot|SKIP|Add CRICZONE_BOT_TOKEN or BOT_TOKEN in GitHub Actions secrets" | tee -a health-report/results.txt
+            exit 0
+          fi
+
+          for method in getMe getWebhookInfo; do
+            body="health-report/telegram-${method}.json"
+            code=$(curl -sS --max-time 20 -o "$body" -w "%{http_code}" "https://api.telegram.org/bot${BOT_TOKEN}/${method}")
+            if [ "$code" = "200" ] && python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("ok") else 1)' "$body"; then
+              echo "telegram_${method}|PASS|Telegram API returned ok=true" | tee -a health-report/results.txt
+            else
+              echo "telegram_${method}|FAIL|HTTP $code or Telegram ok=false" | tee -a health-report/results.txt
+            fi
+          done
+
+      - name: Check Telegram website sign-in endpoint
+        shell: bash
+        run: |
+          set +e
+          mkdir -p health-report
+          body="health-report/telegram-start.json"
+          code=$(curl -sS --max-time 25 -X POST \
+            -H "Content-Type: application/json" \
+            --data '{"return_url":"https://criczone.pages.dev/"}' \
+            -o "$body" -w "%{http_code}" \
+            https://criczone.pages.dev/api/telegram/start)
+          if [ "$code" = "200" ]; then
+            echo "telegram_start|PASS|HTTP 200; sign-in challenge created" | tee -a health-report/results.txt
+          elif [ "$code" = "503" ]; then
+            echo "telegram_start|FAIL|HTTP 503; BOT_TOKEN or TELEGRAM_DB is missing or Telegram setup failed" | tee -a health-report/results.txt
+          elif [ "$code" = "405" ]; then
+            echo "telegram_start|FAIL|HTTP 405; Pages POST route is not being dispatched" | tee -a health-report/results.txt
+          else
+            echo "telegram_start|FAIL|HTTP $code" | tee -a health-report/results.txt
+          fi
+
+      - name: Publish health report and fail on errors
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## CRICZONE Connection Health"
+            echo
+            echo "| Connection | Result | Details |"
+            echo "|---|---|---|"
+            if [ -f health-report/results.txt ]; then
+              while IFS='|' read -r name status detail; do
+                echo "| $name | $status | $detail |"
+              done < health-report/results.txt
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if grep -q '|FAIL|' health-report/results.txt 2>/dev/null; then
+            echo "One or more CRICZONE connections failed."
+            exit 1
+          fi
+
+      - name: Upload diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: criczone-connection-health
+          path: health-report/
+          if-no-files-found: ignore
+          retention-days: 7
