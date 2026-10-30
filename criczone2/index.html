@@ -803,34 +803,85 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
            FETCH FUNCTION (MULTI-PROXY FAILOVER)
         ========================================================= */
         async function fetchStreamData() {
-            const cached = sessionStorage.getItem("criczone_channels_v4");
-            if (cached) {
-                try {
-                    const parsed = JSON.parse(cached);
-                    if (parsed && (parsed.iframes || Array.isArray(parsed))) return parsed;
-                } catch(e) {
-                    sessionStorage.removeItem("criczone_channels_v4");
-                }
-            }
-
             const sourceUrl = "/api/channels?feed=directory";
-            const response = await fetch(sourceUrl, { cache: "no-store" });
+            const response = await fetch(sourceUrl, {
+                method: "GET",
+                cache: "no-store",
+                headers: { "Accept": "application/json" }
+            });
 
             if (!response.ok) {
-                throw new Error(`Channel feed request failed: ${response.status}`);
+                throw new Error(`Channel API failed: HTTP ${response.status}`);
             }
 
-            const data = await response.json();
-            const result = Array.isArray(data) ? { iframes: data } : data;
+            const payload = await response.json();
+            const streams = normalizeChannelPayload(payload);
 
-            if (!result || !Array.isArray(result.iframes)) {
-                throw new Error("Channel feed has an invalid format.");
+            if (!streams.length) {
+                throw new Error("API returned JSON, but no usable channels were found.");
             }
 
-            sessionStorage.setItem("criczone_channels_v4", JSON.stringify(result));
+            const result = { iframes: streams };
+            sessionStorage.setItem("criczone_channels_v5", JSON.stringify(result));
             return result;
         }
 
+        // Accept the same channel data returned by the API even when its
+        // JSON uses a wrapper key or an object keyed by channel ID.
+        function normalizeChannelPayload(payload) {
+            const candidates = [];
+            const visited = new Set();
+
+            function collect(value, depth = 0) {
+                if (!value || depth > 5 || visited.has(value)) return;
+                if (typeof value === "object") visited.add(value);
+
+                if (Array.isArray(value)) {
+                    candidates.push(value);
+                    return;
+                }
+
+                if (typeof value !== "object") return;
+
+                const preferredKeys = [
+                    "iframes", "channels", "streams", "data",
+                    "results", "items", "list", "channel", "tv"
+                ];
+
+                for (const key of preferredKeys) {
+                    if (value[key] !== undefined) collect(value[key], depth + 1);
+                }
+
+                // Some directory feeds store channels as { channelId: {...} }.
+                const values = Object.values(value);
+                if (values.length && values.every(item =>
+                    item && typeof item === "object" && !Array.isArray(item)
+                )) {
+                    candidates.push(values.map((item, index) => ({
+                        id: item.id ?? item.channelId ?? item.key ?? Object.keys(value)[index],
+                        ...item
+                    })));
+                }
+            }
+
+            collect(payload);
+
+            const isChannel = item => item && typeof item === "object" && (
+                item.name || item.title || item.channel || item.id ||
+                item.iframeSrc || item.stream_url || item.url || item.link
+            );
+
+            const found = candidates.find(list => list.some(isChannel));
+            if (!found) return [];
+
+            return found.filter(isChannel).map((item, index) => ({
+                ...item,
+                id: String(item.id ?? item.channelId ?? item.key ?? index + 1),
+                name: item.name ?? item.title ?? item.channel ?? `Channel ${index + 1}`,
+                iframeSrc: item.iframeSrc ?? item.stream_url ?? item.streamUrl ??
+                    item.embed ?? item.iframe ?? item.url ?? item.link ?? ""
+            })).filter(item => item.iframeSrc);
+        }
         async function initializeApp() {
             try {
                 const data = await fetchStreamData();
