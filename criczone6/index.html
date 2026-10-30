@@ -19,14 +19,6 @@
 <!-- CRICZONE anti-popunder guard: block unsolicited script-opened tabs/windows -->
 <script>
 (() => {
-  const blockedOpen = function() {
-    console.warn('[CRICZONE] Blocked unsolicited popup/redirect.');
-    return null;
-  };
-  try { window.open = blockedOpen; } catch (_) {}
-  try {
-    Object.defineProperty(window, 'open', { value: blockedOpen, writable: false, configurable: false });
-  } catch (_) {}
   // Block scripted popup handlers attached to taps/clicks, while preserving normal site controls and links.
   document.addEventListener('click', event => {
     const link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
