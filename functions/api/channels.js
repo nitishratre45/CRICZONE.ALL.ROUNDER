@@ -84,7 +84,7 @@ export async function onRequestOptions(context) {
 // GET /api/channels?feed=sports
 // ============================================================
 
-export async function onRequestGet(context) {
+async function handleGet(context) {
 
     const request = context.request;
 
@@ -244,9 +244,10 @@ export async function onRequestGet(context) {
     }
       }
 
-// Explicit method dispatcher for Cloudflare Pages routing compatibility.
+
+// Single Pages entry point: dispatch methods explicitly.
 export async function onRequest(context) {
-    if (context.request.method === "GET") return onRequestGet(context);
-    if (context.request.method === "OPTIONS") return onRequestOptions(context);
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+  if (context.request.method === "GET") return handleGet(context);
+  if (context.request.method === "OPTIONS") return handleOptions(context);
+  return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
 }
