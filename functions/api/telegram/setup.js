@@ -4,29 +4,21 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 });
 const hex = bytes => [...new Uint8Array(bytes)].map(x => x.toString(16).padStart(2, "0")).join("");
 
-export async function onRequestGet({ request, env }) {
+export async function onRequest(context) {
+  const { request, env } = context;
+  if (request.method !== "GET") return json({ ok: false, error: "Use GET", method: request.method }, 405);
   if (!env.BOT_TOKEN) return json({ ok: false, error: "BOT_TOKEN secret is missing" }, 500);
-
   const origin = new URL(request.url).origin;
   const webhookUrl = `${origin}/api/telegram/webhook`;
   const secret = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(env.BOT_TOKEN)));
-
   try {
     const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/setWebhook`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url: webhookUrl,
-        secret_token: secret,
-        allowed_updates: ["message"],
-        drop_pending_updates: false
-      })
+      body: JSON.stringify({ url: webhookUrl, secret_token: secret, allowed_updates: ["message"], drop_pending_updates: false })
     });
     const result = await response.json();
-    if (!response.ok || !result.ok) {
-      return json({ ok: false, step: "setWebhook", error: result.description || "Telegram rejected webhook setup" }, 502);
-    }
-
+    if (!response.ok || !result.ok) return json({ ok: false, step: "setWebhook", error: result.description || "Telegram rejected webhook setup" }, 502);
     const infoResponse = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getWebhookInfo`);
     const info = await infoResponse.json();
     return json({
