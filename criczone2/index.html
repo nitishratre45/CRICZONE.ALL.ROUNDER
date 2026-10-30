@@ -803,7 +803,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
            FETCH FUNCTION (MULTI-PROXY FAILOVER)
         ========================================================= */
         async function fetchStreamData() {
-            const sourceUrl = "/api/channels?feed=directory";
+            const sourceUrl = "https://allrounder3-0.pages.dev/id.json";
             const response = await fetch(sourceUrl, {
                 method: "GET",
                 cache: "no-store",
@@ -814,7 +814,15 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 throw new Error(`Channel API failed: HTTP ${response.status}`);
             }
 
-            const payload = await response.json();
+            const responseText = await response.text();
+            if (/^\\s*<!doctype\\s+html|^\\s*<html/i.test(responseText)) {
+                throw new Error("Channel source returned an HTML page instead of JSON. Check the feed URL or deployment.");
+            }
+
+            let payload;
+            try { payload = JSON.parse(responseText); }
+            catch (error) { throw new Error("Channel source returned invalid JSON: " + error.message); }
+
             const streams = normalizeChannelPayload(payload);
 
             if (!streams.length) {
