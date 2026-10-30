@@ -5,9 +5,15 @@ async function handlePost({ request, env }) {
   }
 
   try {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return json({ ok: false, error: "Invalid JSON request body." }, 400);
+    }
+
     let returnUrl = "";
     try {
-      const body = await request.json();
       const candidate = new URL(String(body?.return_url || ""));
       const currentOrigin = new URL(request.url).origin;
       if (candidate.protocol === "https:" && candidate.origin === currentOrigin) {
