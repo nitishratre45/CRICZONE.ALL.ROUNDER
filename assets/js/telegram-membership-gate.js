@@ -3,6 +3,8 @@
   window.__CZ_TELEGRAM_GATE__ = true;
   const API="/api/telegram", JOIN="https://t.me/criczonelive";
   const COOLDOWN_KEY="cz_gate_api_cooldown_until";
+  let popupEnabled=true;
+  try{const cfg=await fetch(API+"/settings",{credentials:"same-origin",cache:"no-store"});if(cfg.ok){const d=await cfg.json();popupEnabled=d.popup_enabled===true}}catch{}
   const nextUtcReset=()=>{const d=new Date();return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1,0,0,5)};
   const coolingDown=()=>{try{const until=Number(localStorage.getItem(COOLDOWN_KEY)||0);if(until>Date.now())return true;localStorage.removeItem(COOLDOWN_KEY)}catch{}return false};
   const setCooldown=()=>{try{localStorage.setItem(COOLDOWN_KEY,String(nextUtcReset()))}catch{}};
@@ -19,7 +21,7 @@
   const root=document.createElement("div");root.id="cz-tg-gate";
   root.innerHTML=`<section id="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-title"><span class="cz-badge">CRICZONE MEMBER ACCESS</span><h2 id="cz-tg-title">Unlock for 12 Hours</h2><p>Join our Telegram channel and verify your membership with our official bot to continue watching.</p><a class="cz-btn cz-join" href="${JOIN}" target="_blank" rel="noopener">Join @criczonelive</a><button class="cz-btn" id="cz-tg-continue" type="button">Continue with Telegram Bot</button><div class="cz-error" id="cz-tg-error" aria-live="polite"></div><div class="cz-small">Membership unlock remains active for 12 hours on this website.</div></section>`;
   document.body.appendChild(root);
-  const show=()=>{if(coolingDown())return;root.classList.add("cz-open");document.body.style.overflow="hidden"};
+  const show=()=>{if(!popupEnabled||coolingDown())return;root.classList.add("cz-open");document.body.style.overflow="hidden"};
   const hide=()=>{root.classList.remove("cz-open");document.body.style.overflow=""};
   let verified=false,started=false,apiUnavailable=coolingDown();
   async function check(){
@@ -33,7 +35,7 @@
       return {verified:d.verified===true,unavailable:false};
     }catch{return {verified:false,unavailable:true}}
   }
-  async function trigger(){if(verified||apiUnavailable||coolingDown()||root.classList.contains("cz-open"))return;const s=await check();if(s.verified){verified=true;return}if(s.unavailable)return;show()}
+  async function trigger(){if(!popupEnabled||verified||apiUnavailable||coolingDown()||root.classList.contains("cz-open"))return;const s=await check();if(s.verified){verified=true;return}if(s.unavailable)return;show()}
   check().then(s=>{verified=s.verified;apiUnavailable=s.unavailable;if(!verified&&!apiUnavailable)window.setTimeout(trigger,5000)});
   document.getElementById("cz-tg-continue").addEventListener("click",async()=>{
     if(started||apiUnavailable||coolingDown())return;started=true;
