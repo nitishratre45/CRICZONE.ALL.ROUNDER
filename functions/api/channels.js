@@ -248,6 +248,6 @@ async function handleGet(context) {
 // Single Pages entry point: dispatch methods explicitly.
 export async function onRequest(context) {
   if (context.request.method === "GET") return handleGet(context);
-  if (context.request.method === "OPTIONS") return handleOptions(context);
+  if (context.request.method === "OPTIONS") return onRequestOptions(context);
   return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
 }
