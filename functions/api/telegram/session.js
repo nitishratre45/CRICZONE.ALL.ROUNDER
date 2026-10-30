@@ -1,20 +1,7 @@
-const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers } });
-async function sign(value, token) {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(token), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
-  return btoa(String.fromCharCode(...new Uint8Array(sig))).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-}
-export async function onRequestGet({ request, env }) {
-  const raw = (request.headers.get("Cookie") || "").split(";").map(x => x.trim()).find(x => x.startsWith("cz_tg_session="))?.slice("cz_tg_session=".length);
-  if (!raw || !env.BOT_TOKEN) return json({ verified: false });
-  const [payload, signature] = raw.split(".");
-  if (!payload || !signature || signature !== await sign(payload, env.BOT_TOKEN)) return json({ verified: false }, 401, { "Set-Cookie": "cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax" });
-  try {
-    const data = JSON.parse(atob(payload.replaceAll("-", "+").replaceAll("_", "/")));
-    if (!data.uid || !data.exp || data.exp <= Math.floor(Date.now() / 1000)) throw new Error("expired");
-    return json({ verified: true, expires_at: data.exp });
-  } catch {
-    return json({ verified: false }, 401, { "Set-Cookie": "cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax" });
-  }
-}
-export function onRequestPost() { return json({ error: "Method not allowed" }, 405); }
+const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...headers}});
+async function sign(value,token){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(token),{name:"HMAC",hash:"SHA-256"},false,["sign"]);const sig=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(value));return btoa(String.fromCharCode(...new Uint8Array(sig))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")}
+async function member(env,userId){const r=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(userId)})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.description||"Membership check unavailable");const m=d.result;return ["member","administrator","creator"].includes(m.status)||(m.status==="restricted"&&m.is_member===true)}
+export async function onRequestGet({request,env}){const raw=(request.headers.get("Cookie")||"").split(";").map(x=>x.trim()).find(x=>x.startsWith("cz_tg_session="))?.slice("cz_tg_session=".length);if(!raw||!env.BOT_TOKEN)return json({verified:false});const [payload,signature]=raw.split(".");if(!payload||!signature||signature!==await sign(payload,env.BOT_TOKEN))return json({verified:false},401,{"Set-Cookie":"cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax"});let data;try{data=JSON.parse(atob(payload.replaceAll("-","+").replaceAll("_","/")));if(!data.uid||!data.exp||data.exp<=Math.floor(Date.now()/1000))throw Error("expired")}catch{return json({verified:false},401,{"Set-Cookie":"cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax"})}
+if(!env.TELEGRAM_DB)return json({verified:false,error:"Membership database unavailable"},503);
+const now=Math.floor(Date.now()/1000);try{await env.TELEGRAM_DB.prepare(`CREATE TABLE IF NOT EXISTS telegram_membership_checks(telegram_user_id TEXT PRIMARY KEY,is_member INTEGER NOT NULL,checked_at INTEGER NOT NULL)`).run();const cached=await env.TELEGRAM_DB.prepare("SELECT is_member,checked_at FROM telegram_membership_checks WHERE telegram_user_id=?").bind(String(data.uid)).first();let valid=cached&&now-cached.checked_at<60?cached.is_member===1:null;if(valid===null){valid=await member(env,data.uid);await env.TELEGRAM_DB.prepare("INSERT INTO telegram_membership_checks(telegram_user_id,is_member,checked_at) VALUES(?,?,?) ON CONFLICT(telegram_user_id) DO UPDATE SET is_member=excluded.is_member,checked_at=excluded.checked_at").bind(String(data.uid),valid?1:0,now).run()}if(!valid)return json({verified:false,membership_valid:false},200,{"Set-Cookie":"cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax"});return json({verified:true,membership_valid:true,expires_at:data.exp})}catch(e){console.error("Telegram membership recheck unavailable",e);return json({verified:true,membership_check:"temporarily_unavailable",expires_at:data.exp})}}
+export function onRequestPost(){return json({error:"Method not allowed"},405)}
