@@ -12,6 +12,21 @@ async function handlePost({ request, env }) {
   }
   let update;
   try { update = await request.json(); } catch { return json({ ok: false }, 400); }
+
+  // Bootstrap the tables used by ordinary /start and website-login updates.
+  // The webhook must also work when a user starts the bot before visiting the website.
+  try {
+    await env.TELEGRAM_DB.prepare(
+      "CREATE TABLE IF NOT EXISTS telegram_login_requests (nonce TEXT PRIMARY KEY, status TEXT NOT NULL, telegram_id TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, return_url TEXT)"
+    ).run();
+    await env.TELEGRAM_DB.prepare(
+      "CREATE TABLE IF NOT EXISTS telegram_bot_starts (id INTEGER PRIMARY KEY AUTOINCREMENT, telegram_id TEXT NOT NULL, first_name TEXT, last_name TEXT, username TEXT, language_code TEXT, start_payload TEXT, started_at TEXT NOT NULL, chat_type TEXT)"
+    ).run();
+  } catch (error) {
+    console.error("Telegram core table bootstrap failed:", error?.message || error);
+    return json({ ok: false, error: "Telegram database is not ready." }, 503);
+  }
+
   // Record channel membership changes when Telegram sends chat_member updates.
   const memberUpdate = update?.chat_member;
   if (memberUpdate && String(memberUpdate.chat?.username || "").toLowerCase() === "criczonelive") {
