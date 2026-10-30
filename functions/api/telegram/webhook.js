@@ -12,8 +12,28 @@ export async function onRequestPost({ request, env }) {
   if (supplied !== await expectedSecret(env.BOT_TOKEN)) return json({ error: "Unauthorized" }, 401);
   let update; try { update = await request.json(); } catch { return json({ error: "Bad update" }, 400); }
   const msg = update.message; if (!msg?.text || !msg.from?.id || !msg.chat?.id) return json({ ok: true });
-  const match = msg.text.trim().match(/^\/start\s+([a-f0-9]{32})$/i);
-  if (!match) { await tg(env.BOT_TOKEN, "sendMessage", { chat_id: msg.chat.id, text: "CRICZONE membership verification ke liye website par wapas jaakar Continue with Telegram Bot dabayein." }); return json({ ok: true }); }
+  const text = msg.text.trim();
+  const command = text.split(/\\s+/)[0].split("@")[0].toLowerCase();
+  const match = text.match(/^\/start\\s+([a-f0-9]{32})$/i);
+
+  // Normal chat commands and messages should always receive a helpful reply.
+  if (!match) {
+    let reply;
+    if (command === "/start") {
+      reply = "👋 Welcome to CRICZONE!\\n\\nMain CRICZONE assistant hoon. Aap normal message bhej sakte hain.\\n\\nCommands:\\n/start - Start bot\\n/help - Help\\n/channel - Telegram channel link\\n/verify - Website membership verification ka tarika";
+    } else if (command === "/help") {
+      reply = "ℹ️ CRICZONE Bot Help\\n\\n• /channel — Official Telegram channel\\n• /verify — Website par 12-hour membership unlock kaise karein\\n• Website unlock ke liye CRICZONE page par Continue with Telegram Bot dabayein.\\n\\nAap apna sawal normal chat mein bhi bhej sakte hain.";
+    } else if (command === "/channel") {
+      reply = "📢 Official CRICZONE channel: https://t.me/criczonelive";
+    } else if (command === "/verify") {
+      reply = "🔐 Membership verify karne ke liye CRICZONE website kholiye, popup mein Join @criczonelive dabaiye, channel join kijiye, phir Continue with Telegram Bot dabaiye.";
+    } else {
+      reply = "💬 Aapka message mil gaya!\\n\\nCRICZONE Bot active hai. Website membership unlock ke liye /verify bhejein, channel link ke liye /channel, ya help ke liye /help bhejein.";
+    }
+    await tg(env.BOT_TOKEN, "sendChatAction", { chat_id: msg.chat.id, action: "typing" }).catch(() => {});
+    await tg(env.BOT_TOKEN, "sendMessage", { chat_id: msg.chat.id, text: reply, disable_web_page_preview: true });
+    return json({ ok: true, handled: "normal_message" });
+  }
   const nonce = match[1];
   const row = await env.TELEGRAM_DB.prepare("SELECT nonce, return_url, expires_at, status FROM telegram_login_requests WHERE nonce = ?").bind(nonce).first();
   const now = Math.floor(Date.now() / 1000);
