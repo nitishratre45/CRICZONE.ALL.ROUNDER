@@ -1,4 +1,4 @@
-(() => {
+(async () => {
   if (window.__CZ_TELEGRAM_GATE__) return;
   window.__CZ_TELEGRAM_GATE__ = true;
   const API="/api/telegram", JOIN="https://t.me/criczonelive";
