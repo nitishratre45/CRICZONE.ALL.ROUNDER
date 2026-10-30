@@ -16,7 +16,7 @@ export async function onRequest(context) {
   const now = Math.floor(Date.now() / 1000);
   await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce,status,return_url,created_at,expires_at) VALUES (?, 'pending', ?, ?, ?)").bind(nonce, target.href, now, now + TTL).run();
   const secret = await webhookSecret(env.BOT_TOKEN);
-  const hook = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/setWebhook`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: `${origin}/api/telegram/webhook`, secret_token: secret, allowed_updates: ["message"] }) });
+  const hook = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/setWebhook`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: `${origin}/api/telegram/webhook`, secret_token: secret, allowed_updates: ["message", "callback_query"] }) });
   const hookData = await hook.json();
   if (!hook.ok || !hookData.ok) return json({ error: "Could not configure Telegram webhook", detail: hookData.description || "Telegram error" }, 502);
   return json({ ok: true, nonce, bot_url: `https://t.me/${BOT}?start=${nonce}`, expires_in: TTL });
