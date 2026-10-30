@@ -83,34 +83,44 @@ async function deriveWebhookSecret(token) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-function json(body, status = 200) {
+function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      ...extraHeaders
     }
   });
 }
 
-// Use the method-specific Pages handler so POST routing is explicit.
-export async function onRequestPost(context) {
-  return handlePost(context);
-}
+// Single Pages entry point handles every HTTP method for this route.
+// Keeping one dispatcher avoids method-handler fallback ambiguity.
+export async function onRequest(context) {
+  const method = context.request.method.toUpperCase();
 
-// Keep accidental GET requests explicit and JSON-formatted.
-export async function onRequestGet() {
-  return json({ ok: false, error: "Use POST to start Telegram sign-in." }, 405);
-}
+  if (method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Allow": "POST, OPTIONS",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Cache-Control": "no-store",
+        "X-Criczone-Function": "telegram-start-v2"
+      }
+    });
+  }
 
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Allow": "POST, OPTIONS",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Cache-Control": "no-store"
-    }
-  });
+  if (method === "POST") {
+    const response = await handlePost(context);
+    response.headers.set("X-Criczone-Function", "telegram-start-v2");
+    return response;
+  }
+
+  return json(
+    { ok: false, error: "Use POST to start Telegram sign-in." },
+    405,
+    { "Allow": "POST, OPTIONS", "X-Criczone-Function": "telegram-start-v2" }
+  );
 }
