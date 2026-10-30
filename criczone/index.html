@@ -2742,15 +2742,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 await response.json();
 
 
-            // Accept both a plain channel array and the common
-            // wrapped feed formats. Do not use "||" here: an empty
-            // array is truthy and can hide a populated channels array.
+            // Accept plain arrays, wrapped arrays, and object maps keyed by channel ID.
             const payload =
-                data && typeof data === "object"
-                    ? (data.data && !Array.isArray(data.data) ? data.data : data)
+                data && typeof data === "object" && data.data && typeof data.data === "object"
+                    ? data.data
                     : data;
 
-            const channelArrays = Array.isArray(data)
+            const candidates = Array.isArray(data)
                 ? [data]
                 : [
                     payload?.iframes,
@@ -2761,19 +2759,28 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                     data?.channels,
                     data?.streams,
                     data?.data
-                ].filter(Array.isArray);
+                ];
 
-            let channelList =
-                channelArrays.find(list => list.length > 0) ||
-                channelArrays[0] ||
-                [];
+            let channelList = candidates.find(value => Array.isArray(value) && value.length > 0)
+                || candidates.find(value => Array.isArray(value))
+                || null;
 
-            // Some feeds publish channels as an object keyed by ID.
-            if (!Array.isArray(channelList) && channelList && typeof channelList === "object") {
-                channelList = Object.entries(channelList).map(([id, channel]) => ({
-                    id,
-                    ...(channel && typeof channel === "object" ? channel : { url: channel })
-                }));
+            // Some upstream JSON feeds use { "channel-id": { ...channel } }.
+            if (!channelList) {
+                const channelMap = candidates.find(value =>
+                    value && typeof value === "object" && !Array.isArray(value)
+                ) || (
+                    payload && typeof payload === "object" && !Array.isArray(payload)
+                        ? payload
+                        : null
+                );
+
+                channelList = channelMap
+                    ? Object.entries(channelMap).map(([id, channel]) => ({
+                        id,
+                        ...(channel && typeof channel === "object" ? channel : { url: channel })
+                    }))
+                    : [];
             }
 
             this.masterChannels = Array.isArray(channelList)
