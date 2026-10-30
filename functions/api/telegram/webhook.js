@@ -3,7 +3,7 @@
 // using BOT_TOKEN and secret_token=TELEGRAM_WEBHOOK_SECRET via Telegram setWebhook.
 const CHANNEL = "@criczonelive";
 
-export async function onRequestPost({ request, env }) {
+async function handlePost({ request, env }) {
   if (!env.BOT_TOKEN || !env.TELEGRAM_DB) {
     return json({ ok: false }, 503);
   }
@@ -418,8 +418,9 @@ async function webhookSecret(token) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-// Explicit method dispatcher for Cloudflare Pages routing compatibility.
+
+// Single Pages entry point: dispatch methods explicitly.
 export async function onRequest(context) {
-  if (context.request.method === "POST") return onRequestPost(context);
-  return json({ ok: false }, 405);
+  if (context.request.method === "POST") return handlePost(context);
+  return json({ ok: false, error: "Method not allowed" }, 405);
 }
