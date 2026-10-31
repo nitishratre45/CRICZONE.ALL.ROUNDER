@@ -41,7 +41,7 @@
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
     <p>Join our Telegram channel and verify your membership with our official bot to continue watching.</p>
-    <a class="cz-btn cz-join" href="${JOIN}" target="_blank" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
+    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
     <button class="cz-btn" id="cz-tg-continue" type="button"><span class="cz-btn-icon" aria-hidden="true">▶</span>Continue with Telegram Bot</button>
     <div class="cz-error" id="cz-tg-error" aria-live="polite"></div>
     <div class="cz-small">Membership unlock remains active for 12 hours on this website.</div>
@@ -145,6 +145,69 @@
     window.setTimeout(show, 5000);
   }
 
+  const joinBtn = document.getElementById("cz-tg-join");
+  const isPhone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "") ||
+    (navigator.userAgentData && navigator.userAgentData.mobile === true);
+
+  async function beginJoinVerification() {
+    if (started || verified) return;
+    started = true;
+    const error = document.getElementById("cz-tg-error");
+    joinBtn.textContent = "Preparing Telegram...";
+    joinBtn.setAttribute("aria-disabled", "true");
+    error.textContent = "";
+    try {
+      const r = await fetch(API + "/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ return_url: location.href })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start verification.");
+      saveNonce(d.nonce);
+      try {
+        sessionStorage.setItem("cz_tg_join_pending", "1");
+        sessionStorage.setItem("cz_tg_join_started_at", String(Date.now()));
+        sessionStorage.setItem("cz_tg_join_bot_url", d.bot_url);
+      } catch {}
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = window.setInterval(pollLoginStatus, 1500);
+      // Open the channel first. When the visitor returns, launch the bot to verify real membership.
+      if (isPhone) window.location.assign(JOIN);
+      else {
+        const tab = window.open(JOIN, "_blank", "noopener");
+        if (!tab) window.location.assign(JOIN);
+      }
+    } catch (e) {
+      error.textContent = e.message || "Please try again.";
+      joinBtn.innerHTML = '<span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive';
+      joinBtn.removeAttribute("aria-disabled");
+      started = false;
+    }
+  }
+
+  function resumeJoinVerification() {
+    let pending = false, startedAt = 0, botUrl = "";
+    try {
+      pending = sessionStorage.getItem("cz_tg_join_pending") === "1";
+      startedAt = Number(sessionStorage.getItem("cz_tg_join_started_at") || 0);
+      botUrl = sessionStorage.getItem("cz_tg_join_bot_url") || "";
+    } catch {}
+    if (!pending || !botUrl || Date.now() - startedAt < 3000) return;
+    try {
+      sessionStorage.removeItem("cz_tg_join_pending");
+      sessionStorage.removeItem("cz_tg_join_started_at");
+    } catch {}
+    if (isPhone) window.location.assign(botUrl);
+    else window.open(botUrl, "_blank", "noopener");
+  }
+
+  joinBtn.addEventListener("click", event => {
+    event.preventDefault();
+    beginJoinVerification();
+  });
+
   document.getElementById("cz-tg-continue").addEventListener("click", async () => {
     if (started || verified) return;
     started = true;
@@ -168,8 +231,6 @@
       pollTimer = window.setInterval(pollLoginStatus, 1500);
       // Phones: open Telegram in the current browser context so the device can hand the t.me link to Telegram.
       // Desktop: keep the existing new-tab behavior.
-      const isPhone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "") ||
-        (navigator.userAgentData && navigator.userAgentData.mobile === true);
       if (isPhone) {
         window.location.assign(d.bot_url);
       } else {
@@ -185,9 +246,9 @@
   });
 
   window.addEventListener("pageshow", refreshAccess);
-  window.addEventListener("focus", refreshAccess);
+  window.addEventListener("focus", () => { refreshAccess(); resumeJoinVerification(); });
   window.addEventListener("popstate", refreshAccess);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshAccess();
+    if (document.visibilityState === "visible") { refreshAccess(); resumeJoinVerification(); }
   });
 })();
