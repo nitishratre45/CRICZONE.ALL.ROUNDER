@@ -12,6 +12,7 @@ export async function onRequest(context) {
   let target; try { target = new URL(body.return_url); } catch { return json({ error: "Invalid return URL" }, 400); }
   const origin = new URL(request.url).origin;
   if (target.origin !== origin || !["https:", "http:"].includes(target.protocol)) return json({ error: "Return URL must be on this website" }, 400);
+  await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_login_requests (nonce TEXT PRIMARY KEY, status TEXT NOT NULL DEFAULT 'pending', return_url TEXT NOT NULL, created_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, telegram_user_id TEXT, verified_at INTEGER)").run();
   const nonce = crypto.randomUUID().replaceAll("-", "");
   const now = Math.floor(Date.now() / 1000);
   await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce,status,return_url,created_at,expires_at) VALUES (?, 'pending', ?, ?, ?)").bind(nonce, target.href, now, now + TTL).run();
