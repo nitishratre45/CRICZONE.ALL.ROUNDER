@@ -1,6 +1,6 @@
 const CHANNEL="@criczonelive";
 const esc=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
-const branded=(body)=>`<b>🏏 CRICZONE LIVE</b>\n< i >━━━━━━━━━━━━━━━━</i>\n\n${body}`.replace("< i >","<i>");
+const branded=(body)=>`<b>🏏 CRICZONE LIVE</b>\n<i>━━━━━━━━━━━━━━━━</i>\n\n${body}`;
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});
 const hex=bytes=>[...new Uint8Array(bytes)].map(x=>x.toString(16).padStart(2,"0")).join("");
 async function expectedSecret(token){return hex(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(token)))}
