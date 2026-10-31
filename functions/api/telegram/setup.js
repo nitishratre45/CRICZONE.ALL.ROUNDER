@@ -15,7 +15,7 @@ export async function onRequest(context) {
     const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/setWebhook`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: webhookUrl, secret_token: secret, allowed_updates: ["message", "callback_query"], drop_pending_updates: false })
+      body: JSON.stringify({ url: webhookUrl, secret_token: secret, allowed_updates: ["message", "callback_query", "chat_member", "chat_join_request"], drop_pending_updates: false })
     });
     const result = await response.json();
     if (!response.ok || !result.ok) return json({ ok: false, step: "setWebhook", error: result.description || "Telegram rejected webhook setup" }, 502);
@@ -27,7 +27,7 @@ export async function onRequest(context) {
       webhook_url: info.result?.url || webhookUrl,
       pending_update_count: info.result?.pending_update_count ?? null,
       last_error_message: info.result?.last_error_message || null,
-      allowed_updates: info.result?.allowed_updates || ["message"]
+      allowed_updates: info.result?.allowed_updates || ["message", "chat_join_request"]
     });
   } catch (error) {
     return json({ ok: false, error: error.message || "Webhook setup failed" }, 502);
