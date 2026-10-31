@@ -23,7 +23,7 @@
   document.body.appendChild(root);
   const show=()=>{if(!popupEnabled||coolingDown())return;root.classList.add("cz-open");document.body.style.overflow="hidden"};
   const hide=()=>{root.classList.remove("cz-open");document.body.style.overflow=""};
-  let verified=false,started=false,apiUnavailable=coolingDown(),activeNonce="",noncePollTimer=0;
+  let verified=false,started=false,apiUnavailable=coolingDown(),activeNonce="",noncePollTimer=0;\n  try{activeNonce=sessionStorage.getItem("cz_tg_pending_nonce")||""}catch{}
   async function check(){
     if(apiUnavailable||coolingDown())return {verified:false,unavailable:true};
     try{
@@ -80,7 +80,7 @@
     if(activeNonce)await pollLoginStatus();
     if(!verified){const s=await check();if(s.verified){verified=true;hide()}}
   }
-  window.addEventListener("pageshow",refreshAccess);
+  if(activeNonce)noncePollTimer=window.setInterval(pollLoginStatus,2000);\n  window.addEventListener("pageshow",refreshAccess);
   window.addEventListener("focus",refreshAccess);
   window.addEventListener("popstate",refreshAccess);
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshAccess()});
