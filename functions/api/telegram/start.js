@@ -27,7 +27,6 @@ export async function onRequest(context) {
     catch (error) { if (!/duplicate column/i.test(String(error))) throw error; }
   }
   const nonce = crypto.randomUUID().replaceAll("-", "");
-  const now = Math.floor(Date.now() / 1000);
   await env.TELEGRAM_DB.prepare("INSERT INTO telegram_login_requests (nonce,status,return_url,created_at,expires_at) VALUES (?, 'pending', ?, ?, ?)").bind(nonce, target.href, now, now + TTL).run();
   return json({ ok: true, nonce, bot_url: `https://t.me/${BOT}?start=${nonce}`, expires_in: TTL });
 }
