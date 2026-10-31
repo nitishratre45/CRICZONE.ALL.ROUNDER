@@ -166,8 +166,16 @@
       if (pollTimer) clearInterval(pollTimer);
       await pollLoginStatus();
       pollTimer = window.setInterval(pollLoginStatus, 1500);
-      const tab = window.open(d.bot_url, "_blank", "noopener");
-      if (!tab) location.href = d.bot_url;
+      // Phones: open Telegram in the current browser context so the device can hand the t.me link to Telegram.
+      // Desktop: keep the existing new-tab behavior.
+      const isPhone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "") ||
+        (navigator.userAgentData && navigator.userAgentData.mobile === true);
+      if (isPhone) {
+        window.location.assign(d.bot_url);
+      } else {
+        const tab = window.open(d.bot_url, "_blank", "noopener");
+        if (!tab) window.location.assign(d.bot_url);
+      }
     } catch (e) {
       error.textContent = e.message || "Please try again.";
       btn.textContent = "Continue with Telegram Bot";
