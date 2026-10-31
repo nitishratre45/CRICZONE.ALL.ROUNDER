@@ -14,7 +14,8 @@
     #cz-tg-gate.cz-open{display:flex}
     #cz-tg-card{position:relative;isolation:isolate;overflow:hidden;width:min(100%,430px);padding:30px 25px 24px;border:1px solid rgba(255,255,255,.13);border-radius:26px;background:radial-gradient(ellipse at 50% -15%,rgba(47,190,125,.2),transparent 48%),linear-gradient(155deg,#14251f 0%,#0b1512 58%,#09110f 100%);color:#f4fff8;box-shadow:0 28px 100px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06);text-align:center;animation:czGateRise .28s cubic-bezier(.2,.8,.2,1)}
     #cz-tg-card:before{content:"";position:absolute;z-index:-1;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(126,244,177,.7),transparent)}
-    #cz-tg-card .cz-mark{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 17px;border:1px solid rgba(126,244,177,.23);border-radius:19px;background:linear-gradient(145deg,rgba(45,153,103,.28),rgba(22,74,51,.2));box-shadow:0 8px 28px rgba(0,0,0,.2);font-size:27px}
+    #cz-tg-card .cz-mark{display:grid;place-items:center;overflow:hidden;width:66px;height:66px;margin:0 auto 17px;border:2px solid rgba(126,244,177,.65);border-radius:50%;background:#10251b;box-shadow:0 0 0 5px rgba(126,244,177,.09),0 8px 28px rgba(0,0,0,.3)}
+    #cz-tg-card .cz-mark img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 52%;border-radius:50%}
     #cz-tg-card .cz-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid rgba(126,244,177,.17);border-radius:99px;background:rgba(28,94,63,.28);color:#91efb8;font-size:10px;font-weight:800;letter-spacing:1.15px}
     #cz-tg-card .cz-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#68e5a0;box-shadow:0 0 10px #68e5a0}
     #cz-tg-card h2{margin:17px 0 10px;font-size:clamp(25px,7vw,30px);font-weight:800;letter-spacing:-.8px;line-height:1.12}
@@ -31,12 +32,12 @@
     @keyframes czGateFade{from{opacity:0}to{opacity:1}}
     @keyframes czGateRise{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
     @media(hover:hover){#cz-tg-card .cz-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}}
-    @media(max-width:380px){#cz-tg-card{padding:25px 19px 20px;border-radius:23px}#cz-tg-card .cz-mark{width:52px;height:52px;margin-bottom:14px}#cz-tg-card p{font-size:13px}}
+    @media(max-width:380px){#cz-tg-card{padding:25px 19px 20px;border-radius:23px}#cz-tg-card .cz-mark{width:58px;height:58px;margin-bottom:14px}#cz-tg-card p{font-size:13px}}
     @media(prefers-reduced-motion:reduce){#cz-tg-gate,#cz-tg-card{animation:none}#cz-tg-card .cz-btn{transition:none}}
   `;
   document.head.appendChild(style);
   root.innerHTML = `<section id="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-title">
-    <div class="cz-mark" aria-hidden="true">🏏</div>
+    <div class="cz-mark"><img src="https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE cricket profile" loading="eager"></div>
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
     <p>Join our Telegram channel and verify your membership with our official bot to continue watching.</p>
