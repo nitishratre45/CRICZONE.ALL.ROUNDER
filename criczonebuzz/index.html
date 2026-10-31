@@ -871,6 +871,23 @@
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
         }
 
+
+        /* My List: saved matches stay on this device */
+        .favorite-toggle {
+            position: absolute; top: 10px; right: 10px; z-index: 6;
+            border: 1px solid rgba(255,255,255,.22); border-radius: 999px;
+            padding: 7px 11px; color: #fff; background: rgba(8,10,14,.78);
+            backdrop-filter: blur(10px); font: 700 .74rem var(--font-sub);
+            cursor: pointer; transition: .2s ease;
+        }
+        .favorite-toggle:hover, .favorite-toggle.is-saved {
+            color: #10131a; background: var(--gold-gradient); border-color: transparent;
+        }
+        .favorite-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+        @media (max-width: 600px) {
+            .favorite-toggle { padding: 6px 9px; font-size: .7rem; }
+            .filter-tabs { width: 100%; padding-bottom: 2px; }
+        }
     </style>
 </head>
 <body>
@@ -911,6 +928,7 @@
                 <button class="tab-btn active" data-filter="all">All Events (<span id="count-all">0</span>)</button>
                 <button class="tab-btn" data-filter="live">🔴 Live Now (<span id="count-live">0</span>)</button>
                 <button class="tab-btn" data-filter="upcoming">⏳ Upcoming (<span id="count-upcoming">0</span>)</button>
+                <button class="tab-btn" data-filter="favorites">⭐ My List (<span id="count-favorites">0</span>)</button>
             </div>
             <div class="search-box">
                 <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -1186,9 +1204,36 @@
             }
 
             // Render Match Cards
+            const FAVORITES_KEY = 'criczone_favorite_matches_v1';
+            let favoriteMatchIds = new Set();
+            try {
+                const savedFavorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+                if (Array.isArray(savedFavorites)) favoriteMatchIds = new Set(savedFavorites.map(String));
+            } catch (e) { favoriteMatchIds = new Set(); }
+
+            function saveFavoriteMatches() {
+                try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favoriteMatchIds))); }
+                catch (e) { showToast('Browser storage is unavailable; favorites may not persist.', 'info'); }
+            }
+
+            function toggleFavorite(matchId) {
+                const key = String(matchId || '');
+                if (!key) return;
+                if (favoriteMatchIds.has(key)) {
+                    favoriteMatchIds.delete(key);
+                    showToast('Removed from My List', 'info', 1800);
+                } else {
+                    favoriteMatchIds.add(key);
+                    showToast('⭐ Added to My List', 'success', 1800);
+                }
+                saveFavoriteMatches();
+                renderMatches();
+            }
+
             function renderMatches() {
                 let filtered = allMatches.filter(m => {
                     const isLive = isMatchLive(m);
+                    if (currentFilter === 'favorites' && !favoriteMatchIds.has(String(m.id || m.match_id || ''))) return false;
                     if (currentFilter === 'live' && !isLive) return false;
                     if (currentFilter === 'upcoming' && isLive) return false;
                     if (searchQuery) {
@@ -1204,6 +1249,7 @@
                 document.getElementById('count-all').textContent = allMatches.length;
                 document.getElementById('count-live').textContent = liveCount;
                 document.getElementById('count-upcoming').textContent = upCount;
+                document.getElementById('count-favorites').textContent = favoriteMatchIds.size;
 
                 if (filtered.length === 0) {
                     const noFeedData = allMatches.length === 0;
@@ -1291,6 +1337,14 @@
                             ${serversHtml}
                         </div>
                     `;
+                    const favoriteBtn = document.createElement('button');
+                    favoriteBtn.type = 'button';
+                    favoriteBtn.className = 'favorite-toggle' + (favoriteMatchIds.has(String(id)) ? ' is-saved' : '');
+                    favoriteBtn.textContent = favoriteMatchIds.has(String(id)) ? '★ Saved' : '☆ Save';
+                    favoriteBtn.setAttribute('aria-label', favoriteMatchIds.has(String(id)) ? 'Remove from My List' : 'Add to My List');
+                    favoriteBtn.addEventListener('click', () => toggleFavorite(id));
+                    const poster = card.querySelector('.card-poster');
+                    if (poster) poster.appendChild(favoriteBtn);
                     grid.appendChild(card);
                 });
 
