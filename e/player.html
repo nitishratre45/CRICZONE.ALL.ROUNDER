@@ -22,4 +22,5 @@ document.getElementById('reload').addEventListener('click',()=>{const c=channels
 function render(){const q=search.value.trim().toLowerCase();const list=channels.filter(c=>(c.name+' '+c.category).toLowerCase().includes(q));grid.innerHTML=list.map(c=>'<button class="channel '+(c.id===current?'active':'')+'" type="button" data-id="'+c.id+'"><span class="logo">'+(c.category==='FOX SPORTS'?'FOX':c.category==='SKY SPORTS'?'SKY':c.category==='TNT SPORTS'?'TNT':'W')+'</span><span class="meta"><strong>'+c.name+'</strong><small>'+c.category+'</small></span><span class="arrow">▶</span></button>').join('');empty.style.display=list.length?'none':'block';}
 grid.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)choose(b.dataset.id)});search.addEventListener('input',render);
 if(!channels.some(c=>c.id===current))current=channels[0].id;choose(current);render();
-</script></body></html>
+</script><script>(function(s){s.dataset.zone='12161194',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+</body></html>
