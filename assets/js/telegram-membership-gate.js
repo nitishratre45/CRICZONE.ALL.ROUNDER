@@ -86,6 +86,15 @@
         hide();
         return true;
       }
+      if (r.ok && d.verified !== true && verified) {
+        verified = false;
+        const title = document.getElementById("cz-tg-title");
+        const message = root.querySelector("#cz-tg-card p");
+        if (title) title.textContent = "Session Expired";
+        if (message) message.textContent = "Your secure CRICZONE session has expired or is no longer available. Verify your Telegram membership again to continue.";
+        show(true);
+        return false;
+      }
       if (d.membership_valid === false || r.status === 401) {
         verified = false;
         if (membershipTimer) { clearInterval(membershipTimer); membershipTimer = 0; }
