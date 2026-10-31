@@ -99,12 +99,14 @@
         return false;
       }
       if (!r.ok) {
+        verified = false;
         const message = root.querySelector("#cz-tg-card p");
         if (message) message.textContent = "We could not confirm your channel membership. Access is paused while we retry. Please keep this page open.";
         show(true);
         return false;
       }
     } catch {
+      verified = false;
       const message = root.querySelector("#cz-tg-card p");
       if (message) message.textContent = "Membership verification is temporarily unavailable. Access is paused while we reconnect.";
       show(true);
@@ -115,7 +117,7 @@
   function startMembershipMonitor() {
     if (membershipTimer) clearInterval(membershipTimer);
     membershipTimer = window.setInterval(() => {
-      if (document.visibilityState === "visible" && verified) sessionCheck();
+      if (document.visibilityState === "visible") sessionCheck();
     }, 15000);
   }
 
