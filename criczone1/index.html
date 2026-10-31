@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#070b09">
-    <title>CRICKCAST — Live Channels</title>
+    <title>CRICZONE — Live Channels</title>
+    <meta name="description" content="Watch available live cricket and sports channels on CRICZONE.">
+    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -455,23 +457,56 @@
                 font-size: 8px
             }
         }
-    </style>
 
-    <script src="https://pl31464107.profitableratecpmnetwork.com/4c/0d/d7/4c0dd798d742e1afef44d28d552661f9.js"></script>
+    :root { --bg:#080b11; --panel:#111824; --line:#273244; --green:#ffb800; --mint:#ffd36b; --text:#f4f6fb; --muted:#98a3b5; }
+    body { background:radial-gradient(ellipse at 50% -18%,rgba(255,184,0,.13),transparent 52%),#080b11; }
+    .topbar { background:rgba(8,11,17,.93);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 8px 30px rgba(0,0,0,.18); }
+    .toprow { min-height:48px; }
+    .brand { display:flex;align-items:center;gap:11px;color:#fff;text-decoration:none;font-family:Archivo,sans-serif;font-size:clamp(20px,3vw,26px);font-weight:900;letter-spacing:1.4px;line-height:1.05; }
+    .brand > span:last-child { display:flex;flex-direction:column; }
+    .brand > span:last-child > span { color:var(--green); }
+    .brand small { margin-top:5px;color:#ffc94e;font:800 9px Manrope,sans-serif;letter-spacing:1px; }
+    .brand-mark { width:43px;height:43px;flex:0 0 43px;overflow:hidden;border-radius:13px;border:1px solid rgba(255,184,0,.6);background:#151d2a;box-shadow:0 4px 18px rgba(255,184,0,.16); }
+    .brand-mark img { width:100%;height:100%;display:block;object-fit:contain;padding:2px; }
+    .live { color:#ff7777;border-color:#663c3c;background:#291516; }
+    .tg { background:linear-gradient(135deg,#229ed9,#1476bb);border-radius:11px;box-shadow:0 5px 16px rgba(20,118,187,.2); }
+    main { padding-top:28px; } h1 { letter-spacing:-.7px; } .subtitle { font-size:13px; }
+    #count { border:1px solid var(--line);border-radius:999px;padding:7px 11px;background:#111824;color:#c5cedb; }
+    #search { background:#111824;border-color:#2a3547;border-radius:13px;min-height:48px; }
+    #search:focus { border-color:var(--green);box-shadow:0 0 0 3px rgba(255,184,0,.12); }
+    .pill { background:#111824;border-color:#2a3547;color:#aeb8c8;padding:9px 15px; }
+    .pill.active { color:#17130a;background:linear-gradient(135deg,#ffb800,#ffda78);box-shadow:0 4px 14px rgba(255,184,0,.16); }
+    #grid { grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:17px; }
+    .card { border-color:#273244;border-radius:16px;background:linear-gradient(155deg,#151e2b,#0e141e);box-shadow:0 8px 24px rgba(0,0,0,.16); }
+    .card:hover { transform:translateY(-4px);border-color:rgba(255,184,0,.65);box-shadow:0 14px 30px rgba(0,0,0,.28); }
+    .poster { background:linear-gradient(135deg,#1d2a3d,#101722); }
+    .poster:after { color:#ffd36b;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55));text-shadow:0 2px 12px #000; }
+    .fallback { color:#ffd36b; } .cardbody { padding:13px 14px 15px; }
+    .channelname { font-size:13px; } .category { color:#ffc94e; }
+    footer { border-color:#202b3a;color:#7f8b9d; } footer a { color:#ffc94e; }
+    #player { background:#000; }
+    .playerbar button,.playertitle { background:rgba(12,17,26,.9);border-color:rgba(255,255,255,.18);backdrop-filter:blur(12px); }
+    .playerbar button:hover { border-color:#ffb800;color:#ffd36b; }
+    #retry { background:linear-gradient(135deg,#ffb800,#ffda78); }
+    .card:focus-visible,.pill:focus-visible,.tg:focus-visible,button:focus-visible { outline:2px solid #ffd36b;outline-offset:3px; }
+    @media(max-width:560px) { .brand-mark { width:39px;height:39px;flex-basis:39px; } .brand small { font-size:8px;letter-spacing:.65px; } main { padding-top:20px; } #grid { gap:11px; } }
+    @media(max-width:380px) { .brand { font-size:18px;gap:8px; } .brand-mark { width:35px;height:35px;flex-basis:35px; } .live { font-size:8px;padding:4px 6px; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important; } }
+    </style>
 
 </head>
 
 <body>
     <div id="loading">
         <div class="spinner"></div>
-        <div id="loadingText">Loading CRICKCAST channels…</div>
+        <div id="loadingText">Loading CRICZONE channels…</div>
     </div>
     <div id="app">
         <header class="topbar">
             <div class="toprow">
-                <div class="brand">CRICK<span>CAST</span></div><span class="live">● LIVE</span>
+                <a class="brand" href="./" aria-label="CRICZONE home"><span class="brand-mark"><img src="../photos/photo_2026-10-28_14-52-23.jpg" alt=""></span><span>CRIC<span>ZONE</span><small>LIVE CRICKET • MATCH CENTRE</small></span></a><span class="live">● LIVE</span>
                 <div class="spacer"></div>
-                <a class="tg" href="https://t.me/crickcast18" target="_blank" rel="noopener noreferrer"
+                <a class="tg" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer"
                     aria-label="Join CRICKCAST on Telegram">
                     <svg viewBox="0 0 24 24">
                         <path
@@ -483,7 +518,7 @@
             <div class="intro">
                 <div>
                     <h1>Live Channels</h1>
-                    <p class="subtitle">Your matchday starts here.</p>
+                    <p class="subtitle">Choose a channel and enjoy the matchday.</p>
                 </div>
                 <div id="count">0 channels</div>
             </div>
@@ -494,7 +529,7 @@
             <section id="grid" aria-label="Available channels"></section>
             <div id="empty">📺<br><br>No channels match your search.</div>
         </main>
-        <footer>Made for cricket fans · <a href="https://t.me/crickcast18" target="_blank"
+        <footer>CRICZONE · BUILT FOR CRICKET FANS · <a href="https://t.me/crickcast18" target="_blank"
                 rel="noopener noreferrer">Join CRICKCAST on Telegram ↗</a></footer>
     </div>
     <section id="player"><iframe id="frame" title="CRICKCAST player"
@@ -512,7 +547,7 @@
             let channels = [], activeCategory = 'All', query = '';
             function normalize(raw) { if (Array.isArray(raw)) return raw; if (!raw || typeof raw !== 'object') return []; if (Array.isArray(raw.iframes)) return raw.iframes; if (Array.isArray(raw.channels)) return raw.channels; if (Array.isArray(raw.data)) return raw.data; return [raw] }
             async function fetchJson(url) { const controller = new AbortController(), timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT); try { const r = await fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' }, signal: controller.signal }); if (!r.ok) throw Error('HTTP ' + r.status); return await r.json() } finally { clearTimeout(timer) } }
-            function toChannel(x) { if (!x || x.id == null || !x.name || !x.iframeSrc) return null; return { id: String(x.id), name: String(x.name), iframeSrc: String(x.iframeSrc), category: String(x.category || 'General'), logo: String(x.logourl || x.logo || x.logoUrl || '') } }
+            function toChannel(x) { if (!x || x.id == null || !x.name || !x.iframeSrc) return null; let u; try { u = new URL(String(x.iframeSrc), location.href); if (!['https:', 'http:'].includes(u.protocol)) return null } catch { return null } return { id: String(x.id), name: String(x.name), iframeSrc: u.href, category: String(x.category || 'General'), logo: String(x.logourl || x.logo || x.logoUrl || '') } }
             async function loadChannels() { const results = await Promise.allSettled(JSON_URLS.map(fetchJson)), seen = new Set(), out = [], errors = []; results.forEach((r, i) => { if (r.status === 'rejected') { const e = r.reason; errors.push(JSON_URLS[i] + ' — ' + (e?.name === 'AbortError' ? 'timed out' : e?.message || 'failed')); return } normalize(r.value).forEach(x => { const c = toChannel(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c) } }) }); if (!out.length) throw Error('No valid channels could be loaded. ' + errors.join(' | ')); return out }
             function esc(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
             function renderFilters() { const cats = ['All', ...Array.from(new Set(channels.map(c => c.category).filter(c => c && c !== 'General'))).sort()]; $('filters').innerHTML = cats.map(c => '<button type="button" class="pill ' + (c === activeCategory ? 'active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>').join(''); $('filters').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeCategory = b.dataset.cat; renderFilters(); render() })) }
@@ -525,8 +560,6 @@
             (async () => { try { channels = await loadChannels(); renderFilters(); render(); $('loading').style.display = 'none'; $('app').style.display = 'block'; route() } catch (e) { showError(e?.message || 'Unexpected error') } })();
         })();
     </script>
-    <script src="https://pl31464108.profitableratecpmnetwork.com/ec/b8/a5/ecb8a5fb42645ee3fc693ae000978c3d.js"></script>
-
 </body>
 
 </html>
