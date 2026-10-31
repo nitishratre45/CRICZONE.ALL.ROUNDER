@@ -20,8 +20,8 @@ export async function onRequestGet({request,env}){
   }
   if(row.status!=="verified"||!row.telegram_user_id)return json({verified:false,pending:true});
   const exp=now+12*60*60;
-  const payload=btoa(JSON.stringify({uid:String(row.telegram_user_id),exp})).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
+  const payload=btoa(JSON.stringify({v:1,uid:String(row.telegram_user_id),exp,host:new URL(request.url).host})).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
   const cookie=payload+"."+await sign(payload,env.BOT_TOKEN);
-  return json({verified:true,expires_at:exp},200,{"Set-Cookie":`cz_tg_session=${cookie}; Max-Age=43200; Path=/; HttpOnly; Secure; SameSite=Lax`});
+  return json({verified:true,expires_at:exp},200,{"Set-Cookie":`__Host-cz_tg_session=${cookie}; Max-Age=43200; Path=/; HttpOnly; Secure; SameSite=Strict`});
 }
 export function onRequestPost(){return json({error:"Method not allowed"},405)}
