@@ -217,34 +217,27 @@
   }
 
   const joinBtn = document.getElementById("cz-tg-join");
-
-  async function createLoginRequest() {
-    const r = await fetch(API + "/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "same-origin",
-      body: JSON.stringify({ return_url: location.href })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start Telegram verification.");
-    saveNonce(d.nonce);
-    try { sessionStorage.setItem(BOT_LINK_KEY, d.bot_url); } catch {}
-    return d;
-  }
-
   joinBtn.addEventListener("click", async event => {
     event.preventDefault();
     if (joinFlowBusy || verified) return;
     joinFlowBusy = true;
     const error = document.getElementById("cz-tg-error");
     const original = joinBtn.innerHTML;
-    joinBtn.innerHTML = "Preparing secure verification…";
+    joinBtn.innerHTML = "Creating secure join link…";
     try {
-      const d = await createLoginRequest();
-      try { sessionStorage.setItem(JOIN_RETURN_KEY, "1"); } catch {}
-      // Open the channel in this tab. When the user returns to this page,
-      // pageshow/focus triggers the saved bot deep-link for membership proof.
-      window.location.assign(JOIN);
+      const r = await fetch(API + "/join", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        credentials: "same-origin", body: JSON.stringify({ return_url: location.href })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.nonce || !d.join_url) throw new Error(d.error || "Could not create Telegram join link.");
+      saveNonce(d.nonce);
+      if (pollTimer) clearInterval(pollTimer);
+      pollLoginStatus();
+      pollTimer = window.setInterval(pollLoginStatus, 5000);
+      joinBtn.innerHTML = original;
+      joinFlowBusy = false;
+      window.location.assign(d.join_url);
     } catch (e) {
       error.textContent = e.message || "Please try again.";
       joinBtn.innerHTML = original;
