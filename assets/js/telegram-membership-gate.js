@@ -16,6 +16,21 @@
     #cz-normal-overlay.cz-visible{display:flex;animation:czFade .2s ease}
     #cz-normal-card{position:relative;width:min(100%,390px);overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:23px;background:linear-gradient(155deg,#182333,#0c121d 70%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #0009;animation:czRise .25s ease}
     #cz-normal-card .cz-photo{width:100%;height:clamp(210px,34vh,280px);display:block;object-fit:contain;object-position:center;background:#0c121d}
+    /* Three deliberately different popup layouts */
+    #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.86)}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card{border:1px solid #2367a8;border-radius:16px;background:linear-gradient(160deg,#102d4a,#071421);box-shadow:0 22px 70px #001b36aa}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-photo{height:clamp(230px,38vh,310px);object-fit:cover;object-position:center 42%;background:#102d4a}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-content{padding:22px 24px 25px}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-tag{border:1px solid #3989c8;border-radius:6px;background:#123c60;color:#9bd8ff}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-join{border-radius:999px;background:#229ed9;color:white}
+    #cz-normal-overlay.cz-style-3{background:rgba(4,8,15,.84);backdrop-filter:blur(15px)}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card{border:2px solid #d5a83c;border-radius:30px;background:linear-gradient(145deg,#fff8e8,#f1e4c9);color:#171717;box-shadow:0 24px 90px #000b}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-photo{height:clamp(190px,29vh,245px);object-fit:cover;object-position:center 40%;background:#ead9b5}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-content{padding:24px 22px 25px}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-tag{border:0;border-radius:5px;background:#17283c;color:#ffdc83}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card p{color:#4e5660}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-join{border-radius:8px;background:#14283e;color:#fff;box-shadow:0 5px 14px #14283e33}
+    #cz-normal-card .cz-content{transition:all .2s ease}
     #cz-normal-card .cz-content{padding:21px 22px 20px}
     #cz-normal-card .cz-tag{display:inline-block;padding:6px 10px;border:1px solid #66501e;border-radius:99px;background:#302612;color:#ffd36b;font-size:10px;font-weight:850;letter-spacing:1px}
     #cz-normal-card h2{margin:13px 0 9px;font-size:clamp(22px,6vw,27px);line-height:1.15;font-weight:850;letter-spacing:-.5px}
@@ -43,6 +58,9 @@
   function showStep(){
     if(step>=messages.length||showing)return;
     const m=messages[step];
+    overlay.classList.remove("cz-style-2","cz-style-3");
+    if(step===1) overlay.classList.add("cz-style-2");
+    if(step===2) overlay.classList.add("cz-style-3");
     $("cz-normal-tag").textContent=m.tag;
     $("cz-normal-title").textContent=m.title;
     $("cz-normal-text").textContent=m.text;
