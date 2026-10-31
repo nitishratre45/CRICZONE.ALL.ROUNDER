@@ -38,7 +38,7 @@
     document.body.style.overflow="";
     showing=false;
     step++;
-    if(step<messages.length) timer=window.setTimeout(showStep,6000);
+    if(step<messages.length) showStep();
   }
   function showStep(){
     if(step>=messages.length||showing)return;
