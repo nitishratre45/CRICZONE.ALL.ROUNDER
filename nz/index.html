@@ -729,64 +729,8 @@
         }
       );
 
-      // TELEGRAM POPUP
-      function showPopup() {
-        popup.classList.add("show");
-        popup.setAttribute("aria-hidden", "false");
-        closeBtn.focus();
-      }
-
-      function hidePopup() {
-        popup.classList.remove("show");
-        popup.setAttribute("aria-hidden", "true");
-
-        try {
-          sessionStorage.setItem("criczoneTgDismissed", "1");
-        } catch {}
-      }
-
-      let dismissed = false;
-
-      try {
-        dismissed =
-          sessionStorage.getItem("criczoneTgDismissed") === "1";
-      } catch {}
-
-      if (!dismissed) {
-        setTimeout(() => {
-          let stillDismissed = false;
-
-          try {
-            stillDismissed =
-              sessionStorage.getItem("criczoneTgDismissed") === "1";
-          } catch {}
-
-          if (!stillDismissed) showPopup();
-        }, TELEGRAM_DELAY);
-      }
-
-      closeBtn.addEventListener("click", hidePopup);
-      laterBtn.addEventListener("click", hidePopup);
-
-      popup.addEventListener("click", event => {
-        if (event.target === popup) hidePopup();
-      });
-
-      document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && popup.classList.contains("show")) {
-          hidePopup();
-        }
-      });
-
-      joinBtn.addEventListener("click", () => {
-        try {
-          sessionStorage.setItem("criczoneTgDismissed", "1");
-        } catch {}
-      });
-
       loadPlayer();
     })();
   </script>
-<script src="/assets/js/telegram-membership-gate.js?v=5" defer></script>
 </body>
 </html>
