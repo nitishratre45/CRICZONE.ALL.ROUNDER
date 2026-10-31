@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080a0e"><title>Choose Stream | CRICZONE</title>
+<style>
+:root{color-scheme:dark;--bg:#080a0e;--panel:#111722;--line:#273244;--gold:#ffc247;--muted:#9aa8ba}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#202b3b 0,transparent 55%),var(--bg);color:#f7f9fc;font:16px Inter,system-ui,sans-serif;min-height:100vh}
+.wrap{width:min(920px,100%);margin:auto;padding:22px 18px 40px}.top{display:flex;align-items:center;gap:12px;margin-bottom:22px}.back{color:var(--gold);text-decoration:none;font-weight:800;padding:10px 13px;border:1px solid #554525;border-radius:12px;background:#171b22}.brand{font-weight:900;letter-spacing:.04em}.brand span{color:var(--gold)}
+.hero{overflow:hidden;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 18px 50px #0006}.poster{width:100%;aspect-ratio:16/8;object-fit:cover;display:block;background:#171e29}.info{padding:18px}.status{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.08em;padding:6px 10px;border-radius:8px;background:#243044;color:#d8e2f2}.status.live{background:#6d252b;color:white}.title{font-size:clamp(20px,4vw,30px);line-height:1.2;margin:12px 0 8px}.sub{color:var(--muted);font-size:14px}.section{margin:24px 0 12px;font-size:18px}.hint{color:var(--muted);font-size:13px;margin:-4px 0 14px}.servers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.server{min-height:76px;padding:14px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#1b2432,#111722);color:#f4f6fa;text-decoration:none;display:flex;align-items:center;gap:12px;transition:.18s}.server:hover,.server:focus-visible{border-color:var(--gold);transform:translateY(-2px);outline:none}.play{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#ffc247;color:#17120a;font-weight:900;flex:none}.server strong{display:block;font-size:15px}.server small{display:block;color:var(--muted);margin-top:4px}.empty{padding:22px;border:1px dashed #46536a;border-radius:14px;color:var(--muted);text-align:center}.foot{text-align:center;color:#778398;font-size:12px;margin-top:24px}
+@media(max-width:520px){.wrap{padding:14px 12px 28px}.servers{gap:9px}.server{min-height:72px;padding:11px;gap:9px}.server strong{font-size:13px}.server small{font-size:11px}.play{width:32px;height:32px}.info{padding:14px}.poster{aspect-ratio:16/9}}
+@media(max-width:350px){.servers{grid-template-columns:1fr}}
+</style></head>
+<body><main class="wrap">
+<header class="top"><a class="back" href="index.html">← Back</a><div class="brand">CRICZONE <span>LIVE</span></div></header>
+<section class="hero"><img id="poster" class="poster" alt="Match poster"><div class="info"><span id="status" class="status">MATCH</span><h1 id="title" class="title">Loading match…</h1><div id="meta" class="sub">Finding available streams</div></div></section>
+<h2 class="section">Choose your server</h2><p class="hint">Select any available server to open the match player.</p>
+<div id="servers" class="servers"><div class="empty">Loading available servers…</div></div>
+<p class="foot">CRICZONE · Match centre</p></main>
+<script>
+(function(){
+ const params=new URLSearchParams(location.search),wanted=params.get('match')||params.get('id')||'';
+ const feeds=['../data/willow.json','/data/willow.json','https://sonujson-v5.pages.dev/Data/willow.json'];
+ const configs=[
+  {key:'fastly_server1',label:'Server 1 (Fast)',quality:'Fast stream'},
+  {key:'amazon_server1',label:'Server 2 (Prime)',quality:'Prime stream'},
+  {key:'akamai_server1',label:'Server 3 (Akamai 4K)',quality:'4K stream'},
+  {key:'cloudfront_server1',label:'Server 4 (CloudFront)',quality:'CloudFront stream'},
+  {key:'fastly_server2',label:'Server 5 (Backup)',quality:'Backup stream'},
+  {key:'amazon_server2',label:'Server 6 (Backup)',quality:'Backup stream'},
+  {key:'akamai_server2',label:'Server 7 (Ultra HD)',quality:'Ultra HD stream'},
+  {key:'cloudfront_server2',label:'Server 8 (Backup)',quality:'Backup stream'}
+ ];
+ async function load(){
+  let matches=[];
+  for(const url of feeds){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)continue;const data=await res.json();matches=Array.isArray(data)?data:(data.matches||data.data||data.events||[]);if(matches.length)break}catch(e){}}
+  const key=decodeURIComponent(wanted).toLowerCase();
+  const m=matches.find(x=>String(x.id||'').toLowerCase()===key||String(x.match_id||'').toLowerCase()===key)||matches.find(x=>String(x.id||'').toLowerCase().includes(key)||(x.event_name||'').toLowerCase().includes(key));
+  if(!m){document.getElementById('title').textContent='Match not found';document.getElementById('meta').textContent='Go back to the match list and open the match again.';document.getElementById('servers').innerHTML='<div class="empty">Match details are currently unavailable.</div>';return}
+  const live=String(m.status||'').toUpperCase()==='LIVE'||Object.values(m.CnpTV||{}).some(v=>typeof v==='string'&&/^https?:\/\//i.test(v));
+  document.getElementById('poster').src=m.image||'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1000';
+  document.getElementById('title').textContent=m.event_name||'Live Cricket Event';
+  document.getElementById('status').textContent=live?'● LIVE':'UPCOMING';
+  if(live)document.getElementById('status').classList.add('live');
+  document.getElementById('meta').textContent=(m.sport||'Cricket')+' · '+(m.time||'Match broadcast');
+  const cnp=m.CnpTV||{},list=configs.filter(x=>typeof cnp[x.key]==='string'&&/^https?:\/\//i.test(cnp[x.key])&&!cnp[x.key].includes('pages.dev')).map(x=>({label:x.label,quality:x.quality}));
+  (Array.isArray(m.streams)?m.streams:[]).filter(x=>x&&typeof x.url==='string'&&/^https?:\/\//i.test(x.url)&&!x.url.includes('bintv-sources')&&!x.url.includes('pages.dev')).forEach((x,i)=>list.push({label:x.name||('Server '+(list.length+1)),quality:'Available stream'}));
+  const box=document.getElementById('servers');
+  if(!list.length){box.innerHTML='<div class="empty">No server is available for this match right now. Please check again later.</div>';return}
+  box.innerHTML=list.map((x,i)=>'<a class="server" href="index.html?id='+encodeURIComponent(m.id||m.match_id||wanted)+'&ser='+(i+1)+'"><span class="play">▶</span><span><strong>'+x.label.replace(/[<>]/g,'')+'</strong><small>'+x.quality+'</small></span></a>').join('');
+ }
+ if(!wanted){document.getElementById('title').textContent='No match selected';document.getElementById('servers').innerHTML='<div class="empty">Open a match poster first.</div>'}else load();
+})();
+</script></body></html>
