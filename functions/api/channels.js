@@ -5,7 +5,7 @@
 const FEEDS = {
     sports: "https://sonujson-v5.pages.dev/Data/sports.json",
     directory: "https://allrounder3-0.pages.dev/id.json",
-    select: "https://raw.githubusercontent.com/sportlive18/playlist/refs/heads/main/jtv2.json"
+    select: "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/refs/heads/main/jtv2.json"
 };
 
 const ALLOWED_ORIGINS = new Set([
@@ -147,7 +147,8 @@ async function handleGet(context) {
             await fetch(feedUrl, {
                 headers: {
                     "Accept": "application/json"
-                }
+                },
+                signal: AbortSignal.timeout(10000)
             });
 
 
