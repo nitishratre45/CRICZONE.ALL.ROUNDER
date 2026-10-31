@@ -176,10 +176,22 @@
   async function refreshAccess() {
     if (refreshBusy) return;
     refreshBusy = true;
-    try { if (await sessionCheck()) return; if (activeNonce) await pollLoginStatus(); }
-    finally { refreshBusy = false; }
+    try {
+      if (await sessionCheck()) return;
+      if (activeNonce) await pollLoginStatus();
+      let shouldHandoff = false;
+      try { shouldHandoff = sessionStorage.getItem(JOIN_RETURN_KEY) === "1"; } catch {}
+      if (shouldHandoff && !botHandoffBusy && !verified) {
+        let botUrl = "";
+        try { botUrl = sessionStorage.getItem(BOT_LINK_KEY) || ""; } catch {}
+        if (botUrl) {
+          botHandoffBusy = true;
+          try { sessionStorage.removeItem(JOIN_RETURN_KEY); } catch {}
+          window.location.assign(botUrl);
+        }
+      }
+    } finally { refreshBusy = false; }
   }
-
   try {
     const cacheKey = "cz_tg_popup_setting_v1";
     const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
@@ -205,16 +217,38 @@
   }
 
   const joinBtn = document.getElementById("cz-tg-join");
-  const isPhone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "") ||
-    (navigator.userAgentData && navigator.userAgentData.mobile === true);
 
-  joinBtn.addEventListener("click", event => {
+  async function createLoginRequest() {
+    const r = await fetch(API + "/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ return_url: location.href })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start Telegram verification.");
+    saveNonce(d.nonce);
+    try { sessionStorage.setItem(BOT_LINK_KEY, d.bot_url); } catch {}
+    return d;
+  }
+
+  joinBtn.addEventListener("click", async event => {
     event.preventDefault();
-    if (isPhone) {
+    if (joinFlowBusy || verified) return;
+    joinFlowBusy = true;
+    const error = document.getElementById("cz-tg-error");
+    const original = joinBtn.innerHTML;
+    joinBtn.innerHTML = "Preparing secure verification…";
+    try {
+      const d = await createLoginRequest();
+      try { sessionStorage.setItem(JOIN_RETURN_KEY, "1"); } catch {}
+      // Open the channel in this tab. When the user returns to this page,
+      // pageshow/focus triggers the saved bot deep-link for membership proof.
       window.location.assign(JOIN);
-    } else {
-      const tab = window.open(JOIN, "_blank", "noopener");
-      if (!tab) window.location.assign(JOIN);
+    } catch (e) {
+      error.textContent = e.message || "Please try again.";
+      joinBtn.innerHTML = original;
+      joinFlowBusy = false;
     }
   });
 
@@ -238,7 +272,7 @@
       saveNonce(d.nonce);
       if (pollTimer) clearInterval(pollTimer);
       await pollLoginStatus();
-      pollTimer = window.setInterval(pollLoginStatus, 1500);
+      pollTimer = window.setInterval(pollLoginStatus, 5000);
       // Use the same handoff on desktop and mobile. This lets the operating
       // system open the Telegram desktop app when its t.me handler is installed;
       // otherwise the browser opens Telegram Web.
