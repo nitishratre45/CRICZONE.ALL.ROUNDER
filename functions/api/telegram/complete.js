@@ -15,7 +15,7 @@ export async function onRequestGet({ request, env }) {
   if (target.origin !== url.origin || target.protocol !== "https:") return json({ error: "Invalid return destination" });
   // Re-check membership at the exact moment the return link is redeemed.
   try {
-    const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
+    const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},signal:AbortSignal.timeout(5000),body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
     const result=await check.json();
     const stillMember=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
     if(!stillMember)return json({error:"Channel membership is no longer active. Rejoin and verify again."},403);
