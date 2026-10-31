@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0c0e12">
     <meta name="referrer" content="no-referrer">
-    <title>Aryan Streams Cricbuzz | Live Matches & Streams</title>
+    <title>CRICZONE | Live Cricket & Match Centre</title>
 
     <!-- Google Fonts: Outfit & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -718,7 +718,7 @@
                 <div class="brand-badge">⚡</div>
                 <div class="brand-text">
                     <span class="brand-name">Aryan Streams Cricbuzz</span>
-                    <span class="brand-tag">USA Cricbuzz & Willow Official</span>
+                    <span class="brand-tag">LIVE CRICKET • MATCH CENTRE</span>
                 </div>
             </a>
             <div class="header-actions">
@@ -726,7 +726,7 @@
                     <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                     <span>Main Site</span>
                 </a>
-                <a href="https://t.me/aryanstreams" target="_blank" class="btn-header btn-header-primary">
+                <a href="https://t.me/criczonelive" target="_blank" class="btn-header btn-header-primary">
                     <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
                     <span>Telegram</span>
                 </a>
@@ -737,8 +737,8 @@
     <!-- Main Content -->
     <main id="main-view">
         <section class="hero">
-            <h1>Aryan Streams Cricbuzz</h1>
-            <p>Live Cricket, ICC & Continental Tournaments in Full HD & 4K Ultra Quality</p>
+            <h1>CRICZONE LIVE CRICKET</h1>
+            <p>Live scores, match schedules and authorized cricket broadcasts in one place.</p>
         </section>
 
         <!-- Controls: Filters & Search -->
@@ -797,6 +797,7 @@
             "use strict";
 
             const API_ENDPOINTS = [
+                // Prefer this site's own published data first; use public feeds only as fallbacks.
                 "../data/willow.json",
                 "/data/willow.json",
                 "https://raw.githubusercontent.com/ARYANBHAIcool/aryanstreams2/main/data/willow.json",
@@ -926,13 +927,26 @@
 
                 await Promise.allSettled(API_ENDPOINTS.map(async (ep) => {
                     try {
-                        const res = await fetch(ep + '?_=' + Date.now(), { cache: 'no-store' });
-                        if (!res.ok) return;
+                        const controller = new AbortController();
+                        const timeout = setTimeout(() => controller.abort(), 10000);
+                        let res;
+                        try {
+                            res = await fetch(ep + (ep.includes('?') ? '&' : '?') + '_=' + Date.now(), {
+                                cache: 'no-store',
+                                signal: controller.signal,
+                                headers: { 'Accept': 'application/json' }
+                            });
+                        } finally { clearTimeout(timeout); }
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
                         const data = await res.json();
-                        let list = (data && (data.Matches || data.matches || data.channels || data.events)) || (Array.isArray(data) ? data : []);
-                        if ((!list || list.length === 0) && data && (data['Live Events'] || data['Upcoming Events'])) {
+                        let list = Array.isArray(data) ? data : (data && (
+                            data.Matches || data.matches || data.channels || data.events ||
+                            data.data || data.results || data.fixtures || data.live || data.upcoming
+                        ));
+                        if (!Array.isArray(list) && data && (Array.isArray(data['Live Events']) || Array.isArray(data['Upcoming Events']))) {
                             list = (data['Live Events'] || []).concat(data['Upcoming Events'] || []);
                         }
+                        if (!Array.isArray(list)) throw new Error('Unsupported JSON response shape');
                         if (Array.isArray(list)) {
                             list.forEach(raw => {
                                 const norm = normalizeMatch(raw);
@@ -959,11 +973,12 @@
                             });
                         }
                     } catch (e) {
-                        console.warn("Fetch error from", ep, e);
+                        console.warn('[CRICZONE] Feed failed:', ep, e && e.message ? e.message : e);
                     }
                 }));
 
                 const all = Array.from(matchMap.values());
+                console.info('[CRICZONE] Match feeds loaded:', all.length);
                 return sortMatches(all);
             }
 
@@ -1113,12 +1128,21 @@
                 document.getElementById('count-upcoming').textContent = upCount;
 
                 if (filtered.length === 0) {
+                    const noFeedData = allMatches.length === 0;
                     $container.innerHTML = `
-                        <div class="spinner-center">
+                        <div class="spinner-center" role="status" aria-live="polite">
                             <span style="font-size: 2rem;">🏏</span>
-                            <span>No matches found matching your selection.</span>
+                            <strong>${noFeedData ? 'Match data is temporarily unavailable.' : 'No matches found.'}</strong>
+                            <span>${noFeedData ? 'The event feeds did not return usable JSON. Check your connection or retry.' : 'Try another filter or search term.'}</span>
+                            ${noFeedData ? '<button class="server-btn" id="retry-feeds" type="button">Retry loading matches</button>' : ''}
                         </div>
                     `;
+                    const retry = document.getElementById('retry-feeds');
+                    if (retry) retry.addEventListener('click', async () => {
+                        retry.disabled = true;
+                        retry.textContent = 'Retrying…';
+                        await refreshMatches(true);
+                    });
                     return;
                 }
 
@@ -1338,11 +1362,7 @@
                         }
                     });
 
-                    // Networking filter for Akamai & Amazon Prime bypass
-                    shakaPlayerInstance.getNetworkingEngine().registerRequestFilter(function(type, req) {
-                        req.headers["Referer"] = "https://www.amazon.com/gp/";
-                        req.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
-                    });
+                    // Use the browser's normal networking identity. Do not spoof provider headers.
 
                     $video.addEventListener('playing', () => {
                         showToast('● LIVE STREAM CONNECTED', 'success', 2500);
@@ -1405,16 +1425,9 @@
                     $video.muted = true;
                     $video.play().catch(() => {});
                 } catch (err) {
-                    console.warn('Direct MPD load failed, attempting proxy fallback:', err);
-                    try {
-                        const proxiedUrl = 'https://as-proxy.lovable.app/api/public/px/geobypass?url=' + encodeURIComponent(directMpd);
-                        await shakaPlayerInstance.load(proxiedUrl);
-                        $video.muted = true;
-                        $video.play().catch(() => {});
-                    } catch (err2) {
-                        console.error('Failed to load MPD:', err2);
-                        showToast('Stream failed to load. Try another server.', 'error', 4000);
-                    }
+                    console.error('[CRICZONE] Authorized stream failed to load:', err);
+                    const detail = err && err.message ? err.message : 'Unknown playback error';
+                    showToast('Playback failed: ' + detail.slice(0, 110), 'error', 6000);
                 }
             }
 
@@ -1587,8 +1600,7 @@
 
             // Initializer
             async function init() {
-                allMatches = await fetchMatches();
-                renderMatches();
+                await refreshMatches(true);
 
                 const { id, ser } = parseUrlParams();
                 if (id) {
@@ -1604,16 +1616,29 @@
                 }
             }
 
-            // Auto-refresh match list every 60 seconds
-            setInterval(async () => {
-                const updated = await fetchMatches();
-                if (updated && updated.length > 0) {
-                    allMatches = updated;
-                    if (!$playerModal.classList.contains('active')) {
+            // Refresh feeds without replacing good data with an empty/failed response.
+            let refreshInProgress = false;
+            async function refreshMatches(forceRender = false) {
+                if (refreshInProgress) return;
+                refreshInProgress = true;
+                try {
+                    const updated = await fetchMatches();
+                    if (updated.length > 0) {
+                        allMatches = updated;
+                        if (forceRender || !$playerModal.classList.contains('active')) renderMatches();
+                    } else if (allMatches.length === 0 || forceRender) {
                         renderMatches();
                     }
+                } catch (error) {
+                    console.error('[CRICZONE] Match refresh failed:', error);
+                    if (allMatches.length === 0) renderMatches();
+                } finally {
+                    refreshInProgress = false;
                 }
-            }, 60000);
+            }
+
+            // Auto-refresh every 60 seconds; never wipe the last good list on a transient feed outage.
+            setInterval(() => refreshMatches(false), 60000);
 
             // Orientation change auto-fullscreen on landscape
             window.addEventListener('orientationchange', () => {
@@ -1623,30 +1648,6 @@
                     }
                 }
             });
-
-            // ── Smartlink Ad Trigger (Reduced to Max 1 Gentle Click Per Session) ───
-            const DIRECT_AD_URL = "https://budgetezy.org/4/6da983d7e115700ad4dc612c0e107ec8";
-            let adTriggerCount = 0;
-            const MAX_SESSION_ADS = 1;
-
-            function triggerSmartlinkAd() {
-                try {
-                    if (sessionStorage.getItem('asbuzz_ad_shown') === 'true') return false;
-                } catch(e) {}
-                if (adTriggerCount >= MAX_SESSION_ADS) return false;
-                adTriggerCount++;
-                try {
-                    sessionStorage.setItem('asbuzz_ad_shown', 'true');
-                    window.open(DIRECT_AD_URL, '_blank');
-                } catch (err) {}
-                return true;
-            }
-
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('#video-wrapper')) {
-                    triggerSmartlinkAd();
-                }
-            }, { once: true });
 
             init();
         })();
