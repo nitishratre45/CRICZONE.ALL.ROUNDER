@@ -23,7 +23,7 @@
   document.body.appendChild(root);
   const show=()=>{if(!popupEnabled||coolingDown())return;root.classList.add("cz-open");document.body.style.overflow="hidden"};
   const hide=()=>{root.classList.remove("cz-open");document.body.style.overflow=""};
-  let verified=false,started=false,apiUnavailable=coolingDown();
+  let verified=false,started=false,apiUnavailable=coolingDown(),activeNonce="",noncePollTimer=0;
   async function check(){
     if(apiUnavailable||coolingDown())return {verified:false,unavailable:true};
     try{
@@ -44,11 +44,44 @@
       const r=await fetch(API+"/start",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({return_url:location.href})});
       const raw=await r.text();if(isLimitResponse(r.status,raw)){setCooldown();apiUnavailable=true;hide();return}
       let d={};try{d=JSON.parse(raw)}catch{throw new Error("Telegram API returned an invalid response. Please try again later.")}
-      if(!r.ok||!d.bot_url)throw new Error(d.error||`Could not start Telegram verification (HTTP ${r.status})`);
+      if(!r.ok||!d.bot_url||!d.nonce)throw new Error(d.error||`Could not start Telegram verification (HTTP ${r.status})`);
+      activeNonce=d.nonce;
+      if(noncePollTimer)clearInterval(noncePollTimer);
+      pollLoginStatus();
+      noncePollTimer=window.setInterval(pollLoginStatus,2000);
       const tab=window.open(d.bot_url,"_blank","noopener");if(!tab)location.href=d.bot_url;
     }catch(e){error.textContent=e.message||"Please try again.";btn.textContent="Continue with Telegram Bot";btn.disabled=false;started=false}
   });
-  window.addEventListener("pageshow",async()=>{const s=await check();if(s.verified){verified=true;hide()}});
-  window.addEventListener("focus",async()=>{const s=await check();if(s.verified){verified=true;hide()}});
-  window.addEventListener("popstate",async()=>{const s=await check();if(s.verified){verified=true;hide()}});
+  async function pollLoginStatus(){
+    if(!activeNonce||verified)return;
+    try{
+      const r=await fetch(API+"/status?nonce="+encodeURIComponent(activeNonce),{credentials:"same-origin",cache:"no-store"});
+      const d=await r.json().catch(()=>({}));
+      if(r.ok&&d.verified===true){
+        verified=true;activeNonce="";
+        if(noncePollTimer)clearInterval(noncePollTimer);
+        noncePollTimer=0;started=false;
+        const btn=document.getElementById("cz-tg-continue");
+        if(btn){btn.textContent="Verified — Access Unlocked";btn.disabled=true}
+        hide();return;
+      }
+      if(r.status===410||d.expired){
+        if(noncePollTimer)clearInterval(noncePollTimer);
+        noncePollTimer=0;activeNonce="";
+        const error=document.getElementById("cz-tg-error");
+        if(error)error.textContent="Login expired. Please tap Continue with Telegram Bot again.";
+        const btn=document.getElementById("cz-tg-continue");
+        if(btn){btn.textContent="Continue with Telegram Bot";btn.disabled=false}
+        started=false;
+      }
+    }catch{}
+  }
+  async function refreshAccess(){
+    if(activeNonce)await pollLoginStatus();
+    if(!verified){const s=await check();if(s.verified){verified=true;hide()}}
+  }
+  window.addEventListener("pageshow",refreshAccess);
+  window.addEventListener("focus",refreshAccess);
+  window.addEventListener("popstate",refreshAccess);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshAccess()});
 })();
