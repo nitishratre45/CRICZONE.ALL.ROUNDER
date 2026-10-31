@@ -1,14 +1,14 @@
 {
   "id": "./",
-  "name": "CRICZONE1 · CricZone",
-  "short_name": "CricZone 1",
+  "name": "CRICZONE · Live Cricket",
+  "short_name": "CRICZONE",
   "description": "CricZone live sports channels",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#080808",
-  "theme_color": "#e9232e",
+  "theme_color": "#ffb800",
   "icons": [
     {
       "src": "../icon-192.svg",
