@@ -15,7 +15,7 @@
     #cz-tg-card{position:relative;isolation:isolate;overflow:hidden;width:min(100%,430px);padding:30px 25px 24px;border:1px solid rgba(255,255,255,.13);border-radius:26px;background:radial-gradient(ellipse at 50% -15%,rgba(47,190,125,.2),transparent 48%),linear-gradient(155deg,#14251f 0%,#0b1512 58%,#09110f 100%);color:#f4fff8;box-shadow:0 28px 100px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06);text-align:center;animation:czGateRise .28s cubic-bezier(.2,.8,.2,1)}
     #cz-tg-card:before{content:"";position:absolute;z-index:-1;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(126,244,177,.7),transparent)}
     #cz-tg-card .cz-mark{display:grid;place-items:center;overflow:hidden;width:66px;height:66px;margin:0 auto 17px;border:2px solid rgba(126,244,177,.65);border-radius:50%;background:#10251b;box-shadow:0 0 0 5px rgba(126,244,177,.09),0 8px 28px rgba(0,0,0,.3)}
-    #cz-tg-card .cz-mark img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#10251b;border-radius:50%}
+    #cz-tg-card .cz-mark img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#10251b;border-radius:50%}
     #cz-tg-card .cz-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid rgba(126,244,177,.17);border-radius:99px;background:rgba(28,94,63,.28);color:#91efb8;font-size:10px;font-weight:800;letter-spacing:1.15px}
     #cz-tg-card .cz-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#68e5a0;box-shadow:0 0 10px #68e5a0}
     #cz-tg-card h2{margin:17px 0 10px;font-size:clamp(25px,7vw,30px);font-weight:800;letter-spacing:-.8px;line-height:1.12}
