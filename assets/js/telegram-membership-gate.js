@@ -57,6 +57,7 @@
   let statusPollBusy = false;
   let refreshBusy = false;
   let popupEnabled = true;
+  let joinFlowBusy = false;
 
   const show = (force = false) => {
     if ((!popupEnabled && !force) || verified) return;
@@ -179,18 +180,9 @@
     try {
       if (await sessionCheck()) return;
       if (activeNonce) await pollLoginStatus();
-      let shouldHandoff = false;
-      try { shouldHandoff = sessionStorage.getItem(JOIN_RETURN_KEY) === "1"; } catch {}
-      if (shouldHandoff && !botHandoffBusy && !verified) {
-        let botUrl = "";
-        try { botUrl = sessionStorage.getItem(BOT_LINK_KEY) || ""; } catch {}
-        if (botUrl) {
-          botHandoffBusy = true;
-          try { sessionStorage.removeItem(JOIN_RETURN_KEY); } catch {}
-          window.location.assign(botUrl);
-        }
-      }
-    } finally { refreshBusy = false; }
+    } finally {
+      refreshBusy = false;
+    }
   }
   try {
     const cacheKey = "cz_tg_popup_setting_v1";
