@@ -22,6 +22,6 @@ if(path==="/api/telegram/session"&&method==="GET")return await telegramSession(c
 if(path==="/api/telegram/status"&&method==="GET")return await telegramStatus(context);
 const response=await context.next(),contentType=response.headers.get("Content-Type")||"";
 if(!contentType.includes("text/html")||method!=="GET"||path==="/telegram-admin.html")return response;
-const script=`<script src="/assets/js/telegram-membership-gate.js?v=9" defer></script>`;
+const script=`<script src="/assets/js/telegram-membership-gate.js?v=10" defer></script>`;
 return new HTMLRewriter().on("body",{element(element){element.append(script,{html:true})}}).transform(response)
 }catch(error){console.error("CRICZONE Pages middleware error",path,method,error);return apiError(error,path,method)}}
