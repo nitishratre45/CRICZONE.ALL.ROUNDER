@@ -1,6 +1,5 @@
 import { onRequest as channels } from "./api/channels.js";
 import { onRequest as telegramStart } from "./api/telegram/start.js";
-import { onRequest as telegramJoin } from "./api/telegram/join.js";
 import { onRequest as telegramRepairWebhook } from "./api/telegram/repair-webhook.js";
 import { onRequest as telegramSetup } from "./api/telegram/setup.js";
 import { onRequest as telegramCategories } from "./api/telegram/categories.js";
@@ -14,7 +13,6 @@ const apiError=(error,path,method)=>new Response(JSON.stringify({ok:false,source
 export async function onRequest(context){const {request}=context,path=new URL(request.url).pathname,method=request.method;try{
 if(path==="/api/channels")return await channels(context);
 if(path==="/api/telegram/start")return await telegramStart(context);
-if(path==="/api/telegram/join")return await telegramJoin(context);
 if(path==="/api/telegram/repair-webhook")return await telegramRepairWebhook(context);
 if(path==="/api/telegram/setup")return await telegramSetup(context);
 if(path==="/api/telegram/categories")return await telegramCategories(context);
