@@ -54,8 +54,8 @@
   let pollTimer = 0;
   let popupEnabled = true;
 
-  const show = () => {
-    if (!popupEnabled || verified) return;
+  const show = (force = false) => {
+    if ((!popupEnabled && !force) || verified) return;
     root.classList.add("cz-open");
     document.body.style.overflow = "hidden";
   };
