@@ -12,18 +12,18 @@
   let step = 0, timer = 0, showing = false;
   const style = document.createElement("style");
   style.textContent = `
-    #cz-normal-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+    #cz-normal-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.48);backdrop-filter:none;-webkit-backdrop-filter:none;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     #cz-normal-overlay.cz-visible{display:flex;animation:czFade .2s ease}
     #cz-normal-card{position:relative;width:min(100%,390px);overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:23px;background:linear-gradient(155deg,#182333,#0c121d 70%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #0009;animation:czRise .25s ease}
     #cz-normal-card .cz-photo{width:100%;height:clamp(210px,34vh,280px);display:block;object-fit:contain;object-position:center;background:#0c121d}
     /* Three deliberately different popup layouts */
-    #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.86)}
+    #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.52)}
     #cz-normal-overlay.cz-style-2 #cz-normal-card{border:1px solid #2367a8;border-radius:16px;background:linear-gradient(160deg,#102d4a,#071421);box-shadow:0 22px 70px #001b36aa}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-photo{height:clamp(230px,38vh,310px);object-fit:contain;object-position:center;background:#071421}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-content{padding:22px 24px 25px}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-tag{border:1px solid #3989c8;border-radius:6px;background:#123c60;color:#9bd8ff}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-join{border-radius:999px;background:#229ed9;color:white}
-    #cz-normal-overlay.cz-style-3{background:rgba(4,8,15,.84);backdrop-filter:blur(15px)}
+    #cz-normal-overlay.cz-style-3{background:rgba(4,8,15,.52);backdrop-filter:none}
     #cz-normal-overlay.cz-style-3 #cz-normal-card{border:2px solid #d5a83c;border-radius:30px;background:linear-gradient(145deg,#fff8e8,#f1e4c9);color:#171717;box-shadow:0 24px 90px #000b}
     #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-photo{height:clamp(190px,29vh,245px);object-fit:contain;object-position:center;background:#ead9b5}
     #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-content{padding:24px 22px 25px}
