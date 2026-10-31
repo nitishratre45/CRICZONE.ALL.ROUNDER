@@ -282,46 +282,5 @@ line-height:1.6;
 </script>
 
 
-<!-- CRICZONE Telegram community popup -->
-<div class="cz-tg-backdrop" id="czTelegramPopup" aria-hidden="true">
-  <section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="czTgTitle">
-    <button class="cz-tg-close" id="czTgClose" type="button" aria-label="Close popup">×</button>
-    <div class="cz-tg-icon" aria-hidden="true">➤</div>
-    <p class="cz-tg-tag">CRICZONE COMMUNITY</p>
-    <h2 id="czTgTitle">Match updates. <span>One place.</span></h2>
-    <p class="cz-tg-copy">Join our Telegram community for match updates and important announcements.</p>
-    <a class="cz-tg-join" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">✈ Join Telegram</a>
-    <button class="cz-tg-later" id="czTgLater" type="button">Maybe later</button>
-  </section>
-</div>
-<script>
-(function(){
- const popup=document.getElementById('czTelegramPopup');
- if(!popup) return;
- const closeBtn=document.getElementById('czTgClose');
- const laterBtn=document.getElementById('czTgLater');
- let showTimer;
- function closePopup(){
-   popup.classList.remove('cz-show');
-   popup.setAttribute('aria-hidden','true');
-   try { sessionStorage.setItem('czTelegramDismissed','1'); } catch(e){}
- }
- function showPopup(){
-   try { if(sessionStorage.getItem('czTelegramDismissed')==='1') return; } catch(e){}
-   popup.classList.add('cz-show');
-   popup.setAttribute('aria-hidden','false');
- }
- closeBtn.addEventListener('click',closePopup);
- laterBtn.addEventListener('click',closePopup);
- popup.addEventListener('click',e=>{if(e.target===popup) closePopup();});
- document.addEventListener('keydown',e=>{if(e.key==='Escape' && popup.classList.contains('cz-show')) closePopup();});
- try { if(sessionStorage.getItem('czTelegramDismissed')!=='1') showTimer=setTimeout(showPopup,60000); }
- catch(e){ showTimer=setTimeout(showPopup,60000); }
-})();
-</script>
-
-
-
-<script src="/assets/js/telegram-membership-gate.js?v=5" defer></script>
 </body>
 </html>
