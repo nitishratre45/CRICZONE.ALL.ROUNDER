@@ -40,8 +40,8 @@
     <div class="cz-mark"><img src="https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE cricket profile" loading="eager"></div>
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
-    <p>Join our Telegram channel and verify your membership with our official bot to continue watching.</p>
-    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
+    <p>Tap Join to connect Telegram, then join our channel. This page unlocks automatically when membership is confirmed.</p>
+    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join &amp; Unlock Access</a>
     <button class="cz-btn" id="cz-tg-continue" type="button"><span class="cz-btn-icon" aria-hidden="true">▶</span>Continue with Telegram Bot</button>
     <div class="cz-error" id="cz-tg-error" aria-live="polite"></div>
     <div class="cz-small">Membership unlock remains active for 12 hours on this website.</div>
@@ -176,7 +176,7 @@
       }
     } catch (e) {
       error.textContent = e.message || "Please try again.";
-      joinBtn.innerHTML = '<span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive';
+      joinBtn.innerHTML = '<span class="cz-btn-icon" aria-hidden="true">✈</span>Join &amp; Unlock Access';
       joinBtn.removeAttribute("aria-disabled");
       started = false;
     }
