@@ -19,6 +19,13 @@ export async function onRequestGet({request,env}){
     } catch(error) { console.error("Auto membership check failed",error); }
   }
   if(row.status!=="verified"||!row.telegram_user_id)return json({verified:false,pending:true});
+  // Re-check Telegram membership immediately before issuing a browser session.
+  try {
+    const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
+    const result=await check.json();
+    const stillMember=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
+    if(!stillMember)return json({verified:false,membership_valid:false},403,{"Set-Cookie":"__Host-cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict"});
+  } catch(error) { console.error("Final membership check before session issue failed",error); return json({verified:false,error:"Membership verification temporarily unavailable"},503); }
   const exp=now+12*60*60;
   const payload=btoa(JSON.stringify({v:1,uid:String(row.telegram_user_id),exp,host:new URL(request.url).host})).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
   const cookie=payload+"."+await sign(payload,env.BOT_TOKEN);
