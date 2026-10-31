@@ -19,18 +19,27 @@
     /* Three deliberately different popup layouts */
     #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.86)}
     #cz-normal-overlay.cz-style-2 #cz-normal-card{border:1px solid #2367a8;border-radius:16px;background:linear-gradient(160deg,#102d4a,#071421);box-shadow:0 22px 70px #001b36aa}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-photo{height:clamp(230px,38vh,310px);object-fit:cover;object-position:center 42%;background:#102d4a}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-photo{height:clamp(230px,38vh,310px);object-fit:contain;object-position:center;background:#071421}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-content{padding:22px 24px 25px}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-tag{border:1px solid #3989c8;border-radius:6px;background:#123c60;color:#9bd8ff}
     #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-join{border-radius:999px;background:#229ed9;color:white}
     #cz-normal-overlay.cz-style-3{background:rgba(4,8,15,.84);backdrop-filter:blur(15px)}
     #cz-normal-overlay.cz-style-3 #cz-normal-card{border:2px solid #d5a83c;border-radius:30px;background:linear-gradient(145deg,#fff8e8,#f1e4c9);color:#171717;box-shadow:0 24px 90px #000b}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-photo{height:clamp(190px,29vh,245px);object-fit:cover;object-position:center 40%;background:#ead9b5}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-photo{height:clamp(190px,29vh,245px);object-fit:contain;object-position:center;background:#ead9b5}
     #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-content{padding:24px 22px 25px}
     #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-tag{border:0;border-radius:5px;background:#17283c;color:#ffdc83}
     #cz-normal-overlay.cz-style-3 #cz-normal-card p{color:#4e5660}
     #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-join{border-radius:8px;background:#14283e;color:#fff;box-shadow:0 5px 14px #14283e33}
     #cz-normal-card .cz-content{transition:all .2s ease}
+    #cz-normal-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#ffcf55,#f28a20);z-index:2}
+    #cz-normal-card .cz-join{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;box-shadow:0 8px 22px #0003}
+    #cz-normal-card .cz-join:active{transform:scale(.98);filter:brightness(.96)}
+    #cz-normal-card .cz-join:focus-visible{outline:3px solid #fff;outline-offset:4px}
+    #cz-normal-overlay.cz-style-2 #cz-normal-card{animation:czSlide .34s cubic-bezier(.2,.8,.2,1)}
+    #cz-normal-overlay.cz-style-3 #cz-normal-card{animation:czPop .38s cubic-bezier(.2,.8,.2,1)}
+    @keyframes czSlide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes czPop{from{opacity:0;transform:scale(.92) rotate(-1deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(hover:hover){#cz-normal-card .cz-join:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 12px 26px #0004}}
     #cz-normal-card .cz-content{padding:21px 22px 20px}
     #cz-normal-card .cz-tag{display:inline-block;padding:6px 10px;border:1px solid #66501e;border-radius:99px;background:#302612;color:#ffd36b;font-size:10px;font-weight:850;letter-spacing:1px}
     #cz-normal-card h2{margin:13px 0 9px;font-size:clamp(22px,6vw,27px);line-height:1.15;font-weight:850;letter-spacing:-.5px}
