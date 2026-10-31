@@ -6,7 +6,9 @@ const hex = bytes => [...new Uint8Array(bytes)].map(x => x.toString(16).padStart
 
 export async function onRequest(context) {
   const { request, env } = context;
-  if (request.method !== "GET") return json({ ok: false, error: "Use GET", method: request.method }, 405);
+  if (request.method !== "POST") return json({ ok: false, error: "Method not allowed" }, 405);
+  const adminKey = env.ADMIN_DASHBOARD_KEY || env.TELEGRAM_ADMIN_KEY;
+  if (!adminKey || request.headers.get("X-Admin-Key") !== adminKey) return json({ ok: false, error: "Unauthorized" }, 401);
   if (!env.BOT_TOKEN) return json({ ok: false, error: "BOT_TOKEN secret is missing" }, 500);
   const origin = new URL(request.url).origin;
   const webhookUrl = `${origin}/api/telegram/webhook`;
