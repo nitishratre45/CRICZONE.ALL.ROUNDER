@@ -40,8 +40,8 @@
     <div class="cz-mark"><img src="https://criczone.pages.dev/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE cricket profile" loading="eager"></div>
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
-    <p>Tap Join to connect Telegram, then join our channel. This page unlocks automatically when membership is confirmed.</p>
-    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join &amp; Unlock Access</a>
+    <p>Join our official Telegram channel. Return here after joining to verify your membership and unlock access.</p>
+    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
     <button class="cz-btn" id="cz-tg-continue" type="button"><span class="cz-btn-icon" aria-hidden="true">▶</span>Continue with Telegram Bot</button>
     <div class="cz-error" id="cz-tg-error" aria-live="polite"></div>
     <div class="cz-small">Membership unlock remains active for 12 hours on this website.</div>
@@ -149,42 +149,14 @@
   const isPhone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "") ||
     (navigator.userAgentData && navigator.userAgentData.mobile === true);
 
-  async function beginJoinVerification() {
-    if (started || verified) return;
-    started = true;
-    const error = document.getElementById("cz-tg-error");
-    joinBtn.textContent = "Connecting to Telegram...";
-    joinBtn.setAttribute("aria-disabled", "true");
-    error.textContent = "";
-    try {
-      const r = await fetch(API + "/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ return_url: location.href })
-      });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start verification.");
-      saveNonce(d.nonce);
-      if (pollTimer) clearInterval(pollTimer);
-      pollTimer = window.setInterval(pollLoginStatus, 1500);
-      // Link the Telegram account first; the bot then offers the channel join button.
-      if (isPhone) window.location.assign(d.bot_url);
-      else {
-        const tab = window.open(d.bot_url, "_blank", "noopener");
-        if (!tab) window.location.assign(d.bot_url);
-      }
-    } catch (e) {
-      error.textContent = e.message || "Please try again.";
-      joinBtn.innerHTML = '<span class="cz-btn-icon" aria-hidden="true">✈</span>Join &amp; Unlock Access';
-      joinBtn.removeAttribute("aria-disabled");
-      started = false;
-    }
-  }
-
   joinBtn.addEventListener("click", event => {
     event.preventDefault();
-    beginJoinVerification();
+    if (isPhone) {
+      window.location.assign(JOIN);
+    } else {
+      const tab = window.open(JOIN, "_blank", "noopener");
+      if (!tab) window.location.assign(JOIN);
+    }
   });
 
   document.getElementById("cz-tg-continue").addEventListener("click", async () => {
