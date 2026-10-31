@@ -1,4 +1,5 @@
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...headers}});
+let statusColumnReady=false;
 async function sign(value,token){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(token),{name:"HMAC",hash:"SHA-256"},false,["sign"]);const sig=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(value));return btoa(String.fromCharCode(...new Uint8Array(sig))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")}
 export async function onRequestGet({request,env}){
   if(!env.BOT_TOKEN||!env.TELEGRAM_DB)return json({verified:false,error:"Verification service is not configured"},503);
