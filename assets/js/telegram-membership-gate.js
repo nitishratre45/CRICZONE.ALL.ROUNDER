@@ -259,6 +259,9 @@
     started = true;
     const btn = document.getElementById("cz-tg-continue");
     const error = document.getElementById("cz-tg-error");
+    // Open a new tab immediately from the click, matching Join & Verify.
+    let botTab = null;
+    try { botTab = window.open("about:blank", "_blank"); } catch {}
     btn.textContent = "Connecting to Telegram...";
     btn.disabled = true;
     error.textContent = "";
@@ -275,11 +278,15 @@
       if (pollTimer) clearInterval(pollTimer);
       await pollLoginStatus();
       pollTimer = window.setInterval(pollLoginStatus, 5000);
-      // Use the same handoff on desktop and mobile. This lets the operating
-      // system open the Telegram desktop app when its t.me handler is installed;
-      // otherwise the browser opens Telegram Web.
-      window.location.assign(d.bot_url);
+      if (botTab && !botTab.closed) botTab.location.replace(d.bot_url);
+      else {
+        // If the browser blocks the tab, expose a user-clickable fallback link.
+        btn.disabled = false;
+        btn.textContent = "Open Telegram Bot";
+        btn.onclick = () => window.open(d.bot_url, "_blank", "noopener");
+      }
     } catch (e) {
+      if (botTab && !botTab.closed) botTab.close();
       error.textContent = e.message || "Please try again.";
       btn.textContent = "Continue with Telegram Bot";
       btn.disabled = false;
