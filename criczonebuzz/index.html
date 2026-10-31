@@ -834,10 +834,9 @@
                 if (!m) return false;
                 const status = String(m.status || '').toUpperCase();
                 const cnp = m.CnpTV || {};
-                const hasStreams = Object.keys(cnp).some(k => typeof cnp[k] === 'string' && cnp[k].trim().length > 0 && !cnp[k].includes('pages.dev'));
-                const hasDirect = Array.isArray(m.streams) && m.streams.length > 0;
-                const isSeriesActive = /south africa.*australia|australia.*south africa|pakistan.*sri lanka|sri lanka.*pakistan|pakistan.*england|england.*pakistan|india.*zimbabwe|zimbabwe.*india|new zealand.*india|india.*new zealand/i.test(m.event_name || m.title || '');
-                return status === 'LIVE' || hasStreams || hasDirect || isSeriesActive;
+                const hasStreams = Object.keys(cnp).some(k => typeof cnp[k] === 'string' && /^https?:\/\//i.test(cnp[k]));
+                const hasDirect = Array.isArray(m.streams) && m.streams.some(st => st && typeof st.url === 'string' && /^https?:\/\//i.test(st.url));
+                return status === 'LIVE' || hasStreams || hasDirect;
             }
 
             // Sort matches so live matches always stay on top
@@ -876,12 +875,12 @@
 
             function normalizeMatch(m) {
                 if (!m) return null;
-                const id = m.id || m.match_id || '';
-                const title = m.event_name || m.title || m.synopsis || 'Live Cricket Event';
-                const image = m.image || m.cover_image || '';
-                const alpha = m.stream_url_alpha || {};
-                const bravo = m.stream_url_bravo || {};
-                const rawCnp = m.CnpTV || {};
+                const id = m.id || m.match_id || m.event_id || m.fixture_id || '';
+                const title = m.event_name || m.title || m.synopsis || m.name || m.match || 'Live Cricket Event';
+                const image = m.image || m.cover_image || m.poster || m.thumbnail || '';
+                const alpha = m.stream_url_alpha || m.streams_alpha || {};
+                const bravo = m.stream_url_bravo || m.streams_bravo || {};
+                const rawCnp = m.CnpTV || m.servers || {};
 
                 const cnp = {
                     fastly_server1: rawCnp.fastly_server1 || alpha['Fistly Server'] || alpha['Fastly Server'] || '',
@@ -899,9 +898,10 @@
                 if (directUrl && rawStreams.length === 0) {
                     rawStreams.push({ name: 'Live Stream', url: directUrl });
                 }
-                const hasDirect = rawStreams.length > 0;
-                const isLive = hasDirect || Object.values(cnp).some(v => typeof v === 'string' && v.trim().length > 0);
-                const status = (m.status || (isLive ? 'LIVE' : 'UPCOMING')).toUpperCase();
+                const hasDirect = rawStreams.some(st => st && typeof st.url === 'string' && /^https?:\/\//i.test(st.url));
+                const hasMpd = Object.values(cnp).some(v => typeof v === 'string' && /^https?:\/\//i.test(v));
+                const isLive = hasDirect || hasMpd;
+                const status = String(m.status || (isLive ? 'LIVE' : 'UPCOMING')).toUpperCase();
 
                 return {
                     id: id,
@@ -951,7 +951,7 @@
                             list.forEach(raw => {
                                 const norm = normalizeMatch(raw);
                                 if (!norm || !norm.title) return;
-                                const cleanId = (norm.id || '').replace(/^match-/, '');
+                                const cleanId = String(norm.id || '').trim().replace(/^match-/i, '');
                                 const key = cleanId || norm.title.toLowerCase().replace(/[^a-z0-9]/g, '');
                                 if (!matchMap.has(key)) {
                                     matchMap.set(key, norm);
@@ -1003,71 +1003,7 @@
                 // Clean out any legacy adware / popup links
                 directStreams = directStreams.filter(st => st && st.url && !st.url.includes('bintv-sources') && !st.url.includes('pages.dev'));
 
-                const title = m.event_name || m.title || '';
-                const isAusVsSa = /south africa.*australia|australia.*south africa/i.test(title);
-                const isPakVsSl = /pakistan.*sri lanka|sri lanka.*pakistan/i.test(title);
-                const isPakVsEng = /pakistan.*england|england.*pakistan/i.test(title);
-                const isIndVsZim = /india.*zimbabwe|zimbabwe.*india/i.test(title);
-                const isNzVsInd = /new zealand.*india|india.*new zealand/i.test(title);
-                const isWbbl = /wbbl|womens big bash|big bash/i.test(title);
-
-                if (directStreams.length === 0) {
-                    if (isAusVsSa) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.willow_usa,
-                            CRICKET_ORIGINALS.fox_cricket,
-                            CRICKET_ORIGINALS.supersport_cricket,
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.star_sports1
-                        ];
-                    } else if (isPakVsSl) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.willow2,
-                            CRICKET_ORIGINALS.asports,
-                            CRICKET_ORIGINALS.tensports_pk,
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.sony_sports,
-                            CRICKET_ORIGINALS.ptv_sports
-                        ];
-                    } else if (isPakVsEng) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.willow_usa,
-                            CRICKET_ORIGINALS.asports,
-                            CRICKET_ORIGINALS.tensports_pk,
-                            CRICKET_ORIGINALS.sony_sports
-                        ];
-                    } else if (isIndVsZim) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.sony_sports,
-                            CRICKET_ORIGINALS.sony_sports_3,
-                            CRICKET_ORIGINALS.sony_sports_5,
-                            CRICKET_ORIGINALS.willow_usa
-                        ];
-                    } else if (isNzVsInd) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.willow_usa,
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.sony_sports
-                        ];
-                    } else if (isWbbl) {
-                        directStreams = [
-                            CRICKET_ORIGINALS.fox_cricket,
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.willow_usa,
-                            CRICKET_ORIGINALS.sony_sports
-                        ];
-                    } else {
-                        // Generic Cricket fallback
-                        directStreams = [
-                            CRICKET_ORIGINALS.willow_usa,
-                            CRICKET_ORIGINALS.willow2,
-                            CRICKET_ORIGINALS.sky_cricket,
-                            CRICKET_ORIGINALS.fox_cricket,
-                            CRICKET_ORIGINALS.sony_sports
-                        ];
-                    }
-                }
+                // Only display stream servers explicitly provided by an authorized match feed.
 
                 const list = [];
                 availableMpd.forEach(s => {
