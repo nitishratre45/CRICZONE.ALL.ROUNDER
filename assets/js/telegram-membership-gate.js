@@ -153,7 +153,7 @@
     if (started || verified) return;
     started = true;
     const error = document.getElementById("cz-tg-error");
-    joinBtn.textContent = "Preparing Telegram...";
+    joinBtn.textContent = "Connecting to Telegram...";
     joinBtn.setAttribute("aria-disabled", "true");
     error.textContent = "";
     try {
@@ -166,18 +166,13 @@
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start verification.");
       saveNonce(d.nonce);
-      try {
-        sessionStorage.setItem("cz_tg_join_pending", "1");
-        sessionStorage.setItem("cz_tg_join_started_at", String(Date.now()));
-        sessionStorage.setItem("cz_tg_join_bot_url", d.bot_url);
-      } catch {}
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = window.setInterval(pollLoginStatus, 1500);
-      // Open the channel first. When the visitor returns, launch the bot to verify real membership.
-      if (isPhone) window.location.assign(JOIN);
+      // Link the Telegram account first; the bot then offers the channel join button.
+      if (isPhone) window.location.assign(d.bot_url);
       else {
-        const tab = window.open(JOIN, "_blank", "noopener");
-        if (!tab) window.location.assign(JOIN);
+        const tab = window.open(d.bot_url, "_blank", "noopener");
+        if (!tab) window.location.assign(d.bot_url);
       }
     } catch (e) {
       error.textContent = e.message || "Please try again.";
@@ -185,22 +180,6 @@
       joinBtn.removeAttribute("aria-disabled");
       started = false;
     }
-  }
-
-  function resumeJoinVerification() {
-    let pending = false, startedAt = 0, botUrl = "";
-    try {
-      pending = sessionStorage.getItem("cz_tg_join_pending") === "1";
-      startedAt = Number(sessionStorage.getItem("cz_tg_join_started_at") || 0);
-      botUrl = sessionStorage.getItem("cz_tg_join_bot_url") || "";
-    } catch {}
-    if (!pending || !botUrl || Date.now() - startedAt < 3000) return;
-    try {
-      sessionStorage.removeItem("cz_tg_join_pending");
-      sessionStorage.removeItem("cz_tg_join_started_at");
-    } catch {}
-    if (isPhone) window.location.assign(botUrl);
-    else window.open(botUrl, "_blank", "noopener");
   }
 
   joinBtn.addEventListener("click", event => {
@@ -246,9 +225,9 @@
   });
 
   window.addEventListener("pageshow", refreshAccess);
-  window.addEventListener("focus", () => { refreshAccess(); resumeJoinVerification(); });
+  window.addEventListener("focus", refreshAccess);
   window.addEventListener("popstate", refreshAccess);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") { refreshAccess(); resumeJoinVerification(); }
+    if (document.visibilityState === "visible") refreshAccess();
   });
 })();
