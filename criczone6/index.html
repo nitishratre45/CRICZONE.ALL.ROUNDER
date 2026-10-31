@@ -74,44 +74,5 @@ customElements.whenDefined('criczone-ui').then(() => {
 
 
 
-<!-- CRICZONE Telegram community popup -->
-<div class="cz-telegram-backdrop" id="czTelegramPopup" aria-hidden="true">
-  <section class="cz-telegram-modal" role="dialog" aria-modal="true" aria-labelledby="czTelegramTitle">
-    <button class="cz-telegram-close" id="czTelegramClose" type="button" aria-label="Close popup">×</button>
-    <div class="cz-telegram-icon" aria-hidden="true">✈</div>
-    <p class="cz-telegram-kicker">JOIN THE COMMUNITY</p>
-    <h2 id="czTelegramTitle">Stay Connected with <span>CRICZONE</span></h2>
-    <p class="cz-telegram-copy">Get match updates, important announcements and community news on our Telegram channel.</p>
-    <a class="cz-telegram-join" href="https://t.me/+5hrS9VoLS8tjOTM1" target="_blank" rel="noopener noreferrer">Join Telegram <span>↗</span></a>
-    <button class="cz-telegram-later" id="czTelegramLater" type="button">Maybe later</button>
-  </section>
-</div>
-<script>
-(() => {
-  const popup = document.getElementById('czTelegramPopup');
-  const close = document.getElementById('czTelegramClose');
-  const later = document.getElementById('czTelegramLater');
-  if (!popup) return;
-  const hide = () => {
-    popup.classList.remove('is-visible');
-    popup.setAttribute('aria-hidden', 'true');
-    try { sessionStorage.setItem('czTelegramDismissed', '1'); } catch (_) {}
-  };
-  const show = () => {
-    try { if (sessionStorage.getItem('czTelegramDismissed') === '1') return; } catch (_) {}
-    popup.classList.add('is-visible');
-    popup.setAttribute('aria-hidden', 'false');
-  };
-  close?.addEventListener('click', hide);
-  later?.addEventListener('click', hide);
-  popup.addEventListener('click', event => { if (event.target === popup) hide(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') hide(); });
-  window.setTimeout(show, 60000);
-})();
-</script>
-
-
-
-
 </body>
 </html>
