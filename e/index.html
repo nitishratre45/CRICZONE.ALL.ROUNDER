@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080d19"><title>CRICZONE • Sports Channels</title>
+<style>
+:root{color-scheme:dark;--bg:#080d19;--panel:#101a2b;--panel2:#142238;--gold:#f4c542;--muted:#9aabc2;--line:#263750}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#203653 0,transparent 48%),var(--bg);color:#f5f7fb;font:15px/1.5 Inter,system-ui,Arial,sans-serif;min-height:100vh}
+header{border-bottom:1px solid var(--line);background:#080d19d9;position:sticky;top:0;z-index:5;backdrop-filter:blur(14px)}.nav{max-width:1180px;margin:auto;padding:17px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:1.5px}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#ffe17a,#c28a12);display:grid;place-items:center;color:#101522;font-weight:1000;font-size:20px;box-shadow:0 5px 25px #f4c54230}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;font-weight:700}.live{color:#ff7777;font-size:12px;font-weight:800;letter-spacing:1px}.wrap{max-width:1180px;margin:auto;padding:38px 22px 60px}.hero{padding:32px;border:1px solid #35445b;border-radius:24px;background:linear-gradient(115deg,#172943,#101a2a 65%,#2b2415);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:250px;height:250px;border-radius:50%;background:#f4c54212;right:-60px;top:-100px;filter:blur(5px)}.eyebrow{color:var(--gold);font-weight:800;font-size:11px;letter-spacing:2px}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:9px 0 10px;letter-spacing:-1.4px}.hero p{color:#b6c4d7;margin:0;max-width:580px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}.stat{border:1px solid #ffffff20;background:#ffffff09;padding:8px 13px;border-radius:10px;color:#d8e1ef;font-size:12px}.stat b{color:var(--gold);margin-right:5px}.toolbar{display:flex;gap:12px;margin:26px 0 16px;flex-wrap:wrap}.search{flex:1;min-width:210px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:white;font:inherit;outline:none}.search:focus{border-color:var(--gold);box-shadow:0 0 0 3px #f4c54220}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.filter{border:1px solid var(--line);background:var(--panel);color:#c7d3e3;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:700;font-size:12px}.filter.active,.filter:hover{background:var(--gold);color:#141923;border-color:var(--gold)}.sectionline{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px}.sectionline h2{font-size:17px;margin:0}.sectionline span{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.channel{background:linear-gradient(145deg,#142238,#0e1726);border:1px solid var(--line);border-radius:17px;padding:17px;display:flex;align-items:center;gap:14px;transition:.2s;min-width:0}.channel:hover{transform:translateY(-3px);border-color:#b99134;box-shadow:0 12px 30px #0005}.logo{width:48px;height:48px;flex:0 0 48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#293b55,#17263a);color:var(--gold);font-size:12px;font-weight:900;letter-spacing:-.5px}.info{min-width:0;flex:1}.info strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.info small{color:var(--muted);font-size:10px;letter-spacing:1px;font-weight:800}.open{border:0;background:var(--gold);color:#161b25;font-weight:900;border-radius:10px;padding:10px 12px;cursor:pointer;white-space:nowrap}.open:hover{background:#ffdc70}.empty{display:none;text-align:center;padding:40px;color:var(--muted);border:1px dashed var(--line);border-radius:16px}footer{text-align:center;color:#7e8da3;font-size:12px;padding:26px 12px;border-top:1px solid var(--line)}footer b{color:var(--gold)}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.nav{padding:13px 16px}.wrap{padding:24px 15px 40px}.hero{padding:24px 19px;border-radius:18px}.grid{grid-template-columns:1fr;gap:10px}.channel{padding:14px}.logo{width:44px;height:44px;flex-basis:44px}.open{padding:9px 11px}.toolbar{margin-top:20px}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body>
+<header><div class="nav"><div class="brand"><div class="mark">C</div><div>CRICZONE<small>SPORTS CHANNELS</small></div></div><div class="live">● CHANNEL DIRECTORY</div></div></header>
+<main class="wrap"><section class="hero"><div class="eyebrow">PREMIUM SPORTS HUB</div><h1>Every channel.<br>One destination.</h1><p>Browse the sports channel directory, find your channel instantly and open its source page.</p><div class="stats"><div class="stat"><b id="total">15</b> Channels</div><div class="stat"><b>4</b> Sports groups</div><div class="stat">⚡ Instant search</div></div></section>
+<div class="toolbar"><input id="search" class="search" type="search" placeholder="Search channels… (e.g. Sky, Fox, Willow)" aria-label="Search channels"></div>
+<div class="filters" id="filters"><button class="filter active" data-filter="ALL">All channels</button><button class="filter" data-filter="FOX SPORTS">Fox Sports</button><button class="filter" data-filter="SKY SPORTS">Sky Sports</button><button class="filter" data-filter="TNT SPORTS">TNT Sports</button><button class="filter" data-filter="WILLOW">Willow</button></div>
+<div class="sectionline"><h2>Available channels</h2><span id="count">15 channels</span></div><div class="grid" id="grid"></div><div class="empty" id="empty">No channels match your search.</div></main>
+<footer>© CRICZONE · Sports channel directory<br><span>External source pages are operated by their respective providers.</span></footer>
+<script>
+const channels=[
+  {
+    "id": "fox1",
+    "name": "Fox Sports 501",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-501",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "fox2",
+    "name": "Fox Sports 502",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-502",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "fox3",
+    "name": "Fox Sports 503",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-503",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "skymain4k",
+    "name": "Sky Main 4K",
+    "url": "https://trend48.st/live-tv?ch=skysportsmaineventuhd-uk",
+    "category": "SKY SPORTS"
+  },
+  {
+    "id": "fox5",
+    "name": "Fox Sports 505",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-505",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "fox6",
+    "name": "Fox Sports 506",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-506",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "fox7",
+    "name": "Fox Sports 507",
+    "url": "https://trend48.st/live-tv?ch=fox-sports-507",
+    "category": "FOX SPORTS"
+  },
+  {
+    "id": "skyukmain",
+    "name": "Sky UK Main Event",
+    "url": "https://trend48.st/live-tv?ch=skysportsmainevent-uk",
+    "category": "SKY SPORTS"
+  },
+  {
+    "id": "skyukcric",
+    "name": "Sky Sports Cricket (UK)",
+    "url": "https://trend48.st/live-tv?ch=skysportscricket-uk",
+    "category": "SKY SPORTS"
+  },
+  {
+    "id": "tnt1",
+    "name": "TNT Sports 1 (UK)",
+    "url": "https://trend48.st/live-tv?ch=tntsports1-uk",
+    "category": "TNT SPORTS"
+  },
+  {
+    "id": "tnt2",
+    "name": "TNT Sports 2 (UK)",
+    "url": "https://trend48.st/live-tv?ch=tntsports2-uk",
+    "category": "TNT SPORTS"
+  },
+  {
+    "id": "tnt3",
+    "name": "TNT Sports 3 (UK)",
+    "url": "https://trend48.st/live-tv?ch=tntsports3-uk",
+    "category": "TNT SPORTS"
+  },
+  {
+    "id": "tnt4",
+    "name": "TNT Sports 4 (UK)",
+    "url": "https://trend48.st/live-tv?ch=tntsports4-uk",
+    "category": "TNT SPORTS"
+  },
+  {
+    "id": "willow-2",
+    "name": "Willow 2 (USA)",
+    "url": "https://trend48.st/live-tv?ch=willow2-usa",
+    "category": "WILLOW"
+  },
+  {
+    "id": "willow",
+    "name": "Willow (USA)",
+    "url": "https://trend48.st/live-tv?ch=willow-usa",
+    "category": "WILLOW"
+  }
+];
+const grid=document.getElementById('grid'),search=document.getElementById('search'),count=document.getElementById('count'),empty=document.getElementById('empty');let active='ALL';
+function render(){const q=search.value.trim().toLowerCase();const items=channels.filter(c=>(active==='ALL'||c.category===active)&&(c.name.toLowerCase().includes(q)||c.category.toLowerCase().includes(q)));grid.innerHTML=items.map(c=>'<article class="channel"><div class="logo">'+(c.category==='FOX SPORTS'?'FOX':c.category==='SKY SPORTS'?'SKY':c.category==='TNT SPORTS'?'TNT':'W')+'</div><div class="info"><strong>'+c.name+'</strong><small>'+c.category+'</small></div><button class="open" data-id="'+c.id+'">OPEN ↗</button></article>').join('');count.textContent=items.length+' channels';empty.style.display=items.length?'none':'block';}
+document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('button[data-filter]');if(!b)return;active=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()});search.addEventListener('input',render);grid.addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;const c=channels.find(x=>x.id===b.dataset.id);if(c)window.open(c.url,'_blank','noopener,noreferrer')});render();
+</script></body></html>
