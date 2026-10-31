@@ -215,7 +215,7 @@ async function startPresence() {
     await set(presenceRef, { online: true, joinedAt: Date.now(), page: "criczone10" });
     unsubscribeCount = onValue(ref(db, channelPath), snapshot => {
       const data = snapshot.val() || {};
-      showCount(150 + Object.keys(data).length);
+      showCount(Object.keys(data).length);
     }, error => {
       console.warn("CRICZONE live-watching count unavailable:", error);
       if (countEl) countEl.textContent = "—";
