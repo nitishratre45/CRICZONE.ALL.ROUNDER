@@ -10,25 +10,38 @@
 
   const style = document.createElement("style");
   style.textContent = `
-    #cz-tg-gate{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,8,6,.78);backdrop-filter:blur(9px);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+    #cz-tg-gate{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:20px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom));background:rgba(3,8,13,.8);backdrop-filter:blur(14px) saturate(125%);-webkit-backdrop-filter:blur(14px) saturate(125%);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;animation:czGateFade .22s ease-out}
     #cz-tg-gate.cz-open{display:flex}
-    #cz-tg-card{width:min(100%,410px);padding:28px 23px 22px;border:1px solid rgba(255,255,255,.13);border-radius:22px;background:linear-gradient(145deg,#14231b,#09120e);color:#f4fff7;box-shadow:0 25px 90px #0009;text-align:center}
-    #cz-tg-card .cz-badge{display:inline-flex;padding:7px 12px;border-radius:99px;background:#173b2a;color:#8df0b2;font-size:11px;font-weight:800;letter-spacing:1px}
-    #cz-tg-card h2{margin:16px 0 8px;font-size:25px;line-height:1.15}
-    #cz-tg-card p{margin:0 auto 18px;color:#a9b9af;font-size:13px;line-height:1.6}
-    #cz-tg-card .cz-btn{display:flex;width:100%;min-height:48px;align-items:center;justify-content:center;margin-top:10px;border:0;border-radius:12px;background:#24a1de;color:white;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer}
-    #cz-tg-card .cz-btn.cz-join{background:#218b56}
-    #cz-tg-card .cz-btn:disabled{opacity:.7}
-    #cz-tg-card .cz-small{margin-top:14px;color:#9aa99f;font-size:11px}
-    #cz-tg-card .cz-error{min-height:17px;margin-top:9px;color:#ffb4a8;font-size:12px}
+    #cz-tg-card{position:relative;isolation:isolate;overflow:hidden;width:min(100%,430px);padding:30px 25px 24px;border:1px solid rgba(255,255,255,.13);border-radius:26px;background:radial-gradient(ellipse at 50% -15%,rgba(47,190,125,.2),transparent 48%),linear-gradient(155deg,#14251f 0%,#0b1512 58%,#09110f 100%);color:#f4fff8;box-shadow:0 28px 100px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06);text-align:center;animation:czGateRise .28s cubic-bezier(.2,.8,.2,1)}
+    #cz-tg-card:before{content:"";position:absolute;z-index:-1;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(126,244,177,.7),transparent)}
+    #cz-tg-card .cz-mark{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 17px;border:1px solid rgba(126,244,177,.23);border-radius:19px;background:linear-gradient(145deg,rgba(45,153,103,.28),rgba(22,74,51,.2));box-shadow:0 8px 28px rgba(0,0,0,.2);font-size:27px}
+    #cz-tg-card .cz-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid rgba(126,244,177,.17);border-radius:99px;background:rgba(28,94,63,.28);color:#91efb8;font-size:10px;font-weight:800;letter-spacing:1.15px}
+    #cz-tg-card .cz-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#68e5a0;box-shadow:0 0 10px #68e5a0}
+    #cz-tg-card h2{margin:17px 0 10px;font-size:clamp(25px,7vw,30px);font-weight:800;letter-spacing:-.8px;line-height:1.12}
+    #cz-tg-card p{max-width:340px;margin:0 auto 22px;color:#aebdb4;font-size:14px;line-height:1.65}
+    #cz-tg-card .cz-btn{position:relative;display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;gap:10px;margin-top:12px;padding:13px 16px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:linear-gradient(180deg,#269fe0,#1688c6);color:#fff;font-size:14px;font-weight:750;letter-spacing:.1px;text-decoration:none;cursor:pointer;box-shadow:0 8px 22px rgba(17,137,200,.19);transition:transform .18s ease,filter .18s ease}
+    #cz-tg-card .cz-btn:active{transform:scale(.985)}
+    #cz-tg-card .cz-btn:focus-visible{outline:3px solid rgba(126,244,177,.75);outline-offset:3px}
+    #cz-tg-card .cz-btn.cz-join{border-color:rgba(124,245,176,.2);background:linear-gradient(180deg,#239b62,#167b4b);box-shadow:0 8px 22px rgba(23,139,83,.2)}
+    #cz-tg-card .cz-btn:disabled{opacity:.68;cursor:wait;box-shadow:none}
+    #cz-tg-card .cz-btn .cz-btn-icon{font-size:18px;line-height:1}
+    #cz-tg-card .cz-small{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);color:#899b90;font-size:11px;line-height:1.5}
+    #cz-tg-card .cz-small:before{content:"🔒";font-size:12px}
+    #cz-tg-card .cz-error{min-height:17px;margin-top:10px;color:#ffb4a8;font-size:12px;line-height:1.45}
+    @keyframes czGateFade{from{opacity:0}to{opacity:1}}
+    @keyframes czGateRise{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(hover:hover){#cz-tg-card .cz-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}}
+    @media(max-width:380px){#cz-tg-card{padding:25px 19px 20px;border-radius:23px}#cz-tg-card .cz-mark{width:52px;height:52px;margin-bottom:14px}#cz-tg-card p{font-size:13px}}
+    @media(prefers-reduced-motion:reduce){#cz-tg-gate,#cz-tg-card{animation:none}#cz-tg-card .cz-btn{transition:none}}
   `;
   document.head.appendChild(style);
   root.innerHTML = `<section id="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-title">
+    <div class="cz-mark" aria-hidden="true">🏏</div>
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
     <p>Join our Telegram channel and verify your membership with our official bot to continue watching.</p>
-    <a class="cz-btn cz-join" href="${JOIN}" target="_blank" rel="noopener">Join @criczonelive</a>
-    <button class="cz-btn" id="cz-tg-continue" type="button">Continue with Telegram Bot</button>
+    <a class="cz-btn cz-join" href="${JOIN}" target="_blank" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
+    <button class="cz-btn" id="cz-tg-continue" type="button"><span class="cz-btn-icon" aria-hidden="true">▶</span>Continue with Telegram Bot</button>
     <div class="cz-error" id="cz-tg-error" aria-live="polite"></div>
     <div class="cz-small">Membership unlock remains active for 12 hours on this website.</div>
   </section>`;
