@@ -14,8 +14,8 @@ export async function onRequestGet({ request, env }) {
   const target = new URL(row.return_url);
   if (target.origin !== url.origin) return json({ error: "Invalid return destination" });
   const expires = now + 12 * 60 * 60;
-  const payload = btoa(JSON.stringify({ uid: row.telegram_user_id, exp: expires })).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  const payload = btoa(JSON.stringify({ v: 1, uid: row.telegram_user_id, exp: expires, host: url.host })).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
   const cookieValue = `${payload}.${await sign(payload, env.BOT_TOKEN)}`;
   await env.TELEGRAM_DB.prepare("DELETE FROM telegram_login_requests WHERE nonce=?").bind(nonce).run();
-  return new Response(null, { status: 302, headers: { "Location": target.href, "Set-Cookie": `cz_tg_session=${cookieValue}; Max-Age=43200; Path=/; HttpOnly; Secure; SameSite=Lax`, "Cache-Control": "no-store" } });
+  return new Response(null, { status: 302, headers: { "Location": target.href, "Set-Cookie": `__Host-cz_tg_session=${cookieValue}; Max-Age=43200; Path=/; HttpOnly; Secure; SameSite=Strict`, "Cache-Control": "no-store" } });
 }
