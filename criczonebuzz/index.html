@@ -717,14 +717,14 @@
             <a href="index.html" class="brand">
                 <div class="brand-badge">⚡</div>
                 <div class="brand-text">
-                    <span class="brand-name">Aryan Streams Cricbuzz</span>
+                    <span class="brand-name">CRICZONE</span>
                     <span class="brand-tag">LIVE CRICKET • MATCH CENTRE</span>
                 </div>
             </a>
             <div class="header-actions">
                 <a href="../" class="btn-header">
                     <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                    <span>Main Site</span>
+                    <span>CRICZONE Home</span>
                 </a>
                 <a href="https://t.me/criczonelive" target="_blank" class="btn-header btn-header-primary">
                     <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
@@ -992,22 +992,7 @@
                 return null;
             }
 
-            // Cricket Original Broadcast Feeds (Direct Pure Trend48 Web Players)
-            const CRICKET_ORIGINALS = {
-                willow_usa: { name: 'Willow Cricket HD (Server 1)', url: 'https://trend48.st/live-tv?ch=willow-usa' },
-                willow2: { name: 'Willow Cricket 2 (Server 2)', url: 'https://trend48.st/live-tv?ch=willowxtra-usa' },
-                sky_cricket: { name: 'Sky Sports Cricket (UK)', url: 'https://trend48.st/live-tv?ch=skysportscricket-uk' },
-                fox_cricket: { name: 'Fox Sports 501 (Cricket)', url: 'https://trend48.st/live-tv?ch=foxsports501-au' },
-                supersport_cricket: { name: 'SuperSport Cricket (ZA)', url: 'https://trend48.st/live-tv?ch=supersportcricket-za' },
-                asports: { name: 'A Sports HD (Pakistan)', url: 'https://trend48.st/live-tv?ch=asports-pk' },
-                tensports_pk: { name: 'Ten Sports PK', url: 'https://trend48.st/live-tv?ch=tensports-pk' },
-                sony_sports: { name: 'Sony Sports Ten 1 HD', url: 'https://trend48.st/live-tv?ch=sonyten1-in' },
-                sony_sports_3: { name: 'Sony Sports Ten 3 HD', url: 'https://trend48.st/live-tv?ch=sonyten3-in' },
-                sony_sports_5: { name: 'Sony Sports Ten 5 HD', url: 'https://trend48.st/live-tv?ch=sonyten5-in' },
-                ptv_sports: { name: 'PTV Sports HD', url: 'https://trend48.st/live-tv?ch=ptvsports-pk' },
-                star_sports1: { name: 'Star Sports 1 HD', url: 'https://trend48.st/live-tv?ch=starsports1-in' }
-            };
-
+            // Only use stream URLs explicitly supplied by the match feed and authorized by the operator.
             // Build Unified Stream / Server List for a Match
             function getMatchStreamList(m) {
                 if (!m) return [];
