@@ -7,6 +7,17 @@ export async function onRequestGet({request,env}){
   const row=await env.TELEGRAM_DB.prepare("SELECT status,telegram_user_id,expires_at FROM telegram_login_requests WHERE nonce=?").bind(nonce).first();
   const now=Math.floor(Date.now()/1000);
   if(!row||row.expires_at<now)return json({verified:false,expired:true},410);
+  if(row.status==="pending_member"&&row.telegram_user_id){
+    try {
+      const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
+      const result=await check.json();
+      const member=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
+      if(member){
+        await env.TELEGRAM_DB.prepare("UPDATE telegram_login_requests SET status='verified',verified_at=? WHERE nonce=? AND telegram_user_id=?").bind(now,nonce,String(row.telegram_user_id)).run();
+        row.status="verified";
+      }
+    } catch(error) { console.error("Auto membership check failed",error); }
+  }
   if(row.status!=="verified"||!row.telegram_user_id)return json({verified:false,pending:true});
   const exp=now+12*60*60;
   const payload=btoa(JSON.stringify({uid:String(row.telegram_user_id),exp})).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
