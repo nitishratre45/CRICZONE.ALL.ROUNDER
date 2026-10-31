@@ -52,6 +52,7 @@
   let started = false;
   let activeNonce = "";
   let pollTimer = 0;
+  let membershipTimer = 0;
   let popupEnabled = true;
 
   const show = (force = false) => {
@@ -77,15 +78,45 @@
   async function sessionCheck() {
     try {
       const r = await fetch(API + "/session", { credentials: "same-origin", cache: "no-store" });
-      const d = await r.json();
-      if (r.ok && d.verified === true) {
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d.verified === true && d.membership_valid === true) {
         verified = true;
         saveNonce("");
+        startMembershipMonitor();
         hide();
         return true;
       }
-    } catch {}
+      if (d.membership_valid === false || r.status === 401) {
+        verified = false;
+        if (membershipTimer) { clearInterval(membershipTimer); membershipTimer = 0; }
+        const title = document.getElementById("cz-tg-title");
+        const message = root.querySelector("#cz-tg-card p");
+        const btn = document.getElementById("cz-tg-continue");
+        if (title) title.textContent = "Membership Required";
+        if (message) message.textContent = "Your Telegram channel membership is no longer active. Rejoin @criczonelive and verify again to continue watching.";
+        if (btn) { btn.textContent = "Continue with Telegram Bot"; btn.disabled = false; }
+        show(true);
+        return false;
+      }
+      if (!r.ok) {
+        const message = root.querySelector("#cz-tg-card p");
+        if (message) message.textContent = "We could not confirm your channel membership. Access is paused while we retry. Please keep this page open.";
+        show(true);
+        return false;
+      }
+    } catch {
+      const message = root.querySelector("#cz-tg-card p");
+      if (message) message.textContent = "Membership verification is temporarily unavailable. Access is paused while we reconnect.";
+      show(true);
+    }
     return false;
+  }
+
+  function startMembershipMonitor() {
+    if (membershipTimer) clearInterval(membershipTimer);
+    membershipTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible" && verified) sessionCheck();
+    }, 15000);
   }
 
   async function pollLoginStatus() {
@@ -98,6 +129,7 @@
       if (r.ok && d.verified === true) {
         verified = true;
         saveNonce("");
+        startMembershipMonitor();
         if (pollTimer) clearInterval(pollTimer);
         pollTimer = 0;
         started = false;
