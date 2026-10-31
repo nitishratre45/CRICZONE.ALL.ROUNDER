@@ -204,6 +204,8 @@
   if (activeNonce) {
     pollLoginStatus();
     pollTimer = window.setInterval(pollLoginStatus, 5000);
+    // Restore the gate when the visitor returns from Telegram with a pending login.
+    if (popupEnabled) window.setTimeout(() => { if (!verified) show(true); }, 700);
   } else if (popupEnabled) {
     window.setTimeout(show, 5000);
   }
