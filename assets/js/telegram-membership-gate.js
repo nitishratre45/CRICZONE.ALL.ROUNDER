@@ -41,7 +41,7 @@
     <span class="cz-badge">CRICZONE MEMBER ACCESS</span>
     <h2 id="cz-tg-title">Unlock for 12 Hours</h2>
     <p>Join our official Telegram channel. Return here after joining to verify your membership and unlock access.</p>
-    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join @criczonelive</a>
+    <a class="cz-btn cz-join" id="cz-tg-join" href="${JOIN}" rel="noopener"><span class="cz-btn-icon" aria-hidden="true">✈</span>Join & Verify with Telegram</a>
     <button class="cz-btn" id="cz-tg-continue" type="button"><span class="cz-btn-icon" aria-hidden="true">▶</span>Continue with Telegram Bot</button>
     <div class="cz-error" id="cz-tg-error" aria-live="polite"></div>
     <div class="cz-small">Membership unlock remains active for 12 hours on this website.</div>
@@ -217,35 +217,37 @@
     joinFlowBusy = true;
     const error = document.getElementById("cz-tg-error");
     const original = joinBtn.innerHTML;
-    // Open a blank tab synchronously from the click so the website remains alive
-    // and can keep polling for the Telegram membership verification.
-    let inviteTab = null;
-    try { inviteTab = window.open("about:blank", "_blank"); } catch {}
-    joinBtn.innerHTML = "Creating secure join link…";
+    // Use the established nonce-based bot identity flow. Unique invite links
+    // cannot reliably identify the browser visitor, so they are no longer used.
+    let botTab = null;
+    try { botTab = window.open("about:blank", "_blank"); } catch {}
+    joinBtn.innerHTML = "Connecting to Telegram…";
     try {
-      const r = await fetch(API + "/join", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        credentials: "same-origin", body: JSON.stringify({ return_url: location.href })
+      const r = await fetch(API + "/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ return_url: location.href })
       });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.nonce || !d.join_url) throw new Error(d.error || "Could not create Telegram join link.");
+      if (!r.ok || !d.bot_url || !d.nonce) throw new Error(d.error || "Could not start Telegram verification.");
       saveNonce(d.nonce);
       if (pollTimer) clearInterval(pollTimer);
       await pollLoginStatus();
       pollTimer = window.setInterval(pollLoginStatus, 5000);
       joinBtn.innerHTML = original;
       joinFlowBusy = false;
-      if (inviteTab && !inviteTab.closed) inviteTab.location.replace(d.join_url);
+      if (botTab && !botTab.closed) botTab.location.replace(d.bot_url);
       else {
-        // Popup blockers may prevent a new tab; keep the page usable and offer
-        // the invite as a separate link rather than navigating away.
-        joinBtn.href = d.join_url;
+        joinBtn.href = d.bot_url;
         joinBtn.target = "_blank";
         joinBtn.rel = "noopener";
-        joinBtn.textContent = "Open Telegram Join Link";
+        joinBtn.textContent = "Open Telegram to Verify";
       }
+      const message = root.querySelector("#cz-tg-card p");
+      if (message) message.textContent = "Open the CRICZONE bot, then join the official channel if prompted. Keep this website open; access will unlock automatically after verification.";
     } catch (e) {
-      if (inviteTab && !inviteTab.closed) inviteTab.close();
+      if (botTab && !botTab.closed) botTab.close();
       error.textContent = e.message || "Please try again.";
       joinBtn.innerHTML = original;
       joinFlowBusy = false;
