@@ -15,6 +15,9 @@
     #cz-normal-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.48);backdrop-filter:none;-webkit-backdrop-filter:none;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     #cz-normal-overlay.cz-visible{display:flex;animation:czFade .2s ease}
     #cz-normal-card{position:relative;width:min(100%,390px);overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:23px;background:linear-gradient(155deg,#182333,#0c121d 70%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #0009;animation:czRise .25s ease}
+    #cz-normal-card .cz-close{position:absolute;top:10px;right:10px;z-index:5;width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff66;border-radius:50%;background:#07111dcc;color:#fff;font-size:25px;line-height:1;cursor:pointer;box-shadow:0 3px 12px #0005;backdrop-filter:none}
+    #cz-normal-card .cz-close:focus-visible{outline:3px solid #ffd36b;outline-offset:3px}
+    #cz-normal-card .cz-close:active{transform:scale(.94)}
     #cz-normal-card .cz-photo{width:100%;height:clamp(210px,34vh,280px);display:block;object-fit:contain;object-position:center;background:#0c121d}
     /* Three deliberately different popup layouts */
     #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.52)}
@@ -54,7 +57,7 @@
   document.head.appendChild(style);
   const overlay=document.createElement("div");
   overlay.id="cz-normal-overlay";
-  overlay.innerHTML='<section id="cz-normal-card" role="dialog" aria-modal="true" aria-labelledby="cz-normal-title"><img class="cz-photo" src="'+PHOTO+'" alt="CRICZONE cricket"><div class="cz-content"><span class="cz-tag" id="cz-normal-tag"></span><h2 id="cz-normal-title"></h2><p id="cz-normal-text"></p><a class="cz-join" id="cz-normal-join" href="'+CHANNEL+'" target="_blank" rel="noopener">Join Telegram Channel</a></div></section>';
+  overlay.innerHTML='<section id="cz-normal-card" role="dialog" aria-modal="true" aria-labelledby="cz-normal-title"><button class="cz-close" id="cz-normal-close" type="button" aria-label="Close popup">&times;</button><img class="cz-photo" src="'+PHOTO+'" alt="CRICZONE cricket"><div class="cz-content"><span class="cz-tag" id="cz-normal-tag"></span><h2 id="cz-normal-title"></h2><p id="cz-normal-text"></p><a class="cz-join" id="cz-normal-join" href="'+CHANNEL+'" target="_blank" rel="noopener">Join Telegram Channel</a></div></section>';
   document.body.appendChild(overlay);
   const $=id=>document.getElementById(id);
   function closeStep(){
@@ -78,6 +81,7 @@
     document.body.style.overflow="hidden";
     showing=true;
   }
+  $("cz-normal-close").addEventListener("click",closeStep);
   overlay.addEventListener("click",e=>{if(e.target===overlay)closeStep()});
   window.addEventListener("keydown",e=>{if(e.key==="Escape"&&showing)closeStep()});
   timer=window.setTimeout(showStep,5000);
