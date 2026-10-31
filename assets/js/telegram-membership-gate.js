@@ -217,6 +217,10 @@
     joinFlowBusy = true;
     const error = document.getElementById("cz-tg-error");
     const original = joinBtn.innerHTML;
+    // Open a blank tab synchronously from the click so the website remains alive
+    // and can keep polling for the Telegram membership verification.
+    let inviteTab = null;
+    try { inviteTab = window.open("about:blank", "_blank"); } catch {}
     joinBtn.innerHTML = "Creating secure join link…";
     try {
       const r = await fetch(API + "/join", {
@@ -227,12 +231,21 @@
       if (!r.ok || !d.nonce || !d.join_url) throw new Error(d.error || "Could not create Telegram join link.");
       saveNonce(d.nonce);
       if (pollTimer) clearInterval(pollTimer);
-      pollLoginStatus();
+      await pollLoginStatus();
       pollTimer = window.setInterval(pollLoginStatus, 5000);
       joinBtn.innerHTML = original;
       joinFlowBusy = false;
-      window.location.assign(d.join_url);
+      if (inviteTab && !inviteTab.closed) inviteTab.location.replace(d.join_url);
+      else {
+        // Popup blockers may prevent a new tab; keep the page usable and offer
+        // the invite as a separate link rather than navigating away.
+        joinBtn.href = d.join_url;
+        joinBtn.target = "_blank";
+        joinBtn.rel = "noopener";
+        joinBtn.textContent = "Open Telegram Join Link";
+      }
     } catch (e) {
+      if (inviteTab && !inviteTab.closed) inviteTab.close();
       error.textContent = e.message || "Please try again.";
       joinBtn.innerHTML = original;
       joinFlowBusy = false;
