@@ -240,46 +240,6 @@ box-shadow:0 12px 30px rgba(16,185,129,.45),inset 0 1px 0 rgba(255,255,255,.2)}
 #tg-link svg{width:17px;height:17px;color:#fff;flex-shrink:0}
 #tg-link .tg-txt{white-space:nowrap}
 
-/* ================= TELEGRAM JOIN POPUP ================= */
-#tg-modal{position:fixed;inset:0;z-index:10000;display:none;
-align-items:center;justify-content:center;padding:22px;
-background:rgba(4,7,5,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-#tg-modal.show{display:flex;animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.tg-box{position:relative;width:100%;max-width:350px;overflow:hidden;
-background:linear-gradient(180deg,var(--cc-panel2),var(--cc-panel));
-border:1px solid var(--cc-border2);border-radius:22px;
-padding:34px 26px 26px;text-align:center;
-box-shadow:0 30px 70px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.04);
-animation:popIn .4s cubic-bezier(.2,.9,.25,1.15)}
-@keyframes popIn{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
-.tg-box::before{content:"";position:absolute;top:-40%;left:50%;width:200%;height:80%;
-transform:translateX(-50%);pointer-events:none;
-background:radial-gradient(50% 100% at 50% 0%,rgba(16,185,129,.22),transparent 70%)}
-.tg-close{position:absolute;top:12px;right:12px;z-index:2;
-width:30px;height:30px;border-radius:50%;border:1px solid var(--cc-border2);
-background:rgba(255,255,255,.03);color:var(--cc-muted);font-size:17px;line-height:1;
-cursor:pointer;display:flex;align-items:center;justify-content:center;
-transition:background .2s,color .2s,transform .15s}
-.tg-close:hover{background:rgba(255,255,255,.08);color:#fff;transform:rotate(90deg)}
-.tg-icon-wrap{position:relative;width:70px;height:70px;margin:0 auto 18px;border-radius:20px;
-background:linear-gradient(160deg,var(--cc-accent-3),var(--cc-accent-deep));
-display:flex;align-items:center;justify-content:center;
-box-shadow:0 12px 30px rgba(6,95,70,.55),inset 0 1px 0 rgba(255,255,255,.22)}
-.tg-icon-wrap svg{width:34px;height:34px;color:#fff}
-.tg-box h2{color:#fff;font-family:'Archivo';font-size:19px;font-weight:800;letter-spacing:.3px;margin-bottom:9px}
-.tg-box p{color:var(--cc-muted);font-size:13.5px;line-height:1.55;margin-bottom:22px;
-max-width:270px;margin-left:auto;margin-right:auto}
-.tg-join{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-width:100%;padding:14px 18px;border-radius:14px;text-decoration:none;
-background:linear-gradient(135deg,var(--cc-accent-2),var(--cc-accent-3));
-color:#04140e;font-size:14px;font-weight:800;letter-spacing:.3px;
-box-shadow:0 10px 26px rgba(16,185,129,.4),inset 0 1px 0 rgba(255,255,255,.35);
-transition:transform .2s cubic-bezier(.2,.7,.2,1),filter .2s}
-.tg-join:hover{transform:translateY(-2px);filter:brightness(1.06)}
-.tg-join:active{transform:translateY(0) scale(.98)}
-.tg-join svg{width:18px;height:18px}
-
 /* ================= STATUS TOAST ================= */
 #status{position:fixed;top:max(12px,env(safe-area-inset-top));
 right:max(12px,env(safe-area-inset-right));z-index:9997;
@@ -620,20 +580,6 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.16 2.53 10.33c-1.24.5-1.23 1.19-.23 1.5l4.76 1.48 1.84 5.6c.22.6.36.85.7.85.27 0 .39-.12.53-.27l1.9-1.85 4.68 3.45c.86.48 1.48.23 1.7-.8l3.06-14.3c.3-1.28-.48-1.85-1.42-1.83zM8.4 14.02l9.2-8.24c.4-.36-.09-.53-.6-.2l-11.3 7.1-4.66-1.46c-1.01-.32-1.03-1.01.22-1.5L20.35 4.5c.85-.32 1.6.2 1.32 1.5"/></svg>
 <span class="tg-txt">Telegram</span>
 </a>
-<div id="tg-modal">
-<div class="tg-box">
-<button class="tg-close" id="tg-close" aria-label="Close">&times;</button>
-<div class="tg-icon-wrap">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.16 2.53 10.33c-1.24.5-1.23 1.19-.23 1.5l4.76 1.48 1.84 5.6c.22.6.36.85.7.85.27 0 .39-.12.53-.27l1.9-1.85 4.68 3.45c.86.48 1.48.23 1.7-.8l3.06-14.3c.3-1.28-.48-1.85-1.42-1.83zM8.4 14.02l9.2-8.24c.4-.36-.09-.53-.6-.2l-11.3 7.1-4.66-1.46c-1.01-.32-1.03-1.01.22-1.5L20.35 4.5c.85-.32 1.6.2 1.32 1.5"/></svg>
-</div>
-<h2>Join CRICZONE on Telegram</h2>
-<p>Get live match links, channel updates, and community chat straight to your phone.</p>
-<a class="tg-join" id="tg-join" href="https://t.me/+5hrS9VoLS8tjOTM1" target="_blank" rel="noopener">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.16 2.53 10.33c-1.24.5-1.23 1.19-.23 1.5l4.76 1.48 1.84 5.6c.22.6.36.85.7.85.27 0 .39-.12.53-.27l1.9-1.85 4.68 3.45c.86.48 1.48.23 1.7-.8l3.06-14.3c.3-1.28-.48-1.85-1.42-1.83zM8.4 14.02l9.2-8.24c.4-.36-.09-.53-.6-.2l-11.3 7.1-4.66-1.46c-1.01-.32-1.03-1.01.22-1.5L20.35 4.5c.85-.32 1.6.2 1.32 1.5"/></svg>
-Join Telegram
-</a>
-</div>
-</div>
 <div id="pc">
 <video id="v" playsinline webkit-playsinline
 preload="none" x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
@@ -994,12 +940,6 @@ render();
 $list.style.display="flex";
 }
 function errMsg(msg){ setMsg(msg); $overlay.style.display="flex"; toast(msg,"err",0); }
-var $tgModal=document.getElementById("tg-modal");
-function showTgModal(){ $tgModal.classList.add("show"); }
-function hideTgModal(){ $tgModal.classList.remove("show"); }
-document.getElementById("tg-close").addEventListener("click",hideTgModal);
-$tgModal.addEventListener("click",function(e){ if(e.target===$tgModal) hideTgModal(); });
-document.getElementById("tg-join").addEventListener("click",hideTgModal);
 function shakaErrStr(e){
 if(!e) return "Unknown error";
 var c={1:"Network",2:"Text",3:"Media",4:"Manifest",5:"Streaming",6:"DRM",7:"Player"};
