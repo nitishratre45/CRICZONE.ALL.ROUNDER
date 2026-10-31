@@ -979,6 +979,32 @@
         @media (max-width: 480px) {
             .brand-badge { width: 42px; height: 42px; flex-basis: 42px; border-radius: 12px; }
         }
+
+        /* Match cards: poster-first flow; server selection lives on play.html */
+        .match-open-link { display:block; color:inherit; text-decoration:none; cursor:pointer; }
+        .poster-play-hint { position:absolute; z-index:4; left:50%; top:50%; transform:translate(-50%,-50%); display:inline-flex; align-items:center; gap:9px; padding:11px 17px; border-radius:999px; background:rgba(8,10,14,.82); border:1px solid rgba(255,184,0,.65); color:#ffd36a; font-weight:800; box-shadow:0 8px 28px #0008; opacity:0; transition:opacity .2s ease; white-space:nowrap; }
+        .match-card:hover .poster-play-hint,.match-open-link:focus-visible .poster-play-hint { opacity:1; }
+        .card-actions { display:flex; align-items:center; gap:9px; margin-top:14px; }
+        .open-match-btn { flex:1; display:flex; justify-content:center; align-items:center; min-height:42px; border-radius:10px; background:var(--gold-gradient); color:#111; font-weight:800; text-decoration:none; }
+        .card-share-btn { min-height:40px; }
+        @media (max-width:700px) {
+          .matches-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+          .match-card { min-width:0; border-radius:14px; }
+          .card-body { padding:12px; gap:10px; }
+          .card-title { font-size:clamp(.88rem,3.3vw,1rem); line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; min-height:3.65em; }
+          .card-meta { flex-wrap:wrap; justify-content:flex-start!important; gap:7px!important; font-size:.68rem; }
+          .card-actions { flex-wrap:wrap; gap:7px; margin-top:10px; }
+          .open-match-btn { min-height:42px; font-size:.78rem; }
+          .card-share-btn { font-size:.72rem!important; padding:7px 9px!important; }
+          .poster-play-hint { opacity:1; font-size:.72rem; padding:8px 11px; }
+          .favorite-toggle { transform:scale(.9); transform-origin:top right; }
+        }
+        @media (max-width:380px) {
+          .matches-grid { grid-template-columns:1fr; }
+          .card-title { min-height:0; font-size:1rem; }
+          .card-meta { font-size:.75rem; }
+        }
+
     </style>
 </head>
 <body>
@@ -1372,60 +1398,22 @@
                     const card = document.createElement('div');
                     card.className = 'match-card';
 
-                    // Available servers from unified list
-                    const serverList = getMatchStreamList(m);
-
-                    let serversHtml = '';
-                    if (serverList.length > 0) {
-                        serversHtml = `
-                            <div class="server-grid">
-                                ${serverList.map((s, idx) => `
-                                    <button class="server-btn ${idx === 0 ? 'highlight' : ''}" onclick="window.playMatch('${id}', ${s.id})">
-                                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        <span>${s.label}</span>
-                                    </button>
-                                `).join('')}
-                            </div>
-                        `;
-                    } else {
-                        serversHtml = `
-                            <div class="server-grid" style="grid-template-columns: 1fr;">
-                                <button class="server-btn" style="opacity: 0.7; cursor: default;">
-                                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                                    <span>${m.time || 'Upcoming Broadcast'}</span>
-                                </button>
-                            </div>
-                        `;
-                    }
-
                     card.innerHTML = `
-                        <div class="card-poster">
+                        <a class="card-poster match-open-link" href="play.html?match=${encodeURIComponent(id)}" aria-label="Choose server for ${m.event_name || 'match'}">
                             <img src="${m.image || 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&auto=format&fit=crop'}" alt="${m.event_name || 'Match'}" loading="lazy">
-                            <div class="status-badge ${isLive ? 'live' : 'upcoming'}">
-                                ${isLive ? 'LIVE' : 'UPCOMING'}
-                            </div>
-                        </div>
+                            <div class="status-badge ${isLive ? 'live' : 'upcoming'}">${isLive ? 'LIVE' : 'UPCOMING'}</div>
+                            <span class="poster-play-hint">▶ <span>Choose Server</span></span>
+                        </a>
                         <div class="card-body">
-                            <div>
-                                <h3 class="card-title">${m.event_name || 'Live Cricket Event'}</h3>
-                                <div class="card-meta" style="margin-top: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
-                                    <div style="display: flex; gap: 0.75rem; align-items: center;">
-                                        <span>
-                                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-                                            ${m.sport || 'Cricket'}
-                                        </span>
-                                        <span>
-                                            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                                            ${m.time || 'Live'}
-                                        </span>
-                                    </div>
-                                    <button class="card-share-btn" onclick="event.stopPropagation(); window.copyMatchLink('${id}', 1)" title="Copy Match Link" style="background: rgba(255,184,0,0.12); border: 1px solid rgba(255,184,0,0.25); color: var(--gold); border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                                        <span>Share</span>
-                                    </button>
-                                </div>
+                            <h3 class="card-title">${m.event_name || 'Live Cricket Event'}</h3>
+                            <div class="card-meta" style="margin-top:.55rem">
+                                <span>🏏 ${m.sport || 'Cricket'}</span>
+                                <span>◷ ${m.time || (isLive ? 'Live Now' : 'Upcoming')}</span>
                             </div>
-                            ${serversHtml}
+                            <div class="card-actions">
+                                <a class="open-match-btn" href="play.html?match=${encodeURIComponent(id)}">▶ Choose Server</a>
+                                <button class="card-share-btn" type="button" onclick="event.stopPropagation(); window.copyMatchLink('${id}', 1)">↗ Share</button>
+                            </div>
                         </div>
                     `;
                     const favoriteBtn = document.createElement('button');
@@ -1433,7 +1421,7 @@
                     favoriteBtn.className = 'favorite-toggle' + (favoriteMatchIds.has(String(id)) ? ' is-saved' : '');
                     favoriteBtn.textContent = favoriteMatchIds.has(String(id)) ? '★ Saved' : '☆ Save';
                     favoriteBtn.setAttribute('aria-label', favoriteMatchIds.has(String(id)) ? 'Remove from My List' : 'Add to My List');
-                    favoriteBtn.addEventListener('click', () => toggleFavorite(id));
+                    favoriteBtn.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); toggleFavorite(id); });
                     const poster = card.querySelector('.card-poster');
                     if (poster) poster.appendChild(favoriteBtn);
                     grid.appendChild(card);
