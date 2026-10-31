@@ -9,7 +9,7 @@ export async function onRequestGet({request,env}){
   if(!row||row.expires_at<now)return json({verified:false,expired:true},410);
   if(row.status==="pending_member"&&row.telegram_user_id){
     try {
-      const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
+      const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},signal:AbortSignal.timeout(5000),body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
       const result=await check.json();
       const member=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
       if(member){
@@ -21,7 +21,7 @@ export async function onRequestGet({request,env}){
   if(row.status!=="verified"||!row.telegram_user_id)return json({verified:false,pending:true});
   // Re-check Telegram membership immediately before issuing a browser session.
   try {
-    const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
+    const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},signal:AbortSignal.timeout(5000),body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
     const result=await check.json();
     const stillMember=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
     if(!stillMember)return json({verified:false,membership_valid:false},403,{"Set-Cookie":"__Host-cz_tg_session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict"});
