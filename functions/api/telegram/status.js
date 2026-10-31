@@ -11,7 +11,6 @@ export async function onRequestGet({request,env}){
   const exp=now+12*60*60;
   const payload=btoa(JSON.stringify({uid:String(row.telegram_user_id),exp})).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
   const cookie=payload+"."+await sign(payload,env.BOT_TOKEN);
-  await env.TELEGRAM_DB.prepare("DELETE FROM telegram_login_requests WHERE nonce=?").bind(nonce).run();
   return json({verified:true,expires_at:exp},200,{"Set-Cookie":`cz_tg_session=${cookie}; Max-Age=43200; Path=/; HttpOnly; Secure; SameSite=Lax`});
 }
 export function onRequestPost(){return json({error:"Method not allowed"},405)}
