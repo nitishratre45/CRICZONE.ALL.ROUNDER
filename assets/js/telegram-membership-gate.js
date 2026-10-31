@@ -53,6 +53,9 @@
   let activeNonce = "";
   let pollTimer = 0;
   let membershipTimer = 0;
+  let sessionCheckPromise = null;
+  let statusPollBusy = false;
+  let refreshBusy = false;
   let popupEnabled = true;
 
   const show = (force = false) => {
@@ -76,7 +79,8 @@
   };
 
   async function sessionCheck() {
-    try {
+    if (sessionCheckPromise) return sessionCheckPromise;
+    sessionCheckPromise = (async () => { try {
       const r = await fetch(API + "/session", { credentials: "same-origin", cache: "no-store" });
       const d = await r.json().catch(() => ({}));
       if (r.ok && d.verified === true && d.membership_valid === true) {
@@ -121,17 +125,20 @@
       show(true);
     }
     return false;
+    })();
+    try { return await sessionCheckPromise; } finally { sessionCheckPromise = null; }
   }
 
   function startMembershipMonitor() {
     if (membershipTimer) clearInterval(membershipTimer);
     membershipTimer = window.setInterval(() => {
       if (document.visibilityState === "visible") sessionCheck();
-    }, 15000);
+    }, 60000);
   }
 
   async function pollLoginStatus() {
-    if (verified || !activeNonce) return false;
+    if (verified || !activeNonce || statusPollBusy) return false;
+    statusPollBusy = true;
     try {
       const r = await fetch(API + "/status?nonce=" + encodeURIComponent(activeNonce), {
         credentials: "same-origin", cache: "no-store"
@@ -162,20 +169,29 @@
         if (btn) { btn.textContent = "Continue with Telegram Bot"; btn.disabled = false; }
         if (error) error.textContent = "Login expired. Please try again.";
       }
-    } catch {}
+    } catch {} finally { statusPollBusy = false; }
     return false;
   }
 
   async function refreshAccess() {
-    if (await sessionCheck()) return;
-    if (activeNonce) await pollLoginStatus();
+    if (refreshBusy) return;
+    refreshBusy = true;
+    try { if (await sessionCheck()) return; if (activeNonce) await pollLoginStatus(); }
+    finally { refreshBusy = false; }
   }
 
   try {
-    const cfg = await fetch(API + "/settings", { credentials: "same-origin", cache: "no-store" });
-    if (cfg.ok) {
-      const d = await cfg.json();
-      popupEnabled = d.popup_enabled === true;
+    const cacheKey = "cz_tg_popup_setting_v1";
+    const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+    if (cached && Date.now() - cached.at < 60000 && typeof cached.enabled === "boolean") {
+      popupEnabled = cached.enabled;
+    } else {
+      const cfg = await fetch(API + "/settings", { credentials: "same-origin", cache: "no-store" });
+      if (cfg.ok) {
+        const d = await cfg.json();
+        popupEnabled = d.popup_enabled === true;
+        sessionStorage.setItem(cacheKey, JSON.stringify({ enabled: popupEnabled, at: Date.now() }));
+      }
     }
   } catch {}
 
@@ -183,7 +199,7 @@
   if (await sessionCheck()) return;
   if (activeNonce) {
     pollLoginStatus();
-    pollTimer = window.setInterval(pollLoginStatus, 1500);
+    pollTimer = window.setInterval(pollLoginStatus, 5000);
   } else if (popupEnabled) {
     window.setTimeout(show, 5000);
   }
