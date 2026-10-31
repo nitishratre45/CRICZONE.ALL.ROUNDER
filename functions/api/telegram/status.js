@@ -10,6 +10,9 @@ export async function onRequestGet({request,env}){
   if(!row||row.expires_at<now)return json({verified:false,expired:true},410);
   if(row.status==="pending_member"&&row.telegram_user_id){
     try {
+      await env.TELEGRAM_DB.prepare("CREATE TABLE IF NOT EXISTS telegram_status_checks (nonce TEXT PRIMARY KEY,last_checked_at INTEGER NOT NULL DEFAULT 0)").run();
+      const gate=await env.TELEGRAM_DB.prepare("INSERT INTO telegram_status_checks(nonce,last_checked_at) VALUES(?,?) ON CONFLICT(nonce) DO UPDATE SET last_checked_at=excluded.last_checked_at WHERE telegram_status_checks.last_checked_at<=?").bind(nonce,now,now-10).run();
+      if((gate.meta?.changes??0)!==1)return json({verified:false,pending:true});
       const check=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember`,{method:"POST",headers:{"Content-Type":"application/json"},signal:AbortSignal.timeout(5000),body:JSON.stringify({chat_id:"@criczonelive",user_id:Number(row.telegram_user_id)})});
       const result=await check.json();
       const member=check.ok&&result.ok&&(["member","administrator","creator"].includes(result.result?.status)||(result.result?.status==="restricted"&&result.result?.is_member===true));
