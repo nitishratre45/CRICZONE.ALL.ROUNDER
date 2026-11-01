@@ -20,7 +20,8 @@
 <script>
 (function(){
  const params=new URLSearchParams(location.search),wanted=params.get('match')||params.get('id')||'';
- const feeds=['../data/willow.json','/data/willow.json','https://sonujson-v5.pages.dev/Data/willow.json'];
+ // Match the same known feed sources used by the CRICZONE Willow page.
+ const feeds=['https://sonujson-v4.pages.dev/Data/willow.json','https://sonujson-v4.pages.dev/Data/prime.json','https://sonujson-v5.pages.dev/Data/willow.json'];
  const configs=[
   {key:'fastly_server1',label:'Server 1 (Fast)',quality:'Fast stream'},
   {key:'amazon_server1',label:'Server 2 (Prime)',quality:'Prime stream'},
