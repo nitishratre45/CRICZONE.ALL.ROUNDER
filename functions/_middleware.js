@@ -26,6 +26,7 @@ if(path==="/api/telegram/status"&&method==="GET")return await telegramStatus(con
 const response = await context.next();
 const contentType = response.headers.get("Content-Type") || "";
 if (method !== "GET" || !contentType.includes("text/html") ||
+    /^\/matchcenter(?:\/|$)/i.test(path) ||
     /(^|\/)admin(?:\/|[-.]|$)/i.test(path) ||
     /admin/i.test(path.split("/").pop() || "")) return response;
 const popupScript = '<script src="/assets/js/telegram-membership-gate.js?v=member3" defer></script>';
