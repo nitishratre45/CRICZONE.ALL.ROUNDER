@@ -28,7 +28,7 @@ const contentType = response.headers.get("Content-Type") || "";
 if (method !== "GET" || !contentType.includes("text/html") ||
     /(^|\/)admin(?:\/|[-.]|$)/i.test(path) ||
     /admin/i.test(path.split("/").pop() || "")) return response;
-const popupScript = '<script src="/assets/js/telegram-membership-gate.js?v=member2" defer></script>';
+const popupScript = '<script src="/assets/js/telegram-membership-gate.js?v=member3" defer></script>';
 return new HTMLRewriter().on("body", {
   element(element) { element.append(popupScript, { html: true }); }
 }).transform(response);
