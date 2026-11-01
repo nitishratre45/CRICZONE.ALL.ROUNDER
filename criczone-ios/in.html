@@ -217,8 +217,7 @@
       background: rgba(11, 17, 32, 0.85);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
-      border-bottom: 1px solid var(--app-border);
-      padding: 10px 14px;
+      border-bottom: 1px solid var(--app-border);      padding: 10px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -437,8 +436,7 @@
       padding: 22px 18px;
       width: 100%;
       max-width: 320px;
-      text-align: center;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 210, 255, 0.15);
+      text-align: center;      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 210, 255, 0.15);
       position: relative;
       animation: popZoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -657,8 +655,7 @@
     .directory-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
     .directory-heading h1{font:800 20px 'Space Grotesk',sans-serif;color:#fff}
     .directory-heading p{font-size:11px;color:var(--text-sub);margin-top:4px}
-    #channel-count{font-size:11px;font-weight:800;color:#ffd36b;background:#211b0e;border:1px solid #58431b;padding:7px 10px;border-radius:30px;white-space:nowrap}
-    #channel-search{width:100%;height:44px;padding:0 14px;margin-bottom:13px;border:1px solid var(--app-border);border-radius:12px;background:#101827;color:#fff;font:600 13px 'Plus Jakarta Sans',sans-serif}
+    #channel-count{font-size:11px;font-weight:800;color:#ffd36b;background:#211b0e;border:1px solid #58431b;padding:7px 10px;border-radius:30px;white-space:nowrap}    #channel-search{width:100%;height:44px;padding:0 14px;margin-bottom:13px;border:1px solid var(--app-border);border-radius:12px;background:#101827;color:#fff;font:600 13px 'Plus Jakarta Sans',sans-serif}
     #channel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:11px}
     .channel-card{min-width:0;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:0;background:linear-gradient(145deg,#151f31,#0d1421);color:#fff;overflow:hidden;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s}
     .channel-card:active{transform:scale(.97)}
@@ -877,8 +874,7 @@
     #player-back button:active{transform:scale(.97)}
     #main-stage{
       width:min(100% - 28px,1180px);
-      margin:0 auto;
-      overflow:hidden;
+      margin:0 auto;      overflow:hidden;
       border-radius:20px;
       background:#000;
     }
@@ -1018,6 +1014,54 @@
       *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
     }
 
+  
+    /* PREMIUM CRICZONE WORDMARK + REFINED GOLD ACCENTS */
+    .header-logo-wrap{gap:13px}
+    .cz-wordmark{display:flex;align-items:center;gap:9px;min-width:0}
+    .cz-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;
+      color:#08111d;font:900 13px 'Chakra Petch',sans-serif;letter-spacing:-1px;
+      background:linear-gradient(145deg,#fff2b8 0%,#ffc83d 48%,#d68a08 100%);
+      border:1px solid rgba(255,239,183,.8);box-shadow:0 0 22px rgba(255,190,45,.24),inset 0 1px rgba(255,255,255,.75)}
+    .cz-name{font:900 17px 'Space Grotesk',sans-serif;letter-spacing:1.1px;color:#f8fbff}
+    .cz-name span{color:#ffc84a}
+    .stream-live-badge{position:static;transform:none;margin-left:1px;font-size:8px;padding:5px 8px}
+    .splash-logo-container{width:94px;height:94px;border-radius:27px;
+      background:linear-gradient(145deg,#192b48,#0a1323);border:1px solid rgba(255,203,83,.32);
+      box-shadow:0 18px 55px rgba(0,0,0,.4),0 0 35px rgba(255,190,45,.12)}
+    .splash-glow-halo{background:radial-gradient(circle,rgba(255,190,45,.34),transparent 70%)}
+    .splash-cz-mark{position:relative;z-index:2;color:#ffd36a;
+      font:900 35px 'Chakra Petch',sans-serif;letter-spacing:-3px;
+      text-shadow:0 0 22px rgba(255,190,45,.3);animation:pulseSplash 1.9s infinite ease-in-out}
+    .splash-brand-copy{display:flex;flex-direction:column;align-items:center;gap:5px;color:#f8fafc}
+    .splash-brand-copy strong{font:900 22px 'Space Grotesk',sans-serif;letter-spacing:2px}
+    .splash-brand-copy span{font:700 9px 'Plus Jakarta Sans',sans-serif;letter-spacing:2px;color:#b8c5d8}
+    #channel-browser{position:relative}
+    #channel-browser:before{content:"";display:block;width:min(180px,38vw);height:3px;margin:0 auto 17px;
+      border-radius:99px;background:linear-gradient(90deg,transparent,#ffc84a,#00d2ff,transparent);opacity:.85}
+    .directory-heading h1{background:linear-gradient(100deg,#fff 15%,#ffe09a 70%,#ffc13d);
+      -webkit-background-clip:text;background-clip:text;color:transparent}
+    #channel-search{border:1px solid rgba(255,200,74,.2)!important;
+      background:linear-gradient(135deg,rgba(20,32,52,.96),rgba(9,16,29,.96))!important;
+      box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035)}
+    #channel-search:focus{border-color:rgba(255,200,74,.7)!important;box-shadow:0 0 0 3px rgba(255,200,74,.1),0 12px 28px rgba(0,0,0,.2)}
+    .channel-card{border-color:rgba(255,255,255,.09)!important;
+      background:linear-gradient(155deg,rgba(25,39,62,.96),rgba(10,18,31,.98))!important;
+      box-shadow:0 12px 28px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.045)!important;
+      transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important}
+    .channel-card:hover{transform:translateY(-4px);border-color:rgba(255,200,74,.55)!important;
+      box-shadow:0 18px 35px rgba(0,0,0,.3),0 0 22px rgba(255,190,45,.08)!important}
+    .channel-logo{background:radial-gradient(circle at 50% 35%,#263d5d,#0b1423)!important}
+    .channel-card-name{background:linear-gradient(180deg,rgba(16,27,44,.92),rgba(8,14,25,.98))}
+    .channel-card-name small{color:#ffd16b!important}
+    #channel-count{border:1px solid rgba(255,200,74,.26)!important;background:rgba(255,190,45,.08)!important;color:#ffdc8a!important}
+    #player-back button{border:1px solid rgba(255,200,74,.35);background:linear-gradient(135deg,#1b2b43,#101a2b);color:#ffe09a}
+    .stream-room-meta{border-color:rgba(255,200,74,.16)}
+    .verified-badge{color:#ffd16b}
+    .live-watcher-badge{color:#ff777d}
+    .vip-telegram-pass{background:linear-gradient(115deg,#126bb0,#084c86 58%,#102c50);border-color:rgba(255,200,74,.35)}
+    .interactive-btn:hover{border-color:rgba(255,200,74,.38);color:#ffe09a}
+    @media(max-width:480px){.cz-name{font-size:15px}.cz-mark{width:32px;height:32px}}
+
   </style>
 </head>
 <body>
@@ -1028,7 +1072,7 @@
   <div id="loading-screen">
     <div class="splash-logo-container">
       <div class="splash-glow-halo"></div>
-      <img src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE" class="splash-logo-img">
+      <div class="splash-cz-mark" aria-label="CRICZONE">CZ</div>
     </div>
     <div class="splash-brand-copy"><strong>CRICZONE</strong><span>LIVE SPORTS • ALL CHANNELS</span></div>
     <div class="splash-progress-track">
@@ -1054,7 +1098,7 @@
        ======================================================== -->
   <header>
     <div class="header-logo-wrap">
-      <img src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE" class="logo-img">
+      <div class="cz-wordmark" aria-label="CRICZONE"><span class="cz-mark">CZ</span><span class="cz-name">CRIC<span>ZONE</span></span></div>
       <div class="stream-live-badge">
         <div class="live-pulse-dot"></div> LIVE
       </div>
@@ -1098,7 +1142,6 @@
       </div>
     </div>
   </div>
-
   <!-- ========================================================
        ACTIONS AREA (CLEAN UI - NO BOTTOM VIDEO CARD)
        ======================================================== -->
