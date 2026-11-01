@@ -20,11 +20,11 @@
   style.textContent = `
     #cz-member-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.58);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     #cz-member-overlay.cz-visible{display:flex;animation:czMemberFade .2s ease}
-    #cz-member-card{position:relative;width:min(100%,410px);overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:linear-gradient(155deg,#18283a,#0b1320 72%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #000a;animation:czMemberRise .25s ease}
+    #cz-member-card{position:relative;width:min(100%,420px);max-height:min(88dvh,760px);overflow:auto;border:1px solid rgba(255,255,255,.16);border-radius:26px;background:linear-gradient(155deg,#172b40 0%,#101a2a 48%,#09111e 100%);color:#f8fafc;text-align:center;box-shadow:0 28px 90px #000c;animation:czMemberRise .28s ease}
     #cz-member-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#ffcf55,#f28a20)}
-    #cz-member-card .cz-member-close{position:absolute;top:11px;right:11px;z-index:3;width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:50%;background:#07111ddd;color:#fff;font-size:24px;line-height:1;cursor:pointer}
-    #cz-member-card .cz-member-icon{width:66px;height:66px;display:grid;place-items:center;margin:28px auto 15px;border:1px solid #229ed966;border-radius:20px;background:#229ed91c;color:#55c6ff;font-size:31px}
-    #cz-member-card .cz-member-content{padding:0 25px 25px}
+    #cz-member-card .cz-member-photo{display:block;width:100%;height:clamp(130px,24vh,190px);object-fit:cover;object-position:center 38%;border-bottom:1px solid #ffffff18}
+    #cz-member-card .cz-member-icon{width:54px;height:54px;display:grid;place-items:center;margin:18px auto 13px;border:1px solid #229ed966;border-radius:17px;background:#229ed91c;color:#55c6ff;font-size:25px}
+    #cz-member-card .cz-member-content{padding:0 25px 24px}
     #cz-member-card .cz-member-tag{display:inline-block;padding:6px 11px;border:1px solid #66501e;border-radius:99px;background:#302612;color:#ffd36b;font-size:10px;font-weight:850;letter-spacing:1px}
     #cz-member-card h2{margin:13px 0 9px;font-size:clamp(22px,6vw,27px);line-height:1.15;font-weight:850}
     #cz-member-card p{margin:0 auto 18px;max-width:325px;color:#b7c4d4;font-size:14px;line-height:1.55}
@@ -35,7 +35,7 @@
     #cz-member-card .cz-member-status{min-height:19px;margin:13px 0 0;color:#aab8ca;font-size:12px;line-height:1.45}
     #cz-member-card .cz-member-status.cz-error{color:#ffaaa8}
     #cz-member-card .cz-member-status.cz-success{color:#80e6ad}
-    #cz-member-card .cz-member-note{margin-top:10px;color:#7f8da1;font-size:11px;line-height:1.45}
+    #cz-member-card .cz-member-note{display:none!important}
     #cz-member-card button:focus-visible,#cz-member-card a:focus-visible{outline:3px solid #ffd36b;outline-offset:3px}
     @keyframes czMemberFade{from{opacity:0}to{opacity:1}}
     @keyframes czMemberRise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -48,7 +48,7 @@
   overlay.id = "cz-member-overlay";
   overlay.innerHTML = `
     <section id="cz-member-card" role="dialog" aria-modal="true" aria-labelledby="cz-member-title">
-      <button class="cz-member-close" type="button" aria-label="Close popup">&times;</button>
+      <img class="cz-member-photo" src="/photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE community">
       <div class="cz-member-icon" aria-hidden="true">✈</div>
       <div class="cz-member-content">
         <span class="cz-member-tag">CRICZONE COMMUNITY</span>
@@ -59,7 +59,6 @@
           <button class="cz-member-btn" id="cz-member-verify" type="button">Continue with Telegram</button>
         </div>
         <div class="cz-member-status" id="cz-member-status" role="status" aria-live="polite">Your membership is checked securely by Telegram.</div>
-        <div class="cz-member-note">Already joined? Tap Continue with Telegram, open the bot, then return here. This page will verify automatically.</div>
       </div>
     </section>`;
   document.body.appendChild(overlay);
@@ -183,10 +182,21 @@
   }
 
   verifyButton.addEventListener("click", startVerification);
-  card.querySelector(".cz-member-close").addEventListener("click", hidePopup);
-  overlay.addEventListener("click", event => { if (event.target === overlay) hidePopup(); });
+  // Mandatory gate: ignore backdrop taps and Escape; only verified membership may dismiss it.
+  overlay.addEventListener("click", event => {
+    if (event.target === overlay) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  });
+  overlay.addEventListener("touchmove", event => {
+    if (event.target === overlay) event.preventDefault();
+  }, { passive: false });
   window.addEventListener("keydown", event => {
-    if (event.key === "Escape" && overlay.classList.contains("cz-visible")) hidePopup();
+    if (event.key === "Escape" && overlay.classList.contains("cz-visible")) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   });
 
   (async function init() {
