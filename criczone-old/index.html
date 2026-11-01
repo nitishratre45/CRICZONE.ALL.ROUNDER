@@ -3384,10 +3384,11 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
             "no-referrer"
         );
 
-        // Block popup windows and top-level ad redirects from embedded player pages.
+        // Keep embedded player compatibility while restricting unsolicited top-level navigation.
+        // Some providers require popup handling and user-initiated fullscreen/navigation.
         iframe.setAttribute(
             "sandbox",
-            "allow-scripts allow-same-origin allow-forms allow-presentation"
+            "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
         );
 
 
