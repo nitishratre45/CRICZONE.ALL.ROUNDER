@@ -3332,10 +3332,10 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                         "error",
                         event => {
 
-                            const detail = event.detail || {};
-                            const code = detail.code || "UNKNOWN";
-                            console.error("Shaka error:", detail);
-                            this.setPlayerStatus("ERROR " + code);
+                            console.error(
+                                "Shaka error:",
+                                event.detail
+                            );
 
                         }
                     );
@@ -3375,16 +3375,12 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
                 // A DASH/HLS manifest is media, not an HTML page.
                 // Never open a failed manifest inside an iframe (it appears as a blank white player).
-                const errorCode = error && error.code ? error.code : "UNKNOWN";
-                this.setPlayerStatus("ERROR " + errorCode);
-                console.error("CRICZONE playback failure details:", {
-                    code: errorCode,
-                    message: error && error.message ? error.message : String(error),
-                    streamUrl: url
-                });
-                this.$.player.style.background = "#000";
-                this.$.player.removeAttribute("src");
-                return;
+                console.error(
+                    "Shaka load failed:",
+                    error
+                );
+
+            }
 
             }
 
