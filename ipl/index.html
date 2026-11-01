@@ -37,5 +37,5 @@ async function loadPlaylist(){status('LOADING LIST','Fetching matches.m3u…');t
 document.getElementById('playBtn').addEventListener('click',()=>{if(!selected||!player){status('SELECT MATCH','Choose a feed from the playlist first.');return}player.play().catch(()=>status('READY','Press Play in the video controls to start.'))});document.getElementById('reloadBtn').addEventListener('click',loadPlaylist);search.addEventListener('input',render);language.addEventListener('change',render);loadPlaylist();
 })();
 </script>
-<script>(function(s){s.dataset.zone='12161194',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 </body></html>
