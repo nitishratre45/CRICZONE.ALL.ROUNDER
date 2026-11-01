@@ -674,6 +674,51 @@
     #player-back button{border:1px solid #344155;background:#111827;color:#fff;border-radius:10px;padding:9px 13px;font-weight:800;font-size:11px}
     @media(max-width:420px){#channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.channel-logo{height:78px}}
 
+
+    /* CRICZONE premium directory refresh */
+    .splash-logo-img{width:92px;height:92px;object-fit:contain;border-radius:22px;padding:7px;background:rgba(255,255,255,.035);border:1px solid rgba(255,184,0,.32);filter:drop-shadow(0 0 24px rgba(255,184,0,.32))}
+    .splash-glow-halo{width:150px;height:150px;background:radial-gradient(circle,rgba(255,184,0,.26),transparent 70%)}
+    .splash-brand-copy{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+    .splash-brand-copy strong{font:900 25px 'Space Grotesk',sans-serif;letter-spacing:4px;color:#fff;text-shadow:0 0 22px rgba(255,184,0,.24)}
+    .splash-brand-copy span{font-size:8px;font-weight:800;letter-spacing:2px;color:#ffd36b}
+    .splash-progress-track{width:174px;height:4px;background:rgba(255,255,255,.11)}
+    .splash-progress-bar{background:linear-gradient(90deg,#ffb800,#fff0b8,#ffb800)}
+    .logo-img{width:36px;height:36px;object-fit:contain;border-radius:9px;padding:2px;background:rgba(255,255,255,.04)}
+    #channel-browser{max-width:1120px;margin:0 auto;padding:22px 16px 34px}
+    .directory-heading{align-items:flex-end;margin-bottom:17px}
+    .directory-heading h1{font-size:clamp(21px,4vw,27px);letter-spacing:-.8px}
+    .directory-heading p{font-size:11px;line-height:1.6}
+    #channel-count{background:rgba(255,184,0,.09);border-color:rgba(255,184,0,.3);color:#ffcf64}
+    #channel-search{height:48px;margin-bottom:15px;padding:0 16px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(15,23,39,.88);box-shadow:0 8px 24px rgba(0,0,0,.12);font-size:13px}
+    #channel-search:focus{border-color:rgba(255,184,0,.65);box-shadow:0 0 0 3px rgba(255,184,0,.1)}
+    #channel-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:13px}
+    .channel-card{position:relative;display:flex;flex-direction:column;text-align:left;min-height:148px;border:1px solid rgba(255,255,255,.085);border-radius:16px;background:linear-gradient(155deg,rgba(24,35,54,.98),rgba(10,16,27,.98));box-shadow:0 8px 22px rgba(0,0,0,.2);overflow:hidden}
+    .channel-card:after{content:"TAP TO WATCH";position:absolute;right:9px;top:9px;padding:4px 7px;border-radius:6px;background:rgba(5,8,14,.78);border:1px solid rgba(255,184,0,.28);color:#ffd36b;font-size:7px;font-weight:900;letter-spacing:.7px}
+    .channel-card:hover{transform:translateY(-3px);border-color:rgba(255,184,0,.55);box-shadow:0 14px 28px rgba(0,0,0,.3)}
+    .channel-card:focus-visible,#back-to-channels:focus-visible{outline:2px solid #ffd36b;outline-offset:3px}
+    .channel-logo{height:94px;width:100%;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 25%,rgba(255,184,0,.13),transparent 65%),linear-gradient(135deg,#17243a,#0c1320);color:#ffd36b;font:900 25px 'Space Grotesk',sans-serif;letter-spacing:1px}
+    .channel-logo img{width:100%;height:100%;object-fit:contain;padding:13px}
+    .channel-card-name{display:block;padding:11px 12px 12px;font-size:11px;font-weight:900;letter-spacing:.15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .channel-card-name small{display:block;margin-top:5px;color:#9ba9bd;font-size:8px;font-weight:800;letter-spacing:.65px}
+    #directory-status{padding:34px 14px;color:#aab6c8}
+    #player-back{max-width:1120px;padding:12px 16px 0}
+    #player-back button{border-color:rgba(255,184,0,.35);background:linear-gradient(135deg,#182338,#101827);color:#ffd36b;min-height:40px}
+    #main-stage.active{border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 48px rgba(0,0,0,.45)}
+    .stream-room-meta{max-width:1120px;margin:0 auto}
+    .room-actions-container{max-width:620px;padding-bottom:30px}
+    .vip-telegram-pass{background:linear-gradient(120deg,#0878bd,#0755a8);border-color:rgba(78,190,255,.45)}
+    .interactive-btn{min-height:44px}
+    @media(max-width:520px){
+      #channel-browser{padding:17px 12px 26px}
+      #channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .channel-card{min-height:137px;border-radius:14px}
+      .channel-logo{height:82px}
+      .channel-card-name{padding:9px 10px 10px;font-size:10px}
+      .directory-heading h1{font-size:21px}
+      .stream-room-meta{padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){.splash-logo-img,.splash-glow-halo,.splash-progress-bar{animation:none!important}}
+
   </style>
 </head>
 <body>
@@ -686,6 +731,7 @@
       <div class="splash-glow-halo"></div>
       <img src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE" class="splash-logo-img">
     </div>
+    <div class="splash-brand-copy"><strong>CRICZONE</strong><span>LIVE SPORTS • ALL CHANNELS</span></div>
     <div class="splash-progress-track">
       <div class="splash-progress-bar"></div>
     </div>
@@ -807,28 +853,43 @@
   function safeHttpUrl(value){if(typeof value!=="string"||!value.trim())return"";try{const u=new URL(value.trim(),location.href);return /^https?:$/.test(u.protocol)?u.href:""}catch(_){return""}}
   function normalizePayload(payload){
     const lists=[],visited=new Set();
+    const preferred=["iframes","channels","streams","data","results","items","list","channel","tv"];
     function collect(value,depth=0){
-      if(!value||typeof value!=="object"||depth>7||visited.has(value))return;
+      if(!value||typeof value!=="object"||depth>8||visited.has(value))return;
       visited.add(value);
       if(Array.isArray(value)){lists.push(value);return}
-      const preferred=["iframes","channels","streams","data","results","items","list","channel","tv"];
-      preferred.forEach(k=>{if(value[k]!==undefined)collect(value[k],depth+1)});
+      for(const key of preferred)if(value[key]!==undefined)collect(value[key],depth+1);
       const entries=Object.entries(value);
-      if(entries.length&&entries.every(([,v])=>v&&typeof v==="object"&&!Array.isArray(v))){
-        lists.push(entries.map(([key,item])=>({id:item.id??item.channelId??item.channel_id??item.key??key,...item})));
+      if(entries.length&&entries.every(([,item])=>item&&typeof item==="object"&&!Array.isArray(item))){
+        lists.push(entries.map(([key,item])=>({...item,id:item.id??item.channelId??item.channel_id??item.key??key})));
       }
     }
     collect(payload);
-    const fields=["iframeSrc","iframe_src","iframe_url","stream_url","streamUrl","embedUrl","embed_url","embed","iframe","src","url","link","source"];
-    const isItem=x=>x&&typeof x==="object"&&(x.name||x.title||x.channel||x.channelName||x.id||x.channelId||fields.some(k=>x[k]));
-    const source=lists.find(list=>list.some(isItem))||[];
+    const urlFields=["iframeSrc","iframe_src","iframe_url","stream_url","streamUrl","embedUrl","embed_url","embed","iframe","src","url","link","source"];
+    const getUrl=item=>urlFields.map(key=>item&&item[key]).find(value=>typeof value==="string"&&value.trim());
+    const isChannel=item=>item&&typeof item==="object"&&getUrl(item);
+    // Prefer the list containing the greatest number of actual playable channel records.
+    let source=[];
+    let bestCount=0;
+    for(const list of lists){
+      const count=list.filter(isChannel).length;
+      if(count>bestCount){source=list;bestCount=count}
+    }
     const out=[],seen=new Set();
-    source.filter(isItem).forEach((x,i)=>{
-      const id=String(x.id??x.channelId??x.channel_id??x.key??i+1);
-      const url=safeHttpUrl(fields.map(k=>x[k]).find(v=>typeof v==="string"&&v.trim()));
-      if(!url||seen.has(id))return;
+    source.forEach((item,index)=>{
+      if(!isChannel(item))return;
+      const id=String(item.id??item.channelId??item.channel_id??item.key??index+1).trim();
+      const url=safeHttpUrl(getUrl(item));
+      if(!url||!id||seen.has(id))return;
       seen.add(id);
-      out.push({id,name:String(x.name??x.title??x.channelName??x.channel??("Channel "+(i+1))),url,logo:safeHttpUrl(x.logo??x.logoUrl??x.logourl??x.image??x.imageUrl),category:String(x.category??"Live")});
+      const rawLogo=item.logo??item.logoUrl??item.logourl??item.image??item.imageUrl??"";
+      out.push({
+        id,
+        name:String(item.name??item.title??item.channelName??item.channel??("Channel "+(index+1))),
+        url,
+        logo:safeHttpUrl(rawLogo),
+        category:String(item.category??item.group??item.type??"Live")
+      });
     });
     return out;
   }
