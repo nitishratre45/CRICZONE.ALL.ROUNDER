@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>CRICKET YODDHA - Live Stream</title>
+  <title>CRICZONE — Live Stream</title>
   
   <!-- Fonts & Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -37,7 +37,13 @@
       padding: 0;
     }
 
+    html { min-height:100%; -webkit-text-size-adjust:100%; }
     body {
+      min-height:100vh;
+      min-height:100dvh;
+      padding-top:env(safe-area-inset-top);
+      padding-left:env(safe-area-inset-left);
+      padding-right:env(safe-area-inset-right);
       background: var(--app-bg);
       background-image: 
         radial-gradient(ellipse at 50% -15%, #182852 0%, #060811 65%, #04050a 100%),
@@ -637,6 +643,8 @@
     }
 
     /* ERROR SCREEN */
+    #reloadIcon.is-reloading { animation: czRotate .55s linear infinite; }
+    @keyframes czRotate { to { transform: rotate(360deg); } }
     #error-screen {
       display: none; position: fixed; inset: 0; background: var(--app-bg);
       align-items: center; justify-content: center; flex-direction: column;
@@ -678,7 +686,7 @@
        ======================================================== -->
   <header>
     <div class="header-logo-wrap">
-      <img src="https://i.ibb.co/HLkW7zJV/ei-1765534270242-removebg-preview.png" alt="Cricket Yoddha" class="logo-img">
+      <img src="https://i.ibb.co/HLkW7zJV/ei-1765534270242-removebg-preview.png" alt="CRICZONE" class="logo-img">
       <div class="stream-live-badge">
         <div class="live-pulse-dot"></div> LIVE
       </div>
@@ -707,7 +715,7 @@
     <div class="stream-room-right">
       <div class="live-watcher-badge">
         <div class="watcher-dot"></div>
-        <span id="live-count">0</span> LIVE
+        <span id="live-count">LIVE</span>
       </div>
     </div>
   </div>
@@ -718,14 +726,14 @@
   <div class="room-actions-container">
     
     <!-- VIP 1-CLICK JOIN BAR -->
-    <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" onclick="verifyAccess()" class="vip-telegram-pass">
+    <a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer" class="vip-telegram-pass">
       <div class="vip-card-left">
         <div class="vip-icon-wrap">
           <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
         </div>
         <div class="vip-text-box">
-          <div class="vip-text-title">Join Official Telegram</div>
-          <div class="vip-text-desc">1-Click Tap • Instant 24H Match VIP Pass</div>
+          <div class="vip-text-title">Join CRICZONE Telegram</div>
+          <div class="vip-text-desc">Official channel • Membership verification</div>
         </div>
       </div>
       <div class="btn-tap-pill">TAP HERE 👉</div>
@@ -808,149 +816,163 @@
   <!-- ========================================================
        SCRIPTS & LOGIC INTEGRATION
        ======================================================== -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script>
-  
-    const JSON_URL = "http://127.0.0.1:5500/id.json"; // Replace with your actual JSON URL
-    const TELEGRAM_LINK = "https://t.me/+rwZKMV0-L8wyOTll";
-    const LOOT_CHANNEL_LINK = "https://t.me/+dXBfsd_sqlU1YWY1";
+  "use strict";
 
-    window.onload = () => {
-      const lastJoin = localStorage.getItem(CONFIG.timeKey);
-      const now = new Date().getTime();
-      
-      if (lastJoin && (now - lastJoin < CONFIG.expiry)) {
-        document.getElementById('main-stage').classList.remove('locked');
-      } else {
-        document.getElementById('main-stage').classList.add('locked');
-        setTimeout(() => {
-          document.getElementById('forcePop').classList.add('active');
-        }, CONFIG.preview);
-      }
-      
-      loadStream();
-      initTimedLootPopup();
-    };
+  const CHANNEL_API = "/api/channels?feed=directory";
+  const player = document.getElementById("main-player");
+  const splash = document.getElementById("loading-screen");
+  const errorScreen = document.getElementById("error-screen");
+  const errorMessage = document.getElementById("error-msg");
+  const channelName = document.getElementById("channel-name");
+  const toast = document.getElementById("toastMessage");
+  let toastTimer = 0;
 
-    // 1. STREAM LOADER (DYNAMIC VIA JSON)
-    async function loadStream() {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get("id");
-      
-      if (!id) {
-        showError("No channel ID specified.");
+  function hideSplash() {
+    if (!splash) return;
+    splash.style.opacity = "0";
+    splash.style.visibility = "hidden";
+    window.setTimeout(() => { splash.style.display = "none"; }, 460);
+  }
+
+  function showError(message) {
+    hideSplash();
+    errorMessage.textContent = message;
+    errorScreen.style.display = "flex";
+  }
+
+  function safeHttpUrl(value) {
+    if (typeof value !== "string" || !value.trim()) return "";
+    try {
+      const url = new URL(value.trim(), window.location.href);
+      return /^https?:$/.test(url.protocol) ? url.href : "";
+    } catch (_) { return ""; }
+  }
+
+  function findChannel(feed, id) {
+    const candidates = [];
+    const seen = new Set();
+    function walk(value, depth) {
+      if (!value || typeof value !== "object" || depth > 7 || seen.has(value)) return;
+      seen.add(value);
+      if (Array.isArray(value)) {
+        for (const item of value) walk(item, depth + 1);
         return;
       }
-
-      try {
-        const response = await fetch(JSON_URL + "?t=" + Date.now());
-        if (!response.ok) throw new Error("Fetch failed");
-        
-        const data = await response.json();
-        let iframeSrc = "";
-        let channelTitle = id.replace(/[-_]/g, ' ').toUpperCase();
-
-        if (data.iframes) {
-          const found = data.iframes.find(x => x.id === id);
-          if (found) {
-            iframeSrc = found.iframeSrc;
-            if (found.name || found.channel || found.title || found.channelName) {
-              channelTitle = found.name || found.channel || found.title || found.channelName;
-            }
-          }
-        } else if (data.channels && data.channels[id]) {
-          if (typeof data.channels[id] === 'object') {
-            iframeSrc = data.channels[id].iframeSrc || data.channels[id].link || data.channels[id].url;
-            channelTitle = data.channels[id].name || data.channels[id].channel || channelTitle;
-          } else {
-            iframeSrc = data.channels[id];
-          }
-        }
-
-        if (!iframeSrc) {
-          showError("Channel stream not found.");
-          return;
-        }
-
-        document.getElementById('channel-name').innerText = channelTitle.toUpperCase();
-        document.getElementById('main-player').src = iframeSrc;
-        
-        // Hide splash screen smoothly
-        const splash = document.getElementById('loading-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => { splash.style.display = 'none'; }, 450);
-
-      } catch (e) {
-        showError("Failed to fetch stream details.");
+      const keys = ["id", "key", "slug", "code", "channelId", "channel_id"];
+      const identity = keys.map(key => value[key]).find(v => v != null && String(v).toLowerCase() === id.toLowerCase());
+      if (identity != null) candidates.push(value);
+      for (const child of Object.values(value)) {
+        if (child && typeof child === "object") walk(child, depth + 1);
       }
     }
+    walk(feed, 0);
 
-    function showError(msg) {
-      document.getElementById('loading-screen').style.display = 'none';
-      const errScreen = document.getElementById('error-screen');
-      errScreen.style.display = 'flex';
-      document.getElementById('error-msg').innerText = msg;
-    }
-
-    function goTelegram() {
-      verifyAccess();
-      window.open(TELEGRAM_LINK, "_blank");
-    }
-
-    // 3. 60-SECONDS TIMED LOOT POP-UP
-    function initTimedLootPopup() {
-      setTimeout(() => {
-        const forcePop = document.getElementById('forcePop');
-        // Trigger timed pop-up only if first lock is not currently showing
-        if (!forcePop.classList.contains('active')) {
-          const pop = document.getElementById('timedLootPop');
-          pop.classList.add('active');
-          const video = document.getElementById('modalLootVideo');
-          if (video) video.play().catch(() => {});
+    // Some feeds are keyed by channel ID instead of storing an ID property.
+    if (feed && typeof feed === "object" && !Array.isArray(feed)) {
+      const roots = [feed.channels, feed.data, feed];
+      for (const root of roots) {
+        if (root && typeof root === "object" && !Array.isArray(root) && root[id] != null) {
+          const item = root[id];
+          candidates.unshift(typeof item === "string" ? { url: item, id } : item);
         }
-      }, CONFIG.lootDelay);
+      }
+    }
+    return candidates.find(item => item && typeof item === "object" &&
+      safeHttpUrl(item.iframeSrc || item.iframe || item.embedUrl || item.embed_url || item.streamUrl || item.stream_url || item.link || item.url || item.src)) || null;
+  }
+
+  function getStreamUrl(item) {
+    if (!item) return "";
+    return safeHttpUrl(item.iframeSrc || item.iframe || item.embedUrl || item.embed_url ||
+      item.streamUrl || item.stream_url || item.link || item.url || item.src);
+  }
+
+  async function loadStream() {
+    const params = new URLSearchParams(window.location.search);
+    const id = (params.get("id") || "").trim();
+    if (!id) {
+      showError("No channel ID was provided. Open this page from a CRICZONE channel link.");
+      return;
     }
 
-    // a) "I am Excited" Click Handler
-    function handleExcitedLoot() {
-      const video = document.getElementById('modalLootVideo');
-      if (video) video.pause();
-      document.getElementById('timedLootPop').classList.remove('active');
-      window.open(LOOT_CHANNEL_LINK, "_blank");
-    }
+    try {
+      const response = await fetch(CHANNEL_API, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      if (!response.ok) throw new Error("Channel feed returned HTTP " + response.status);
+      const feed = await response.json();
+      const channel = findChannel(feed, id);
+      const streamUrl = getStreamUrl(channel);
+      if (!streamUrl) throw new Error("Channel '" + id + "' was not found in the directory feed.");
 
-    // b) "Not Excited" Click Handler
-    function handleNotExcitedLoot() {
-      const video = document.getElementById('modalLootVideo');
-      if (video) video.pause();
-      document.getElementById('timedLootPop').classList.remove('active');
+      channelName.textContent = String(channel.name || channel.channel || channel.title || channel.channelName || id)
+        .replace(/[<>]/g, "").toUpperCase().slice(0, 80);
+      player.title = channelName.textContent + " live stream";
+      player.referrerPolicy = "no-referrer";
+      player.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      player.allowFullscreen = true;
+      player.src = streamUrl;
+      player.addEventListener("load", hideSplash, { once: true });
+      window.setTimeout(hideSplash, 9000);
+    } catch (error) {
+      console.error("CRICZONE iOS stream load failed:", error);
+      showError(error.message || "Unable to load this channel right now.");
     }
+  }
 
-    // 4. UTILITIES
-    function showToast(message) {
-      const toast = document.getElementById('toastMessage');
-      document.getElementById('toastText').innerText = message;
-      toast.classList.add('active');
-      setTimeout(() => { toast.classList.remove('active'); }, 2400);
+  function showToast(message) {
+    document.getElementById("toastText").textContent = message;
+    toast.classList.add("active");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove("active"), 2400);
+  }
+
+  function handleReload() {
+    const icon = document.getElementById("reloadIcon");
+    if (icon) icon.classList.add("is-reloading");
+    showToast("Refreshing stream…");
+    if (player) {
+      const current = player.src;
+      player.src = "about:blank";
+      window.setTimeout(() => { player.src = current; if (icon) icon.classList.remove("is-reloading"); }, 180);
     }
+  }
 
-    function handleReload() {
-      const icon = document.getElementById('reloadIcon');
-      if (icon) icon.style.transform = "rotate(360deg)";
-      showToast("Reloading Live Feed...");
-      setTimeout(() => { location.reload(); }, 350);
-    }
-
-    function handleShare() {
-      if (navigator.share) {
-        navigator.share({ title: 'Cricket Yoddha Live', url: window.location.href }).catch(() => {});
+  async function handleShare() {
+    const shareData = { title: "CRICZONE Live", url: window.location.href };
+    try {
+      if (navigator.share) await navigator.share(shareData);
+      else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast("Stream link copied!");
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        showToast("Link copied to clipboard!");
+        const field = document.createElement("textarea");
+        field.value = window.location.href;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        const copied = document.execCommand("copy");
+        field.remove();
+        showToast(copied ? "Stream link copied!" : "Copy this page URL to share.");
       }
+    } catch (error) {
+      if (error && error.name !== "AbortError") showToast("Unable to share. Copy the page link.");
     }
+  }
+
+  window.handleReload = handleReload;
+  window.handleShare = handleShare;
+  window.addEventListener("pageshow", event => {
+    if (event.persisted) loadStream();
+  });
+
+  loadStream();
   </script>
 </body>
 </html>
