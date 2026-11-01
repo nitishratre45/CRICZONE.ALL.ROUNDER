@@ -55,8 +55,8 @@
         <h2 id="cz-member-title">Verify Telegram Membership</h2>
         <p>Join our official Telegram channel and verify your membership to continue using CRICZONE.</p>
         <div class="cz-member-actions">
-          <a class="cz-member-btn cz-member-secondary" href="${CHANNEL_URL}" target="_blank" rel="noopener">Join Telegram Channel</a>
-          <button class="cz-member-btn" id="cz-member-verify" type="button">Continue with Telegram</button>
+          <button class="cz-member-btn cz-member-secondary" id="cz-member-continue" type="button">Continue with Telegram Bot</button>
+          <button class="cz-member-btn" id="cz-member-verify" type="button">Join and Verify with Telegram</button>
         </div>
         <div class="cz-member-status" id="cz-member-status" role="status" aria-live="polite">Your membership is checked securely by Telegram.</div>
       </div>
@@ -105,6 +105,8 @@
       setStatus("Membership verified successfully. You are all set!", "cz-success");
       verifyButton.textContent = "Verified";
       verifyButton.disabled = true;
+      continueButton.textContent = "Verified";
+      continueButton.disabled = true;
       window.setTimeout(hidePopup, 900);
       return true;
     }
@@ -114,7 +116,9 @@
       nonce = "";
       setStatus("This verification link expired. Please try again.", "cz-error");
       verifyButton.disabled = false;
-      verifyButton.textContent = "Try Again";
+      verifyButton.textContent = "Join and Verify with Telegram";
+      continueButton.disabled = false;
+      continueButton.textContent = "Continue with Telegram Bot";
       return false;
     }
     if (data.membership_valid === false) {
@@ -137,7 +141,9 @@
         pollTimer = 0;
         setStatus("Verification timed out. Tap Continue with Telegram to try again.", "cz-error");
         verifyButton.disabled = false;
-        verifyButton.textContent = "Try Again";
+        verifyButton.textContent = "Join and Verify with Telegram";
+        continueButton.disabled = false;
+        continueButton.textContent = "Continue with Telegram Bot";
         return;
       }
       try { await checkStatus(); }
@@ -149,7 +155,9 @@
     if (busy) return;
     busy = true;
     verifyButton.disabled = true;
+    continueButton.disabled = true;
     verifyButton.textContent = "Connecting…";
+    continueButton.textContent = "Connecting…";
     setStatus("Preparing your secure Telegram verification…");
     // Open a blank tab synchronously so mobile browsers do not block the bot link.
     const botWindow = window.open("about:blank", "_blank");
@@ -169,18 +177,23 @@
       if (botWindow) botWindow.location.href = data.bot_url;
       else window.location.href = data.bot_url;
       verifyButton.textContent = "Waiting for Telegram…";
+      continueButton.textContent = "Waiting for Telegram…";
       setStatus("Telegram bot opened. Press Start in the bot and make sure you have joined @criczonelive.");
       beginPolling();
     } catch (error) {
       if (botWindow && !botWindow.closed) botWindow.close();
       setStatus(error.message || "Unable to connect. Please try again.", "cz-error");
       verifyButton.disabled = false;
-      verifyButton.textContent = "Try Again";
+      verifyButton.textContent = "Join and Verify with Telegram";
+      continueButton.disabled = false;
+      continueButton.textContent = "Continue with Telegram Bot";
     } finally {
       busy = false;
     }
   }
 
+  const continueButton = $("cz-member-continue");
+  continueButton.addEventListener("click", startVerification);
   verifyButton.addEventListener("click", startVerification);
   // Mandatory gate: ignore backdrop taps and Escape; only verified membership may dismiss it.
   overlay.addEventListener("click", event => {
