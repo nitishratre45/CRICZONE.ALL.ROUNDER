@@ -862,6 +862,7 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
     toast("Stream URL is missing for this selection.", "err", 4000);
     return;
   }
+  currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
   var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(streamUrl);
   $frame.src = iframeUrl;
   $playerModal.style.display = "flex";
@@ -940,7 +941,8 @@ async function main(){
 
 document.addEventListener("DOMContentLoaded", function(){
   main();
-});;
+});
+})();
 </script>
 </body>
 </html>
