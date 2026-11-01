@@ -719,6 +719,17 @@
   <!-- ========================================================
        MAIN PLAYER STAGE
        ======================================================== -->
+  <section id="channel-browser" aria-label="All CRICZONE channels">
+    <div class="directory-heading">
+      <div><h1>All Live Channels</h1><p>Choose any channel to start watching</p></div>
+      <span id="channel-count">Loading…</span>
+    </div>
+    <input id="channel-search" type="search" placeholder="Search channels…" autocomplete="off" aria-label="Search channels">
+    <div id="channel-grid"></div>
+    <div id="directory-status">Loading all channels…</div>
+  </section>
+  <div id="player-back"><button type="button" id="back-to-channels">← ALL CHANNELS</button></div>
+
   <div id="main-stage">
     <div class="video-box">
       <iframe id="main-player" allowfullscreen="true" scrolling="no" allow="autoplay; encrypted-media"></iframe>
