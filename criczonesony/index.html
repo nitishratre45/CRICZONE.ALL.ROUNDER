@@ -140,8 +140,8 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
   const SPORTS_JSON_URL = "https://aryanstreams2.pages.dev/data/sports.json";
   function normalizeChannelName(value){
     return String(value||"").normalize("NFKD").toLowerCase()
-      .replace(/\\u0300-\\u036f/g,"")
-      .replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+      .replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
   }
   function collectSportsLogoRecords(data, output=[]){
     if(Array.isArray(data)){for(const item of data)collectSportsLogoRecords(item,output);return output;}
@@ -150,7 +150,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
     const logoKeys=["logo","logo_url","logoUrl","image","image_url","imageUrl","channel_logo","channelLogo","icon"];
     let name="",logo="";
     for(const key of nameKeys){if(typeof data[key]==="string"&&data[key].trim()){name=data[key].trim();break;}}
-    for(const key of logoKeys){if(typeof data[key]==="string"&&/^https?:\\/\\//i.test(data[key].trim())){logo=data[key].trim();break;}}
+    for(const key of logoKeys){if(typeof data[key]==="string"&&/^https?:\/\//i.test(data[key].trim())){logo=data[key].trim();break;}}
     if(name&&logo)output.push({name,logo});
     for(const value of Object.values(data))if(value&&typeof value==="object")collectSportsLogoRecords(value,output);
     return output;
