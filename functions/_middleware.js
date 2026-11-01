@@ -22,13 +22,13 @@ if(path==="/api/telegram/webhook"&&method==="POST")return await telegramWebhook(
 if(path==="/api/telegram/complete"&&method==="GET")return await telegramComplete(context);
 if(path==="/api/telegram/session"&&method==="GET")return await telegramSession(context);
 if(path==="/api/telegram/status"&&method==="GET")return await telegramStatus(context);
-// Add the same simple Telegram channel popup to every public HTML page.
+// Add the Telegram membership verification gate to every public HTML page.
 const response = await context.next();
 const contentType = response.headers.get("Content-Type") || "";
 if (method !== "GET" || !contentType.includes("text/html") ||
     /(^|\/)admin(?:\/|[-.]|$)/i.test(path) ||
     /admin/i.test(path.split("/").pop() || "")) return response;
-const popupScript = '<script src="/assets/js/telegram-membership-gate.js?v=normal6" defer></script>';
+const popupScript = '<script src="/assets/js/telegram-membership-gate.js?v=member1" defer></script>';
 return new HTMLRewriter().on("body", {
   element(element) { element.append(popupScript, { html: true }); }
 }).transform(response);
