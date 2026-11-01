@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Opening CRICZONE player…</title>
+  <script>
+    (function () {
+      var target = '/criczonebuzz/play.html' + window.location.search + window.location.hash;
+      window.location.replace(target);
+    })();
+  </script>
+  <noscript><meta http-equiv="refresh" content="0;url=/criczonebuzz/play.html"></noscript>
+</head>
+<body>
+  <p>Opening CRICZONE player…</p>
+  <p><a id="fallback" href="/criczonebuzz/play.html">Continue to player</a></p>
+  <script>
+    document.getElementById('fallback').href =
+      '/criczonebuzz/play.html' + window.location.search + window.location.hash;
+  </script>
+</body>
+</html>
