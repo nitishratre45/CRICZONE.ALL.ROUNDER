@@ -832,7 +832,15 @@
     });
     return out;
   }
-  function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;',"'":"&#39;"}[c]))}
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+      if (character === "&") return "&amp;";
+      if (character === "<") return "&lt;";
+      if (character === ">") return "&gt;";
+      if (character === '"') return "&quot;";
+      return "&#39;";
+    });
+  }
   function renderChannels(){
     const q=search.value.trim().toLowerCase();
     const visible=channels.filter(c=>(c.name+" "+c.category+" "+c.id).toLowerCase().includes(q));
