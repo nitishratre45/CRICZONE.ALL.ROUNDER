@@ -1,88 +1,198 @@
 (function () {
-  if (window.__CZ_NORMAL_CHANNEL_POPUP__) return;
-  window.__CZ_NORMAL_CHANNEL_POPUP__ = true;
+  "use strict";
+  if (window.__CZ_TELEGRAM_MEMBERSHIP_GATE__) return;
+  window.__CZ_TELEGRAM_MEMBERSHIP_GATE__ = true;
 
-  const CHANNEL = "https://t.me/criczonelive";
-  const PHOTO = "/photos/photo_2026-10-28_14-52-23.jpg";
-  const messages = [
-    { tag: "CRICZONE COMMUNITY", title: "Join Our Telegram Channel", text: "Get cricket updates, match alerts and the latest CRICZONE announcements in one place.", button: "Join Telegram Channel" },
-    { tag: "MATCH DAY UPDATES", title: "Stay Close to Every Match", text: "Follow our Telegram channel for live match updates, important notices and cricket content.", button: "Join for Match Updates" },
-    { tag: "DON'T MISS OUT", title: "Be Part of CRICZONE", text: "Join the official channel and stay connected with the CRICZONE cricket community.", button: "Join @criczonelive" }
-  ];
-  let step = 0, timer = 0, showing = false;
+  const CHANNEL_URL = "https://t.me/criczonelive";
+  const START_API = "/api/telegram/start";
+  const STATUS_API = "/api/telegram/status";
+  const SESSION_API = "/api/telegram/session";
+  const POLL_MS = 3000;
+  const MAX_WAIT_MS = 5 * 60 * 1000;
+
+  let nonce = "";
+  let pollTimer = 0;
+  let pollStartedAt = 0;
+  let busy = false;
+  let dismissed = false;
+
   const style = document.createElement("style");
   style.textContent = `
-    #cz-normal-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.48);backdrop-filter:none;-webkit-backdrop-filter:none;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
-    #cz-normal-overlay.cz-visible{display:flex;animation:czFade .2s ease}
-    #cz-normal-card{position:relative;width:min(100%,390px);overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:23px;background:linear-gradient(155deg,#182333,#0c121d 70%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #0009;animation:czRise .25s ease}
-    #cz-normal-card .cz-close{position:absolute;top:10px;right:10px;z-index:5;width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff66;border-radius:50%;background:#07111dcc;color:#fff;font-size:25px;line-height:1;cursor:pointer;box-shadow:0 3px 12px #0005;backdrop-filter:none}
-    #cz-normal-card .cz-close:focus-visible{outline:3px solid #ffd36b;outline-offset:3px}
-    #cz-normal-card .cz-close:active{transform:scale(.94)}
-    #cz-normal-card .cz-photo{width:100%;height:clamp(210px,34vh,280px);display:block;object-fit:contain;object-position:center;background:#0c121d}
-    /* Three deliberately different popup layouts */
-    #cz-normal-overlay.cz-style-2{background:rgba(0,12,28,.52)}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card{border:1px solid #2367a8;border-radius:16px;background:linear-gradient(160deg,#102d4a,#071421);box-shadow:0 22px 70px #001b36aa}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-photo{height:clamp(230px,38vh,310px);object-fit:contain;object-position:center;background:#071421}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-content{padding:22px 24px 25px}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-tag{border:1px solid #3989c8;border-radius:6px;background:#123c60;color:#9bd8ff}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card .cz-join{border-radius:999px;background:#229ed9;color:white}
-    #cz-normal-overlay.cz-style-3{background:rgba(4,8,15,.52);backdrop-filter:none}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card{border:2px solid #d5a83c;border-radius:30px;background:linear-gradient(145deg,#fff8e8,#f1e4c9);color:#171717;box-shadow:0 24px 90px #000b}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-photo{height:clamp(190px,29vh,245px);object-fit:contain;object-position:center;background:#ead9b5}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-content{padding:24px 22px 25px}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-tag{border:0;border-radius:5px;background:#17283c;color:#ffdc83}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card p{color:#4e5660}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card .cz-join{border-radius:8px;background:#14283e;color:#fff;box-shadow:0 5px 14px #14283e33}
-    #cz-normal-card .cz-content{transition:all .2s ease}
-    #cz-normal-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#ffcf55,#f28a20);z-index:2}
-    #cz-normal-card .cz-join{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;box-shadow:0 8px 22px #0003}
-    #cz-normal-card .cz-join:active{transform:scale(.98);filter:brightness(.96)}
-    #cz-normal-card .cz-join:focus-visible{outline:3px solid #fff;outline-offset:4px}
-    #cz-normal-overlay.cz-style-2 #cz-normal-card{animation:czSlide .34s cubic-bezier(.2,.8,.2,1)}
-    #cz-normal-overlay.cz-style-3 #cz-normal-card{animation:czPop .38s cubic-bezier(.2,.8,.2,1)}
-    @keyframes czSlide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
-    @keyframes czPop{from{opacity:0;transform:scale(.92) rotate(-1deg)}to{opacity:1;transform:scale(1) rotate(0)}}
-    @media(hover:hover){#cz-normal-card .cz-join:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 12px 26px #0004}}
-    #cz-normal-card .cz-content{padding:21px 22px 20px}
-    #cz-normal-card .cz-tag{display:inline-block;padding:6px 10px;border:1px solid #66501e;border-radius:99px;background:#302612;color:#ffd36b;font-size:10px;font-weight:850;letter-spacing:1px}
-    #cz-normal-card h2{margin:13px 0 9px;font-size:clamp(22px,6vw,27px);line-height:1.15;font-weight:850;letter-spacing:-.5px}
-    #cz-normal-card p{margin:0 auto 18px;max-width:310px;color:#b4c0cf;font-size:14px;line-height:1.55}
-    #cz-normal-card .cz-join{display:flex;min-height:49px;align-items:center;justify-content:center;width:100%;border-radius:12px;background:linear-gradient(135deg,#ffc94f,#ff941c);color:#17120a;font-weight:850;font-size:14px;text-decoration:none}
-    #cz-normal-card .cz-later{display:block;margin:13px auto 0;padding:7px 12px;border:0;background:transparent;color:#a9b4c3;font-size:13px;font-weight:650;cursor:pointer}
-    #cz-normal-card .cz-count{margin-top:8px;color:#78869a;font-size:11px}
-    @keyframes czFade{from{opacity:0}to{opacity:1}}@keyframes czRise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-    @media(max-width:380px){#cz-normal-card .cz-photo{height:clamp(190px,32vh,250px)}#cz-normal-card .cz-content{padding:18px 17px}}
-    @media(prefers-reduced-motion:reduce){#cz-normal-overlay,#cz-normal-card{animation:none}}
+    #cz-member-overlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;padding-top:max(18px,env(safe-area-inset-top));padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(3,7,13,.58);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+    #cz-member-overlay.cz-visible{display:flex;animation:czMemberFade .2s ease}
+    #cz-member-card{position:relative;width:min(100%,410px);overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:linear-gradient(155deg,#18283a,#0b1320 72%);color:#f8fafc;text-align:center;box-shadow:0 24px 80px #000a;animation:czMemberRise .25s ease}
+    #cz-member-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#ffcf55,#f28a20)}
+    #cz-member-card .cz-member-close{position:absolute;top:11px;right:11px;z-index:3;width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:50%;background:#07111ddd;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+    #cz-member-card .cz-member-icon{width:66px;height:66px;display:grid;place-items:center;margin:28px auto 15px;border:1px solid #229ed966;border-radius:20px;background:#229ed91c;color:#55c6ff;font-size:31px}
+    #cz-member-card .cz-member-content{padding:0 25px 25px}
+    #cz-member-card .cz-member-tag{display:inline-block;padding:6px 11px;border:1px solid #66501e;border-radius:99px;background:#302612;color:#ffd36b;font-size:10px;font-weight:850;letter-spacing:1px}
+    #cz-member-card h2{margin:13px 0 9px;font-size:clamp(22px,6vw,27px);line-height:1.15;font-weight:850}
+    #cz-member-card p{margin:0 auto 18px;max-width:325px;color:#b7c4d4;font-size:14px;line-height:1.55}
+    #cz-member-card .cz-member-actions{display:grid;gap:10px}
+    #cz-member-card .cz-member-btn{display:flex;min-height:49px;align-items:center;justify-content:center;width:100%;padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#ffc94f,#ff941c);color:#17120a;font-weight:850;font-size:14px;text-decoration:none;cursor:pointer}
+    #cz-member-card .cz-member-btn:disabled{opacity:.65;cursor:wait}
+    #cz-member-card .cz-member-secondary{border:1px solid #ffffff24;background:#ffffff0b;color:#e5edf7}
+    #cz-member-card .cz-member-status{min-height:19px;margin:13px 0 0;color:#aab8ca;font-size:12px;line-height:1.45}
+    #cz-member-card .cz-member-status.cz-error{color:#ffaaa8}
+    #cz-member-card .cz-member-status.cz-success{color:#80e6ad}
+    #cz-member-card .cz-member-note{margin-top:10px;color:#7f8da1;font-size:11px;line-height:1.45}
+    #cz-member-card button:focus-visible,#cz-member-card a:focus-visible{outline:3px solid #ffd36b;outline-offset:3px}
+    @keyframes czMemberFade{from{opacity:0}to{opacity:1}}
+    @keyframes czMemberRise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(max-width:380px){#cz-member-card .cz-member-content{padding:0 18px 21px}}
+    @media(prefers-reduced-motion:reduce){#cz-member-overlay,#cz-member-card{animation:none}}
   `;
   document.head.appendChild(style);
-  const overlay=document.createElement("div");
-  overlay.id="cz-normal-overlay";
-  overlay.innerHTML='<section id="cz-normal-card" role="dialog" aria-modal="true" aria-labelledby="cz-normal-title"><button class="cz-close" id="cz-normal-close" type="button" aria-label="Close popup">&times;</button><img class="cz-photo" src="'+PHOTO+'" alt="CRICZONE cricket"><div class="cz-content"><span class="cz-tag" id="cz-normal-tag"></span><h2 id="cz-normal-title"></h2><p id="cz-normal-text"></p><a class="cz-join" id="cz-normal-join" href="'+CHANNEL+'" target="_blank" rel="noopener">Join Telegram Channel</a></div></section>';
+
+  const overlay = document.createElement("div");
+  overlay.id = "cz-member-overlay";
+  overlay.innerHTML = `
+    <section id="cz-member-card" role="dialog" aria-modal="true" aria-labelledby="cz-member-title">
+      <button class="cz-member-close" type="button" aria-label="Close popup">&times;</button>
+      <div class="cz-member-icon" aria-hidden="true">✈</div>
+      <div class="cz-member-content">
+        <span class="cz-member-tag">CRICZONE COMMUNITY</span>
+        <h2 id="cz-member-title">Verify Telegram Membership</h2>
+        <p>Join our official Telegram channel and verify your membership to continue using CRICZONE.</p>
+        <div class="cz-member-actions">
+          <a class="cz-member-btn cz-member-secondary" href="${CHANNEL_URL}" target="_blank" rel="noopener">Join Telegram Channel</a>
+          <button class="cz-member-btn" id="cz-member-verify" type="button">Continue with Telegram</button>
+        </div>
+        <div class="cz-member-status" id="cz-member-status" role="status" aria-live="polite">Your membership is checked securely by Telegram.</div>
+        <div class="cz-member-note">Already joined? Tap Continue with Telegram, open the bot, then return here. This page will verify automatically.</div>
+      </div>
+    </section>`;
   document.body.appendChild(overlay);
-  const $=id=>document.getElementById(id);
-  function closeStep(){
+
+  const $ = id => document.getElementById(id);
+  const card = $("cz-member-card");
+  const status = $("cz-member-status");
+  const verifyButton = $("cz-member-verify");
+
+  function setStatus(message, type) {
+    status.textContent = message;
+    status.classList.remove("cz-error", "cz-success");
+    if (type) status.classList.add(type);
+  }
+
+  function hidePopup() {
     overlay.classList.remove("cz-visible");
-    document.body.style.overflow="";
-    showing=false;
-    step++;
-    if(step<messages.length) showStep();
+    document.body.style.overflow = "";
+    dismissed = true;
   }
-  function showStep(){
-    if(step>=messages.length||showing)return;
-    const m=messages[step];
-    overlay.classList.remove("cz-style-2","cz-style-3");
-    if(step===1) overlay.classList.add("cz-style-2");
-    if(step===2) overlay.classList.add("cz-style-3");
-    $("cz-normal-tag").textContent=m.tag;
-    $("cz-normal-title").textContent=m.title;
-    $("cz-normal-text").textContent=m.text;
-    $("cz-normal-join").textContent=m.button;
+
+  function showPopup() {
+    if (dismissed || !overlay.isConnected) return;
     overlay.classList.add("cz-visible");
-    document.body.style.overflow="hidden";
-    showing=true;
+    document.body.style.overflow = "hidden";
   }
-  $("cz-normal-close").addEventListener("click",closeStep);
-  overlay.addEventListener("click",e=>{if(e.target===overlay)closeStep()});
-  window.addEventListener("keydown",e=>{if(e.key==="Escape"&&showing)closeStep()});
-  timer=window.setTimeout(showStep,5000);
+
+  async function requestSession() {
+    const response = await fetch(SESSION_API, { credentials: "same-origin", cache: "no-store" });
+    if (!response.ok) return false;
+    const data = await response.json();
+    return data.verified === true && data.membership_valid === true;
+  }
+
+  async function checkStatus() {
+    if (!nonce) return false;
+    const response = await fetch(STATUS_API + "?nonce=" + encodeURIComponent(nonce), {
+      credentials: "same-origin", cache: "no-store"
+    });
+    const data = await response.json().catch(() => ({}));
+    if (data.verified === true) {
+      clearInterval(pollTimer);
+      pollTimer = 0;
+      setStatus("Membership verified successfully. You are all set!", "cz-success");
+      verifyButton.textContent = "Verified";
+      verifyButton.disabled = true;
+      window.setTimeout(hidePopup, 900);
+      return true;
+    }
+    if (response.status === 410 || data.expired) {
+      clearInterval(pollTimer);
+      pollTimer = 0;
+      nonce = "";
+      setStatus("This verification link expired. Please try again.", "cz-error");
+      verifyButton.disabled = false;
+      verifyButton.textContent = "Try Again";
+      return false;
+    }
+    if (data.membership_valid === false) {
+      setStatus("Membership not detected yet. Join @criczonelive, then tap Continue with Telegram.", "cz-error");
+    } else if (data.pending) {
+      setStatus("Waiting for Telegram membership confirmation…");
+    } else if (data.error) {
+      setStatus(data.error, "cz-error");
+    }
+    return false;
+  }
+
+  function beginPolling() {
+    clearInterval(pollTimer);
+    pollStartedAt = Date.now();
+    checkStatus().catch(() => setStatus("Checking Telegram…"));
+    pollTimer = window.setInterval(async () => {
+      if (Date.now() - pollStartedAt > MAX_WAIT_MS) {
+        clearInterval(pollTimer);
+        pollTimer = 0;
+        setStatus("Verification timed out. Tap Continue with Telegram to try again.", "cz-error");
+        verifyButton.disabled = false;
+        verifyButton.textContent = "Try Again";
+        return;
+      }
+      try { await checkStatus(); }
+      catch (_) { setStatus("Connection issue. Retrying membership check…", "cz-error"); }
+    }, POLL_MS);
+  }
+
+  async function startVerification() {
+    if (busy) return;
+    busy = true;
+    verifyButton.disabled = true;
+    verifyButton.textContent = "Connecting…";
+    setStatus("Preparing your secure Telegram verification…");
+    // Open a blank tab synchronously so mobile browsers do not block the bot link.
+    const botWindow = window.open("about:blank", "_blank");
+    try {
+      const response = await fetch(START_API, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ return_url: window.location.href })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !data.nonce || !data.bot_url) {
+        if (botWindow) botWindow.close();
+        throw new Error(data.error || "Could not start Telegram verification.");
+      }
+      nonce = data.nonce;
+      if (botWindow) botWindow.location.href = data.bot_url;
+      else window.location.href = data.bot_url;
+      verifyButton.textContent = "Waiting for Telegram…";
+      setStatus("Telegram bot opened. Press Start in the bot and make sure you have joined @criczonelive.");
+      beginPolling();
+    } catch (error) {
+      if (botWindow && !botWindow.closed) botWindow.close();
+      setStatus(error.message || "Unable to connect. Please try again.", "cz-error");
+      verifyButton.disabled = false;
+      verifyButton.textContent = "Try Again";
+    } finally {
+      busy = false;
+    }
+  }
+
+  verifyButton.addEventListener("click", startVerification);
+  card.querySelector(".cz-member-close").addEventListener("click", hidePopup);
+  overlay.addEventListener("click", event => { if (event.target === overlay) hidePopup(); });
+  window.addEventListener("keydown", event => {
+    if (event.key === "Escape" && overlay.classList.contains("cz-visible")) hidePopup();
+  });
+
+  (async function init() {
+    try {
+      if (await requestSession()) return;
+    } catch (_) { /* Fail closed: show the membership prompt if session check is unavailable. */ }
+    window.setTimeout(showPopup, 5000);
+  })();
 })();
