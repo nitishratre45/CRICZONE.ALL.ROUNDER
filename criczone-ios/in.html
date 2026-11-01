@@ -754,7 +754,7 @@
   <script>
   "use strict";
 
-  const CHANNEL_API = "/api/channels?feed=directory";
+  const CHANNEL_JSON_URL = "https://allrounder3-0.pages.dev/id.json";
   const player = document.getElementById("main-player");
   const splash = document.getElementById("loading-screen");
   const errorScreen = document.getElementById("error-screen");
@@ -832,10 +832,11 @@
     }
 
     try {
-      const response = await fetch(CHANNEL_API, {
+      const response = await fetch(CHANNEL_JSON_URL, {
         method: "GET",
         headers: { "Accept": "application/json" },
-        credentials: "same-origin",
+        mode: "cors",
+        credentials: "omit",
         cache: "no-store"
       });
       if (!response.ok) throw new Error("Channel feed returned HTTP " + response.status);
