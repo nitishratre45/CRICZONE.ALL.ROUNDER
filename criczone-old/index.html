@@ -936,6 +936,32 @@ button {
 }
 
 
+.card-head {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-bottom: 14px;
+}
+
+.channel-logo {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    object-fit: contain;
+    border-radius: 10px;
+    padding: 4px;
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 2px 12px rgba(0,0,0,.22);
+}
+
+.card-head .card-title {
+    min-width: 0;
+    margin: 0;
+}
+
 .card-title {
 
     position: relative;
@@ -2886,14 +2912,12 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
                 card.innerHTML = `
 
-                    <div class="card-title">
-
-                        ${this.escapeHtml(
-                            title
-                        )}
-
+                    <div class="card-head">
+                        <img class="channel-logo" alt="">
+                        <div class="card-title">
+                            ${this.escapeHtml(title)}
+                        </div>
                     </div>
-
 
                     <div class="card-meta">
 
@@ -2908,6 +2932,27 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                     </div>
 
                 `;
+
+
+                const logoUrl =
+                    channel.logo ||
+                    channel.logo_url ||
+                    channel.image ||
+                    channel.image_url ||
+                    channel.channel_logo ||
+                    channel.icon ||
+                    "";
+
+                const logoImage = card.querySelector(".channel-logo");
+
+                if (typeof logoUrl === "string" && /^https?:\\/\\//i.test(logoUrl.trim())) {
+                    logoImage.src = logoUrl.trim();
+                    logoImage.onerror = () => {
+                        logoImage.remove();
+                    };
+                } else {
+                    logoImage.remove();
+                }
 
 
                 card.onclick = () => {
