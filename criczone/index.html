@@ -2651,14 +2651,19 @@ this.setupBackground();
 
         try {
 
-            const response =
-                await fetch(
-                    window.CricConfig.sourceUrl,
-                    {
-                        cache:
-                            "no-store"
-                    }
-                );
+            this.$.grid.innerHTML = '<div class="state">Loading channels…</div>';
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 12000);
+            let response;
+            try {
+                response = await fetch(window.CricConfig.sourceUrl, {
+                    cache: "no-store",
+                    headers: { Accept: "application/json" },
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeout);
+            }
 
 
             if (
@@ -2737,15 +2742,8 @@ this.setupBackground();
             );
 
 
-            this.$.grid.innerHTML = `
-
-                <div class="state">
-
-                    Unable to load channels.
-
-                </div>
-
-            `;
+            this.$.grid.innerHTML = '<div class="state">Channels could not load. Check your connection and try again.<br><button type="button" id="retryChannels">Retry</button></div>';
+            this.$.grid.querySelector("#retryChannels")?.addEventListener("click", () => this.fetchChannels());
 
         }
 
