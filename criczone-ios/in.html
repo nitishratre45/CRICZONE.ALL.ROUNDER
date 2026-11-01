@@ -651,6 +651,29 @@
       gap: 12px; z-index: 9998; padding: 20px; text-align: center;
     }
     #error-screen h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--app-live); }
+
+    /* CRICZONE channel directory */
+    #channel-browser{max-width:1100px;margin:0 auto;padding:18px 14px 26px}
+    .directory-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .directory-heading h1{font:800 20px 'Space Grotesk',sans-serif;color:#fff}
+    .directory-heading p{font-size:11px;color:var(--text-sub);margin-top:4px}
+    #channel-count{font-size:11px;font-weight:800;color:#ffd36b;background:#211b0e;border:1px solid #58431b;padding:7px 10px;border-radius:30px;white-space:nowrap}
+    #channel-search{width:100%;height:44px;padding:0 14px;margin-bottom:13px;border:1px solid var(--app-border);border-radius:12px;background:#101827;color:#fff;font:600 13px 'Plus Jakarta Sans',sans-serif}
+    #channel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:11px}
+    .channel-card{min-width:0;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:0;background:linear-gradient(145deg,#151f31,#0d1421);color:#fff;overflow:hidden;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s}
+    .channel-card:active{transform:scale(.97)}
+    .channel-card:hover{border-color:rgba(255,184,0,.65);box-shadow:0 8px 22px #0008}
+    .channel-logo{height:88px;display:grid;place-items:center;background:radial-gradient(circle,#23344c,#111827);font:900 24px 'Space Grotesk',sans-serif;color:#ffd36b}
+    .channel-logo img{width:100%;height:100%;object-fit:contain;padding:12px}
+    .channel-card-name{padding:10px 10px 11px;font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .channel-card-name small{display:block;color:#9aa8bb;font-size:9px;font-weight:700;margin-top:4px}
+    #directory-status{text-align:center;color:#9aa8bb;padding:28px 12px;font-size:12px}
+    #main-stage{display:none}
+    #main-stage.active{display:block}
+    #player-back{display:none;max-width:1100px;margin:0 auto;padding:12px 14px 0}
+    #player-back button{border:1px solid #344155;background:#111827;color:#fff;border-radius:10px;padding:9px 13px;font-weight:800;font-size:11px}
+    @media(max-width:420px){#channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.channel-logo{height:78px}}
+
   </style>
 </head>
 <body>
@@ -753,7 +776,6 @@
 
   <script>
   "use strict";
-
   const CHANNEL_JSON_URL = "https://allrounder3-0.pages.dev/id.json";
   const player = document.getElementById("main-player");
   const splash = document.getElementById("loading-screen");
@@ -761,154 +783,94 @@
   const errorMessage = document.getElementById("error-msg");
   const channelName = document.getElementById("channel-name");
   const toast = document.getElementById("toastMessage");
-  let toastTimer = 0;
+  const grid = document.getElementById("channel-grid");
+  const search = document.getElementById("channel-search");
+  const directoryStatus = document.getElementById("directory-status");
+  const stage = document.getElementById("main-stage");
+  const browser = document.getElementById("channel-browser");
+  const backBar = document.getElementById("player-back");
+  let channels = [], toastTimer = 0;
 
-  function hideSplash() {
-    if (!splash) return;
-    splash.style.opacity = "0";
-    splash.style.visibility = "hidden";
-    window.setTimeout(() => { splash.style.display = "none"; }, 460);
-  }
-
-  function showError(message) {
-    hideSplash();
-    errorMessage.textContent = message;
-    errorScreen.style.display = "flex";
-  }
-
-  function safeHttpUrl(value) {
-    if (typeof value !== "string" || !value.trim()) return "";
-    try {
-      const url = new URL(value.trim(), window.location.href);
-      return /^https?:$/.test(url.protocol) ? url.href : "";
-    } catch (_) { return ""; }
-  }
-
-  function findChannel(feed, id) {
-    const candidates = [];
-    const seen = new Set();
-    function walk(value, depth) {
-      if (!value || typeof value !== "object" || depth > 7 || seen.has(value)) return;
-      seen.add(value);
-      if (Array.isArray(value)) {
-        for (const item of value) walk(item, depth + 1);
-        return;
-      }
-      const keys = ["id", "key", "slug", "code", "channelId", "channel_id"];
-      const identity = keys.map(key => value[key]).find(v => v != null && String(v).toLowerCase() === id.toLowerCase());
-      if (identity != null) candidates.push(value);
-      for (const child of Object.values(value)) {
-        if (child && typeof child === "object") walk(child, depth + 1);
+  function hideSplash(){if(!splash)return;splash.style.opacity="0";splash.style.visibility="hidden";window.setTimeout(()=>splash.style.display="none",460)}
+  function showError(message){hideSplash();errorMessage.textContent=message;errorScreen.style.display="flex"}
+  function safeHttpUrl(value){if(typeof value!=="string"||!value.trim())return"";try{const u=new URL(value.trim(),location.href);return /^https?:$/.test(u.protocol)?u.href:""}catch(_){return""}}
+  function normalizePayload(payload){
+    const lists=[],visited=new Set();
+    function collect(value,depth=0){
+      if(!value||typeof value!=="object"||depth>7||visited.has(value))return;
+      visited.add(value);
+      if(Array.isArray(value)){lists.push(value);return}
+      const preferred=["iframes","channels","streams","data","results","items","list","channel","tv"];
+      preferred.forEach(k=>{if(value[k]!==undefined)collect(value[k],depth+1)});
+      const entries=Object.entries(value);
+      if(entries.length&&entries.every(([,v])=>v&&typeof v==="object"&&!Array.isArray(v))){
+        lists.push(entries.map(([key,item])=>({id:item.id??item.channelId??item.channel_id??item.key??key,...item})));
       }
     }
-    walk(feed, 0);
-
-    // Some feeds are keyed by channel ID instead of storing an ID property.
-    if (feed && typeof feed === "object" && !Array.isArray(feed)) {
-      const roots = [feed.channels, feed.data, feed];
-      for (const root of roots) {
-        if (root && typeof root === "object" && !Array.isArray(root) && root[id] != null) {
-          const item = root[id];
-          candidates.unshift(typeof item === "string" ? { url: item, id } : item);
-        }
-      }
-    }
-    return candidates.find(item => item && typeof item === "object" &&
-      safeHttpUrl(item.iframeSrc || item.iframe || item.embedUrl || item.embed_url || item.streamUrl || item.stream_url || item.link || item.url || item.src)) || null;
+    collect(payload);
+    const fields=["iframeSrc","iframe_src","iframe_url","stream_url","streamUrl","embedUrl","embed_url","embed","iframe","src","url","link","source"];
+    const isItem=x=>x&&typeof x==="object"&&(x.name||x.title||x.channel||x.channelName||x.id||x.channelId||fields.some(k=>x[k]));
+    const source=lists.find(list=>list.some(isItem))||[];
+    const out=[],seen=new Set();
+    source.filter(isItem).forEach((x,i)=>{
+      const id=String(x.id??x.channelId??x.channel_id??x.key??i+1);
+      const url=safeHttpUrl(fields.map(k=>x[k]).find(v=>typeof v==="string"&&v.trim()));
+      if(!url||seen.has(id))return;
+      seen.add(id);
+      out.push({id,name:String(x.name??x.title??x.channelName??x.channel??("Channel "+(i+1))),url,logo:safeHttpUrl(x.logo??x.logoUrl??x.logourl??x.image??x.imageUrl),category:String(x.category??"Live")});
+    });
+    return out;
   }
-
-  function getStreamUrl(item) {
-    if (!item) return "";
-    return safeHttpUrl(item.iframeSrc || item.iframe || item.embedUrl || item.embed_url ||
-      item.streamUrl || item.stream_url || item.link || item.url || item.src);
+  function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;',"'":"&#39;"}[c]))}
+  function renderChannels(){
+    const q=search.value.trim().toLowerCase();
+    const visible=channels.filter(c=>(c.name+" "+c.category+" "+c.id).toLowerCase().includes(q));
+    document.getElementById("channel-count").textContent=visible.length+" / "+channels.length;
+    grid.innerHTML=visible.map(c=>'<button class="channel-card" type="button" data-id="'+escapeHtml(c.id)+'" aria-label="Play '+escapeHtml(c.name)+'"><span class="channel-logo">'+(c.logo?'<img loading="lazy" src="'+escapeHtml(c.logo)+'" alt="" onerror="this.remove()">':escapeHtml(c.name.slice(0,3).toUpperCase()))+'</span><span class="channel-card-name">'+escapeHtml(c.name)+'<small>'+escapeHtml(c.category)+' · TAP TO PLAY</small></span></button>').join("");
+    directoryStatus.textContent=visible.length? "Tap any channel to start streaming.": "No channels match your search.";
+    directoryStatus.style.display=visible.length?"none":"block";
+    grid.querySelectorAll(".channel-card").forEach(card=>card.addEventListener("click",()=>playChannel(card.dataset.id)));
   }
-
-  async function loadStream() {
-    const params = new URLSearchParams(window.location.search);
-    const id = (params.get("id") || "").trim();
-    if (!id) {
-      showError("No channel ID was provided. Open this page from a CRICZONE channel link.");
-      return;
-    }
-
-    try {
-      const response = await fetch(CHANNEL_JSON_URL, {
-        method: "GET",
-        headers: { "Accept": "application/json" },
-        mode: "cors",
-        credentials: "omit",
-        cache: "no-store"
-      });
-      if (!response.ok) throw new Error("Channel feed returned HTTP " + response.status);
-      const feed = await response.json();
-      const channel = findChannel(feed, id);
-      const streamUrl = getStreamUrl(channel);
-      if (!streamUrl) throw new Error("Channel '" + id + "' was not found in the directory feed.");
-
-      channelName.textContent = String(channel.name || channel.channel || channel.title || channel.channelName || id)
-        .replace(/[<>]/g, "").toUpperCase().slice(0, 80);
-      player.title = channelName.textContent + " live stream";
-      player.referrerPolicy = "no-referrer";
-      player.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-      player.allowFullscreen = true;
-      player.src = streamUrl;
-      player.addEventListener("load", hideSplash, { once: true });
-      window.setTimeout(hideSplash, 9000);
-    } catch (error) {
-      console.error("CRICZONE iOS stream load failed:", error);
-      showError(error.message || "Unable to load this channel right now.");
-    }
+  function playChannel(id){
+    const c=channels.find(x=>x.id===String(id));if(!c)return;
+    errorScreen.style.display="none";
+    channelName.textContent=c.name.toUpperCase().slice(0,80);
+    player.title=c.name+" live stream";player.referrerPolicy="no-referrer";
+    player.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";player.allowFullscreen=true;
+    player.src=c.url;
+    stage.classList.add("active");backBar.style.display="block";
+    browser.style.display="none";
+    const next=new URL(location.href);next.searchParams.set("id",c.id);history.replaceState({id:c.id},"",next);
+    window.scrollTo({top:0,behavior:"smooth"});
   }
-
-  function showToast(message) {
-    document.getElementById("toastText").textContent = message;
-    toast.classList.add("active");
-    window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => toast.classList.remove("active"), 2400);
+  function backToChannels(){
+    player.src="about:blank";stage.classList.remove("active");backBar.style.display="none";
+    browser.style.display="block";
+    const next=new URL(location.href);next.searchParams.delete("id");history.replaceState({},"",next);
+    window.scrollTo({top:0,behavior:"smooth"});
   }
-
-  function handleReload() {
-    const icon = document.getElementById("reloadIcon");
-    if (icon) icon.classList.add("is-reloading");
-    showToast("Refreshing stream…");
-    if (player) {
-      const current = player.src;
-      player.src = "about:blank";
-      window.setTimeout(() => { player.src = current; if (icon) icon.classList.remove("is-reloading"); }, 180);
-    }
+  async function loadChannels(){
+    try{
+      const response=await fetch(CHANNEL_JSON_URL,{method:"GET",headers:{Accept:"application/json"},mode:"cors",credentials:"omit",cache:"no-store"});
+      if(!response.ok)throw new Error("Channel feed returned HTTP "+response.status);
+      const raw=await response.text();
+      if(/^\s*<!doctype\s+html|^\s*<html/i.test(raw))throw new Error("Channel source returned HTML instead of JSON.");
+      const data=JSON.parse(raw);channels=normalizePayload(data);
+      if(!channels.length)throw new Error("Feed loaded, but no playable channels were found.");
+      channels.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:"base"}));
+      renderChannels();directoryStatus.style.display="none";hideSplash();
+      // Always show the complete channel directory first. A URL id never starts playback automatically.
+    }catch(error){console.error("CRICZONE channel directory:",error);directoryStatus.textContent=error.message||"Unable to load channels.";showError(error.message||"Unable to load channels.");}
   }
-
-  async function handleShare() {
-    const shareData = { title: "CRICZONE Live", url: window.location.href };
-    try {
-      if (navigator.share) await navigator.share(shareData);
-      else if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(window.location.href);
-        showToast("Stream link copied!");
-      } else {
-        const field = document.createElement("textarea");
-        field.value = window.location.href;
-        field.setAttribute("readonly", "");
-        field.style.position = "fixed";
-        field.style.opacity = "0";
-        document.body.appendChild(field);
-        field.select();
-        const copied = document.execCommand("copy");
-        field.remove();
-        showToast(copied ? "Stream link copied!" : "Copy this page URL to share.");
-      }
-    } catch (error) {
-      if (error && error.name !== "AbortError") showToast("Unable to share. Copy the page link.");
-    }
-  }
-
-  window.handleReload = handleReload;
-  window.handleShare = handleShare;
-  window.addEventListener("pageshow", event => {
-    if (event.persisted) loadStream();
-  });
-
-  loadStream();
+  function showToast(message){document.getElementById("toastText").textContent=message;toast.classList.add("active");window.clearTimeout(toastTimer);toastTimer=window.setTimeout(()=>toast.classList.remove("active"),2400)}
+  function handleReload(){const icon=document.getElementById("reloadIcon");if(icon)icon.classList.add("is-reloading");showToast("Refreshing channel list…");backToChannels();loadChannels().finally(()=>{if(icon)icon.classList.remove("is-reloading")})}
+  async function handleShare(){const shareData={title:"CRICZONE Live Channels",url:window.location.href};try{if(navigator.share)await navigator.share(shareData);else if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(window.location.href);showToast("Link copied!") }else showToast("Copy this page URL to share.");}catch(error){if(error&&error.name!=="AbortError")showToast("Unable to share link.");}}
+  search.addEventListener("input",renderChannels);
+  document.getElementById("back-to-channels").addEventListener("click",backToChannels);
+  window.handleReload=handleReload;window.handleShare=handleShare;
+  window.addEventListener("pageshow",event=>{if(event.persisted)loadChannels()});
+  window.addEventListener("popstate",backToChannels);
+  loadChannels();
   </script>
 </body>
 </html>
