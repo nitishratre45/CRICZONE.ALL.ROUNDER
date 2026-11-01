@@ -5,7 +5,10 @@
 const FEEDS = {
     sports: "https://sonujson-v5.pages.dev/Data/sports.json",
     directory: "https://allrounder3-0.pages.dev/id.json",
-    select: "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/refs/heads/main/jtv2.json"
+    select: [
+        "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json",
+        "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/main/jtv2.json"
+    ]
 };
 
 const ALLOWED_ORIGINS = new Set([
@@ -143,61 +146,39 @@ async function handleGet(context) {
 
     try {
 
-        const upstream =
-            await fetch(feedUrl, {
-                headers: {
-                    "Accept": "application/json"
-                },
-                // Cache only the public upstream feed response at Cloudflare's edge.
-                // This endpoint uses fixed public feed URLs; auth/session APIs are untouched.
-                cf: { cacheTtl: 30, cacheEverything: true },
-                signal: AbortSignal.timeout(10000)
-            });
+        // Try the CDN mirror first, then GitHub Raw to tolerate transient outages.
+        const candidates = Array.isArray(feedUrl) ? feedUrl : [feedUrl];
+        let body = "";
+        let lastFailure = "Channel feed unavailable";
 
-
-        // ------------------------------------------------------
-        // Upstream error
-        // ------------------------------------------------------
-
-        if (!upstream.ok) {
-
-            return new Response(
-                JSON.stringify({
-                    error: "Channel feed unavailable"
-                }),
-                {
-                    status: 502,
-                    headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                        ...corsHeaders(origin, request)
-                    }
+        for (const candidate of candidates) {
+            try {
+                const upstream = await fetch(candidate, {
+                    headers: { "Accept": "application/json" },
+                    cf: { cacheTtl: 30, cacheEverything: true },
+                    signal: AbortSignal.timeout(10000)
+                });
+                if (!upstream.ok) {
+                    lastFailure = `Upstream returned HTTP ${upstream.status}`;
+                    continue;
                 }
-            );
+                const candidateBody = await upstream.text();
+                try {
+                    JSON.parse(candidateBody);
+                    body = candidateBody;
+                    break;
+                } catch {
+                    lastFailure = "Upstream returned invalid JSON";
+                }
+            } catch (error) {
+                lastFailure = String(error?.message || error || "Upstream request failed");
+            }
         }
 
-
-        // ------------------------------------------------------
-        // Read response
-        // ------------------------------------------------------
-
-        const body =
-            await upstream.text();
-
-
-        // ------------------------------------------------------
-        // Validate JSON
-        // ------------------------------------------------------
-
-        try {
-
-            JSON.parse(body);
-
-        } catch {
-
+        if (!body) {
+            console.error("Select/channel feed unavailable:", lastFailure);
             return new Response(
-                JSON.stringify({
-                    error: "Invalid channel feed"
-                }),
+                JSON.stringify({ error: "Channel feed unavailable", detail: lastFailure }),
                 {
                     status: 502,
                     headers: {
