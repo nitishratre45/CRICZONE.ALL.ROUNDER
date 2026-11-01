@@ -170,7 +170,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
   }
   async function shareCurrentChannel(){
     const requested=new URLSearchParams(location.search).get("channel");
-    const channel=state.channels.find(c=>c.id===requested);
+    const channel=state.channels.find(c=>c.id===requested||c.legacyId===requested);
     if(!channel)return;
     const shareUrl=new URL(location.href);shareUrl.searchParams.set("channel",channel.id);
     const payload={title:"CRICZONE · "+channel.title,text:"Watch "+channel.title+" on CRICZONE",url:shareUrl.toString()};
@@ -184,7 +184,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
     const requested=new URLSearchParams(location.search).get("channel");
     if(!requested)return;
     const channel=state.channels.find(c=>c.id===requested);
-    if(channel)openPlayer(channel,false);
+    if(channel)openPlayer(channel,true);
     else $("channels").insertAdjacentHTML("afterbegin",'<div class="error" style="grid-column:1/-1">This shared channel link is no longer available in the current playlist.</div>');
   }
   $("filters").addEventListener("click",e=>{const b=e.target.closest("[data-genre]");if(!b)return;state.genre=b.dataset.genre;renderFilters();render();});
