@@ -21,7 +21,10 @@ const ALLOWED_ORIGINS = [
 const FEEDS = {
     sports: "https://sonujson-v5.pages.dev/Data/sports.json",
     directory: "https://allrounder3-0.pages.dev/id.json",
-    select: "https://raw.githubusercontent.com/sportlive18/playlist/refs/heads/main/jtv2.json"
+    select: [
+        "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json",
+        "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/main/jtv2.json"
+    ]
 };
 
 
@@ -299,59 +302,40 @@ module.exports = async function handler(
 
     try {
 
-        const upstream =
-            await fetch(
-                feedUrl,
-                {
-                    headers: {
-                        Accept: "application/json"
-                    },
+        // Use the same Select feed sources as Cloudflare Pages with CDN fallback.
+        const candidates = Array.isArray(feedUrl) ? feedUrl : [feedUrl];
+        let body = "";
+        let lastFailure = "Channel feed unavailable";
 
-                    signal:
-                        AbortSignal.timeout(10000)
-                }
-            );
-
-
-        // ====================================================
-        // UPSTREAM ERROR
-        // ====================================================
-
-        if (!upstream.ok) {
-
-            return response
-                .status(502)
-                .json({
-                    error:
-                        "Channel feed unavailable"
+        for (const candidate of candidates) {
+            try {
+                const upstream = await fetch(candidate, {
+                    headers: { Accept: "application/json" },
+                    signal: AbortSignal.timeout(10000)
                 });
+                if (!upstream.ok) {
+                    lastFailure = `Upstream returned HTTP ${upstream.status}`;
+                    continue;
+                }
+                const candidateBody = await upstream.text();
+                try {
+                    JSON.parse(candidateBody);
+                    body = candidateBody;
+                    break;
+                } catch {
+                    lastFailure = "Upstream returned invalid JSON";
+                }
+            } catch (error) {
+                lastFailure = String(error?.message || error || "Upstream request failed");
+            }
         }
 
-
-        // ====================================================
-        // READ DATA
-        // ====================================================
-
-        const body =
-            await upstream.text();
-
-
-        // ====================================================
-        // VALIDATE JSON
-        // ====================================================
-
-        try {
-
-            JSON.parse(body);
-
-        } catch (error) {
-
-            return response
-                .status(502)
-                .json({
-                    error:
-                        "Invalid channel feed"
-                });
+        if (!body) {
+            console.error("Channel feed unavailable:", lastFailure);
+            return response.status(502).json({
+                error: "Channel feed unavailable",
+                detail: lastFailure
+            });
         }
 
 
