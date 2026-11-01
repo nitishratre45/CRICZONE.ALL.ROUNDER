@@ -25,8 +25,6 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.2/controls.min.css"
 >
-<script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
-<script src="../theme.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.2/shaka-player.compiled.min.js"></script>
 
 <style>
@@ -44,13 +42,7 @@ body {
 }
 </style>
 
-  <link rel="stylesheet" href="../site-polish.css?v=20261019-premium-ui">
-<style>
-/* CRICZONE: photo-backed cinematic background, kept dark for text contrast. */
-html,body{background-color:#050a0f!important}
-body{background-image:linear-gradient(180deg,rgba(3,8,14,.90) 0%,rgba(3,8,14,.78) 48%,rgba(3,8,14,.92) 100%),url('../photos/photo_2026-10-28_14-52-23.jpg')!important;background-position:center top!important;background-size:cover!important;background-attachment:fixed!important;background-repeat:no-repeat!important}
-@media(max-width:700px){body{background-position:center top!important;background-attachment:scroll!important;background-size:cover!important}}
-</style>
+<style>html,body{background:#050a0f!important}</style>
 </head>
 
 <body>
@@ -514,13 +506,7 @@ button {
    HERO
    ========================================================= */
 
-.hero {
-
-    padding:
-        clamp(55px,7vw,95px)
-        0
-        35px;
-}
+.channels-heading{padding:22px 0 16px}.channels-heading h1{margin:0;font:800 clamp(24px,4vw,34px) Space Grotesk,sans-serif}.channels-heading p{margin:7px 0 0;color:#8293a0;font-size:13px}
 
 
 .hero-label {
@@ -915,6 +901,8 @@ button {
 }
 
 
+.channel-card:active{transform:scale(.985);border-color:var(--border-hover)}
+.channel-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .channel-card:hover {
 
     transform:
@@ -1855,19 +1843,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
         class="brand"
         id="brandHome"
     >
-        CRIC<span>ZONE</span>
+        CRIC ZONE
     </div>
 
 
     <div class="nav-actions">
 
-        <button
-            class="theme-toggle"
-            id="themeToggle"
-            type="button"
-        ></button>
-
-        <div class="live-pill">
+<div class="live-pill">
 
             <span class="live-dot"></span>
 
@@ -1900,49 +1882,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
     id="homeView"
 >
 
-<section class="hero">
-
-    <div class="hero-label">
-        CRICZONE LIVE
-    </div>
-
-
-    <h1>
-
-        LIVE
-
-        <br>
-
-        <span class="gradient">
-            SPORTS.
-        </span>
-
-    </h1>
-
-
-    <div class="hero-info">
-
-        <strong>CRICKET</strong>
-
-        <span class="separator-dot"></span>
-
-        SPORTS
-
-        <span class="separator-dot"></span>
-
-        LIVE
-
-        <span class="separator-dot"></span>
-
-        HD CHANNELS
-
-        <span class="separator-dot"></span>
-
-        WATCH NOW
-
-    </div>
-
-</section>
+<section class="channels-heading"><h1>Live Channels</h1><p>Select a channel to start watching.</p></section>
 
 
 <!-- =====================================================
@@ -2257,12 +2197,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
         this.setupEvents();
 
-        window.CriczoneTheme.bind(
-            this.shadow.querySelector("#themeToggle"),
-            this
-        );
-
-        this.setupBackground();
+this.setupBackground();
 
         this.checkUnlock();
 
@@ -2871,8 +2806,10 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                     );
 
 
-                card.className =
-                    "channel-card";
+                card.className = "channel-card";
+                card.setAttribute("role", "button");
+                card.setAttribute("tabindex", "0");
+                card.setAttribute("aria-label", "Play " + title);
 
 
                 card.dataset.id =
@@ -2910,11 +2847,11 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 `;
 
 
-                card.onclick = () => {
-
-                    this.openPlayer(id);
-
-                };
+                const playSelectedChannel = () => this.openPlayer(id);
+                card.addEventListener("click", playSelectedChannel);
+                card.addEventListener("keydown", event => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); playSelectedChannel(); }
+                });
 
 
                 this.$.grid.appendChild(
