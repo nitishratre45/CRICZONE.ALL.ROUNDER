@@ -721,6 +721,303 @@
 
 
 
+  
+    /* CRICZONE iOS — complete responsive visual refresh */
+    :root{
+      --app-bg:#070b13;
+      --app-surface:#101a2b;
+      --app-card:#111d30;
+      --app-border:rgba(255,255,255,.10);
+      --app-gold:#ffc533;
+      --app-cyan:#54c8ff;
+      --text-main:#f7f9fc;
+      --text-sub:#9ba9bd;
+    }
+    html{scroll-behavior:smooth;background:#070b13}
+    body{
+      color:var(--text-main);
+      font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+      background:
+        radial-gradient(ellipse at 50% -12%,rgba(30,73,124,.36),transparent 48%),
+        radial-gradient(ellipse at 100% 42%,rgba(255,181,35,.07),transparent 34%),
+        #070b13;
+      background-attachment:fixed;
+      overflow-x:hidden;
+    }
+    button,input{font:inherit}
+    button{touch-action:manipulation}
+    .header-logo-wrap{
+      gap:11px;
+      padding:14px clamp(14px,3vw,28px);
+      border-bottom:1px solid rgba(255,255,255,.075);
+      background:rgba(7,11,19,.86);
+      box-shadow:0 8px 30px rgba(0,0,0,.16);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+    .logo-img{width:40px;height:40px;border-radius:12px}
+    .stream-live-badge{
+      border:1px solid rgba(255,76,76,.25);
+      background:rgba(229,9,20,.12);
+      border-radius:999px;
+      padding:7px 11px;
+      letter-spacing:1px;
+    }
+    #channel-browser{
+      width:min(100%,1180px);
+      padding:clamp(20px,4vw,38px) clamp(14px,3vw,26px) 42px;
+    }
+    .directory-heading{
+      align-items:center;
+      margin-bottom:20px;
+      gap:16px;
+    }
+    .directory-heading h1{
+      font-size:clamp(24px,4vw,34px);
+      line-height:1.12;
+      letter-spacing:-1.15px;
+      font-weight:900;
+    }
+    .directory-heading p{
+      color:#a8b5c8;
+      font-size:12px;
+      line-height:1.65;
+      margin-top:7px;
+    }
+    #channel-count{
+      flex:0 0 auto;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:10px;
+      letter-spacing:.35px;
+      box-shadow:inset 0 1px rgba(255,255,255,.07);
+    }
+    #channel-search{
+      height:52px;
+      border-radius:15px;
+      padding:0 17px;
+      margin-bottom:19px;
+      background:rgba(17,28,45,.92);
+      border:1px solid rgba(255,255,255,.11);
+      color:#fff;
+      font-size:13px;
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
+      transition:border-color .2s,box-shadow .2s,background .2s;
+    }
+    #channel-search::placeholder{color:#77869c}
+    #channel-search:focus{
+      background:#121f33;
+      border-color:rgba(255,197,51,.68);
+      box-shadow:0 0 0 4px rgba(255,197,51,.10),0 12px 30px rgba(0,0,0,.2);
+    }
+    #channel-grid{
+      grid-template-columns:repeat(auto-fill,minmax(165px,1fr));
+      gap:15px;
+    }
+    .channel-card{
+      min-height:158px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.085);
+      background:linear-gradient(155deg,rgba(23,36,56,.98),rgba(11,18,30,.99));
+      box-shadow:0 10px 28px rgba(0,0,0,.22);
+      transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+    }
+    .channel-card:after{
+      top:10px;right:10px;
+      padding:5px 8px;
+      border-radius:999px;
+      background:rgba(4,9,17,.82);
+      border-color:rgba(255,197,51,.30);
+      color:#ffda79;
+      font-size:7px;
+      letter-spacing:.8px;
+    }
+    .channel-card:hover{
+      transform:translateY(-4px);
+      border-color:rgba(255,197,51,.52);
+      box-shadow:0 18px 38px rgba(0,0,0,.34),0 0 0 1px rgba(255,197,51,.08);
+    }
+    .channel-card:active{transform:scale(.975)}
+    .channel-logo{
+      height:102px;
+      background:
+        radial-gradient(ellipse at 50% 20%,rgba(255,197,51,.14),transparent 65%),
+        linear-gradient(140deg,#1a2b43,#0d1728);
+      color:#ffda79;
+    }
+    .channel-logo img{padding:15px;transition:transform .25s ease}
+    .channel-card:hover .channel-logo img{transform:scale(1.045)}
+    .channel-card-name{
+      padding:12px 13px 13px;
+      font-size:11px;
+      line-height:1.35;
+      letter-spacing:.1px;
+    }
+    .channel-card-name small{
+      font-size:8px;
+      color:#a9b7ca;
+      letter-spacing:.8px;
+    }
+    #directory-status{
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:16px;
+      background:rgba(15,25,41,.55);
+      margin-top:12px;
+    }
+    #player-back{width:min(100%,1180px);padding:16px 18px 12px}
+    #player-back button{
+      min-height:43px;
+      padding:0 16px;
+      border-radius:12px;
+      font-size:11px;
+      letter-spacing:.45px;
+      box-shadow:0 7px 20px rgba(0,0,0,.18);
+      transition:transform .18s,border-color .18s,background .18s;
+    }
+    #player-back button:active{transform:scale(.97)}
+    #main-stage{
+      width:min(100% - 28px,1180px);
+      margin:0 auto;
+      overflow:hidden;
+      border-radius:20px;
+      background:#000;
+    }
+    #main-stage.active{
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 22px 60px rgba(0,0,0,.48);
+    }
+    .video-box{
+      width:100%;
+      aspect-ratio:16/9;
+      min-height:0;
+      background:#000;
+      overflow:hidden;
+      border-radius:inherit;
+    }
+    #main-player{
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:0;
+      border:0;
+      background:#000;
+    }
+    .stream-room-meta{
+      width:min(100% - 28px,1180px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin:14px auto 0;
+      padding:16px 18px;
+      border:1px solid rgba(255,255,255,.085);
+      border-radius:16px;
+      background:linear-gradient(135deg,rgba(20,32,51,.96),rgba(11,18,30,.96));
+      box-shadow:0 10px 28px rgba(0,0,0,.18);
+    }
+    .channel-name-txt{font-size:14px;letter-spacing:.25px}
+    .stream-room-sub{font-size:10px;line-height:1.5;color:#98a8bd}
+    .live-watcher-badge{
+      border:1px solid rgba(255,70,70,.24);
+      border-radius:999px;
+      padding:8px 11px;
+      background:rgba(229,9,20,.10);
+      white-space:nowrap;
+    }
+    .room-actions-container{
+      width:min(100% - 28px,680px);
+      margin:14px auto 0;
+      padding:0 0 max(28px,env(safe-area-inset-bottom));
+    }
+    .vip-telegram-pass{
+      min-height:76px;
+      padding:14px 16px;
+      border-radius:17px;
+      background:linear-gradient(115deg,#0879bb,#07549b 58%,#073d79);
+      border:1px solid rgba(99,196,255,.34);
+      box-shadow:0 12px 28px rgba(0,89,160,.22);
+      transition:transform .18s,box-shadow .18s;
+    }
+    .vip-telegram-pass:active{transform:scale(.985)}
+    .vip-icon-wrap{width:42px;height:42px;border-radius:13px}
+    .vip-text-title{font-size:12px;letter-spacing:.1px}
+    .vip-text-desc{font-size:10px;line-height:1.5}
+    .btn-tap-pill{font-size:9px;letter-spacing:.45px}
+    .controls-grid{gap:11px;margin-top:12px}
+    .interactive-btn{
+      min-height:47px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.1);
+      background:linear-gradient(145deg,#17253a,#101a2b);
+      color:#eef4fc;
+      font-size:11px;
+      box-shadow:0 8px 20px rgba(0,0,0,.16);
+      transition:transform .18s,border-color .18s;
+    }
+    .interactive-btn:active{transform:scale(.975);border-color:rgba(255,197,51,.42)}
+    #error-screen{
+      background:radial-gradient(ellipse at 50% 25%,rgba(32,61,98,.3),transparent 55%),#070b13;
+    }
+    #error-screen h2{color:#ffcf64;letter-spacing:1px}
+    .app-toast{
+      max-width:calc(100vw - 32px);
+      border-color:rgba(255,197,51,.45);
+      border-radius:14px;
+      background:rgba(12,20,33,.96);
+      padding:11px 16px;
+      font-size:11px;
+    }
+    @media(min-width:900px){
+      #channel-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:17px}
+      .channel-card{min-height:170px}
+      .channel-logo{height:112px}
+    }
+    @media(max-width:700px){
+      #channel-browser{padding:20px 14px 30px}
+      #channel-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+      .channel-card{min-height:145px;border-radius:15px}
+      .channel-logo{height:86px}
+      #main-stage{width:100%;border-radius:0}
+      .stream-room-meta{width:calc(100% - 24px);padding:13px 14px}
+      .room-actions-container{width:calc(100% - 24px)}
+    }
+    @media(max-width:480px){
+      .header-logo-wrap{padding:11px 13px}
+      .logo-img{width:35px;height:35px}
+      #channel-browser{padding:18px 12px 26px}
+      .directory-heading{margin-bottom:15px;gap:9px}
+      .directory-heading h1{font-size:22px;letter-spacing:-.7px}
+      .directory-heading p{font-size:10px;max-width:250px}
+      #channel-count{padding:7px 9px;font-size:9px}
+      #channel-search{height:47px;margin-bottom:14px;border-radius:13px}
+      #channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .channel-card{min-height:142px;border-radius:14px}
+      .channel-logo{height:82px}
+      .channel-card-name{padding:10px 10px 11px;font-size:10px}
+      .channel-card-name small{font-size:7px;letter-spacing:.55px}
+      #player-back{padding:12px 12px 10px}
+      .stream-room-meta{margin-top:10px;padding:12px;border-radius:13px}
+      .channel-name-txt{font-size:12px}
+      .stream-room-sub{font-size:9px}
+      .live-watcher-badge{padding:7px 9px;font-size:9px}
+      .vip-telegram-pass{min-height:68px;padding:11px 12px;border-radius:14px}
+      .vip-icon-wrap{width:37px;height:37px}
+      .vip-text-title{font-size:11px}
+      .vip-text-desc{font-size:9px}
+      .btn-tap-pill{font-size:8px;padding:7px}
+      .interactive-btn{min-height:44px;font-size:10px}
+    }
+    @media(max-width:350px){
+      #channel-grid{gap:8px}
+      .channel-card{min-height:132px}
+      .channel-logo{height:72px}
+      .channel-card:after{font-size:6px;right:6px;top:6px}
+      .controls-grid{grid-template-columns:1fr}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
   </style>
 </head>
 <body>
