@@ -148,6 +148,9 @@ async function handleGet(context) {
                 headers: {
                     "Accept": "application/json"
                 },
+                // Cache only the public upstream feed response at Cloudflare's edge.
+                // This endpoint uses fixed public feed URLs; auth/session APIs are untouched.
+                cf: { cacheTtl: 30, cacheEverything: true },
                 signal: AbortSignal.timeout(10000)
             });
 
