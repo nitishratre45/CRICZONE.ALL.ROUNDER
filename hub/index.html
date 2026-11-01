@@ -596,14 +596,21 @@ footer {
 </head>
 <body>
 
-<div id="overlay">
-  <div class="loading-spinner"></div>
-  <p id="loadMsg">Loading Movies Hub…</p>
-</div>
-
 <div id="status"></div>
 
-<div id="app-wrapper">
+<header class="cz-hub-header">
+  <a class="cz-hub-brand" href="/hub/"><span class="cz-brand-mark">C</span><span>CRIC<span>ZONE</span><small>SPORTS & ENTERTAINMENT</small></span></a>
+  <nav class="cz-hub-tabs" aria-label="Main sections">
+    <button class="cz-tab active" type="button" data-section="sports"><span class="material-icons">sports_cricket</span> Live Sports TV</button>
+    <button class="cz-tab" type="button" data-section="movies"><span class="material-icons">movie</span> Movies & Series</button>
+  </nav>
+  <a class="cz-hub-telegram" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join Telegram</a>
+</header>
+<section id="sportsPanel" class="cz-sports-panel">
+  <iframe id="sportsFrame" title="CRICZONE Live Sports TV" src="/criczone-old/" loading="eager" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+</section>
+
+<div id="app-wrapper" hidden>
   <header class="sky-header">
     <a href="#" class="sky-logo" onclick="location.href=location.pathname;return false;">
       <span class="material-icons">movie</span>
