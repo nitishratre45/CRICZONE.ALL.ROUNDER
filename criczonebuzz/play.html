@@ -19,9 +19,14 @@
 <p class="foot">CRICZONE · Match centre</p></main>
 <script>
 (function(){
- const params=new URLSearchParams(location.search),wanted=params.get('match')||params.get('id')||'';
- // Match the same known feed sources used by the CRICZONE Willow page.
- const feeds=['https://sonujson-v4.pages.dev/Data/willow.json','https://sonujson-v4.pages.dev/Data/prime.json','https://sonujson-v5.pages.dev/Data/willow.json'];
+ "use strict";
+ const params=new URLSearchParams(location.search);
+ const wanted=(params.get('match')||params.get('id')||params.get('play')||'').trim();
+ const feeds=[
+  'https://sonujson-v4.pages.dev/Data/willow.json',
+  'https://sonujson-v4.pages.dev/Data/prime.json',
+  'https://sonujson-v5.pages.dev/Data/willow.json'
+ ];
  const configs=[
   {key:'fastly_server1',label:'Server 1 (Fast)',quality:'Fast stream'},
   {key:'amazon_server1',label:'Server 2 (Prime)',quality:'Prime stream'},
@@ -32,25 +37,115 @@
   {key:'akamai_server2',label:'Server 7 (Ultra HD)',quality:'Ultra HD stream'},
   {key:'cloudfront_server2',label:'Server 8 (Backup)',quality:'Backup stream'}
  ];
- async function load(){
-  let matches=[];
-  for(const url of feeds){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)continue;const data=await res.json();matches=Array.isArray(data)?data:(data.matches||data.data||data.events||[]);if(matches.length)break}catch(e){}}
-  const key=decodeURIComponent(wanted).toLowerCase();
-  const m=matches.find(x=>String(x.id||'').toLowerCase()===key||String(x.match_id||'').toLowerCase()===key)||matches.find(x=>String(x.id||'').toLowerCase().includes(key)||(x.event_name||'').toLowerCase().includes(key));
-  if(!m){document.getElementById('title').textContent='Match not found';document.getElementById('meta').textContent='Go back to the match list and open the match again.';document.getElementById('servers').innerHTML='<div class="empty">Match details are currently unavailable.</div>';return}
-  const live=String(m.status||'').toUpperCase()==='LIVE'||Object.values(m.CnpTV||{}).some(v=>typeof v==='string'&&/^https?:\/\//i.test(v));
-  document.getElementById('poster').src=m.image||'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1000';
-  document.getElementById('title').textContent=m.event_name||'Live Cricket Event';
-  document.getElementById('status').textContent=live?'● LIVE':'UPCOMING';
-  if(live)document.getElementById('status').classList.add('live');
-  document.getElementById('meta').textContent=(m.sport||'Cricket')+' · '+(m.time||'Match broadcast');
-  const cnp=m.CnpTV||{},list=configs.filter(x=>typeof cnp[x.key]==='string'&&/^https?:\/\//i.test(cnp[x.key])&&!cnp[x.key].includes('pages.dev')).map(x=>({label:x.label,quality:x.quality}));
-  (Array.isArray(m.streams)?m.streams:[]).filter(x=>x&&typeof x.url==='string'&&/^https?:\/\//i.test(x.url)&&!x.url.includes('bintv-sources')&&!x.url.includes('pages.dev')).forEach((x,i)=>list.push({label:x.name||('Server '+(list.length+1)),quality:'Available stream'}));
-  const box=document.getElementById('servers');
-  if(!list.length){box.innerHTML='<div class="empty">No server is available for this match right now. Please check again later.</div>';return}
-  box.innerHTML=list.map((x,i)=>'<a class="server" href="index.html?id='+encodeURIComponent(m.id||m.match_id||wanted)+'&ser='+(i+1)+'"><span class="play">▶</span><span><strong>'+x.label.replace(/[<>]/g,'')+'</strong><small>'+x.quality+'</small></span></a>').join('');
+ const $=id=>document.getElementById(id);
+ function extractList(data){
+  if(Array.isArray(data)) return data;
+  if(!data||typeof data!=='object') return [];
+  const keys=['Matches','matches','channels','events','data','results','fixtures','live','upcoming','streams'];
+  for(const key of keys) if(Array.isArray(data[key])) return data[key];
+  const live=Array.isArray(data['Live Events'])?data['Live Events']:[];
+  const upcoming=Array.isArray(data['Upcoming Events'])?data['Upcoming Events']:[];
+  return live.concat(upcoming);
  }
- if(!wanted){document.getElementById('title').textContent='No match selected';document.getElementById('servers').innerHTML='<div class="empty">Open a match poster first.</div>'}else load();
+ function normalize(raw){
+  if(!raw||typeof raw!=='object') return null;
+  const alpha=raw.stream_url_alpha||raw.streams_alpha||{};
+  const bravo=raw.stream_url_bravo||raw.streams_bravo||{};
+  const c=raw.CnpTV||raw.servers||{};
+  const cnp={
+   fastly_server1:c.fastly_server1||alpha['Fistly Server']||alpha['Fastly Server']||'',
+   amazon_server1:c.amazon_server1||alpha['Amazon Server']||'',
+   akamai_server1:c.akamai_server1||alpha['Akamai Server']||'',
+   cloudfront_server1:c.cloudfront_server1||alpha['Cloudfront Server 1']||alpha['CloudFront Server 1']||alpha['Cloudfront Server']||'',
+   fastly_server2:c.fastly_server2||bravo['Fistly Server']||bravo['Fastly Server']||'',
+   amazon_server2:c.amazon_server2||bravo['Amazon Server']||'',
+   akamai_server2:c.akamai_server2||bravo['Akamai Server']||'',
+   cloudfront_server2:c.cloudfront_server2||bravo['Cloudfront Server 1']||bravo['CloudFront Server 1']||bravo['Cloudfront Server']||''
+  };
+  const id=String(raw.id||raw.match_id||raw.event_id||raw.fixture_id||raw.channel_id||'').trim();
+  const streams=Array.isArray(raw.streams)?raw.streams.slice():[];
+  const direct=raw.live_stream||raw.url||'';
+  if(direct&&streams.length===0) streams.push({name:'Live Stream',url:direct});
+  return {
+   id,match_id:id,
+   event_name:raw.event_name||raw.title||raw.synopsis||raw.name||raw.match||'Live Cricket Event',
+   image:raw.image||raw.cover_image||raw.poster||raw.thumbnail||'',
+   status:String(raw.status||'').toUpperCase(),
+   time:raw.time||raw.start_time||raw.date||'',
+   sport:raw.sport||'Cricket',
+   series:raw.series||raw.tournament||'',
+   drm_key:raw.drm_key||'',
+   CnpTV:cnp,streams
+  };
+ }
+ async function fetchFeed(url){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),10000);
+  try{
+   const response=await fetch(url+(url.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store',signal:controller.signal,headers:{Accept:'application/json'}});
+   if(!response.ok) throw new Error('HTTP '+response.status);
+   return extractList(await response.json());
+  }finally{clearTimeout(timer);}
+ }
+ function idForms(value){
+  const v=String(value||'').trim().toLowerCase();
+  return [v,v.replace(/^cb/i,''),v.replace(/^match-/i,''),v.replace(/[^a-z0-9]/g,'')].filter(Boolean);
+ }
+ function findMatch(matches){
+  const wantedForms=idForms(wanted);
+  return matches.find(m=>{
+   const forms=idForms(m.id||m.match_id);
+   return forms.some(a=>wantedForms.some(b=>a===b));
+  })||matches.find(m=>{
+   const forms=idForms(m.id||m.match_id);
+   return forms.some(a=>wantedForms.some(b=>a.includes(b)||b.includes(a)));
+  });
+ }
+ function showError(title,detail){
+  $('title').textContent=title;
+  $('meta').textContent=detail;
+  $('servers').innerHTML='<div class="empty">Match details are currently unavailable. Go back and try again.</div>';
+ }
+ async function load(){
+  $('title').textContent='Loading match…';
+  $('meta').textContent='Connecting to match feeds';
+  const results=await Promise.allSettled(feeds.map(fetchFeed));
+  const merged=new Map();
+  results.forEach(result=>{
+   if(result.status!=='fulfilled') return;
+   result.value.forEach(raw=>{
+    const m=normalize(raw);
+    if(!m||!m.id) return;
+    const key=m.id.toLowerCase();
+    if(!merged.has(key)) merged.set(key,m);
+    else{
+     const old=merged.get(key);
+     Object.keys(m.CnpTV).forEach(k=>{if(!old.CnpTV[k]&&m.CnpTV[k])old.CnpTV[k]=m.CnpTV[k];});
+     if(!old.image&&m.image)old.image=m.image;
+     old.streams=old.streams.concat(m.streams.filter(x=>!old.streams.some(y=>y.url===x.url)));
+     if(!old.drm_key&&m.drm_key)old.drm_key=m.drm_key;
+    }
+   });
+  });
+  const matches=Array.from(merged.values());
+  if(!matches.length){showError('Match feed unavailable','The feed endpoints returned no readable match records. Please retry shortly.');return;}
+  const m=findMatch(matches);
+  if(!m){showError('Match not found','This match ID was not present in the current Willow/Prime feeds. Go back and open the match again.');return;}
+  const live=m.status==='LIVE'||Object.values(m.CnpTV).some(v=>typeof v==='string'&&/^https?:\/\//i.test(v))||m.streams.some(x=>x&&/^https?:\/\//i.test(x.url||''));
+  $('poster').src=m.image||'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1000';
+  $('poster').alt=m.event_name;
+  $('title').textContent=m.event_name;
+  $('status').textContent=live?'● LIVE':'UPCOMING';
+  if(live)$('status').classList.add('live');
+  $('meta').textContent=[m.sport,m.series,m.time||(live?'Live now':'Match broadcast')].filter(Boolean).join(' · ');
+  const list=configs.filter(x=>typeof m.CnpTV[x.key]==='string'&&/^https?:\/\//i.test(m.CnpTV[x.key])).map(x=>({label:x.label,quality:x.quality}));
+  m.streams.filter(x=>x&&typeof x.url==='string'&&/^https?:\/\//i.test(x.url)).forEach(x=>list.push({label:x.name||('Server '+(list.length+1)),quality:'Available stream'}));
+  const unique=list.filter((x,i,a)=>a.findIndex(y=>y.label===x.label)===i);
+  if(!unique.length){$('servers').innerHTML='<div class="empty">No server is available for this match right now. Please check again later.</div>';return;}
+  $('servers').innerHTML=unique.map((x,i)=>'<a class="server" href="index.html?id='+encodeURIComponent(m.id)+'&ser='+(i+1)+'"><span class="play">▶</span><span><strong>'+x.label.replace(/[<>]/g,'')+'</strong><small>'+x.quality+'</small></span></a>').join('');
+ }
+ if(!wanted){showError('No match selected','Open a match poster first.');}
+ else load().catch(error=>{console.error('[CRICZONE BUZZ] Match load failed:',error);showError('Unable to load match',error&&error.message?error.message:'Please retry.');});
 })();
 </script>
 </body></html>
