@@ -3373,6 +3373,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                     error
                 );
 
+                // A DASH/HLS manifest is media, not an HTML page.
+                // Never open a failed manifest inside an iframe (it appears as a blank white player).
+                this.setPlayerStatus("STREAM ERROR");
+                this.$.player.style.background = "#000";
+                this.$.player.removeAttribute("src");
+                return;
+
             }
 
         }
