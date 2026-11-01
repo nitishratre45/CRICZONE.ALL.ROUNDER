@@ -201,7 +201,12 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
       const response=await fetch(M3U_URL,{cache:"no-store"});
       if(!response.ok)throw new Error("Playlist request failed ("+response.status+")");
       const usedIds=new Set();
-      state.channels=parseM3U(await response.text()).map(channel=>{\n        const baseId=channelId(channel);let id=baseId,suffix=2;\n        while(usedIds.has(id)){id=baseId+"-"+suffix++;}\n        usedIds.add(id);\n        return {...channel,id,legacyId:legacyChannelId(channel)};\n      });
+      state.channels=parseM3U(await response.text()).map(channel=>{
+        const baseId=channelId(channel);let id=baseId,suffix=2;
+        while(usedIds.has(id)){id=baseId+"-"+suffix++;}
+        usedIds.add(id);
+        return {...channel,id,legacyId:legacyChannelId(channel)};
+      });
       if(!state.channels.length)throw new Error("No channel entries were found in the playlist.");
       renderFilters();render();openChannelFromAddress();
     }catch(error){
