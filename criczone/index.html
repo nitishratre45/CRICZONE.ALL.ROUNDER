@@ -3696,39 +3696,9 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
     showTelegramModal() {
 
-        if (
-            this.isUnlocked
-        ) {
-
-            return;
-
-        }
-
-
-        this.$.modal
-            .classList
-            .add(
-                "show"
-            );
-
-
-        /*
-         * Pause actual video.
-         */
-
-        try {
-
-            if (
-                this.$.player &&
-                this.$.player.tagName ===
-                "VIDEO"
-            ) {
-
-                this.$.player.pause();
-
-            }
-
-        } catch (error) {}
+        // The global Telegram membership gate is the only access prompt.
+        // Do not show this legacy, locally-dismissible modal.
+        return;
 
     }
 
