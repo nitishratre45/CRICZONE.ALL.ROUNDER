@@ -282,18 +282,7 @@ try {
   </video>
 </div>
 
-<!-- Telegram Popup Overlay -->
-<div id="tgOverlay">
-  <div id="tgCard">
-    <div id="tgIcon"><svg viewBox="0 0 24 24" fill="white" width="36" height="36"><path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/></svg></div>
-    <h2>Join Telegram Channel</h2>
-    <p>Get match links &amp; live updates delivered straight to your phone.</p>
-    <div class="tgBtns">
-      <button class="tgBtn" id="joinedBtn">Already Joined</button>
-      <button class="tgBtn" id="joinNow">Join Now</button>
-    </div>
-  </div>
-</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
 <script>
@@ -975,18 +964,7 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
-<!-- Telegram Popup Logic -->
-<script>
-(function(){
-  var tgOverlay=document.getElementById('tgOverlay');
-  function closePopup(){tgOverlay.classList.remove('show');}
-  setTimeout(function(){tgOverlay.classList.add('show');},3000);
-  document.getElementById('joinNow').onclick=function(){window.open('https://t.me/+5hrS9VoLS8tjOTM1','_blank');closePopup();};
-  document.getElementById('joinedBtn').onclick=function(){closePopup();};
-  tgOverlay.addEventListener('click',function(e){if(e.target===tgOverlay)closePopup();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&tgOverlay.classList.contains('show'))closePopup();});
-})();
-</script>
+
 
 
 
