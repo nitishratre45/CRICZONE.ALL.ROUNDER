@@ -2945,7 +2945,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
                 const logoImage = card.querySelector(".channel-logo");
 
-                if (typeof logoUrl === "string" && /^https?:\\/\\//i.test(logoUrl.trim())) {
+                if (typeof logoUrl === "string" && /^https?:\/\//i.test(logoUrl.trim())) {
                     logoImage.src = logoUrl.trim();
                     logoImage.onerror = () => {
                         logoImage.remove();
