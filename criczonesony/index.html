@@ -50,7 +50,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
   const state = {channels:[], genre:"All", query:""};
   const WATCHING_BASE = 420;
   const firebaseConfig = {
-    apiKey: "AIzaSySyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+    apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
     authDomain: "cricket-live-39106.firebaseapp.com",
     databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "cricket-live-39106",
@@ -60,7 +60,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
   };
   let fb = null, activePresence = null, presenceDisconnect = null, viewerUnsubscribe = null, activeChannelKey = null;
   const showWatching = count => { $("playerWatchCount").textContent = String(WATCHING_BASE + Math.max(0, Number(count)||0)); };
-  const safeKey = value => String(value || "channel").replace(/[.#$\\[\\]/]/g, "_");
+  const safeKey = value => String(value || "channel").replace(/[.#$]/g, "_").replaceAll("[", "_").replaceAll("]", "_").replaceAll("/", "_");
   async function initFirebase(){
     try {
       const [appSdk, dbSdk] = await Promise.all([
@@ -82,7 +82,9 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
     activePresence=null; presenceDisconnect=null; activeChannelKey=null;
     showWatching(0);
   }
+  const firebaseReady = initFirebase();
   async function joinWatching(channel){
+    await firebaseReady;
     await leaveWatching();
     if(!fb || !channel) return;
     const key=safeKey(channel.title);
@@ -166,7 +168,6 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
       $("count").textContent="Unavailable";
     }finally{$("loading").style.display="none";}
   }
-  initFirebase();
   init();
   window.addEventListener("pagehide",leaveWatching);
   setTimeout(()=>{try{if(!sessionStorage.getItem("czTelegramDismissed"))$("telegramPop").classList.add("show");}catch(e){$("telegramPop").classList.add("show");}},12000);
