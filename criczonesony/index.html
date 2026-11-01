@@ -137,6 +137,44 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
       }else if(/^https?:\/\//i.test(line)&&current){current.streamUrl=line;list.push(current);current=null;}
     }return list;
   }
+  const SPORTS_JSON_URL = "https://aryanstreams2.pages.dev/data/sports.json";
+  function normalizeChannelName(value){
+    return String(value||"").normalize("NFKD").toLowerCase()
+      .replace(/\\u0300-\\u036f/g,"")
+      .replace(/[^a-z0-9]+/g," ").trim().replace(/\\s+/g," ");
+  }
+  function collectSportsLogoRecords(data, output=[]){
+    if(Array.isArray(data)){for(const item of data)collectSportsLogoRecords(item,output);return output;}
+    if(!data||typeof data!=="object")return output;
+    const nameKeys=["name","channel_name","channelName","title","channel","tvg_name","tvg-name"];
+    const logoKeys=["logo","logo_url","logoUrl","image","image_url","imageUrl","channel_logo","channelLogo","icon"];
+    let name="",logo="";
+    for(const key of nameKeys){if(typeof data[key]==="string"&&data[key].trim()){name=data[key].trim();break;}}
+    for(const key of logoKeys){if(typeof data[key]==="string"&&/^https?:\\/\\//i.test(data[key].trim())){logo=data[key].trim();break;}}
+    if(name&&logo)output.push({name,logo});
+    for(const value of Object.values(data))if(value&&typeof value==="object")collectSportsLogoRecords(value,output);
+    return output;
+  }
+  async function applySportsLogos(){
+    try{
+      const response=await fetch(SPORTS_JSON_URL,{cache:"no-store"});
+      if(!response.ok)throw new Error("sports.json request failed ("+response.status+")");
+      const records=collectSportsLogoRecords(await response.json());
+      const logoByName=new Map();
+      for(const record of records){
+        const key=normalizeChannelName(record.name);
+        if(key&&!logoByName.has(key))logoByName.set(key,record.logo);
+      }
+      let matched=0;
+      for(const channel of state.channels){
+        const logo=logoByName.get(normalizeChannelName(channel.title));
+        if(logo){channel.logo=logo;matched++;}
+      }
+      console.info("CRICZONE matching sports.json logos:",matched,"of",state.channels.length);
+    }catch(error){
+      console.warn("CRICZONE sports.json logos unavailable; keeping playlist logos:",error);
+    }
+  }
   function renderFilters(){
     const genres=["All",...new Set(state.channels.map(c=>c.genre).filter(Boolean))].sort((a,b)=>a==="All"?-1:b==="All"?1:a.localeCompare(b));
     $("filters").innerHTML=genres.map(g=>'<button class="filter '+(state.genre===g?"active":"")+'" data-genre="'+escapeHTML(g)+'"><span class="material-icons">'+icons(g)+'</span>'+escapeHTML(g)+'</button>').join("");
@@ -208,7 +246,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
         return {...channel,id,legacyId:legacyChannelId(channel)};
       });
       if(!state.channels.length)throw new Error("No channel entries were found in the playlist.");
-      renderFilters();render();openChannelFromAddress();
+      await applySportsLogos();\n      renderFilters();render();openChannelFromAddress();
     }catch(error){
       $("channels").innerHTML='<div class="error"><strong>Channels could not be loaded</strong><br><br>'+escapeHTML(error.message)+'<br><br>Please refresh in a moment.</div>';
       $("count").textContent="Unavailable";
