@@ -246,8 +246,9 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
         return {...channel,id,legacyId:legacyChannelId(channel)};
       });
       if(!state.channels.length)throw new Error("No channel entries were found in the playlist.");
-      await applySportsLogos();
       renderFilters();render();openChannelFromAddress();
+      // Load logos in the background so a slow/unavailable logo JSON never blocks channels.
+      applySportsLogos().then(()=>render());
     }catch(error){
       $("channels").innerHTML='<div class="error"><strong>Channels could not be loaded</strong><br><br>'+escapeHTML(error.message)+'<br><br>Please refresh in a moment.</div>';
       $("count").textContent="Unavailable";
