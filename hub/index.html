@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>CRICZONE — Sports & Movies</title>
+<title>CRICZONE Movies & Web Series</title>
 <!-- Material Icons & Inter Font -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
@@ -528,6 +528,8 @@ body {
   background: #000;
 }
 
+.player-share{position:absolute;top:12px;right:58px;z-index:11;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #42618a;border-radius:22px;background:rgba(10,22,40,.9);color:#fff;font:700 12px Inter,sans-serif;cursor:pointer}.player-share .material-icons{font-size:17px}.player-share:hover{background:#1769c2;border-color:#398eea}
+@media(max-width:600px){.player-share{top:10px;right:54px;padding:7px 9px;font-size:11px}.player-close{top:10px;right:10px}}
 /* Status Toast */
 #status {
   position: fixed;
@@ -579,38 +581,13 @@ footer {
   color: var(--text-secondary);
 }
 
-/* CRICZONE unified hub navigation */
-.cz-hub-header{position:sticky;top:0;z-index:500;min-height:72px;padding:10px clamp(14px,3vw,38px);display:flex;align-items:center;justify-content:space-between;gap:18px;background:#080d18;border-bottom:1px solid #263650;box-shadow:0 8px 28px #0004}
-.cz-hub-brand{display:flex;align-items:center;gap:10px;color:#f4f7ff;text-decoration:none;font-size:20px;font-weight:900;letter-spacing:.2px;white-space:nowrap}
-.cz-hub-brand>span:last-child>span{color:#ffc857}.cz-hub-brand small{display:block;font-size:9px;letter-spacing:2px;color:#8ea3bf;font-weight:700;margin-top:2px}
-.cz-brand-mark{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#258cff,#1453bd);color:white;font-size:23px;font-weight:900;box-shadow:0 6px 20px #1674e544}
-.cz-hub-tabs{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
-.cz-tab{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 17px;border:1px solid #2c405e;border-radius:12px;background:#111d30;color:#aebed4;font:700 13px Inter,sans-serif;cursor:pointer;transition:.18s}
-.cz-tab .material-icons{font-size:18px}.cz-tab:hover{border-color:#398eea;color:#fff}.cz-tab.active{background:linear-gradient(120deg,#1679e5,#1557b8);border-color:#348ff5;color:#fff;box-shadow:0 5px 18px #1265ca44}
-.cz-hub-telegram{padding:10px 15px;border-radius:11px;background:#168fd1;color:#fff;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}
-.cz-sports-panel{height:calc(100dvh - 72px);min-height:520px;background:#050a0f}
-.cz-sports-panel iframe{display:block;width:100%;height:100%;border:0;background:#050a0f}
-#app-wrapper[hidden],.cz-sports-panel[hidden]{display:none!important}
-@media(max-width:700px){.cz-hub-header{position:sticky;min-height:auto;padding:9px 10px;gap:8px;flex-wrap:wrap}.cz-hub-brand{font-size:16px;gap:7px}.cz-brand-mark{width:34px;height:34px;border-radius:10px}.cz-hub-brand small{font-size:7px;letter-spacing:1.4px}.cz-hub-tabs{order:3;width:100%;display:grid;grid-template-columns:1fr 1fr}.cz-tab{padding:10px 7px;font-size:11px;gap:5px}.cz-hub-telegram{padding:9px 11px;font-size:11px}.cz-sports-panel{height:calc(100dvh - 116px);min-height:480px}}
 \n</style>
 </head>
 <body>
 
 <div id="status"></div>
 
-<header class="cz-hub-header">
-  <a class="cz-hub-brand" href="/hub/"><span class="cz-brand-mark">C</span><span>CRIC<span>ZONE</span><small>SPORTS & ENTERTAINMENT</small></span></a>
-  <nav class="cz-hub-tabs" aria-label="Main sections">
-    <button class="cz-tab active" type="button" data-section="sports"><span class="material-icons">sports_cricket</span> Live Sports TV</button>
-    <button class="cz-tab" type="button" data-section="movies"><span class="material-icons">movie</span> Movies & Series</button>
-  </nav>
-  <a class="cz-hub-telegram" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join Telegram</a>
-</header>
-<section id="sportsPanel" class="cz-sports-panel">
-  <iframe id="sportsFrame" title="CRICZONE Live Sports TV" src="/criczone-old/" loading="eager" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
-</section>
-
-<div id="app-wrapper" hidden>
+<div id="app-wrapper">
   <header class="sky-header">
     <a href="#" class="sky-logo" onclick="location.href=location.pathname;return false;">
       <span class="material-icons">movie</span>
@@ -680,6 +657,7 @@ footer {
 <!-- Video Player Modal Container -->
 <div id="playerModal">
   <div class="player-modal-content">
+    <button class="player-share" id="playerShare" type="button" title="Share this movie or episode" aria-label="Share this movie or episode"><span class="material-icons">share</span><span>Share</span></button>
     <button class="player-close" id="playerClose" title="Close Player">
       <span class="material-icons">close</span>
     </button>
@@ -713,6 +691,9 @@ var $episodesGrid = document.getElementById("episodesGrid");
 
 var $playerModal = document.getElementById("playerModal");
 var $playerClose = document.getElementById("playerClose");
+var $playerShare = document.getElementById("playerShare");
+var currentWatch = { title: "", sourceIndex: 0 };
+
 var $frame       = document.getElementById("playerFrame");
 
 var _stTmr   = null;
@@ -856,14 +837,14 @@ function openDetailModal(movie){
   if(!channels.length){
     $episodesGrid.innerHTML = '<div style="color:var(--text-secondary); font-size:0.85rem;">No stream sources available.</div>';
   } else {
-    channels.forEach(function(ch){
+    channels.forEach(function(ch, sourceIndex){
       var btn = document.createElement("button");
       btn.className = "episode-btn";
       btn.textContent = ch.name || "Play";
       btn.title = ch.name || "Play";
       btn.addEventListener("click", function(){
         closeDetailModal();
-        openPlayer(ch.streamUrl, movie.title + " - " + (ch.name || "Play"));
+        openPlayer(ch.streamUrl, movie.title + " - " + (ch.name || "Play"), movie.title, sourceIndex);
       });
       $episodesGrid.appendChild(btn);
     });
@@ -876,7 +857,7 @@ function closeDetailModal(){
   $detailModal.style.display = "none";
 }
 
-function openPlayer(streamUrl, title){
+function openPlayer(streamUrl, title, movieTitle, sourceIndex){
   if(!streamUrl){
     toast("Stream URL is missing for this selection.", "err", 4000);
     return;
@@ -891,6 +872,22 @@ function closePlayer(){
   $frame.src = "";
   $playerModal.style.display = "none";
 }
+
+async function shareCurrentWatch(){
+  if(!currentWatch.title){toast("Open a movie or episode first.","err",3000);return;}
+  var url = new URL(location.href);
+  url.search = "";
+  url.searchParams.set("watch", currentWatch.title);
+  url.searchParams.set("source", String(currentWatch.sourceIndex));
+  var shareData = {title:"CRICZONE — "+currentWatch.title,text:"Watch "+currentWatch.title+" on CRICZONE",url:url.href};
+  try{
+    if(navigator.share){await navigator.share(shareData);}
+    else if(navigator.clipboard && navigator.clipboard.writeText){await navigator.clipboard.writeText(url.href);toast("Share link copied.","ok",3000);}
+    else {window.prompt("Copy this CRICZONE link:",url.href);}
+  }catch(error){if(error && error.name!=="AbortError")toast("Could not share this link.","err",3000);}
+}
+$playerShare.addEventListener("click",shareCurrentWatch);
+
 
 $detailClose.addEventListener("click", closeDetailModal);
 $detailModal.addEventListener("click", function(e){
@@ -927,6 +924,14 @@ async function main(){
     renderCategories(allMovies);
     setupSearch();
     filterMovies();
+    var sharedTitle = new URLSearchParams(location.search).get("watch");
+    var sharedSource = Number(new URLSearchParams(location.search).get("source") || 0);
+    if(sharedTitle){
+      var sharedMovie = allMovies.find(function(item){return String(item.title||"").toLowerCase()===sharedTitle.toLowerCase();});
+      if(sharedMovie && Array.isArray(sharedMovie.channels) && sharedMovie.channels[sharedSource]){
+        openPlayer(sharedMovie.channels[sharedSource].streamUrl, sharedMovie.title+" - "+(sharedMovie.channels[sharedSource].name||"Play"), sharedMovie.title, sharedSource);
+      }else{toast("Shared movie/source is no longer available.","err",4500);}
+    }
   }catch(e){
     setMsg("Connection Error. Please Check Your Internet or CORS policy.");
     toast("Failed to load catalog.", "err", 0);
