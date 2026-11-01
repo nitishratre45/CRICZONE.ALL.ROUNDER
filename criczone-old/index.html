@@ -3231,53 +3231,65 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
     async loadStream(streamUrl) {
 
-        /*
-         * Reset player.
-         */
-
         try {
-
             this.$.player.pause();
-
         } catch (e) {}
 
-
-        /*
-         * Destroy previous Shaka instance.
-         */
-
-        if (
-            this.shakaPlayer
-        ) {
-
+        if (this.shakaPlayer) {
             try {
-
                 await this.shakaPlayer.destroy();
-
             } catch (error) {
-
-                console.error(
-                    "Shaka load failed:",
-                    error
-                );
-
+                console.warn("Previous Shaka destroy:", error);
             }
-
+            this.shakaPlayer = null;
         }
 
+        const url = String(streamUrl || "");
+        const lowerUrl = url.toLowerCase();
+        const isDirectManifest =
+            lowerUrl.includes(".m3u8") ||
+            lowerUrl.includes(".mpd");
 
-        /*
-         * If the existing source is an HTML
-         * player page, keep the original
-         * URL unchanged and use a compatible
-         * embedded frame.
-         *
-         * This preserves existing feed links.
-         */
+        if (isDirectManifest) {
 
-        this.loadEmbeddedPlayer(
-            url
-        );
+            if (!window.shaka) {
+                console.error("Shaka Player library is unavailable.");
+                this.setPlayerStatus("PLAYER UNAVAILABLE");
+                return;
+            }
+
+            try {
+                shaka.polyfill.installAll();
+
+                if (!shaka.Player.isBrowserSupported()) {
+                    throw new Error("Shaka Player is not supported");
+                }
+
+                this.shakaPlayer = new shaka.Player(this.$.player);
+
+                this.shakaPlayer.addEventListener("error", event => {
+                    console.error("Shaka error:", event.detail);
+                });
+
+                await this.shakaPlayer.load(url);
+                this.setPlayerStatus("LIVE");
+
+                try {
+                    await this.$.player.play();
+                } catch (e) {
+                    console.log("Autoplay requires interaction.");
+                }
+
+                return;
+
+            } catch (error) {
+                console.error("Shaka load failed:", error);
+                this.setPlayerStatus("STREAM ERROR");
+                return;
+            }
+        }
+
+        this.loadEmbeddedPlayer(url);
 
     }
 
