@@ -1095,10 +1095,11 @@
         (function() {
             "use strict";
 
+            // Use the same published Willow/Prime feeds as the working Willow page.
+            // The old relative /data/willow.json paths do not exist in this repository.
             const API_ENDPOINTS = [
-                // This page's own match feed must be first; legacy third-party feeds are optional fallbacks.
-                "../data/willow.json",
-                "/data/willow.json",
+                "https://sonujson-v4.pages.dev/Data/willow.json",
+                "https://sonujson-v4.pages.dev/Data/prime.json",
                 "https://sonujson-v5.pages.dev/Data/willow.json"
             ];
 
