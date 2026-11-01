@@ -719,6 +719,29 @@
     }
     @media(prefers-reduced-motion:reduce){.splash-logo-img,.splash-glow-halo,.splash-progress-bar{animation:none!important}}
 
+
+    /* Featured India vs New Zealand match links */
+    #featured-match{max-width:1120px;margin:0 auto;padding:20px 16px 8px}
+    .match-banner{position:relative;overflow:hidden;padding:19px 18px;border:1px solid rgba(255,184,0,.27);border-radius:18px;background:radial-gradient(circle at 90% 0%,rgba(255,184,0,.16),transparent 42%),linear-gradient(130deg,#17243b,#0b1220 72%);box-shadow:0 12px 30px rgba(0,0,0,.22)}
+    .match-kicker{display:inline-flex;align-items:center;gap:7px;color:#ffd36b;font-size:9px;font-weight:900;letter-spacing:1.5px}
+    .match-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff3d4f;box-shadow:0 0 10px #ff3d4f}
+    .match-banner h1{margin-top:9px;color:#fff;font:900 clamp(21px,4vw,30px) 'Space Grotesk',sans-serif;letter-spacing:-.8px}
+    .match-banner p{margin-top:6px;color:#aebbd0;font-size:11px;line-height:1.6}
+    .match-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+    .match-group{padding:14px;border:1px solid rgba(255,255,255,.085);border-radius:15px;background:rgba(13,21,35,.9)}
+    .match-group h2{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:#f8fafc;font-size:12px;font-weight:900;letter-spacing:.4px}
+    .match-group h2 span{color:#ffd36b;font-size:9px;font-weight:800}
+    .match-link{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;margin-top:7px;padding:9px 11px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:linear-gradient(110deg,rgba(255,255,255,.055),rgba(255,255,255,.018));color:#eaf1fb;text-decoration:none;font-size:10px;font-weight:800;transition:border-color .2s,transform .2s,background .2s}
+    .match-link:hover{transform:translateY(-1px);border-color:rgba(255,184,0,.42);background:rgba(255,184,0,.07)}
+    .match-link b{color:#ffd36b;font-size:9px;white-space:nowrap}
+    .match-link:focus-visible{outline:2px solid #ffd36b;outline-offset:3px}
+    .telegram-howto{display:flex;align-items:center;gap:12px;margin-top:12px;padding:13px 14px;border:1px solid rgba(34,158,217,.25);border-radius:13px;background:rgba(34,158,217,.075)}
+    .telegram-howto .tg-icon{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:10px;background:#229ed9;color:white;font-size:18px}
+    .telegram-howto strong{display:block;color:#fff;font-size:10px;font-weight:900}
+    .telegram-howto p{margin-top:4px;color:#aebbd0;font-size:9px;line-height:1.6}
+    .directory-heading{margin-top:0}
+    @media(max-width:620px){#featured-match{padding:14px 12px 5px}.match-groups{grid-template-columns:1fr;gap:9px}.match-group{padding:12px}.match-banner{padding:16px 14px;border-radius:15px}}
+
   </style>
 </head>
 <body>
@@ -765,6 +788,38 @@
   <!-- ========================================================
        MAIN PLAYER STAGE
        ======================================================== -->
+  <section id="featured-match" aria-label="India vs New Zealand fifth T20 international streams">
+    <div class="match-banner">
+      <div class="match-kicker">MATCH CENTRE • CRICZONE</div>
+      <h1>IND vs NZ — 5th T20I</h1>
+      <p>Choose your preferred language or broadcast option below.</p>
+    </div>
+    <div class="match-groups">
+      <section class="match-group" aria-label="Hindi HD streams">
+        <h2>🇮🇳 HINDI HD <span>2 OPTIONS</span></h2>
+        <a class="match-link" href="https://criczone2.pages.dev/criczone10/player?channel=xy8" target="_blank" rel="noopener noreferrer">Hindi HD • Option 1 <b>WATCH ↗</b></a>
+        <a class="match-link" href="https://criczone2.pages.dev/criczone/?id=STEN3" target="_blank" rel="noopener noreferrer">Hindi HD • Option 2 <b>WATCH ↗</b></a>
+      </section>
+      <section class="match-group" aria-label="English HD streams">
+        <h2>🇬🇧 ENG HD <span>2 OPTIONS</span></h2>
+        <a class="match-link" href="https://criczone2.pages.dev/criczone/?id=STEN1" target="_blank" rel="noopener noreferrer">English HD • Option 1 <b>WATCH ↗</b></a>
+        <a class="match-link" href="https://criczone2.pages.dev/criczone10/player?channel=xy6" target="_blank" rel="noopener noreferrer">English HD • Option 2 <b>WATCH ↗</b></a>
+      </section>
+      <section class="match-group" aria-label="Sony all channels">
+        <h2>📺 SONY ALL <span>1 OPTION</span></h2>
+        <a class="match-link" href="https://criczone.pages.dev/criczone6/?id=26" target="_blank" rel="noopener noreferrer">Sony All • Open channels <b>WATCH ↗</b></a>
+      </section>
+      <section class="match-group" aria-label="Sony Liv">
+        <h2>▶ SONY LIV <span>1 OPTION</span></h2>
+        <a class="match-link" href="https://criczone2.pages.dev/hindi2/" target="_blank" rel="noopener noreferrer">Sony Liv • Open stream <b>WATCH ↗</b></a>
+      </section>
+    </div>
+    <div class="telegram-howto">
+      <div class="tg-icon">➤</div>
+      <div><strong>STREAM UNLOCK — TELEGRAM BOT</strong><p>Open the stream link. Select “Continue with Telegram Bot”, then open Telegram and press Start on @CRICZONE_ADMIN_BOT. Return to the website; access should unlock after verification.</p></div>
+    </div>
+  </section>
+
   <section id="channel-browser" aria-label="All CRICZONE channels">
     <div class="directory-heading">
       <div><h1>All Live Channels</h1><p>Choose any channel to start watching</p></div>
