@@ -705,7 +705,7 @@ body{background-color:#060b13!important;background-image:radial-gradient(ellipse
             arrow.textContent = key === selectedKey ? '✓' : '▶';
             card.append(badge,meta,arrow);
             card.addEventListener('click', () => {
-              window.location.href = 'player.html?channel=' + encodeURIComponent(key);
+              window.location.href = '/criczone10/player.html?channel=' + encodeURIComponent(key);
             });
             grid.appendChild(card);
           });
