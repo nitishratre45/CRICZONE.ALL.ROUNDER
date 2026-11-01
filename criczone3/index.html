@@ -1277,96 +1277,9 @@ document.addEventListener("DOMContentLoaded", main);
 
 })();
 </script>
-  <div id="telegramPopup" class="tg-overlay">
-  <div class="tg-popup">
-    <button id="tgClose" class="tg-close">×</button>
+  
 
-    <div class="tg-lock">🔒</div>
-
-    <h2>Unlock Stream</h2>
-
-    <p>
-      Join our Telegram channel to continue watching
-      for the next <b>24 hours.</b>
-    </p>
-
-    <a
-      id="tgJoin"
-      href="https://t.me/+5hrS9VoLS8tjOTM1"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      JOIN TELEGRAM
-    </a>
-
-    <button id="tgContinue">
-      ✓ I've Joined — Continue Watching
-    </button>
-
-    <div class="tg-note">Free access • Valid for 24 hours</div>
-  </div>
-</div>
-
-  <script>
-(function(){
-
-  let popupTimer = null;
-  let popupShown = false;
-
-  const popup = document.getElementById("telegramPopup");
-  const closeBtn = document.getElementById("tgClose");
-  const continueBtn = document.getElementById("tgContinue");
-
-  if (!popup) return;
-
-  function showTelegramPopup(){
-    if (popupShown) return;
-
-    popupShown = true;
-    popup.classList.add("show");
-
-    // Pause the player while popup is open
-    try {
-      const video = document.getElementById("v");
-      if (video) video.pause();
-    } catch(e){}
-  }
-
-  function startTelegramTimer(){
-    clearTimeout(popupTimer);
-
-    popupTimer = setTimeout(function(){
-      showTelegramPopup();
-    }, 10000);
-  }
-
-  // Stream actually starts playing
-  const video = document.getElementById("v");
-
-  if(video){
-    video.addEventListener("playing", function(){
-      if(!popupShown){
-        startTelegramTimer();
-      }
-    });
-  }
-
-  closeBtn.addEventListener("click", function(){
-    popup.classList.remove("show");
-  });
-
-  continueBtn.addEventListener("click", function(){
-    popup.classList.remove("show");
-
-    try{
-      if(video){
-        video.play().catch(function(){});
-      }
-    }catch(e){}
-  });
-
-})();
-</script>
+  
 
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(e=>console.warn("CricZone install:",e)));}</script>
 
