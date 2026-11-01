@@ -933,7 +933,8 @@ async function main(){
   }
 }
 
-document.addEventListener("DOMContentLoaded", function(){\n
+document.addEventListener("DOMContentLoaded", function(){
+
 document.querySelectorAll(".cz-tab").forEach(function(tab){
   tab.addEventListener("click",function(){
     var section=tab.getAttribute("data-section");
@@ -947,7 +948,9 @@ document.querySelectorAll(".cz-tab").forEach(function(tab){
     window.scrollTo({top:0,behavior:"instant"});
   });
 });
-\nmain();\n});
+
+main();
+});
 })();
 </script>
 </body>
