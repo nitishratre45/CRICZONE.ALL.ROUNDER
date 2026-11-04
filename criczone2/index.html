@@ -1139,9 +1139,10 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
             setTimeout(showTelegramPopup, 5000);
         }
 
-        function showTelegramPopup() { telegramOverlay.classList.add("show"); }
+        function showTelegramPopup() { if (window.__czTelegramPopupShown) return; window.__czTelegramPopupShown = true; telegramOverlay.classList.add("show"); }
         function hideTelegramPopup() { telegramOverlay.classList.remove("show"); }
 
+        setTimeout(showTelegramPopup, 5000); // Page-load trigger; stream-start trigger is also retained.
         popupClose.addEventListener("click", hideTelegramPopup);
         telegramOverlay.addEventListener("click", e => { if (e.target === telegramOverlay) hideTelegramPopup(); });
 
