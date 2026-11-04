@@ -1,4 +1,4 @@
-const BOT = "CRICZONE1_ADMIN_BOT";
+const BOT = "CRICZONE_ADMIN_BOT";
 const CHANNEL = "@criczonelive";
 const TTL = 5 * 60;
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
