@@ -22,7 +22,23 @@ if(path==="/api/telegram/webhook"&&method==="POST")return await telegramWebhook(
 if(path==="/api/telegram/complete"&&method==="GET")return await telegramComplete(context);
 if(path==="/api/telegram/session"&&method==="GET")return await telegramSession(context);
 if(path==="/api/telegram/status"&&method==="GET")return await telegramStatus(context);
-// Membership popup is temporarily disabled at the injection point.
-// The original assets/js/telegram-membership-gate.js file and all verification APIs remain unchanged.
-return await context.next();
+// Inject the separate promotional popup on public HTML pages only.
+const response = await context.next();
+const contentType = response.headers.get("content-type") || "";
+const isPublicHtml = contentType.includes("text/html") &&
+  !path.startsWith("/api/") &&
+  path !== "/telegram-admin.html" &&
+  !path.startsWith("/matchcenter/") &&
+  !path.startsWith("/matchcenter2/");
+if (isPublicHtml) {
+  return new HTMLRewriter()
+    .on("body", {
+      element(element) {
+        element.append('<script src="/assets/js/telegram-promo-popup.js?v=1" defer></script>', { html: true });
+      }
+    })
+    .transform(response);
+}
+// Membership gate stays disabled; its source file and verification APIs are untouched.
+return response;
 }catch(error){console.error("CRICZONE Pages middleware error",path,method,error);return apiError(error,path,method)}}
