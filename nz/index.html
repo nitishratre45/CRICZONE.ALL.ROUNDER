@@ -659,6 +659,25 @@
 
       let loadTimer;
 
+      // Close only the normal Telegram promotional popup.
+      function hideTelegramPopup() {
+        popup.classList.remove("show");
+        popup.setAttribute("aria-hidden", "true");
+      }
+
+      closeBtn.addEventListener("click", hideTelegramPopup);
+      laterBtn.addEventListener("click", hideTelegramPopup);
+
+      // Also allow tapping the dimmed area or pressing Escape to close it.
+      popup.addEventListener("click", (event) => {
+        if (event.target === popup) hideTelegramPopup();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && popup.classList.contains("show")) {
+          hideTelegramPopup();
+        }
+      });
+
       // PLAYER
       function loadPlayer() {
         clearTimeout(loadTimer);
