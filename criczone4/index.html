@@ -1047,7 +1047,6 @@ return "application/x-mpegurl";
 }
 async function startPlayer(ch){
 $pc.style.display="flex";
-showTgModal();
 shaka.polyfill.installAll();
 if(!shaka.Player.isBrowserSupported()){ errMsg("Browser not supported."); return; }
 var player=new shaka.Player();
