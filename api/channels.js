@@ -19,7 +19,7 @@ const ALLOWED_ORIGINS = [
 // ============================================================
 
 const FEEDS = {
-    sports: "https://sonujson-v5.pages.dev/Data/sports.json",
+    sports: "https://sonujson-v7.pages.dev/Data/sports.json",
     directory: "https://allrounder3-0.pages.dev/id.json",
     select: [
         "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json",
