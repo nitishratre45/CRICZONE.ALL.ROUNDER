@@ -1690,7 +1690,7 @@ function renderHomeRails(){
       var card=document.createElement("button");card.type="button";card.className="home-rail-card";card.setAttribute("aria-label","Open "+movie.title);
       var img=document.createElement("img");img.className="home-rail-poster";img.loading=index<4?"eager":"lazy";img.decoding="async";img.alt=movie.title;
       var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e2430&color=fff";
-      img.src=safeHttpUrl(movie.poster)||fallback;img.onerror=function(){this.onerror=null;this.src=fallback;};
+      img.src=safeHttpUrl(movie.poster)||fallback;img.onerror=function(){this.onerror=null;this.hidden=true;var placeholder=document.createElement("div");placeholder.className="poster-fallback";placeholder.textContent=movie.title||"CRICZONE";card.insertBefore(placeholder,label);};
       var label=document.createElement("span");label.className="home-rail-tag";label.textContent=group.tag;
       var name=document.createElement("strong");name.textContent=movie.title;
       card.append(img,label,name);card.addEventListener("click",function(){openDetailModal(movie);});
@@ -1711,6 +1711,7 @@ document.querySelectorAll(".bottom-nav-item").forEach(function(button){
     if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent="Popular on CRICZONE";window.scrollTo({top:0,behavior:"smooth"});}
     else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent=activeNav==="movies"?"Movies":"Series";renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
     else if(activeNav==="search"){$search.focus();window.scrollTo({top:0,behavior:"smooth"});}
+    else if(activeNav==="mylist"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent="My List";renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
   });
 });
 function getCategoryList(movies){
@@ -1815,7 +1816,7 @@ function renderNextBatch(){
     var media=document.createElement("div"); media.className="sky-card-media";
     var category=document.createElement("span"); category.className="sky-category"; category.textContent=(typeof movie.categories==="string" && movie.categories.split(",")[0].trim()) || "Movie";
     var img=document.createElement("img"); var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
-    img.src=safeHttpUrl(movie.poster)||fallback; img.alt=movie.title; img.loading="lazy"; img.decoding="async"; img.onerror=function(){this.onerror=null;this.src=fallback;};
+    img.src=safeHttpUrl(movie.poster)||fallback; img.alt=movie.title; img.loading="lazy"; img.decoding="async"; img.onerror=function(){this.onerror=null;this.hidden=true;var placeholder=document.createElement("div");placeholder.className="poster-fallback";placeholder.textContent=movie.title||"CRICZONE";media.appendChild(placeholder);};
     media.append(category,img);
     var content=document.createElement("div"); content.className="sky-card-content";
     var title=document.createElement("div"); title.className="movie-title"; title.title=movie.title; title.textContent=movie.title;
