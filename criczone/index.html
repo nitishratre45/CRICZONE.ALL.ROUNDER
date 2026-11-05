@@ -188,6 +188,15 @@ html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,A
 @media(min-width:900px){#ch-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
 
 
+/* FIX: Shaka/player sizing rules must not override the selected fit mode */
+#pc video.mode-fill,.shaka-video-container video.mode-fill{object-fit:fill!important}
+#pc video.mode-cover,.shaka-video-container video.mode-cover{object-fit:cover!important}
+#pc video:not(.mode-fill):not(.mode-cover),.shaka-video-container video:not(.mode-fill):not(.mode-cover){object-fit:contain!important}
+#pc video,.shaka-video-container video{object-position:center center!important}
+.sp-fit-btn{position:relative;z-index:5;touch-action:manipulation}
+.sp-fit-btn .fit-pill{display:inline-block;min-width:34px;text-align:center}
+.sp-fit-btn.mode-fill .fit-pill{background:rgba(56,189,248,.12)}
+.sp-fit-btn.mode-cover .fit-pill{background:rgba(167,139,250,.12)}
 /* RESPONSIVE PASS: phones, tablets, laptops and wide desktops */
 html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
 #channel-list{min-height:100dvh;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -594,9 +603,10 @@ function injectControls(container, vid){
     applyFit((fitIdx + 1) % FITS.length);
   });
 
+  // Preserve selected Fit / Fill / Zoom mode across fullscreen changes.
   ["fullscreenchange","webkitfullscreenchange"].forEach(function(ev){
     document.addEventListener(ev, function(){
-      if(!(document.fullscreenElement || document.webkitFullscreenElement)) applyFit(0);
+      requestAnimationFrame(function(){ applyFit(fitIdx); });
     });
   });
 
