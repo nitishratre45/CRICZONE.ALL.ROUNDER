@@ -231,7 +231,7 @@ main{max-width:1440px;margin:auto;padding:30px 26px 70px}.hero{position:relative
   $("closePlayer").addEventListener("click",closePlayer);
   $("shareChannel").addEventListener("click",shareCurrentChannel);
   // Player stays open on backdrop taps; only the explicit X button closes it.
-  try{sessionStorage.setItem("czTelegramDismissed","1");}catch(e){}});
+  
   $("year").textContent=new Date().getFullYear();
   async function init(){
     try{
