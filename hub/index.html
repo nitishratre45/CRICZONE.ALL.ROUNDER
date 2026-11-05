@@ -1414,6 +1414,9 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
 #detailResume:not([hidden]),#detailTrailer:not([hidden]){display:inline-flex}#detailResume{border-color:#e8b63b;color:#ffd36b}
 @media(max-width:520px){.hub-filterbar{gap:7px;padding:9px}.hub-filterbar label{flex-basis:calc(50% - 7px)}.hub-filterbar button{flex:1}}
 
+
+/* Desktop: use the full-width layout without the floating mobile tab bar */
+@media (min-width: 769px){.bottom-glass-nav{display:none!important}body{padding-bottom:0!important}#movie-grid{scroll-margin-bottom:24px}}
 </style>
 </head>
 <body>
