@@ -588,7 +588,12 @@ body.modal-open { overflow: hidden; }
   .search-wrapper { order: 3; max-width: 100%; width: 100%; margin-top: 4px; }
   .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .container { padding: 16px 12px; }
-  .sky-card-media { height: 200px; }
+  .sky-card-media { height: clamp(160px,48vw,220px); }
+  .sky-card { min-width:0; }
+  .sky-card-content { padding:11px; }
+  .movie-title { font-size:.84rem; }
+  .category-btn { padding:8px 14px; }
+  #status { left:12px; right:12px; width:max-content; max-width:calc(100vw - 24px); }
   .detail-header-flex { flex-direction: column; align-items: center; text-align: center; }
   .detail-poster { width: 130px; height: 180px; }
   .detail-meta-row { justify-content: center; }
@@ -604,11 +609,12 @@ footer {
   color: var(--text-secondary);
 }
 
-\n</style>
+</style>
 </head>
 <body>
 
-<div id="status"></div>
+<div id="status" role="status" aria-live="polite"></div>
+<div id="overlay" role="status" aria-live="polite"><div class="loading-spinner"></div><p id="loadMsg">Loading CRICZONE Movies…</p></div>
 
 <div id="app-wrapper">
   <header class="sky-header">
@@ -758,91 +764,77 @@ async function loadData(){
   var res = await fetch(API_URL, {cache:"no-store"});
   if(!res.ok) throw new Error("HTTP " + res.status);
   var json = await res.json();
-  return json.matches || [];
+  if (!json || !Array.isArray(json.matches)) throw new Error("Invalid catalog response");
+  return json.matches.filter(function(item){ return item && typeof item === "object" && typeof item.title === "string" && item.title.trim(); });
 }
 
 function renderCategories(movies){
-  var set = new Set(["All"]);
-  movies.forEach(function(m){
-    if(m.categories){
-      m.categories.split(",").forEach(function(cat){
-        var cleanCat = cat.trim();
-        if(cleanCat) set.add(cleanCat);
-      });
-    }
+  var categories = new Set(["All"]);
+  movies.forEach(function(movie){
+    (typeof movie.categories === "string" ? movie.categories : "").split(",").forEach(function(cat){
+      if(cat.trim()) categories.add(cat.trim());
+    });
   });
-
-  $catBar.innerHTML = "";
-  set.forEach(function(grp){
-    var b = document.createElement("button");
-    b.className = "category-btn" + (grp === selectedCategory ? " active" : "");
-    b.innerHTML = '<span class="material-icons">category</span>' + grp;
-    b.onclick = function(){
-      selectedCategory = grp;
-      document.querySelectorAll(".category-btn").forEach(function(el){ el.classList.remove("active"); });
-      b.classList.add("active");
-      filterMovies();
-    };
-    $catBar.appendChild(b);
+  $catBar.textContent = "";
+  categories.forEach(function(category){
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "category-btn" + (category === selectedCategory ? " active" : "");
+    var icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "category";
+    button.append(icon,document.createTextNode(category));
+    button.setAttribute("aria-pressed",category === selectedCategory ? "true" : "false");
+    button.addEventListener("click",function(){ selectedCategory=category; renderCategories(allMovies); filterMovies(); });
+    $catBar.appendChild(button);
   });
 }
 
 function filterMovies(){
-  filteredMovies = allMovies.filter(function(m){
-    var matchesCategory = (selectedCategory === "All") || (m.categories && m.categories.toLowerCase().indexOf(selectedCategory.toLowerCase()) !== -1);
-    var matchesSearch = !searchQuery || (m.title.toLowerCase().indexOf(searchQuery) !== -1);
-    return matchesCategory && matchesSearch;
+  filteredMovies = allMovies.filter(function(movie){
+    var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
+    var title = String(movie.title || "").toLowerCase();
+    return (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
-
-  displayedCount = 0;
-  $grid.innerHTML = "";
+  displayedCount=0;
+  $grid.textContent="";
   renderNextBatch();
 }
 
+function safeHttpUrl(value){
+  try { var u=new URL(String(value || ""),location.href); return (u.protocol==="https:" || u.protocol==="http:") ? u.href : ""; }
+  catch(e){ return ""; }
+}
 function renderNextBatch(){
   if(!filteredMovies.length){
-    $grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-secondary);"><span class="material-icons" style="font-size: 48px; opacity: 0.5; margin-bottom: 8px;">search_off</span><br>No movies or series found matching "' + searchQuery + '"</div>';
-    $loadMoreContainer.style.display = "none";
+    var empty=document.createElement("div");
+    empty.style.cssText="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)";
+    empty.textContent=searchQuery ? 'No movies or series found matching "'+searchQuery+'"' : "No movies or series available right now.";
+    $grid.replaceChildren(empty);
+    $loadMoreContainer.style.display="none";
     return;
   }
-
-  var nextBatch = filteredMovies.slice(displayedCount, displayedCount + PAGE_SIZE);
-  var f = document.createDocumentFragment();
-
-  nextBatch.forEach(function(movie){
-    var div = document.createElement("div");
-    div.className = "sky-card";
-    var fb = "https://ui-avatars.com/api/?name=" + encodeURIComponent(movie.title) + "&background=1e88e5&color=fff&rounded=true";
-    var posterImg = movie.poster || fb;
-    var primaryCategory = movie.categories ? movie.categories.split(",")[0].trim() : "Movie";
-
-    div.innerHTML = 
-      '<div class="sky-card-media">' +
-        '<span class="sky-category">' + primaryCategory + '</span>' +
-        '<img src="' + posterImg + '" loading="lazy" onerror="this.src=\'' + fb + '\'" alt="">' +
-      '</div>' +
-      '<div class="sky-card-content">' +
-        '<div class="movie-title" title="' + movie.title + '">' + movie.title + '</div>' +
-        '<div class="watch-button-wrapper">' +
-          '<button class="watch-btn" type="button"><span class="material-icons" style="font-size:16px;">play_arrow</span> Watch Now</button>' +
-        '</div>' +
-      '</div>';
-      
-    div.addEventListener("click", function(){
-      openDetailModal(movie);
-    });
-
-    f.appendChild(div);
+  var batch=filteredMovies.slice(displayedCount,displayedCount+PAGE_SIZE);
+  var fragment=document.createDocumentFragment();
+  batch.forEach(function(movie){
+    var card=document.createElement("article"); card.className="sky-card"; card.tabIndex=0; card.setAttribute("role","button"); card.setAttribute("aria-label","Open "+movie.title);
+    var media=document.createElement("div"); media.className="sky-card-media";
+    var category=document.createElement("span"); category.className="sky-category"; category.textContent=(typeof movie.categories==="string" && movie.categories.split(",")[0].trim()) || "Movie";
+    var img=document.createElement("img"); var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
+    img.src=safeHttpUrl(movie.poster)||fallback; img.alt=movie.title; img.loading="lazy"; img.decoding="async"; img.onerror=function(){this.onerror=null;this.src=fallback;};
+    media.append(category,img);
+    var content=document.createElement("div"); content.className="sky-card-content";
+    var title=document.createElement("div"); title.className="movie-title"; title.title=movie.title; title.textContent=movie.title;
+    var watch=document.createElement("button"); watch.className="watch-btn"; watch.type="button"; watch.textContent="▶  Watch Now";
+    content.append(title,watch); card.append(media,content);
+    function open(){openDetailModal(movie);}
+    card.addEventListener("click",open);
+    card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+    fragment.appendChild(card);
   });
-
-  $grid.appendChild(f);
-  displayedCount += nextBatch.length;
-
-  if(displayedCount < filteredMovies.length){
-    $loadMoreContainer.style.display = "flex";
-  } else {
-    $loadMoreContainer.style.display = "none";
-  }
+  $grid.appendChild(fragment);
+  displayedCount+=batch.length;
+  $loadMoreContainer.style.display=displayedCount<filteredMovies.length?"flex":"none";
 }
 
 $loadMoreBtn.addEventListener("click", function(){
@@ -850,42 +842,39 @@ $loadMoreBtn.addEventListener("click", function(){
 });
 
 function openDetailModal(movie){
-  var fb = "https://ui-avatars.com/api/?name=" + encodeURIComponent(movie.title) + "&background=1e88e5&color=fff&rounded=true";
-  $detailPoster.src = movie.poster || fb;
-  $detailTitle.textContent = movie.title;
-
-  var meta = movie.metadata || {};
-  var imdb = meta.imdbRating ? '<span class="meta-badge">IMDb: ' + meta.imdbRating + '</span>' : '';
-  var lang = meta.language ? '<span><b>Language:</b> ' + meta.language + '</span>' : '';
-  var qual = meta.quality ? '<span><b>Quality:</b> ' + meta.quality + '</span>' : '';
-  $detailMetaRow.innerHTML = imdb + lang + qual;
-
-  var descParts = [];
-  if(meta.genre && meta.genre.length) descParts.push("<b>Genre:</b> " + meta.genre.join(", "));
-  if(meta.stars && meta.stars.length) descParts.push("<b>Cast:</b> " + meta.stars.join(", "));
-  if(meta.director) descParts.push("<b>Director:</b> " + meta.director);
-  $detailDesc.innerHTML = descParts.join("<br>") || (movie.heading || "");
-
-  $episodesGrid.innerHTML = "";
-  var channels = movie.channels || [];
-  
-  if(!channels.length){
-    $episodesGrid.innerHTML = '<div style="color:var(--text-secondary); font-size:0.85rem;">No stream sources available.</div>';
-  } else {
-    channels.forEach(function(ch, sourceIndex){
-      var btn = document.createElement("button");
-      btn.className = "episode-btn";
-      btn.textContent = ch.name || "Play";
-      btn.title = ch.name || "Play";
-      btn.addEventListener("click", function(){
-        closeDetailModal();
-        openPlayer(ch.streamUrl, movie.title + " - " + (ch.name || "Play"), movie.title, sourceIndex);
-      });
-      $episodesGrid.appendChild(btn);
-    });
+  var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
+  $detailPoster.onerror=function(){this.onerror=null;this.src=fallback;};
+  $detailPoster.src=safeHttpUrl(movie.poster)||fallback;
+  $detailPoster.alt=movie.title;
+  $detailTitle.textContent=movie.title;
+  var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
+  $detailMetaRow.textContent="";
+  function addMeta(label,value,badge){
+    if(value===undefined||value===null||value==="")return;
+    var item=document.createElement("span"); if(badge)item.className="meta-badge";
+    var strong=document.createElement("b"); strong.textContent=label+": ";
+    item.append(strong,document.createTextNode(Array.isArray(value)?value.join(", "):String(value)));
+    $detailMetaRow.appendChild(item);
   }
-
-  $detailModal.style.display = "flex";
+  addMeta("IMDb",meta.imdbRating,true); addMeta("Language",meta.language,false); addMeta("Quality",meta.quality,false);
+  $detailDesc.textContent="";
+  [["Genre",meta.genre],["Cast",meta.stars],["Director",meta.director]].forEach(function(pair){
+    if(!pair[1]||(Array.isArray(pair[1])&&!pair[1].length))return;
+    var line=document.createElement("div"),strong=document.createElement("b");
+    strong.textContent=pair[0]+": "; line.append(strong,document.createTextNode(Array.isArray(pair[1])?pair[1].join(", "):String(pair[1]))); $detailDesc.appendChild(line);
+  });
+  if(!$detailDesc.childNodes.length)$detailDesc.textContent=movie.heading||"No description available.";
+  $episodesGrid.textContent="";
+  var channels=Array.isArray(movie.channels)?movie.channels:[];
+  if(!channels.length){var empty=document.createElement("div");empty.style.color="var(--text-secondary)";empty.textContent="No stream sources available."; $episodesGrid.appendChild(empty);}
+  else channels.forEach(function(channel,index){
+    var btn=document.createElement("button");btn.className="episode-btn";btn.type="button";btn.textContent=channel&&channel.name?String(channel.name):"Play";btn.title=btn.textContent;
+    btn.disabled=!channel||!safeHttpUrl(channel.streamUrl);
+    if(btn.disabled)btn.title+=" (unavailable)";
+    btn.addEventListener("click",function(){closeDetailModal();openPlayer(channel.streamUrl,movie.title+" - "+btn.textContent,movie.title,index);});
+    $episodesGrid.appendChild(btn);
+  });
+  $detailModal.style.display="flex";
 }
 
 function closeDetailModal(){
@@ -898,7 +887,9 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
     return;
   }
   currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
-  var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(streamUrl);
+  var safeStreamUrl = safeHttpUrl(streamUrl);
+  if(!safeStreamUrl){toast("This stream URL is invalid or unsupported.","err",4000);return;}
+  var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(safeStreamUrl);
   $frame.src = "about:blank";
   $playerModal.style.display = "flex";
   document.body.classList.add("modal-open");
@@ -972,10 +963,10 @@ async function main(){
     setupSearch();
     filterMovies();
     var sharedTitle = new URLSearchParams(location.search).get("watch");
-    var sharedSource = Number(new URLSearchParams(location.search).get("source") || 0);
+    var sharedSource = Number.parseInt(new URLSearchParams(location.search).get("source") || "0",10);
     if(sharedTitle){
       var sharedMovie = allMovies.find(function(item){return String(item.title||"").toLowerCase()===sharedTitle.toLowerCase();});
-      if(sharedMovie && Array.isArray(sharedMovie.channels) && sharedMovie.channels[sharedSource]){
+      if(sharedMovie && Number.isInteger(sharedSource) && sharedSource>=0 && Array.isArray(sharedMovie.channels) && sharedMovie.channels[sharedSource]){
         openPlayer(sharedMovie.channels[sharedSource].streamUrl, sharedMovie.title+" - "+(sharedMovie.channels[sharedSource].name||"Play"), sharedMovie.title, sharedSource);
       }else{toast("Shared movie/source is no longer available.","err",4500);}
     }
