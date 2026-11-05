@@ -703,6 +703,17 @@ function injectControls(container, vid){
 }
 
 async function startPlayer(ch){
+  var url = isNonEmpty(ch.stream_url) ? ch.stream_url.trim() : "";
+  var drmKeys = buildClearKeys(ch);
+  if(!url){
+    errMsg("Stream URL Missing For This Channel.");
+    return;
+  }
+  if(Object.keys(drmKeys).length === 0){
+    errMsg("DRM Keys Missing For This Channel.");
+    return;
+  }
+
   $pc.style.display = "flex";
   shaka.polyfill.installAll();
   if(!shaka.Player.isBrowserSupported()){ errMsg("Browser Not Supported."); return; }
@@ -729,20 +740,13 @@ async function startPlayer(ch){
     if(++_injectCount < 5) setTimeout(tryInject, 150);
   })();
 
-  var cookie = ch.cookie;
+  var cookie = ch.cookie || "";
   var raw    = rawCookie(cookie);
-  var url    = ch.stream_url;
-  var drmKeys = buildClearKeys(ch);
   var keyMode = keyModeOf(ch);
 
   var restrictionsRelaxed = false;
   var thermalApplied      = false;
   var sessionStart        = Date.now();
-
-  if(Object.keys(drmKeys).length === 0){
-    toast("No DRM Keys Available","err",0);
-    return;
-  }
 
   var thermalTimer = setInterval(function(){
     if(Date.now() - sessionStart < 60*60*1000) return;
@@ -833,7 +837,7 @@ async function startPlayer(ch){
     toast("Reconnecting… (" + retries + " / 5)","warn",0);
     try{
       var d     = await loadData();
-      var fresh = (d.channels || []).find(function(c){ return c.id === ch.id; });
+      var fresh = (d.channels || []).find(function(c){ return String(c.id) === String(ch.id); });
       if(!fresh) throw new Error("missing");
       var freshKeys = buildClearKeys(fresh);
       if(Object.keys(freshKeys).length === 0) throw new Error("no_keys");
@@ -950,17 +954,27 @@ async function main(){
 
   if(!id){ renderList(channels); return; }
 
-  var ch = channels.find(function(c){ return c.id === id; });
+  var ch = channels.find(function(c){ return String(c.id) === String(id); });
   if(!ch){
     errMsg("Channel Not Found.");
     return;
   }
   document.title = ch.name;
-  await startPlayer(ch);
-  if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
+  try{
+    await startPlayer(ch);
+    if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
+  }catch(error){
+    console.error("CRICZONE player startup failed:", error);
+    errMsg("Player Could Not Start. Please Refresh And Try Again.");
+  }
 }
 
-document.addEventListener("DOMContentLoaded", main);
+document.addEventListener("DOMContentLoaded", function(){
+  main().catch(function(error){
+    console.error("CRICZONE page startup failed:", error);
+    errMsg("Unable To Load CRICZONE. Please Refresh.");
+  });
+});
 })();
 </script>
 <script type="module">
