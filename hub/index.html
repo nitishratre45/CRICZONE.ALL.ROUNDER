@@ -1226,7 +1226,7 @@ async function loadData(){
 function setFeatured(movie){
   if(!movie)return; featuredMovie=movie;
   var poster=safeHttpUrl(movie.poster);
-  $featuredBackdrop.style.backgroundImage=poster?'url("'+poster.replace(/["\\\\]/g,"\\function renderCategories(movies){")+'")':'linear-gradient(135deg,#1b2638,#080b12)';
+  $featuredBackdrop.style.backgroundImage=poster ? 'url("'+poster+'")' : "linear-gradient(135deg,#1b2638,#080b12)";
   $featuredTitle.textContent=movie.title||"Featured";
   var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
   $featuredDescription.textContent=String(movie.heading||meta.genre||meta.language||"Stream movies and series on CRICZONE.");
