@@ -1047,6 +1047,9 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 @media(max-width:768px){body{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.featured-hero{min-height:clamp(390px,112vw,540px);border-radius:17px;margin-bottom:27px}.featured-backdrop{background-position:center top}.featured-backdrop:after{background:linear-gradient(0deg,rgba(4,7,13,.98),rgba(4,7,13,.78) 34%,rgba(4,7,13,.12))}.featured-shade{background:linear-gradient(0deg,#07090e,rgba(7,9,14,.24) 45%,transparent)}.featured-copy{width:100%;padding:20px 18px 28px}.featured-copy h1{max-width:95%;font-size:clamp(1.7rem,8vw,2.5rem)}.featured-copy p{max-width:100%;font-size:.83rem;-webkit-line-clamp:2}.featured-actions{margin-top:17px;gap:9px}.featured-actions button{min-height:43px;padding:0 14px;font-size:.82rem}.featured-pagination{right:17px;bottom:18px}.home-section-heading{margin-bottom:13px}.section-note{font-size:.7rem}.bottom-glass-nav{bottom:max(10px,env(safe-area-inset-bottom));min-height:66px;border-radius:20px}}
 @media(max-width:380px){.featured-hero{min-height:390px}.featured-copy{padding-left:14px;padding-right:14px}.featured-actions button{padding:0 11px}.bottom-glass-nav{width:calc(100vw - 20px)}}
 
+
+.detail-share-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;align-self:flex-start;margin-top:7px;padding:10px 14px;border-radius:10px;border:1px solid rgba(245,185,40,.34);background:rgba(245,185,40,.10);color:#ffd166;font-weight:750;font-size:.8rem;cursor:pointer}
+.detail-share-btn:hover{background:#f5b928;color:#17130a}
 </style>
 </head>
 <body>
@@ -1120,6 +1123,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
         <div id="detailTitle" class="detail-title"></div>
         <div class="detail-meta-row" id="detailMetaRow"></div>
         <div class="detail-desc" id="detailDesc"></div>
+        <button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button>
       </div>
     </div>
     <div class="section-title">
@@ -1169,12 +1173,14 @@ var $detailPoster = document.getElementById("detailPoster");
 var $detailTitle = document.getElementById("detailTitle");
 var $detailMetaRow = document.getElementById("detailMetaRow");
 var $detailDesc = document.getElementById("detailDesc");
+var $detailShare = document.getElementById("detailShare");
 var $episodesGrid = document.getElementById("episodesGrid");
 
 var $playerModal = document.getElementById("playerModal");
 var $playerClose = document.getElementById("playerClose");
 var $playerShare = document.getElementById("playerShare");
 var currentWatch = { title: "", sourceIndex: 0 };
+var currentMovie = null;
 
 var $frame       = document.getElementById("playerFrame");
 var $featuredBackdrop=document.getElementById("featuredBackdrop");
@@ -1317,7 +1323,28 @@ $loadMoreBtn.addEventListener("click", function(){
   renderNextBatch();
 });
 
+function getMovieId(movie){
+  if(!movie)return "";
+  var explicit=movie.id||movie.movieId||movie.imdbID||movie.imdbId;
+  if(explicit!==undefined&&explicit!==null&&String(explicit).trim())return String(explicit).trim();
+  return String(movie.title||"movie").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"movie";
+}
+function updateMovieUrl(movie,sourceIndex){
+  if(!movie)return;
+  var url=new URL(location.href);
+  url.searchParams.delete("watch");
+  url.searchParams.set("movie",getMovieId(movie));
+  if(Number.isInteger(sourceIndex)&&sourceIndex>=0)url.searchParams.set("source",String(sourceIndex));
+  else url.searchParams.delete("source");
+  history.replaceState({criczoneMovie:getMovieId(movie),source:sourceIndex??null},"",url.pathname+url.search+url.hash);
+}
+function clearMovieSourceFromUrl(){
+  var url=new URL(location.href);url.searchParams.delete("source");
+  history.replaceState(history.state,"",url.pathname+url.search+url.hash);
+}
 function openDetailModal(movie){
+  currentMovie=movie;
+  updateMovieUrl(movie);
   var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
   $detailPoster.onerror=function(){this.onerror=null;this.src=fallback;};
   $detailPoster.src=safeHttpUrl(movie.poster)||fallback;
@@ -1355,6 +1382,10 @@ function openDetailModal(movie){
 
 function closeDetailModal(){
   $detailModal.style.display = "none";
+  if($playerModal.style.display!=="flex"){
+    var url=new URL(location.href);url.searchParams.delete("movie");url.searchParams.delete("watch");url.searchParams.delete("source");
+    history.replaceState(null,"",url.pathname+url.search+url.hash);currentMovie=null;
+  }
 }
 
 function openPlayer(streamUrl, title, movieTitle, sourceIndex){
@@ -1363,6 +1394,7 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
     return;
   }
   currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
+  if(currentMovie)updateMovieUrl(currentMovie,currentWatch.sourceIndex);
   var safeStreamUrl = safeHttpUrl(streamUrl);
   if(!safeStreamUrl){toast("This stream URL is invalid or unsupported.","err",4000);return;}
   var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(safeStreamUrl);
@@ -1378,13 +1410,15 @@ function closePlayer(){
   $frame.src = "about:blank";
   $playerModal.style.display = "none";
   document.body.classList.remove("modal-open");
+  clearMovieSourceFromUrl();
+  if(currentMovie)$detailModal.style.display="flex";
 }
 
 async function shareCurrentWatch(){
-  if(!currentWatch.title){toast("Open a movie or episode first.","err",3000);return;}
+  if(!currentMovie){toast("Open a movie or episode first.","err",3000);return;}
   var url = new URL(location.href);
   url.search = "";
-  url.searchParams.set("watch", currentWatch.title);
+  url.searchParams.set("movie", getMovieId(currentMovie));
   url.searchParams.set("source", String(currentWatch.sourceIndex));
   var shareData = {title:"CRICZONE — "+currentWatch.title,text:"Watch "+currentWatch.title+" on CRICZONE",url:url.href};
   try{
@@ -1394,6 +1428,17 @@ async function shareCurrentWatch(){
   }catch(error){if(error && error.name!=="AbortError")toast("Could not share this link.","err",3000);}
 }
 $playerShare.addEventListener("click",shareCurrentWatch);
+async function shareMovieLink(){
+  if(!currentMovie)return;
+  var url=new URL(location.href);url.search="";url.searchParams.set("movie",getMovieId(currentMovie));
+  var data={title:"CRICZONE — "+currentMovie.title,text:"Open "+currentMovie.title+" on CRICZONE",url:url.href};
+  try{
+    if(navigator.share)await navigator.share(data);
+    else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url.href);toast("Movie link copied.","ok",3000);}
+    else window.prompt("Copy this movie link:",url.href);
+  }catch(error){if(error&&error.name!=="AbortError")toast("Could not share this movie link.","err",3000);}
+}
+$detailShare.addEventListener("click",shareMovieLink);
 
 
 $detailClose.addEventListener("click", closeDetailModal);
@@ -1439,14 +1484,19 @@ async function main(){
     renderCategories(allMovies);
     setupSearch();
     filterMovies();
-    var sharedTitle = new URLSearchParams(location.search).get("watch");
-    var sharedSource = Number.parseInt(new URLSearchParams(location.search).get("source") || "0",10);
-    if(sharedTitle){
-      var sharedMovie = allMovies.find(function(item){return String(item.title||"").toLowerCase()===sharedTitle.toLowerCase();});
-      if(sharedMovie && Number.isInteger(sharedSource) && sharedSource>=0 && Array.isArray(sharedMovie.channels) && sharedMovie.channels[sharedSource]){
-        openPlayer(sharedMovie.channels[sharedSource].streamUrl, sharedMovie.title+" - "+(sharedMovie.channels[sharedSource].name||"Play"), sharedMovie.title, sharedSource);
-      }else{toast("Shared movie/source is no longer available.","err",4500);}
-    }
+    var params=new URLSearchParams(location.search);
+    var requestedMovieId=params.get("movie"),legacyTitle=params.get("watch");
+    var requestedSource=params.has("source")?Number.parseInt(params.get("source"),10):null;
+    var sharedMovie=allMovies.find(function(item){
+      return requestedMovieId ? getMovieId(item)===requestedMovieId : (legacyTitle&&String(item.title||"").toLowerCase()===legacyTitle.toLowerCase());
+    });
+    if(sharedMovie){
+      openDetailModal(sharedMovie);
+      if(Number.isInteger(requestedSource)&&requestedSource>=0&&Array.isArray(sharedMovie.channels)&&sharedMovie.channels[requestedSource]){
+        var chosen=sharedMovie.channels[requestedSource];
+        openPlayer(chosen.streamUrl,sharedMovie.title+" - "+(chosen.name||"Play"),sharedMovie.title,requestedSource);
+      }else if(requestedSource!==null){toast("Shared movie/source is no longer available.","err",4500);}
+    }else if(requestedMovieId||legacyTitle){toast("This movie link is no longer available.","err",4500);}
   }catch(e){
     hideOverlay();
     $grid.textContent = "";
