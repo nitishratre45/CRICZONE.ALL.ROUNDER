@@ -1370,6 +1370,15 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
  .category-more-item{min-height:76px;padding:10px}
 }
 
+
+/* ===== STREAMING APP FINISHING LAYER ===== */
+.detail-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.detail-actions .detail-share-btn{margin:0}#detailWatchlist[aria-pressed="true"]{border-color:#e9b83f;background:#e9b83f20;color:#ffd36b}
+body[data-active-nav="mylist"] .featured-hero,body[data-active-nav="mylist"] .home-rails,body[data-active-nav="mylist"] .category-filter-wrapper{display:none!important}body[data-active-nav="mylist"] .home-section-heading{display:block}body[data-active-nav="mylist"] #movie-grid{display:grid!important}body[data-active-nav="mylist"] #movie-grid:empty:after{content:"Your list is empty. Add movies using the bookmark button.";grid-column:1/-1;padding:50px 18px;text-align:center;color:#9ba8ba}
+.bottom-glass-nav{grid-template-columns:repeat(5,minmax(0,1fr))}.bottom-nav-item{min-width:0}.bottom-nav-item span:last-child{font-size:.72rem}
+.sky-card-media{overflow:hidden}.sky-card-media img{display:block}.home-rail-card{min-height:0}.home-rail-poster{background:linear-gradient(145deg,#293449,#111722)}.home-rail-card img[hidden]{display:none}
+.home-rail-card:focus-visible,.category-more-item:focus-visible,.category-btn:focus-visible{outline:2px solid #f5c34d;outline-offset:3px}
+@media(max-width:420px){.bottom-nav-item span:last-child{font-size:.66rem}.bottom-glass-nav{padding:7px 8px}.detail-actions .detail-share-btn{flex:1;justify-content:center}}
+
 </style>
 </head>
 <body>
@@ -1431,6 +1440,7 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
     <button class="bottom-nav-item" type="button" data-nav="movies"><span class="material-icons">movie</span><span>Movies</span></button>
     <button class="bottom-nav-item" type="button" data-nav="series"><span class="material-icons">live_tv</span><span>Series</span></button>
     <button class="bottom-nav-item" type="button" data-nav="search"><span class="material-icons">search</span><span>Search</span></button>
+    <button class="bottom-nav-item" type="button" data-nav="mylist"><span class="material-icons">bookmark</span><span>My List</span></button>
   </nav>
 
   <footer>
@@ -1452,7 +1462,7 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
         <div id="detailTitle" class="detail-title"></div>
         <div class="detail-meta-row" id="detailMetaRow"></div>
         <div class="detail-desc" id="detailDesc"></div>
-        <button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button>
+        <div class="detail-actions"><button type="button" class="detail-share-btn" id="detailWatchlist"><span class="material-icons">bookmark_add</span> Add to My List</button><button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button></div>
       </div>
     </div>
     <div class="section-title">
@@ -1503,6 +1513,7 @@ var $detailTitle = document.getElementById("detailTitle");
 var $detailMetaRow = document.getElementById("detailMetaRow");
 var $detailDesc = document.getElementById("detailDesc");
 var $detailShare = document.getElementById("detailShare");
+var $detailWatchlist = document.getElementById("detailWatchlist");
 var $episodesGrid = document.getElementById("episodesGrid");
 
 var $playerModal = document.getElementById("playerModal");
@@ -1529,6 +1540,8 @@ var PAGE_SIZE = 50;
 var selectedCategory = "All";
 var searchQuery = "";
 var activeCollection = null;
+var watchlistIds = readStoredIds("cz_hub_watchlist");
+var lastWatchedId = "";
 
 function toast(msg, type, dur){
   $status.textContent = "";
@@ -1611,6 +1624,12 @@ document.addEventListener("visibilitychange",function(){if(document.hidden){if(h
     if(Math.abs(dx)>55&&heroMovies.length>1){heroIndex=(heroIndex+(dx<0?1:heroMovies.length-1))%heroMovies.length;setFeatured(heroMovies[heroIndex]);restartHeroTimer();}
   },{passive:true});
 })();
+function readStoredIds(key){try{var value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value.filter(function(x){return typeof x==="string";}):[];}catch(e){return [];}}
+function getWatchlist(){return watchlistIds.map(function(id){return allMovies.find(function(movie){return getMovieId(movie)===id;});}).filter(Boolean);}
+function isInWatchlist(movie){return !!movie&&watchlistIds.indexOf(getMovieId(movie))!==-1;}
+function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=isInWatchlist(currentMovie)?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(isInWatchlist(currentMovie)?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",isInWatchlist(currentMovie)?"true":"false");}
+function toggleWatchlist(movie){if(!movie)return;var id=getMovieId(movie),index=watchlistIds.indexOf(id);if(index>=0){watchlistIds.splice(index,1);toast("Removed from My List.","ok",2200);}else{watchlistIds.unshift(id);toast("Added to My List.","ok",2200);}watchlistIds=watchlistIds.slice(0,200);try{localStorage.setItem("cz_hub_watchlist",JSON.stringify(watchlistIds));}catch(e){}updateWatchlistButton();renderHomeRails();if(activeNav==="mylist")filterMovies();}
+$detailWatchlist.addEventListener("click",function(){toggleWatchlist(currentMovie);});
 function getRecentMovies(){
   try{
     var ids=JSON.parse(localStorage.getItem("cz_hub_recent")||"[]");
@@ -1630,6 +1649,10 @@ function renderHomeRails(){
   root.textContent="";
   var collections=[];
   var recent=getRecentMovies();
+  var saved=getWatchlist();
+  var last=allMovies.find(function(movie){return getMovieId(movie)===lastWatchedId;});
+  if(last)collections.push({title:"Continue Watching",items:[last],tag:"CONTINUE"});
+  if(saved.length)collections.push({title:"My List",items:saved,tag:"SAVED"});
   if(recent.length)collections.push({title:"Your Recent Picks",items:recent,tag:"RECENT"});
   collections.push({title:"Popular on CRICZONE",items:allMovies.slice(0,16),tag:"TRENDING"});
   var rated=allMovies.filter(function(movie){var v=Number(movie.metadata&&movie.metadata.imdbRating);return Number.isFinite(v)&&v>0;}).sort(function(a,b){return Number(b.metadata.imdbRating)-Number(a.metadata.imdbRating);}).slice(0,14);
@@ -1764,7 +1787,7 @@ function filterMovies(){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
     var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
-    var navMatch=selectedCategory!=="All"?true:(activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true);
+    var navMatch=activeNav==="mylist"?isInWatchlist(movie):(selectedCategory!=="All"?true:(activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true));
     return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
   displayedCount=0;
@@ -1834,6 +1857,7 @@ function clearMovieSourceFromUrl(){
 function openDetailModal(movie){
   currentMovie=movie;
   saveRecentMovie(movie);
+  updateWatchlistButton();
   updateMovieUrl(movie);
   var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
   $detailPoster.onerror=function(){this.onerror=null;this.src=fallback;};
@@ -1884,6 +1908,7 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
     return;
   }
   currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
+  if(currentMovie){lastWatchedId=getMovieId(currentMovie);try{localStorage.setItem("cz_hub_continue",lastWatchedId);}catch(e){}renderHomeRails();}
   if(currentMovie)updateMovieUrl(currentMovie,currentWatch.sourceIndex);
   var safeStreamUrl = safeHttpUrl(streamUrl);
   if(!safeStreamUrl){toast("This stream URL is invalid or unsupported.","err",4000);return;}
@@ -1984,6 +2009,7 @@ async function main(){
     renderCategories(allMovies);
     setupSearch();
     filterMovies();
+    lastWatchedId=localStorage.getItem("cz_hub_continue")||"";
     var params=new URLSearchParams(location.search);
     var requestedMovieId=params.get("movie"),legacyTitle=params.get("watch");
     var requestedSource=params.has("source")?Number.parseInt(params.get("source"),10):null;
