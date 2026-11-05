@@ -161,13 +161,11 @@ video.mode-cover{object-fit:cover}
   .sp-btn{padding:0 5px!important}
 }
 
-/* ═══════════ TELEGRAM BADGE & POPUP STYLES ═══════════ */
-#tgBadge{position:fixed;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));z-index:10001;display:inline-flex;align-items:center;gap:10px;padding:11px 20px;background:linear-gradient(135deg,#1e88e5,#1565c0);color:#fff;font-size:15px;font-weight:600;text-decoration:none;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.5);transition:transform .2s ease;font-family:'Inter',system-ui,sans-serif}
 #tgBadge:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(30,136,229,.55)}
 #tgBadge svg{width:20px;height:20px;flex-shrink:0;fill:#fff}
 #tgBadge span{white-space:nowrap}
-@media(max-width:480px){#tgBadge{padding:9px 15px;font-size:13px;gap:8px}#tgBadge svg{width:17px;height:17px}}
-@media(max-width:360px){#tgBadge span{display:none}#tgBadge{padding:9px 12px}}
+@media(max-width:480px){#tgBadge svg{width:17px;height:17px}}
+@media(max-width:360px){#tgBadge span{display:none}}
 
 #tgOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;z-index:999999;padding:20px}
 #tgOverlay.show{display:flex}
@@ -199,7 +197,6 @@ html,body{background:#070b14;color:#eaf2ff}
 .ch-live-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:4px 7px;border-radius:999px;background:rgba(239,68,68,.12);border:1px solid rgba(248,113,113,.28);color:#fca5a5;font-size:9px;font-weight:850;letter-spacing:.7px;line-height:1;text-transform:uppercase}
 .ch-live-badge i{width:5px;height:5px;border-radius:50%;background:#fb7185;box-shadow:0 0 8px rgba(251,113,133,.75);animation:dot-pulse 1.5s infinite}
 #status{top:max(14px,env(safe-area-inset-top));right:14px;background:rgba(8,14,25,.92);border-color:rgba(56,189,248,.22);box-shadow:0 8px 26px rgba(0,0,0,.45)}
-#tgBadge{background:linear-gradient(135deg,#0891b2,#2563eb);border:1px solid rgba(125,211,252,.3);border-radius:999px;box-shadow:0 8px 28px rgba(2,132,199,.28);font-size:13px;padding:10px 16px}
 #tgBadge:hover{box-shadow:0 10px 32px rgba(2,132,199,.4)}
 #tgCard{background:radial-gradient(ellipse at top,rgba(14,165,233,.15),transparent 60%),linear-gradient(160deg,#111c2e,#080d17);border-color:rgba(56,189,248,.24)}
 #tgCard h2{letter-spacing:-.4px}
@@ -250,11 +247,6 @@ try {
 <body>
 
 <!-- Telegram Badge -->
-<a id="tgBadge" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener">
-  <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-  <span>CricZone Telegram</span>
-</a>
-
 <div id="overlay">
   <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
     <circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/>
