@@ -146,7 +146,7 @@ window.CricConfig = {
      * SAME SOURCE URL
      */
     sourceUrl:
-        "https://sonujson-v7.pages.dev/Data/sports.json",
+        "https://sportlink-tv11.pages.dev/Star3.json",
 
     /*
      * SAME TELEGRAM LINK
@@ -2701,9 +2701,24 @@ this.setupBackground();
                     data?.data
                 ];
 
-            let channelList = candidates.find(value => Array.isArray(value) && value.length > 0)
-                || candidates.find(value => Array.isArray(value))
-                || null;
+            const isSingleChannelRecord =
+                payload &&
+                typeof payload === "object" &&
+                !Array.isArray(payload) &&
+                ["id", "name", "title", "channel", "url", "stream_url", "streamUrl", "iframeSrc", "link", "stream", "file", "source", "src"]
+                    .some(key => Object.prototype.hasOwnProperty.call(payload, key));
+
+            let channelList = isSingleChannelRecord
+                ? [{
+                    ...payload,
+                    id: payload.id ?? "STEN3",
+                    name: payload.name || payload.title || payload.channel || "Sony Sports 3 Hindi HD"
+                }]
+                : (
+                    candidates.find(value => Array.isArray(value) && value.length > 0)
+                    || candidates.find(value => Array.isArray(value))
+                    || null
+                );
 
             // Some upstream JSON feeds use { "channel-id": { ...channel } }.
             if (!channelList) {
