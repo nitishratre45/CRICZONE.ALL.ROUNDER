@@ -609,6 +609,266 @@ footer {
   color: var(--text-secondary);
 }
 
+
+/* ===== CRICZONE PREMIUM UI REFRESH ===== */
+:root {
+  --bg-dark:#07090e;
+  --surface-dark:#10141d;
+  --card-bg:#151b27;
+  --border-light:rgba(148,163,184,.16);
+  --text-primary:#f8fafc;
+  --text-secondary:#9aa8bb;
+  --prime-blue:#f5b928;
+  --live-red:#ef4444;
+  --upcoming-gold:#ffd166;
+}
+html { scroll-behavior:smooth; }
+body {
+  background:
+    radial-gradient(ellipse at 12% -10%,rgba(245,185,40,.10),transparent 34rem),
+    radial-gradient(ellipse at 90% 12%,rgba(37,99,235,.09),transparent 30rem),
+    var(--bg-dark);
+  color:var(--text-primary);
+}
+::selection { background:rgba(245,185,40,.28); color:#fff; }
+button,input { font:inherit; }
+button:focus-visible,a:focus-visible,[tabindex="0"]:focus-visible,input:focus-visible {
+  outline:2px solid #f5b928;
+  outline-offset:3px;
+}
+.sky-header {
+  padding:14px clamp(14px,3vw,42px);
+  background:rgba(10,13,20,.88);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow:0 10px 35px rgba(0,0,0,.22);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.sky-logo { letter-spacing:-.6px; font-size:1.22rem; }
+.sky-logo .material-icons {
+  color:#f5b928;
+  filter:drop-shadow(0 0 10px rgba(245,185,40,.3));
+}
+.search-input {
+  min-height:44px;
+  background:#0b1019;
+  border:1px solid rgba(148,163,184,.2);
+  border-radius:14px;
+  padding-left:44px;
+}
+.search-input:focus {
+  border-color:#f5b928;
+  box-shadow:0 0 0 4px rgba(245,185,40,.10);
+}
+.sky-telegram {
+  background:linear-gradient(135deg,#168b59,#0d6b48);
+  border:1px solid rgba(110,231,183,.18);
+  box-shadow:0 7px 20px rgba(16,185,129,.12);
+  padding:10px 17px;
+}
+.sky-telegram:hover { background:linear-gradient(135deg,#1aa66a,#0e7952); transform:translateY(-2px); }
+.container {
+  max-width:1500px;
+  padding:clamp(16px,3vw,34px);
+}
+.category-filter-wrapper { margin-bottom:24px; }
+.category-filter { gap:9px; padding:5px 2px 12px; scrollbar-width:none; }
+.category-filter::-webkit-scrollbar { display:none; }
+.category-btn {
+  background:rgba(18,24,35,.88);
+  border:1px solid rgba(148,163,184,.17);
+  color:#aab6c7;
+  padding:10px 17px;
+  border-radius:12px;
+  font-size:.82rem;
+  font-weight:600;
+  transition:background .2s,border-color .2s,color .2s,transform .2s;
+}
+.category-btn:hover { color:#fff; border-color:rgba(245,185,40,.5); transform:translateY(-1px); }
+.category-btn.active {
+  background:linear-gradient(135deg,#f7c64a,#e5a514);
+  border-color:#f7c64a;
+  color:#17130a;
+  box-shadow:0 7px 20px rgba(245,185,40,.17);
+}
+.category-btn .material-icons { font-size:17px; }
+.grid-layout {
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,205px),1fr));
+  gap:clamp(13px,1.8vw,22px);
+}
+.sky-card {
+  position:relative;
+  background:linear-gradient(160deg,rgba(25,33,47,.98),rgba(13,18,28,.98));
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:17px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+.sky-card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(245,185,40,.48);
+  box-shadow:0 18px 38px rgba(0,0,0,.38),0 0 0 1px rgba(245,185,40,.06);
+}
+.sky-card-media {
+  height:clamp(230px,28vw,310px);
+  background:linear-gradient(145deg,#171f2d,#0b1018);
+  overflow:hidden;
+}
+.sky-card-media img {
+  display:block;
+  transition:transform .45s ease,filter .3s ease;
+}
+.sky-card:hover .sky-card-media img { transform:scale(1.045); filter:saturate(1.08); }
+.sky-category {
+  top:12px;
+  left:12px;
+  padding:5px 10px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(5,8,13,.78);
+  color:#f7c64a;
+  letter-spacing:.45px;
+  font-size:.65rem;
+  backdrop-filter:blur(10px);
+}
+.sky-card-content {
+  padding:14px;
+  gap:13px;
+  background:transparent;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.movie-title {
+  font-size:.91rem;
+  line-height:1.45;
+  letter-spacing:-.15px;
+  min-height:2.6em;
+}
+.watch-btn {
+  min-height:40px;
+  border-radius:11px;
+  background:linear-gradient(135deg,#f7c64a,#e3a20d);
+  color:#17130a;
+  font-weight:800;
+  letter-spacing:.1px;
+  box-shadow:0 5px 14px rgba(245,185,40,.12);
+}
+.watch-btn:hover,.sky-card:hover .watch-btn {
+  background:linear-gradient(135deg,#ffda70,#f0b323);
+  color:#17130a;
+}
+.load-more-container { margin:38px 0 12px; }
+.load-more-btn {
+  border-radius:12px;
+  background:#151c29;
+  border:1px solid rgba(245,185,40,.32);
+  padding:13px 28px;
+}
+.load-more-btn:hover {
+  background:#f5b928;
+  border-color:#f5b928;
+  color:#15120a;
+  transform:translateY(-2px);
+}
+#detailModal,#playerModal {
+  background:rgba(2,5,10,.84);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.detail-content {
+  background:linear-gradient(145deg,#151d2a,#0d121c);
+  border:1px solid rgba(245,185,40,.2);
+  border-radius:22px;
+  box-shadow:0 28px 90px rgba(0,0,0,.7);
+}
+.detail-poster { box-shadow:0 12px 30px rgba(0,0,0,.35); }
+.detail-title { letter-spacing:-.5px; font-size:1.4rem; }
+.detail-desc { line-height:1.7; }
+.meta-badge {
+  background:rgba(245,185,40,.10);
+  border-color:rgba(245,185,40,.22);
+  color:#ffd166;
+}
+.detail-close,.player-close {
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(10px);
+}
+.detail-close:hover,.player-close:hover { background:#dc3545; border-color:#dc3545; }
+.episodes-grid { gap:11px; max-height:290px; }
+.episode-btn {
+  min-height:44px;
+  background:#192333;
+  border:1px solid rgba(148,163,184,.17);
+  border-radius:11px;
+  transition:all .2s ease;
+}
+.episode-btn:hover:not(:disabled) {
+  background:rgba(245,185,40,.14);
+  border-color:#f5b928;
+  color:#ffda70;
+  transform:translateY(-2px);
+}
+.episode-btn:disabled { opacity:.38; cursor:not-allowed; }
+.player-modal-content {
+  border:1px solid rgba(245,185,40,.2);
+  box-shadow:0 25px 80px rgba(0,0,0,.6);
+}
+.player-share {
+  background:rgba(13,20,31,.92);
+  border-color:rgba(245,185,40,.35);
+  border-radius:12px;
+}
+.player-share:hover { background:#d99b0b; border-color:#f5b928; color:#15120a; }
+#status {
+  right:18px;
+  left:auto;
+  padding:10px 15px;
+  border-radius:12px;
+  border-color:rgba(245,185,40,.24);
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+#status.ok .st-dot { background:#f5b928; }
+footer {
+  margin-top:55px;
+  padding:30px 18px;
+  background:rgba(10,14,22,.65);
+  border-top:1px solid rgba(148,163,184,.12);
+  line-height:1.8;
+}
+#overlay { background:rgba(7,9,14,.97); }
+.loading-spinner { border-top-color:#f5b928; }
+@media (min-width:1200px) {
+  .grid-layout { grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); }
+}
+@media (max-width:768px) {
+  .sky-header { gap:12px; padding:12px 14px; }
+  .sky-logo { font-size:1.08rem; }
+  .sky-telegram { padding:9px 12px; font-size:.8rem; gap:7px; }
+  .container { padding:15px 12px 24px; }
+  .grid-layout { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .sky-card { border-radius:14px; }
+  .sky-card-media { height:clamp(175px,57vw,235px); }
+  .sky-card-content { padding:10px; gap:10px; }
+  .movie-title { font-size:.82rem; min-height:2.5em; }
+  .watch-btn { min-height:38px; font-size:.78rem; }
+  .category-btn { padding:9px 13px; border-radius:10px; }
+  .detail-content { border-radius:17px; }
+  .detail-header-flex { gap:13px; }
+  .detail-title { font-size:1.18rem; }
+  .episodes-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  footer { margin-top:35px; font-size:.74rem; }
+}
+@media (max-width:360px) {
+  .sky-logo { font-size:.98rem; }
+  .sky-logo .material-icons { font-size:23px; }
+  .sky-telegram { padding:8px 10px; }
+  .sky-telegram svg { width:15px; }
+  .sky-card-media { height:165px; }
+  .sky-card-content { padding:9px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
+
 </style>
 </head>
 <body>
