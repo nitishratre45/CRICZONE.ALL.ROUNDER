@@ -280,6 +280,19 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
 
 /* CRICZONE channel playback screen — premium player UI */
 
+/* FINAL STREAM BRIGHTNESS FIX */
+#pc:before,
+#pc:after{display:none!important;content:none!important;opacity:0!important}
+#pc video,
+#pc .shaka-video-container video,
+#pc .shaka-video-container video[media]{
+  opacity:1!important;
+  filter:brightness(1.28) contrast(1.06) saturate(1.08)!important;
+}
+#pc .shaka-video-container,
+#pc .shaka-video-container video{background:#000!important}
+
+
 #pc{position:fixed;inset:0;isolation:isolate;background:#000;overflow:hidden}
 #pc:before{content:"";position:absolute;inset:0 0 auto;height:190px;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(3,10,17,.94),rgba(3,10,17,.55) 48%,transparent)}
 #pc .shaka-controls-container{z-index:10!important;padding:0 clamp(12px,3vw,30px) max(14px,env(safe-area-inset-bottom))!important;background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.58) 55%,transparent)!important}
