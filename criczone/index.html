@@ -190,6 +190,18 @@ html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,A
 @media(min-width:900px){#ch-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
 
 
+/* FIX: keep the viewer counter as a compact horizontal chip on desktop and mobile */
+#viewerBadge,#viewerBadge.is-fullscreen{
+  display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+  width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-height:none!important;
+  max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;white-space:nowrap!important;
+  writing-mode:horizontal-tb!important;transform:none!important;align-self:flex-start!important;
+}
+#viewerBadge .viewer-dot,#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{
+  flex:0 0 auto!important;writing-mode:horizontal-tb!important;
+}
+#viewerBadge.is-fullscreen{top:max(14px,env(safe-area-inset-top))!important;right:14px!important;bottom:auto!important;left:auto!important;}
+@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;bottom:auto!important;padding:8px 10px!important;font-size:10px!important;}}
 /* FIX: Shaka/player sizing rules must not override the selected fit mode */
 #pc video.mode-fill,.shaka-video-container video.mode-fill{object-fit:fill!important}
 #pc video.mode-cover,.shaka-video-container video.mode-cover{object-fit:cover!important}
