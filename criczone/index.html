@@ -146,7 +146,7 @@ window.CricConfig = {
      * SAME SOURCE URL
      */
     sourceUrl:
-        "https://sonujson-v5.pages.dev/Data/sports.json",
+        "https://sonujson-v7.pages.dev/Data/sports.json",
 
     /*
      * SAME TELEGRAM LINK
@@ -3009,38 +3009,23 @@ this.setupBackground();
 
 
         /*
-         * Keep ORIGINAL URL resolution.
+         * Resolve only an explicitly configured stream URL.
+         * Do not send missing channels to the retired star.html fallback.
          */
-        let streamUrl =
+        const streamCandidates = [
+            target.iframeSrc,
+            target.url,
+            target.link,
+            target.stream,
+            target.file,
+            target.source,
+            target.src
+        ];
 
-            target.iframeSrc ||
-
-            target.url ||
-
-            target.link ||
-
-            target.stream ||
-
-            target.file ||
-
-            target.source ||
-
-            target.src;
-
-
-        if (
-            !streamUrl
-        ) {
-
-            streamUrl =
-                "https://sonucdn-v2.pages.dev/star.html?id=" +
-                encodeURIComponent(
-                    target.id !== undefined
-                        ? target.id
-                        : identifier
-                );
-
-        }
+        const streamUrl = streamCandidates.find(value =>
+            typeof value === "string" &&
+            /^https?:\/\//i.test(value.trim())
+        )?.trim() || "";
 
 
         this.currentStreamId =
@@ -3062,6 +3047,23 @@ this.setupBackground();
 
         this.$.playerTitle.textContent =
             this.currentChannelTitle;
+
+
+        if (!streamUrl) {
+            this.stopPreviewTimer();
+            this.setPlayerStatus("SOURCE UNAVAILABLE");
+            try {
+                this.$.player.pause();
+                this.$.player.removeAttribute("src");
+                this.$.player.load?.();
+            } catch (error) {}
+            console.error(
+                "CRICZONE: no valid stream URL configured for channel",
+                this.currentStreamId,
+                target
+            );
+            return;
+        }
 
 
         this.viewerCount = 0;
