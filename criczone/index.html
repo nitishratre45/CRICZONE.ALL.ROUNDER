@@ -811,23 +811,25 @@ document.addEventListener("DOMContentLoaded", main);
 </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
   import { getDatabase, ref, onValue, onDisconnect, set, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
-    authDomain: "cricket-live-39106.firebaseapp.com",
-    databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "cricket-live-39106",
-    storageBucket: "cricket-live-39106.firebasestorage.app",
-    messagingSenderId: "841890143",
-    appId: "1:841890143:web:ca5b87c9395bdc19145eea",
-    measurementId: "G-ZNEZC8YVMX"
+    apiKey: "AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
+    authDomain: "criczone-4daa2.firebaseapp.com",
+    databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "criczone-4daa2",
+    storageBucket: "criczone-4daa2.firebasestorage.app",
+    messagingSenderId: "113293633217",
+    appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
+    measurementId: "G-Q9RJ0VSSPP"
   };
 
   let viewerRef = null;
   let countUnsubscribe = null;
   let firebaseApp = null;
+  let analyticsInstance = null;
 
   window.startRealtimeWatching = async function(streamId) {
     const count = document.getElementById("watchingCount");
@@ -836,7 +838,10 @@ document.addEventListener("DOMContentLoaded", main);
       if (countUnsubscribe) { countUnsubscribe(); countUnsubscribe = null; }
       if (viewerRef) { await remove(viewerRef).catch(() => {}); viewerRef = null; }
 
-      firebaseApp = firebaseApp || initializeApp(firebaseConfig, "criczone-live-watch");
+      firebaseApp = firebaseApp || initializeApp(firebaseConfig);
+      if (!analyticsInstance && await isSupported().catch(() => false)) {
+        try { analyticsInstance = getAnalytics(firebaseApp); } catch (analyticsError) { console.warn("Firebase Analytics unavailable:", analyticsError); }
+      }
       const db = getDatabase(firebaseApp);
       const auth = getAuth(firebaseApp);
       await signInAnonymously(auth);
