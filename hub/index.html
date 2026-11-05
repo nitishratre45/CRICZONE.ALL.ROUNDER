@@ -1266,6 +1266,57 @@ body { padding-bottom: calc(124px + env(safe-area-inset-bottom)); }
   .detail-content { gap:11px; }
 }
 
+
+/* ===== JIOHOTSTAR-INSPIRED HOME EXPERIENCE ===== */
+.home-rails{display:none}
+.home-rail{margin:0 0 30px}
+.home-rail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px}
+.home-rail-head h3{margin:0;color:#f7f8fb;font-size:clamp(1.05rem,2vw,1.35rem);font-weight:800;letter-spacing:-.35px}
+.home-rail-head span{color:#9aa5b5;font-size:.75rem}
+.home-rail-track{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(145px,18vw,210px);gap:13px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:none}
+.home-rail-track::-webkit-scrollbar{display:none}
+.home-rail-card{position:relative;min-width:0;overflow:hidden;scroll-snap-align:start;border:1px solid #ffffff14;border-radius:13px;background:#141a26;color:#fff;text-align:left;padding:0;cursor:pointer;transition:transform .2s,border-color .2s}
+.home-rail-card:hover{transform:translateY(-3px);border-color:#e9b83f88}
+.home-rail-poster{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#202735}
+.home-rail-card strong{display:-webkit-box;padding:9px 10px 11px;font-size:.8rem;line-height:1.35;font-weight:750;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.home-rail-tag{position:absolute;top:9px;left:9px;padding:5px 8px;border-radius:20px;background:#080b12d9;border:1px solid #ffffff2b;color:#ffd166;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.home-rail-card.featured-rail-card .home-rail-poster{aspect-ratio:16/10}
+.home-rail-card.featured-rail-card strong{font-size:.84rem}
+.featured-hero{min-height:clamp(360px,43vw,600px)}
+.featured-backdrop{transition:opacity .35s ease,background-image .35s ease}
+.featured-copy h1{max-width:760px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.featured-pagination{z-index:3;align-items:center}
+.featured-pagination button{width:7px;height:7px;padding:0;border:0;border-radius:20px;background:#ffffff70;cursor:pointer;transition:width .2s,background .2s}
+.featured-pagination button.active{width:24px;background:#f5b928}
+body[data-active-nav="home"] .home-rails{display:block}
+body[data-active-nav="home"] .category-filter-wrapper,
+body[data-active-nav="home"] #movie-grid,
+body[data-active-nav="home"] #loadMoreContainer{display:none!important}
+body[data-active-nav="movies"] .home-rails,
+body[data-active-nav="series"] .home-rails,
+body[data-active-nav="search"] .home-rails{display:none}
+body[data-active-nav="search"] .home-section-heading{display:none}
+body[data-active-nav="movies"] .featured-hero,
+body[data-active-nav="series"] .featured-hero,
+body[data-active-nav="search"] .featured-hero{display:none}
+body[data-active-nav="movies"] .home-section-heading h2{font-size:1.35rem}
+body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
+@media(max-width:768px){
+ .featured-hero{height:clamp(390px,112vw,510px);min-height:0}
+ .featured-copy{width:100%;padding:20px 17px 34px}
+ .featured-copy h1{font-size:clamp(1.55rem,7.2vw,2.25rem);line-height:1.08;-webkit-line-clamp:4}
+ .featured-copy p{-webkit-line-clamp:2}
+ .home-rail{margin-bottom:23px}
+ .home-rail-head{margin-bottom:10px}
+ .home-rail-track{grid-auto-columns:clamp(132px,39vw,170px);gap:10px;margin-right:-12px;padding-right:14px}
+ .home-rail-card{border-radius:11px}
+ .home-rail-card strong{padding:8px;font-size:.76rem}
+ .home-rail-card.featured-rail-card{grid-auto-columns:clamp(220px,67vw,290px)}
+ .home-rail-card.featured-rail-card .home-rail-poster{aspect-ratio:16/9}
+ .home-rail-card.featured-rail-card strong{font-size:.82rem}
+ .featured-pagination{right:16px;bottom:14px}
+}
+
 </style>
 </head>
 <body>
@@ -1306,9 +1357,10 @@ body { padding-bottom: calc(124px + env(safe-area-inset-bottom)); }
         <span class="featured-label">FEATURED</span><h1 id="featuredTitle">Discover your next favourite</h1>
         <p id="featuredDescription">Movies and series, all in one place.</p>
         <div class="featured-actions"><button class="featured-watch" id="featuredWatch" type="button"><span class="material-icons">play_arrow</span> Watch now</button><button class="featured-more" id="featuredMore" type="button"><span class="material-icons">info</span> More info</button></div>
-      </div><div class="featured-pagination" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div><div class="featured-pagination" id="heroDots" aria-label="Featured slides"></div>
     </section>
-    <div class="home-section-heading"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2>Popular on CRICZONE</h2></div><span class="section-note">Movies &amp; Series</span></div>
+    <div class="home-section-heading" id="libraryHeading"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2 id="libraryHeadingTitle">Popular on CRICZONE</h2></div><span class="section-note">Movies &amp; Series</span></div>
+    <div id="homeRails" class="home-rails" aria-label="Featured collections"></div>
     <div class="category-filter-wrapper"><div class="category-filter" id="category-bar"></div></div>
     <div id="movie-grid" class="grid-layout"></div>
     <div class="load-more-container" id="loadMoreContainer" style="display: none;"><button class="load-more-btn" id="loadMoreBtn"><span class="material-icons">expand_more</span> Load More</button></div>
@@ -1451,13 +1503,68 @@ async function loadData(){
   }
 }
 
+var heroMovies=[];
+var heroIndex=0;
+var heroTimer=null;
 function setFeatured(movie){
   if(!movie)return; featuredMovie=movie;
-  var poster=safeHttpUrl(movie.poster);
+  var poster=safeHttpUrl(movie.backdrop||movie.poster);
   $featuredBackdrop.style.backgroundImage=poster ? 'url("'+poster+'")' : "linear-gradient(135deg,#1b2638,#080b12)";
   $featuredTitle.textContent=movie.title||"Featured";
   var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
   $featuredDescription.textContent=String(movie.heading||meta.genre||meta.language||"Stream movies and series on CRICZONE.");
+  var dots=document.getElementById("heroDots");
+  if(dots){Array.from(dots.children).forEach(function(dot,index){dot.classList.toggle("active",index===heroIndex);dot.setAttribute("aria-current",index===heroIndex?"true":"false");});}
+}
+function startHeroCarousel(){
+  heroMovies=allMovies.filter(function(movie){return safeHttpUrl(movie.backdrop||movie.poster);}).slice(0,6);
+  if(!heroMovies.length)heroMovies=allMovies.slice(0,6);
+  var dots=document.getElementById("heroDots");
+  if(dots){
+    dots.textContent="";
+    heroMovies.forEach(function(movie,index){
+      var dot=document.createElement("button");dot.type="button";dot.className=index===0?"active":"";
+      dot.setAttribute("aria-label","Show featured item "+(index+1));
+      dot.addEventListener("click",function(){heroIndex=index;setFeatured(heroMovies[heroIndex]);restartHeroTimer();});
+      dots.appendChild(dot);
+    });
+  }
+  heroIndex=0;if(heroMovies.length)setFeatured(heroMovies[0]);
+  restartHeroTimer();
+}
+function restartHeroTimer(){
+  if(heroTimer)clearInterval(heroTimer);
+  if(heroMovies.length>1)heroTimer=setInterval(function(){heroIndex=(heroIndex+1)%heroMovies.length;setFeatured(heroMovies[heroIndex]);},6500);
+}
+function renderHomeRails(){
+  var root=document.getElementById("homeRails");if(!root)return;
+  root.textContent="";
+  var collections=[{title:"Trending on CRICZONE",items:allMovies.slice(0,14),tag:"TRENDING"}];
+  var seen=new Set();
+  allMovies.forEach(function(movie){
+    var category=(typeof movie.categories==="string"?movie.categories.split(",")[0]:"").trim();
+    if(category&&!seen.has(category.toLowerCase())){seen.add(category.toLowerCase());collections.push({title:category+" Picks",items:allMovies.filter(function(item){return typeof item.categories==="string"&&item.categories.split(",").some(function(c){return c.trim().toLowerCase()===category.toLowerCase();});}).slice(0,12),tag:category});}
+  });
+  collections=collections.filter(function(group){return group.items.length>0;}).slice(0,7);
+  collections.forEach(function(group){
+    var section=document.createElement("section");section.className="home-rail";
+    var head=document.createElement("div");head.className="home-rail-head";
+    var title=document.createElement("h3");title.textContent=group.title;
+    var note=document.createElement("span");note.textContent="See all";
+    head.append(title,note);
+    var track=document.createElement("div");track.className="home-rail-track";
+    group.items.forEach(function(movie){
+      var card=document.createElement("button");card.type="button";card.className="home-rail-card";
+      var img=document.createElement("img");img.className="home-rail-poster";img.loading="lazy";img.decoding="async";img.alt=movie.title;
+      var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e2430&color=fff";
+      img.src=safeHttpUrl(movie.poster)||fallback;img.onerror=function(){this.onerror=null;this.src=fallback;};
+      var label=document.createElement("span");label.className="home-rail-tag";label.textContent=group.tag;
+      var name=document.createElement("strong");name.textContent=movie.title;
+      card.append(img,label,name);card.addEventListener("click",function(){openDetailModal(movie);});
+      track.appendChild(card);
+    });
+    section.append(head,track);root.appendChild(section);
+  });
 }
 $featuredWatch.addEventListener("click",function(){if(featuredMovie)openDetailModal(featuredMovie);});
 $featuredMore.addEventListener("click",function(){if(featuredMovie)openDetailModal(featuredMovie);});
@@ -1466,8 +1573,8 @@ document.querySelectorAll(".bottom-nav-item").forEach(function(button){
     activeNav=button.getAttribute("data-nav")||"home";
     document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item===button);});
     document.body.dataset.activeNav=activeNav;
-    if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";setFeatured(allMovies[0]);renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
-    else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
+    if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent="Popular on CRICZONE";window.scrollTo({top:0,behavior:"smooth"});}
+    else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent=activeNav==="movies"?"Movies":"Series";renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
     else if(activeNav==="search"){$search.focus();window.scrollTo({top:0,behavior:"smooth"});}
   });
 });
@@ -1710,7 +1817,8 @@ async function main(){
   try{
     setMsg("Fetching Movies Database…");
     allMovies = await loadData();
-    setFeatured(allMovies[0]);
+    startHeroCarousel();
+    renderHomeRails();
     hideOverlay();
     renderCategories(allMovies);
     setupSearch();
