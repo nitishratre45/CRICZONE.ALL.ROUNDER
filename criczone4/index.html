@@ -225,15 +225,6 @@ box-shadow:0 0 6px var(--cc-live);animation:pulse-red 1.5s ease-in-out infinite}
 #cc-watermark.visible{opacity:1;transition:opacity .25s}
 
 /* ================= TELEGRAM BUTTON (homepage) ================= */
-#tg-link{position:fixed;top:max(18px,env(safe-area-inset-top));
-right:max(16px,env(safe-area-inset-right));z-index:9999;
-display:none;align-items:center;gap:8px;
-padding:9px 15px 9px 12px;border-radius:999px;text-decoration:none;
-background:linear-gradient(135deg,var(--cc-accent-3),var(--cc-accent-deep));
-border:1px solid rgba(52,211,153,.5);
-color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.4px;
-box-shadow:0 8px 24px rgba(6,95,70,.5),inset 0 1px 0 rgba(255,255,255,.15);
-transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .25s,filter .2s}
 #tg-link:hover{transform:translateY(-2px);filter:brightness(1.08);
 box-shadow:0 12px 30px rgba(16,185,129,.45),inset 0 1px 0 rgba(255,255,255,.2)}
 #tg-link:active{transform:translateY(0) scale(.96)}
@@ -418,10 +409,6 @@ transition:transform .2s cubic-bezier(.2,.7,.2,1),filter .2s}
 .hero-cta:hover{transform:translateY(-2px);filter:brightness(1.07)}
 .hero-cta:active{transform:translateY(0) scale(.98)}
 .hero-cta svg{width:18px;height:18px}
-.hero-tg{display:inline-flex;align-items:center;gap:8px;padding:15px 24px;border-radius:14px;text-decoration:none;
-background:rgba(9,14,11,.5);border:1px solid var(--cc-border2);color:#e8efeb;
-font-size:14px;font-weight:700;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-transition:border-color .2s,transform .2s,background .2s}
 .hero-tg:hover{border-color:rgba(52,211,153,.5);transform:translateY(-2px);background:rgba(9,14,11,.75)}
 .hero-tg svg{width:16px;height:16px;color:var(--cc-accent-2)}
 .hero-dots{display:flex;gap:8px;margin-top:24px}
@@ -450,7 +437,6 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 .cc-chips::-webkit-scrollbar{display:none}
 .brand-name{font-size:19px}
 .brand-logo{width:40px;height:40px}
-#tg-link{padding:8px 13px 8px 11px;font-size:12px}
 }
 @media (max-width:400px){
 .fit-ratio{font-size:9px}
@@ -459,7 +445,6 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 #cc-watermark span{font-size:10.5px;letter-spacing:1.2px}
 #cc-watermark .wm-live b{font-size:8px}
 #tg-link .tg-txt{display:none}
-#tg-link{padding:9px;gap:0}
 .brand-tag{font-size:9.5px;letter-spacing:1.1px}
 }
 @media (prefers-reduced-motion: reduce){
@@ -523,7 +508,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <p class="hero-sub">Your top live channel, streaming right now in crystal-clear HD — no buffering, no sign-up.</p>
 <div class="hero-actions">
 <a class="hero-cta" id="hero-cta" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch Live</a>
-<a class="hero-tg" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.16 2.53 10.33c-1.24.5-1.23 1.19-.23 1.5l4.76 1.48 1.84 5.6c.22.6.36.85.7.85.27 0 .39-.12.53-.27l1.9-1.85 4.68 3.45c.86.48 1.48.23 1.7-.8l3.06-14.3c.3-1.28-.48-1.85-1.42-1.83zM8.4 14.02l9.2-8.24c.4-.36-.09-.53-.6-.2l-11.3 7.1-4.66-1.46c-1.01-.32-1.03-1.01.22-1.5L20.35 4.5c.85-.32 1.6.2 1.32 1.5"/></svg>Telegram</a>
+
 </div>
 <div class="hero-dots" id="hero-dots"></div>
 </div>
@@ -576,10 +561,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <div id="ch-sections"></div>
 <div class="cc-empty" id="cc-empty" style="display:none">No channels match your search.</div>
 </div>
-<a id="tg-link" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener" title="Join CRICZONE on Telegram">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 3.16 2.53 10.33c-1.24.5-1.23 1.19-.23 1.5l4.76 1.48 1.84 5.6c.22.6.36.85.7.85.27 0 .39-.12.53-.27l1.9-1.85 4.68 3.45c.86.48 1.48.23 1.7-.8l3.06-14.3c.3-1.28-.48-1.85-1.42-1.83zM8.4 14.02l9.2-8.24c.4-.36-.09-.53-.6-.2l-11.3 7.1-4.66-1.46c-1.01-.32-1.03-1.01.22-1.5L20.35 4.5c.85-.32 1.6.2 1.32 1.5"/></svg>
-<span class="tg-txt">Telegram</span>
-</a>
+
 <div id="pc">
 <video id="v" playsinline webkit-playsinline
 preload="none" x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
