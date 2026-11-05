@@ -1567,6 +1567,7 @@ var searchQuery = "";
 var activeCollection = null;
 var watchlistIds = readStoredIds("cz_hub_watchlist");
 var lastWatchedId = "";
+var searchOriginNav = "home";
 
 function toast(msg, type, dur){
   $status.textContent = "";
@@ -2008,11 +2009,12 @@ function setupSearch(){
     var value = (e.target.value || "").trim().toLowerCase();
     $clear.style.display = value ? "flex" : "none";
     if(value){
+      if(activeNav!=="search")searchOriginNav=activeNav;
       activeNav="search";document.body.dataset.activeNav="search";
       document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="search");});
     }else if(activeNav==="search"){
-      activeNav="home";document.body.dataset.activeNav="home";
-      document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="home");});
+      activeNav=searchOriginNav||"home";document.body.dataset.activeNav=activeNav;
+      document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")===activeNav);});
     }
     if(searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(function(){
@@ -2029,8 +2031,8 @@ function setupSearch(){
     $search.value = "";
     searchQuery = "";
     $clear.style.display = "none";
-    if(activeNav==="search"){activeNav="home";document.body.dataset.activeNav="home";document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="home");});}
-    document.getElementById("libraryHeadingTitle").textContent="Popular on CRICZONE";
+    if(activeNav==="search"){activeNav=searchOriginNav||"home";document.body.dataset.activeNav=activeNav;document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")===activeNav);});}
+    document.getElementById("libraryHeadingTitle").textContent=activeNav==="series"?"Series":activeNav==="movies"?"Movies":activeNav==="mylist"?"My List":"Popular on CRICZONE";
     filterMovies();
     $search.focus();
   });
