@@ -1394,6 +1394,16 @@ body[data-active-nav="mylist"] .featured-hero,body[data-active-nav="mylist"] .ho
 @media(max-width:390px){.home-rail-track{grid-auto-columns:minmax(0,1fr);grid-auto-columns:44vw;gap:10px}.home-rail-card strong{font-size:.78rem;padding:9px 9px 12px}.bottom-glass-nav{gap:1px;padding:6px 5px}.bottom-nav-item{gap:2px}.bottom-nav-item .material-icons{font-size:19px}.bottom-nav-item span:last-child{font-size:.58rem}}
 @media(min-width:600px){.home-rail-track{grid-auto-columns:clamp(180px,22vw,230px)}}
 
+
+/* ===== SEARCH RESULTS & DISCOVERY UX ===== */
+body[data-active-nav="search"] #movie-grid{display:grid!important}
+body[data-active-nav="search"] .home-section-heading{display:block}
+body[data-active-nav="search"] .home-section-heading .section-note{display:none}
+#movieSearch:focus{border-color:#e8b63b;box-shadow:0 0 0 3px #e8b63b20}
+#movieSearch::placeholder{color:#7f8999}
+#movie-grid .sky-card{contain:layout paint}
+@media(max-width:768px){body[data-active-nav="search"] #movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+
 </style>
 </head>
 <body>
@@ -1802,9 +1812,11 @@ function filterMovies(){
   filteredMovies = allMovies.filter(function(movie){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
+    var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
+    var searchHaystack=[title,typeof movie.categories==="string"?movie.categories:"",movie.heading||"",meta.genre||"",meta.language||"",meta.quality||"",meta.stars||"",meta.director||""].map(function(value){return Array.isArray(value)?value.join(" "):String(value||"");}).join(" ").toLowerCase();
     var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
     var navMatch=activeNav==="mylist"?isInWatchlist(movie):(selectedCategory!=="All"?true:(activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true));
-    return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
+    return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || searchHaystack.indexOf(searchQuery) !== -1);
   });
   displayedCount=0;
   $grid.textContent="";
@@ -1995,9 +2007,17 @@ function setupSearch(){
   $search.addEventListener("input", function(e){
     var value = (e.target.value || "").trim().toLowerCase();
     $clear.style.display = value ? "flex" : "none";
+    if(value){
+      activeNav="search";document.body.dataset.activeNav="search";
+      document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="search");});
+    }else if(activeNav==="search"){
+      activeNav="home";document.body.dataset.activeNav="home";
+      document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="home");});
+    }
     if(searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(function(){
       searchQuery = value;
+      document.getElementById("libraryHeadingTitle").textContent=value?"Search Results":"Popular on CRICZONE";
       filterMovies();
       searchTimer = null;
     }, 120);
@@ -2009,6 +2029,8 @@ function setupSearch(){
     $search.value = "";
     searchQuery = "";
     $clear.style.display = "none";
+    if(activeNav==="search"){activeNav="home";document.body.dataset.activeNav="home";document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="home");});}
+    document.getElementById("libraryHeadingTitle").textContent="Popular on CRICZONE";
     filterMovies();
     $search.focus();
   });
@@ -2019,13 +2041,13 @@ async function main(){
   try{
     setMsg("Fetching Movies Database…");
     allMovies = await loadData();
+    lastWatchedId=localStorage.getItem("cz_hub_continue")||"";
     startHeroCarousel();
     renderHomeRails();
     hideOverlay();
     renderCategories(allMovies);
     setupSearch();
     filterMovies();
-    lastWatchedId=localStorage.getItem("cz_hub_continue")||"";
     var params=new URLSearchParams(location.search);
     var requestedMovieId=params.get("movie"),legacyTitle=params.get("watch");
     var requestedSource=params.has("source")?Number.parseInt(params.get("source"),10):null;
