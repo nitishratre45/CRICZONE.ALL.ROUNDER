@@ -1550,7 +1550,7 @@ function renderHomeRails(){
     var section=document.createElement("section");section.className="home-rail";
     var head=document.createElement("div");head.className="home-rail-head";
     var title=document.createElement("h3");title.textContent=group.title;
-    var note=document.createElement("span");note.textContent="See all";
+    var note=document.createElement("span");note.textContent="Swipe to explore";
     head.append(title,note);
     var track=document.createElement("div");track.className="home-rail-track";
     group.items.forEach(function(movie){
@@ -1814,6 +1814,7 @@ function setupSearch(){
 }
 
 async function main(){
+  document.body.dataset.activeNav="home";
   try{
     setMsg("Fetching Movies Database…");
     allMovies = await loadData();
