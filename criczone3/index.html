@@ -735,9 +735,10 @@ function getTier(){
 
 var TIER = getTier();
 var PROF = {
-  low:  {buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000 },
-  mid:  {buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000},
-  high: {buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000}
+  // Larger forward buffers reduce brief network dips; keep device-aware quality caps.
+  low:  {buf:12, reBuf:3, behind:18, maxH:480,  maxBw:1400000, bwEst:650000 },
+  mid:  {buf:18, reBuf:4, behind:24, maxH:720,  maxBw:3500000, bwEst:1400000},
+  high: {buf:24, reBuf:5, behind:30, maxH:1080, maxBw:0,       bwEst:2600000}
 }[TIER];
 
 var FITS       = ["contain","fill","cover"];
@@ -1003,8 +1004,8 @@ async function startPlayer(ch){
         bufferBehind:PROF.behind,
         safeSeekOffset:4,
         stallEnabled:true,
-        stallThreshold:1,
-        stallSkip:.3,
+        stallThreshold:2,
+        stallSkip:.1,
         inaccurateManifestTolerance:0,
         retryParameters:{maxAttempts:5,baseDelay:500,backoffFactor:2,fuzzFactor:.5,timeout:30000}
       },
@@ -1089,7 +1090,7 @@ async function startPlayer(ch){
     }
     if(RECOVERABLE.indexOf(code) !== -1){
       toast("Buffering…","warn",0);
-      setTimeout(function(){ if(!refreshing) reload(); }, 700);
+      setTimeout(function(){ if(!refreshing) reload(); }, 1800);
     } else {
       toast(shakaErrStr(err),"err",6000);
     }
@@ -1104,7 +1105,7 @@ async function startPlayer(ch){
   }catch(_){
     hideOverlay();
     toast("Connection Error — Retrying…","warn",0);
-    setTimeout(reload, 1500);
+    setTimeout(reload, 2500);
     return;
   }
 
