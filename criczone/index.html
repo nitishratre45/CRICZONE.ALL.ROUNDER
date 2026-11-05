@@ -202,6 +202,20 @@ html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,A
 }
 #viewerBadge.is-fullscreen{top:max(14px,env(safe-area-inset-top))!important;right:14px!important;bottom:auto!important;left:auto!important;}
 @media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;bottom:auto!important;padding:8px 10px!important;font-size:10px!important;}}
+/* COMPACT viewer statistics chip */
+#viewerBadge,#viewerBadge.is-fullscreen{
+  display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;
+  width:max-content!important;height:auto!important;min-height:0!important;max-height:none!important;
+  padding:6px 9px!important;border-radius:999px!important;font-size:9px!important;line-height:1!important;
+  letter-spacing:0!important;max-width:calc(100vw - 20px)!important;
+}
+#viewerBadge .viewer-dot{width:6px!important;height:6px!important;flex-basis:6px!important;box-shadow:0 0 0 2px rgba(0,240,168,.1),0 0 8px rgba(0,240,168,.75)!important;}
+#viewerBadge .watching-live-label{gap:4px!important;font-size:9px!important;}
+#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important;letter-spacing:.6px!important;}
+#watchingCount{font-size:10px!important;}
+#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important;letter-spacing:.35px!important;}
+#totalVisits{font-size:10px!important;}
+@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{padding:5px 8px!important;gap:4px!important;font-size:8px!important}#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{font-size:8px!important}#viewerBadge .watching-live-label:before{font-size:6px!important}#watchingCount,#totalVisits{font-size:9px!important}}
 /* FIX: Shaka/player sizing rules must not override the selected fit mode */
 #pc video.mode-fill,.shaka-video-container video.mode-fill{object-fit:fill!important}
 #pc video.mode-cover,.shaka-video-container video.mode-cover{object-fit:cover!important}
