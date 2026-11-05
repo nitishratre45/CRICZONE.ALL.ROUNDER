@@ -1327,7 +1327,7 @@ function getMovieId(movie){
   if(!movie)return "";
   var explicit=movie.id||movie.movieId||movie.imdbID||movie.imdbId;
   if(explicit!==undefined&&explicit!==null&&String(explicit).trim())return String(explicit).trim();
-  return String(movie.title||"movie").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"movie";
+  return String(movie.title||"movie").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"movie";
 }
 function updateMovieUrl(movie,sourceIndex){
   if(!movie)return;
@@ -1374,7 +1374,7 @@ function openDetailModal(movie){
     var btn=document.createElement("button");btn.className="episode-btn";btn.type="button";btn.textContent=channel&&channel.name?String(channel.name):"Play";btn.title=btn.textContent;
     btn.disabled=!channel||!safeHttpUrl(channel.streamUrl);
     if(btn.disabled)btn.title+=" (unavailable)";
-    btn.addEventListener("click",function(){closeDetailModal();openPlayer(channel.streamUrl,movie.title+" - "+btn.textContent,movie.title,index);});
+    btn.addEventListener("click",function(){$detailModal.style.display="none";openPlayer(channel.streamUrl,movie.title+" - "+btn.textContent,movie.title,index);});
     $episodesGrid.appendChild(btn);
   });
   $detailModal.style.display="flex";
