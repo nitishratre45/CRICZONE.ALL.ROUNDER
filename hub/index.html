@@ -1404,6 +1404,16 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
 #movie-grid .sky-card{contain:layout paint}
 @media(max-width:768px){body[data-active-nav="search"] #movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
 
+
+/* ===== ADVANCED DISCOVERY / DETAILS ===== */
+.hub-filterbar{display:flex;align-items:end;gap:9px;flex-wrap:wrap;margin:12px 0 20px;padding:12px;border:1px solid #ffffff14;border-radius:16px;background:#111722cc}
+.hub-filterbar label{display:grid;gap:5px;flex:1 1 105px;min-width:0;color:#9ca9bb;font-size:.7rem;font-weight:700}
+.hub-filterbar select{width:100%;min-width:0;height:40px;padding:0 9px;border:1px solid #ffffff1c;border-radius:10px;background:#171f2d;color:#f2f5fa;font:inherit;font-size:.78rem}
+.hub-filterbar button{height:40px;padding:0 13px;border:1px solid #e9b83f66;border-radius:10px;background:#e9b83f16;color:#f4c65d;font-weight:800}
+.similar-section{margin-top:24px}.similar-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.similar-item{min-width:0;padding:0;overflow:hidden;border:1px solid #ffffff17;border-radius:12px;background:#171f2d;color:#fff;text-align:left}.similar-item img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#222c3b}.similar-item span{display:block;padding:8px;font-size:.75rem;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+#detailResume:not([hidden]),#detailTrailer:not([hidden]){display:inline-flex}#detailResume{border-color:#e8b63b;color:#ffd36b}
+@media(max-width:520px){.hub-filterbar{gap:7px;padding:9px}.hub-filterbar label{flex-basis:calc(50% - 7px)}.hub-filterbar button{flex:1}}
+
 </style>
 </head>
 <body>
@@ -1449,6 +1459,7 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
     <div class="home-section-heading" id="libraryHeading"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2 id="libraryHeadingTitle">Popular on CRICZONE</h2></div><span class="section-note">Movies &amp; Series</span></div>
     <div id="homeRails" class="home-rails" aria-label="Featured collections"></div>
     <div class="category-filter-wrapper"><div class="category-filter" id="category-bar"></div></div>
+  <section class="hub-filterbar" aria-label="Filter and sort library"><label>Year<select id="filterYear"><option value="">All years</option></select></label><label>Language<select id="filterLanguage"><option value="">All languages</option></select></label><label>Quality<select id="filterQuality"><option value="">All qualities</option></select></label><label>Sort<select id="filterSort"><option value="featured">Featured</option><option value="title-asc">Title A–Z</option><option value="year-desc">Newest year</option><option value="rating-desc">IMDb rating</option></select></label><button id="resetFilters" type="button">Reset</button></section>
   <div id="categoryMoreModal" class="category-more-modal" role="dialog" aria-modal="true" aria-labelledby="categoryMoreTitle" style="display:none">
     <div class="category-more-panel">
       <div class="category-more-head"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2 id="categoryMoreTitle">All Categories</h2></div><button type="button" id="categoryMoreClose" aria-label="Close categories"><span class="material-icons">close</span></button></div>
@@ -1487,14 +1498,14 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
         <div id="detailTitle" class="detail-title"></div>
         <div class="detail-meta-row" id="detailMetaRow"></div>
         <div class="detail-desc" id="detailDesc"></div>
-        <div class="detail-actions"><button type="button" class="detail-share-btn" id="detailWatchlist"><span class="material-icons">bookmark_add</span> Add to My List</button><button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button></div>
+        <div class="detail-actions"><button type="button" class="detail-share-btn" id="detailWatchlist"><span class="material-icons">bookmark_add</span> Add to My List</button><button type="button" class="detail-share-btn" id="detailResume" hidden><span class="material-icons">play_circle</span> Resume last source</button><button type="button" class="detail-share-btn" id="detailTrailer" hidden><span class="material-icons">smart_display</span> Trailer</button><button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button></div>
       </div>
     </div>
     <div class="section-title">
       <span class="material-icons" style="font-size: 18px; color: var(--prime-blue);">play_circle</span>
       Select Episode / Quality
     </div>
-    <div id="episodesGrid" class="episodes-grid"></div>
+    <div id="episodesGrid" class="episodes-grid"></div><section id="similarSection" class="similar-section" hidden><div class="section-title">You May Also Like</div><div id="similarGrid" class="similar-grid"></div></section>
   </div>
 </div>
 
@@ -1539,6 +1550,10 @@ var $detailMetaRow = document.getElementById("detailMetaRow");
 var $detailDesc = document.getElementById("detailDesc");
 var $detailShare = document.getElementById("detailShare");
 var $detailWatchlist = document.getElementById("detailWatchlist");
+var $detailResume = document.getElementById("detailResume");
+var $detailTrailer = document.getElementById("detailTrailer");
+var $similarSection = document.getElementById("similarSection");
+var $similarGrid = document.getElementById("similarGrid");
 var $episodesGrid = document.getElementById("episodesGrid");
 
 var $playerModal = document.getElementById("playerModal");
@@ -1567,6 +1582,8 @@ var searchQuery = "";
 var activeCollection = null;
 var watchlistIds = readStoredIds("cz_hub_watchlist");
 var lastWatchedId = "";
+var lastWatchedSource = Number.parseInt(localStorage.getItem("cz_hub_continue_source")||"-1",10);
+var filterYear="",filterLanguage="",filterQuality="",filterSort="featured";
 var searchOriginNav = "home";
 
 function toast(msg, type, dur){
@@ -1653,9 +1670,11 @@ document.addEventListener("visibilitychange",function(){if(document.hidden){if(h
 function readStoredIds(key){try{var value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value.filter(function(x){return typeof x==="string";}):[];}catch(e){return [];}}
 function getWatchlist(){return watchlistIds.map(function(id){return allMovies.find(function(movie){return getMovieId(movie)===id;});}).filter(Boolean);}
 function isInWatchlist(movie){return !!movie&&watchlistIds.indexOf(getMovieId(movie))!==-1;}
-function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=isInWatchlist(currentMovie)?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(isInWatchlist(currentMovie)?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",isInWatchlist(currentMovie)?"true":"false");}
+function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;var saved=isInWatchlist(currentMovie);$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=saved?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(saved?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",saved?"true":"false");var channels=Array.isArray(currentMovie.channels)?currentMovie.channels:[];$detailResume.hidden=!(lastWatchedId===getMovieId(currentMovie)&&Number.isInteger(lastWatchedSource)&&lastWatchedSource>=0&&lastWatchedSource<channels.length&&!!safeHttpUrl(channels[lastWatchedSource]&&channels[lastWatchedSource].streamUrl));$detailTrailer.hidden=!safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);}
 function toggleWatchlist(movie){if(!movie)return;var id=getMovieId(movie),index=watchlistIds.indexOf(id);if(index>=0){watchlistIds.splice(index,1);toast("Removed from My List.","ok",2200);}else{watchlistIds.unshift(id);toast("Added to My List.","ok",2200);}watchlistIds=watchlistIds.slice(0,200);try{localStorage.setItem("cz_hub_watchlist",JSON.stringify(watchlistIds));}catch(e){}updateWatchlistButton();renderHomeRails();if(activeNav==="mylist")filterMovies();}
 $detailWatchlist.addEventListener("click",function(){toggleWatchlist(currentMovie);});
+$detailResume.addEventListener("click",function(){if(!currentMovie)return;var channel=(currentMovie.channels||[])[lastWatchedSource];if(channel){$detailModal.style.display="none";openPlayer(channel.streamUrl,currentMovie.title+" - "+(channel.name||"Resume"),currentMovie.title,lastWatchedSource);}});
+$detailTrailer.addEventListener("click",function(){if(!currentMovie)return;var url=safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);if(url)window.open(url,"_blank","noopener,noreferrer");});
 function getRecentMovies(){
   try{
     var ids=JSON.parse(localStorage.getItem("cz_hub_recent")||"[]");
@@ -1677,6 +1696,7 @@ function renderHomeRails(){
   var recent=getRecentMovies();
   var saved=getWatchlist();
   var last=allMovies.find(function(movie){return getMovieId(movie)===lastWatchedId;});
+  var topTen=allMovies.slice(0,10);if(topTen.length)collections.push({title:"Top 10 on CRICZONE",items:topTen,tag:"TOP 10"});
   if(last)collections.push({title:"Continue Watching",items:[last],tag:"CONTINUE"});
   if(saved.length)collections.push({title:"My List",items:saved,tag:"SAVED"});
   if(recent.length)collections.push({title:"Your Recent Picks",items:recent,tag:"RECENT"});
@@ -1817,12 +1837,27 @@ function filterMovies(){
     var searchHaystack=[title,typeof movie.categories==="string"?movie.categories:"",movie.heading||"",meta.genre||"",meta.language||"",meta.quality||"",meta.stars||"",meta.director||""].map(function(value){return Array.isArray(value)?value.join(" "):String(value||"");}).join(" ").toLowerCase();
     var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
     var navMatch=activeNav==="mylist"?isInWatchlist(movie):(selectedCategory!=="All"?true:(activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true));
-    return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || searchHaystack.indexOf(searchQuery) !== -1);
+    var yearMatch=String(meta.year||meta.releaseYear||meta.released||movie.year||"").match(/(?:19|20)\\d{2}/);var year=yearMatch?yearMatch[0]:"";
+    var language=String(meta.language||"").toLowerCase();var quality=String(meta.quality||"").toLowerCase();
+    return navMatch && (!filterYear||year===filterYear) && (!filterLanguage||language===filterLanguage) && (!filterQuality||quality===filterQuality) && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || searchHaystack.indexOf(searchQuery) !== -1);
   });
+  if(filterSort==="title-asc")filteredMovies.sort(function(a,b){return String(a.title).localeCompare(String(b.title));});
+  else if(filterSort==="year-desc")filteredMovies.sort(function(a,b){return Number((b.metadata&&(b.metadata.year||b.metadata.releaseYear))||b.year||0)-Number((a.metadata&&(a.metadata.year||a.metadata.releaseYear))||a.year||0);});
+  else if(filterSort==="rating-desc")filteredMovies.sort(function(a,b){return Number(b.metadata&&b.metadata.imdbRating||0)-Number(a.metadata&&a.metadata.imdbRating||0);});
   displayedCount=0;
   $grid.textContent="";
   renderNextBatch();
 }
+
+
+function populateFilterOptions(){
+  var years=new Set(),languages=new Set(),qualities=new Set();
+  allMovies.forEach(function(movie){var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};var match=String(meta.year||meta.releaseYear||meta.released||movie.year||"").match(/(?:19|20)\\d{2}/);if(match)years.add(match[0]);if(meta.language)String(meta.language).split(/[,/]/).forEach(function(x){if(x.trim())languages.add(x.trim());});if(meta.quality)String(meta.quality).split(/[,/]/).forEach(function(x){if(x.trim())qualities.add(x.trim());});});
+  function fill(id,values){var select=document.getElementById(id);Array.from(select.options).slice(1).forEach(function(option){option.remove();});Array.from(values).sort(function(a,b){return a.localeCompare(b,undefined,{numeric:true});}).forEach(function(value){var option=document.createElement("option");option.value=value.toLowerCase();option.textContent=value;select.appendChild(option);});}
+  fill("filterYear",Array.from(years).sort().reverse());fill("filterLanguage",languages);fill("filterQuality",qualities);
+}
+["filterYear","filterLanguage","filterQuality","filterSort"].forEach(function(id){document.getElementById(id).addEventListener("change",function(){filterYear=document.getElementById("filterYear").value;filterLanguage=document.getElementById("filterLanguage").value;filterQuality=document.getElementById("filterQuality").value;filterSort=document.getElementById("filterSort").value;filterMovies();});});
+document.getElementById("resetFilters").addEventListener("click",function(){["filterYear","filterLanguage","filterQuality"].forEach(function(id){document.getElementById(id).value="";});document.getElementById("filterSort").value="featured";filterYear=filterLanguage=filterQuality="";filterSort="featured";filterMovies();});
 
 function safeHttpUrl(value){
   try { var u=new URL(String(value || ""),location.href); return (u.protocol==="https:" || u.protocol==="http:") ? u.href : ""; }
@@ -1920,6 +1955,10 @@ function openDetailModal(movie){
     btn.addEventListener("click",function(){$detailModal.style.display="none";openPlayer(channel.streamUrl,movie.title+" - "+btn.textContent,movie.title,index);});
     $episodesGrid.appendChild(btn);
   });
+  var trailerUrl=safeHttpUrl(meta.trailerUrl||movie.trailerUrl);$detailTrailer.hidden=!trailerUrl;
+  var similar=allMovies.filter(function(item){if(getMovieId(item)===getMovieId(movie))return false;var a=String(item.categories||"").toLowerCase().split(",");return a.some(function(cat){return String(movie.categories||"").toLowerCase().split(",").indexOf(cat.trim())!==-1;});}).slice(0,6);
+  $similarGrid.textContent="";$similarSection.hidden=!similar.length;similar.forEach(function(item){var button=document.createElement("button");button.type="button";button.className="similar-item";var img=document.createElement("img");img.loading="lazy";img.alt="";img.src=safeHttpUrl(item.poster)||"";var name=document.createElement("span");name.textContent=item.title;button.append(img,name);button.addEventListener("click",function(){openDetailModal(item);});$similarGrid.appendChild(button);});
+  updateWatchlistButton();
   $detailModal.style.display="flex";
 }
 
@@ -1937,7 +1976,7 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
     return;
   }
   currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
-  if(currentMovie){lastWatchedId=getMovieId(currentMovie);try{localStorage.setItem("cz_hub_continue",lastWatchedId);}catch(e){}renderHomeRails();}
+  if(currentMovie){lastWatchedId=getMovieId(currentMovie);lastWatchedSource=currentWatch.sourceIndex;try{localStorage.setItem("cz_hub_continue",lastWatchedId);localStorage.setItem("cz_hub_continue_source",String(lastWatchedSource));}catch(e){}renderHomeRails();}
   if(currentMovie)updateMovieUrl(currentMovie,currentWatch.sourceIndex);
   var safeStreamUrl = safeHttpUrl(streamUrl);
   if(!safeStreamUrl){toast("This stream URL is invalid or unsupported.","err",4000);return;}
@@ -2048,6 +2087,7 @@ async function main(){
     renderHomeRails();
     hideOverlay();
     renderCategories(allMovies);
+    populateFilterOptions();
     setupSearch();
     filterMovies();
     var params=new URLSearchParams(location.search);
