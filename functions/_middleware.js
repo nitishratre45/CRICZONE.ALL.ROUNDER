@@ -12,7 +12,7 @@ export async function onRequest(context){
     const contentType=response.headers.get("content-type")||"";
     if(method!=="GET" || !contentType.toLowerCase().includes("text/html") || response.status!==200) return response;
     return new HTMLRewriter()
-      .on("body", { element(element){ element.append('<script src="/telegram-popup.js?v=1" defer></script>',{html:true}); } })
+      .on("body", { element(element){ element.append('<script src="/telegram-join-bar.js?v=1" defer></script>',{html:true}); } })
       .transform(response);
   } catch(error) {
     console.error("CRICZONE Pages middleware error",path,method,error);
