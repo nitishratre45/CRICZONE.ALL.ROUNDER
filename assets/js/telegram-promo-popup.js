@@ -1,1 +1,0 @@
-/* Telegram promotional popup removed. */
