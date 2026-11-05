@@ -1654,6 +1654,7 @@ function renderHomeRails(){
     var note=document.createElement("button");note.type="button";note.className="home-rail-seeall";note.textContent="Explore";
     note.addEventListener("click",function(){
       activeNav="movies";document.body.dataset.activeNav="movies";
+      closeCategoryMore();
       document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="movies");});
       selectedCategory=group.category||"All";activeCollection=group.category?null:new Set(group.items.map(getMovieId));
       searchQuery="";$search.value="";
@@ -1680,6 +1681,8 @@ $featuredMore.addEventListener("click",function(){if(featuredMovie)openDetailMod
 document.querySelectorAll(".bottom-nav-item").forEach(function(button){
   button.addEventListener("click",function(){
     activeNav=button.getAttribute("data-nav")||"home";
+    activeCollection=null;
+    closeCategoryMore();
     document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item===button);});
     document.body.dataset.activeNav=activeNav;
     if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";document.getElementById("libraryHeadingTitle").textContent="Popular on CRICZONE";window.scrollTo({top:0,behavior:"smooth"});}
@@ -1700,7 +1703,7 @@ function getCategoryList(movies){
 }
 function selectCategory(category){
   selectedCategory=category;activeCollection=null;
-  document.getElementById("categoryMoreModal").style.display="none";
+  closeCategoryMore();
   if(activeNav==="home")activeNav="movies";
   document.body.dataset.activeNav=activeNav;
   document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")===activeNav);});
@@ -1736,7 +1739,7 @@ function openCategoryMore(categories){
   var modal=document.getElementById("categoryMoreModal"),grid=document.getElementById("categoryMoreGrid");
   grid.textContent="";
   var allButton=document.createElement("button");allButton.type="button";allButton.className="category-more-item"+(selectedCategory==="All"?" active":"");
-  allButton.innerHTML='<span class="material-icons">apps</span><span>All</span><small>'+allMovies.length+' titles</small>';
+  var allIcon=document.createElement("span");allIcon.className="material-icons";allIcon.textContent="apps";var allName=document.createElement("span");allName.textContent="All";var allCount=document.createElement("small");allCount.textContent=allMovies.length+" titles";allButton.append(allIcon,allName,allCount);
   allButton.addEventListener("click",function(){selectCategory("All");});grid.appendChild(allButton);
   categories.forEach(function(item){
     var button=document.createElement("button");button.type="button";button.className="category-more-item"+(selectedCategory.toLowerCase()===item.name.toLowerCase()?" active":"");
@@ -1761,7 +1764,7 @@ function filterMovies(){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
     var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
-    var navMatch=activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true;
+    var navMatch=selectedCategory!=="All"?true:(activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true);
     return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
   displayedCount=0;
