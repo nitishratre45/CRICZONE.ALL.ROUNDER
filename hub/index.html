@@ -1012,6 +1012,41 @@ footer { padding-left:clamp(14px,3vw,32px); padding-right:clamp(14px,3vw,32px); 
   .detail-content { max-height:94dvh; }
 }
 
+
+/* ===== STREAMING HOME + GLASS NAV ===== */
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.container{max-width:1560px;padding-top:clamp(14px,2vw,28px)}
+.featured-hero{position:relative;isolation:isolate;width:100%;min-height:clamp(330px,42vw,590px);display:flex;align-items:flex-end;overflow:hidden;border-radius:24px;background:#111722;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 65px rgba(0,0,0,.34);margin:0 0 34px}
+.featured-backdrop{position:absolute;inset:0;z-index:-3;background:#151b27 center 28%/cover no-repeat;transform:scale(1.015)}
+.featured-backdrop:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,7,13,.97),rgba(4,7,13,.82) 32%,rgba(4,7,13,.22) 75%,rgba(4,7,13,.12))}
+.featured-shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(0deg,#07090e,rgba(7,9,14,.76) 8%,transparent 58%)}
+.featured-copy{position:relative;z-index:1;width:min(620px,68%);padding:clamp(24px,4.5vw,64px);padding-bottom:clamp(32px,5vw,66px)}
+.featured-kicker,.featured-label{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;font-weight:800;letter-spacing:1.5px;color:#f6c54b}
+.featured-live-dot{width:7px;height:7px;border-radius:50%;background:#f5b928;box-shadow:0 0 12px #f5b928}
+.featured-label{margin:18px 0 8px;color:#fff;background:rgba(245,185,40,.18);border:1px solid rgba(245,185,40,.35);padding:5px 10px;border-radius:6px;width:max-content;font-size:.64rem}
+.featured-copy h1{margin:0 0 12px;color:#fff;font-size:clamp(1.8rem,4.2vw,3.6rem);line-height:1.05;letter-spacing:-1.2px;font-weight:850;text-shadow:0 3px 24px #0009}
+.featured-copy p{max-width:520px;margin:0;color:rgba(240,244,250,.82);font-size:clamp(.85rem,1.2vw,1rem);line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.featured-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
+.featured-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:11px;border:1px solid transparent;font-weight:800;cursor:pointer;transition:transform .2s}
+.featured-actions button:hover{transform:translateY(-2px)}
+.featured-watch{background:#f5bd36;color:#17130a;box-shadow:0 8px 24px #f5b92833}
+.featured-more{background:#ffffff21;color:#fff;border-color:#ffffff33!important;backdrop-filter:blur(12px)}
+.featured-pagination{position:absolute;right:26px;bottom:25px;display:flex;gap:6px}
+.featured-pagination span{width:6px;height:6px;border-radius:10px;background:#ffffff66}
+.featured-pagination span:first-child{width:22px;background:#f5b928}
+.home-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 0 16px}
+.home-section-heading h2{margin:4px 0 0;font-size:clamp(1.25rem,2vw,1.7rem);color:#f8fafc;letter-spacing:-.5px}
+.section-eyebrow{color:#e8b63b;font-size:.65rem;font-weight:800;letter-spacing:1.4px}
+.section-note{color:#8995a7;font-size:.78rem;padding-bottom:4px}
+.bottom-glass-nav{position:fixed;z-index:9000;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;justify-content:space-around;width:min(440px,calc(100vw - 28px));min-height:68px;padding:8px 12px;border:1px solid #ffffff2b;border-radius:22px;background:rgba(18,23,34,.70);backdrop-filter:blur(24px) saturate(165%);-webkit-backdrop-filter:blur(24px) saturate(165%);box-shadow:0 12px 42px #0007,inset 0 1px #ffffff1a}
+.bottom-nav-item{position:relative;flex:1;min-width:0;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:14px;background:transparent;color:#9ba8ba;cursor:pointer;font-size:.67rem;font-weight:650;transition:color .2s,background .2s}
+.bottom-nav-item .material-icons{font-size:22px}
+.bottom-nav-item.active{color:#ffd166;background:#f5b9281f}
+.bottom-nav-item.active:after{content:"";position:absolute;bottom:2px;width:15px;height:3px;border-radius:9px;background:#f5b928;box-shadow:0 0 10px #f5b928a6}
+@media(min-width:769px){.bottom-glass-nav{width:min(480px,calc(100vw - 48px));min-height:64px}.bottom-nav-item{flex-direction:row;gap:8px;font-size:.8rem}.bottom-nav-item .material-icons{font-size:20px}}
+@media(max-width:768px){body{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.featured-hero{min-height:clamp(390px,112vw,540px);border-radius:17px;margin-bottom:27px}.featured-backdrop{background-position:center top}.featured-backdrop:after{background:linear-gradient(0deg,rgba(4,7,13,.98),rgba(4,7,13,.78) 34%,rgba(4,7,13,.12))}.featured-shade{background:linear-gradient(0deg,#07090e,rgba(7,9,14,.24) 45%,transparent)}.featured-copy{width:100%;padding:20px 18px 28px}.featured-copy h1{max-width:95%;font-size:clamp(1.7rem,8vw,2.5rem)}.featured-copy p{max-width:100%;font-size:.83rem;-webkit-line-clamp:2}.featured-actions{margin-top:17px;gap:9px}.featured-actions button{min-height:43px;padding:0 14px;font-size:.82rem}.featured-pagination{right:17px;bottom:18px}.home-section-heading{margin-bottom:13px}.section-note{font-size:.7rem}.bottom-glass-nav{bottom:max(10px,env(safe-area-inset-bottom));min-height:66px;border-radius:20px}}
+@media(max-width:380px){.featured-hero{min-height:390px}.featured-copy{padding-left:14px;padding-right:14px}.featured-actions button{padding:0 11px}.bottom-glass-nav{width:calc(100vw - 20px)}}
+
 </style>
 </head>
 <body>
@@ -1046,16 +1081,25 @@ footer { padding-left:clamp(14px,3vw,32px); padding-right:clamp(14px,3vw,32px); 
   </header>
 
   <main class="container">
-    <div class="category-filter-wrapper">
-      <div class="category-filter" id="category-bar"></div>
-    </div>
+    <section class="featured-hero" id="featuredHero" aria-label="Featured movie">
+      <div class="featured-backdrop" id="featuredBackdrop"></div><div class="featured-shade"></div>
+      <div class="featured-copy"><span class="featured-kicker"><span class="featured-live-dot"></span> CRICZONE SPOTLIGHT</span>
+        <span class="featured-label">FEATURED</span><h1 id="featuredTitle">Discover your next favourite</h1>
+        <p id="featuredDescription">Movies and series, all in one place.</p>
+        <div class="featured-actions"><button class="featured-watch" id="featuredWatch" type="button"><span class="material-icons">play_arrow</span> Watch now</button><button class="featured-more" id="featuredMore" type="button"><span class="material-icons">info</span> More info</button></div>
+      </div><div class="featured-pagination" aria-hidden="true"><span></span><span></span><span></span></div>
+    </section>
+    <div class="home-section-heading"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2>Popular on CRICZONE</h2></div><span class="section-note">Movies &amp; Series</span></div>
+    <div class="category-filter-wrapper"><div class="category-filter" id="category-bar"></div></div>
     <div id="movie-grid" class="grid-layout"></div>
-    <div class="load-more-container" id="loadMoreContainer" style="display: none;">
-      <button class="load-more-btn" id="loadMoreBtn">
-        <span class="material-icons">expand_more</span> Load More
-      </button>
-    </div>
+    <div class="load-more-container" id="loadMoreContainer" style="display: none;"><button class="load-more-btn" id="loadMoreBtn"><span class="material-icons">expand_more</span> Load More</button></div>
   </main>
+  <nav class="bottom-glass-nav" id="bottomNav" aria-label="Main navigation">
+    <button class="bottom-nav-item active" type="button" data-nav="home"><span class="material-icons">home</span><span>Home</span></button>
+    <button class="bottom-nav-item" type="button" data-nav="movies"><span class="material-icons">movie</span><span>Movies</span></button>
+    <button class="bottom-nav-item" type="button" data-nav="series"><span class="material-icons">live_tv</span><span>Series</span></button>
+    <button class="bottom-nav-item" type="button" data-nav="search"><span class="material-icons">search</span><span>Search</span></button>
+  </nav>
 
   <footer>
     <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">info</span>
@@ -1133,6 +1177,14 @@ var $playerShare = document.getElementById("playerShare");
 var currentWatch = { title: "", sourceIndex: 0 };
 
 var $frame       = document.getElementById("playerFrame");
+var $featuredBackdrop=document.getElementById("featuredBackdrop");
+var $featuredTitle=document.getElementById("featuredTitle");
+var $featuredDescription=document.getElementById("featuredDescription");
+var $featuredWatch=document.getElementById("featuredWatch");
+var $featuredMore=document.getElementById("featuredMore");
+var featuredMovie=null;
+var activeNav="home";
+
 
 var _stTmr   = null;
 var allMovies = [];
@@ -1171,6 +1223,25 @@ async function loadData(){
   return json.matches.filter(function(item){ return item && typeof item === "object" && typeof item.title === "string" && item.title.trim(); });
 }
 
+function setFeatured(movie){
+  if(!movie)return; featuredMovie=movie;
+  var poster=safeHttpUrl(movie.poster);
+  $featuredBackdrop.style.backgroundImage=poster?'url("'+poster.replace(/["\\\\]/g,"\\function renderCategories(movies){")+'")':'linear-gradient(135deg,#1b2638,#080b12)';
+  $featuredTitle.textContent=movie.title||"Featured";
+  var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
+  $featuredDescription.textContent=String(movie.heading||meta.genre||meta.language||"Stream movies and series on CRICZONE.");
+}
+$featuredWatch.addEventListener("click",function(){if(featuredMovie)openDetailModal(featuredMovie);});
+$featuredMore.addEventListener("click",function(){if(featuredMovie)openDetailModal(featuredMovie);});
+document.querySelectorAll(".bottom-nav-item").forEach(function(button){
+  button.addEventListener("click",function(){
+    activeNav=button.getAttribute("data-nav")||"home";
+    document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item===button);});
+    if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";setFeatured(allMovies[0]);renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
+    else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";renderCategories(allMovies);filterMovies();document.getElementById("movie-grid").scrollIntoView({behavior:"smooth",block:"start"});}
+    else if(activeNav==="search"){$search.focus();window.scrollTo({top:0,behavior:"smooth"});}
+  });
+});
 function renderCategories(movies){
   var categories = new Set(["All"]);
   movies.forEach(function(movie){
@@ -1197,7 +1268,9 @@ function filterMovies(){
   filteredMovies = allMovies.filter(function(movie){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
-    return (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
+    var isSeries=categories.some(function(x){return /series|web series|tv show|tv series/.test(x);});
+    var navMatch=activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true;
+    return navMatch && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
   displayedCount=0;
   $grid.textContent="";
@@ -1361,6 +1434,7 @@ async function main(){
   try{
     setMsg("Fetching Movies Database…");
     allMovies = await loadData();
+    setFeatured(allMovies[0]);
     hideOverlay();
     renderCategories(allMovies);
     setupSearch();
