@@ -224,13 +224,6 @@ box-shadow:0 0 6px var(--cc-live);animation:pulse-red 1.5s ease-in-out infinite}
 #cc-watermark.faded{opacity:0;transition:opacity .4s}
 #cc-watermark.visible{opacity:1;transition:opacity .25s}
 
-/* ================= TELEGRAM BUTTON (homepage) ================= */
-#tg-link:hover{transform:translateY(-2px);filter:brightness(1.08);
-box-shadow:0 12px 30px rgba(16,185,129,.45),inset 0 1px 0 rgba(255,255,255,.2)}
-#tg-link:active{transform:translateY(0) scale(.96)}
-#tg-link svg{width:17px;height:17px;color:#fff;flex-shrink:0}
-#tg-link .tg-txt{white-space:nowrap}
-
 /* ================= STATUS TOAST ================= */
 #status{position:fixed;top:max(12px,env(safe-area-inset-top));
 right:max(12px,env(safe-area-inset-right));z-index:9997;
@@ -444,7 +437,7 @@ box-shadow:0 14px 34px rgba(6,95,70,.5);opacity:0;transition:opacity .3s,transfo
 #cc-watermark{padding:5px 11px 5px 7px}
 #cc-watermark span{font-size:10.5px;letter-spacing:1.2px}
 #cc-watermark .wm-live b{font-size:8px}
-#tg-link .tg-txt{display:none}
+
 .brand-tag{font-size:9.5px;letter-spacing:1.1px}
 }
 @media (prefers-reduced-motion: reduce){
@@ -915,7 +908,7 @@ if(rc) rc.addEventListener("click",function(){ setRecent([]); render(); });
 }
 function renderList(channels){
 hideOverlay();
-document.getElementById("tg-link").style.display="flex";
+
 ALL=channels;
 wireToolbar();
 render();
