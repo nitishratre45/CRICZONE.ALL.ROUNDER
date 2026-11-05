@@ -522,10 +522,33 @@ body {
   border-color: var(--live-red);
 }
 #playerFrame {
+  display: block;
   width: 100%;
   height: 100%;
-  border: none;
+  min-height: 0;
+  flex: 1 1 auto;
+  border: 0;
   background: #000;
+}
+.player-modal-content:focus-within { outline: none; }
+body.modal-open { overflow: hidden; }
+@media (max-width: 768px) {
+  #playerModal { padding: 0; }
+  .player-modal-content {
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #detailModal { padding: 10px; }
+  .detail-content {
+    max-height: calc(100dvh - 20px);
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
 }
 
 .player-share{position:absolute;top:12px;right:58px;z-index:11;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #42618a;border-radius:22px;background:rgba(10,22,40,.9);color:#fff;font:700 12px Inter,sans-serif;cursor:pointer}.player-share .material-icons{font-size:17px}.player-share:hover{background:#1769c2;border-color:#398eea}
@@ -661,7 +684,13 @@ footer {
     <button class="player-close" id="playerClose" title="Close Player">
       <span class="material-icons">close</span>
     </button>
-    <iframe id="playerFrame" allowfullscreen allow="encrypted-media; autoplay; picture-in-picture"></iframe>
+    <iframe id="playerFrame"
+      title="CRICZONE video player"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowfullscreen
+      referrerpolicy="no-referrer"
+      loading="eager"></iframe>
   </div>
 </div>
 
@@ -705,7 +734,13 @@ var selectedCategory = "All";
 var searchQuery = "";
 
 function toast(msg, type, dur){
-  $status.innerHTML = '<span class="st-dot"></span><span>' + msg + '</span>';
+  $status.textContent = "";
+  var dot = document.createElement("span");
+  dot.className = "st-dot";
+  var label = document.createElement("span");
+  label.textContent = String(msg || "");
+  $status.appendChild(dot);
+  $status.appendChild(label);
   $status.className = "show " + (type || "ok");
   if(_stTmr){ clearTimeout(_stTmr); _stTmr = null; }
   if(dur !== 0){
@@ -864,14 +899,18 @@ function openPlayer(streamUrl, title, movieTitle, sourceIndex){
   }
   currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
   var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(streamUrl);
-  $frame.src = iframeUrl;
+  $frame.src = "about:blank";
   $playerModal.style.display = "flex";
+  document.body.classList.add("modal-open");
+  // Block pop-up windows and top-level navigation commonly used by redirect ads.
+  requestAnimationFrame(function(){ $frame.src = iframeUrl; });
   toast("Loading " + title + "…", "live", 3000);
 }
 
 function closePlayer(){
-  $frame.src = "";
+  $frame.src = "about:blank";
   $playerModal.style.display = "none";
+  document.body.classList.remove("modal-open");
 }
 
 async function shareCurrentWatch(){
@@ -898,6 +937,13 @@ $detailModal.addEventListener("click", function(e){
 $playerClose.addEventListener("click", closePlayer);
 $playerModal.addEventListener("click", function(e){
   if(e.target === $playerModal) closePlayer();
+});
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape"){
+    if($playerModal.style.display === "flex") closePlayer();
+    else if($detailModal.style.display === "flex") closeDetailModal();
+  }
 });
 
 function setupSearch(){
