@@ -971,8 +971,24 @@ async function main(){
       }else{toast("Shared movie/source is no longer available.","err",4500);}
     }
   }catch(e){
-    setMsg("Connection Error. Please Check Your Internet or CORS policy.");
-    toast("Failed to load catalog.", "err", 0);
+    hideOverlay();
+    $grid.textContent = "";
+    var errorBox = document.createElement("div");
+    errorBox.style.cssText = "grid-column:1/-1;text-align:center;padding:48px 18px;color:var(--text-secondary)";
+    var errorTitle = document.createElement("h2");
+    errorTitle.textContent = "Unable to load movies";
+    errorTitle.style.cssText = "color:var(--text-primary);font-size:1.1rem;margin-bottom:10px";
+    var errorText = document.createElement("p");
+    errorText.textContent = "Please check your internet connection and try again.";
+    errorText.style.marginBottom = "18px";
+    var retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "load-more-btn";
+    retry.textContent = "Retry";
+    retry.addEventListener("click",function(){ errorBox.remove(); main(); });
+    errorBox.append(errorTitle,errorText,retry);
+    $grid.appendChild(errorBox);
+    toast("Failed to load catalog.", "err", 4500);
   }
 }
 
