@@ -11,9 +11,7 @@ export async function onRequest(context){
     const response=await context.next();
     const contentType=response.headers.get("content-type")||"";
     if(method!=="GET" || !contentType.toLowerCase().includes("text/html") || response.status!==200) return response;
-    return new HTMLRewriter()
-      .on("body", { element(element){ element.append('<script src="/telegram-join-bar.js?v=1" defer></script>',{html:true}); } })
-      .transform(response);
+    return response;
   } catch(error) {
     console.error("CRICZONE Pages middleware error",path,method,error);
     return apiError(error,path,method);
