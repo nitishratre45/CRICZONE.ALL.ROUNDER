@@ -1344,6 +1344,32 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
  .featured-backdrop,.home-rail-poster,.home-rail-card{transition:none!important}
 }
 
+
+/* ===== ALL CATEGORIES DRAWER + RAIL DISCOVERY ===== */
+.category-more-modal{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,5,11,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.category-more-panel{width:min(680px,100%);max-height:min(82dvh,760px);overflow:auto;padding:22px;border:1px solid #ffffff20;border-radius:22px;background:linear-gradient(145deg,#171e2b,#0b101a);box-shadow:0 25px 90px #000b}
+.category-more-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.category-more-head h2{margin:5px 0 0;color:#fff;font-size:1.45rem}
+.category-more-head>button{width:40px;height:40px;border:1px solid #ffffff20;border-radius:50%;background:#ffffff0c;color:#fff;display:grid;place-items:center;cursor:pointer}
+.category-more-subtitle{color:#9ba8ba;font-size:.88rem;margin:9px 0 18px}
+.category-more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.category-more-item{min-width:0;min-height:88px;display:grid;grid-template-columns:25px 1fr;grid-template-rows:auto auto;align-content:center;align-items:center;gap:3px 8px;padding:12px;border:1px solid #ffffff16;border-radius:13px;background:#ffffff08;color:#e8edf6;text-align:left;cursor:pointer}
+.category-more-item>.material-icons{grid-row:1/3;color:#f4c34e;font-size:21px}
+.category-more-item>span:not(.material-icons){font-weight:750;font-size:.86rem;overflow-wrap:anywhere}
+.category-more-item small{color:#94a1b4;font-size:.7rem}
+.category-more-item.active,.category-more-item:hover{border-color:#eab83d99;background:#f5b9281a}
+.category-modal-open{overflow:hidden}
+.category-more-btn{background:linear-gradient(135deg,#f6c64c,#e5a91b);border-color:#f6c64c;color:#17130a;font-weight:800;position:sticky;right:0;z-index:2;box-shadow:-10px 0 18px #090d15}
+.home-rail-seeall{display:inline-flex;align-items:center;gap:4px}
+.home-rail-seeall:after{content:"›";font-size:1.1rem;line-height:1}
+.home-rail{position:relative}
+.home-rail-track{scroll-padding-inline:4px}
+@media(max-width:600px){
+ .category-more-panel{padding:17px 14px;border-radius:18px}
+ .category-more-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .category-more-item{min-height:76px;padding:10px}
+}
+
 </style>
 </head>
 <body>
@@ -1389,6 +1415,14 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
     <div class="home-section-heading" id="libraryHeading"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2 id="libraryHeadingTitle">Popular on CRICZONE</h2></div><span class="section-note">Movies &amp; Series</span></div>
     <div id="homeRails" class="home-rails" aria-label="Featured collections"></div>
     <div class="category-filter-wrapper"><div class="category-filter" id="category-bar"></div></div>
+  <div id="categoryMoreModal" class="category-more-modal" role="dialog" aria-modal="true" aria-labelledby="categoryMoreTitle" style="display:none">
+    <div class="category-more-panel">
+      <div class="category-more-head"><div><span class="section-eyebrow">EXPLORE THE LIBRARY</span><h2 id="categoryMoreTitle">All Categories</h2></div><button type="button" id="categoryMoreClose" aria-label="Close categories"><span class="material-icons">close</span></button></div>
+      <p class="category-more-subtitle">Choose a genre to explore its movies and series.</p>
+      <div id="categoryMoreGrid" class="category-more-grid"></div>
+    </div>
+  </div>
+
     <div id="movie-grid" class="grid-layout"></div>
     <div class="load-more-container" id="loadMoreContainer" style="display: none;"><button class="load-more-btn" id="loadMoreBtn"><span class="material-icons">expand_more</span> Load More</button></div>
   </main>
@@ -1494,6 +1528,7 @@ var displayedCount = 0;
 var PAGE_SIZE = 50;
 var selectedCategory = "All";
 var searchQuery = "";
+var activeCollection = null;
 
 function toast(msg, type, dur){
   $status.textContent = "";
@@ -1608,7 +1643,7 @@ function renderHomeRails(){
       if(!category||seen.has(key)||/^(all|movie|movies|series|web series)$/i.test(category))return;
       seen.add(key);
       var items=allMovies.filter(function(item){return typeof item.categories==="string"&&item.categories.split(",").some(function(c){return c.trim().toLowerCase()===key;});}).slice(0,14);
-      if(items.length>=2)collections.push({title:"Popular "+category,items:items,tag:category.toUpperCase()});
+      if(items.length>=2)collections.push({title:"Popular "+category,items:items,tag:category.toUpperCase(),category:category});
     });
   });
   collections=collections.filter(function(group){return group.items.length>0;}).slice(0,9);
@@ -1620,8 +1655,9 @@ function renderHomeRails(){
     note.addEventListener("click",function(){
       activeNav="movies";document.body.dataset.activeNav="movies";
       document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="movies");});
-      selectedCategory="All";searchQuery="";$search.value="";
-      document.getElementById("libraryHeadingTitle").textContent="Movies";
+      selectedCategory=group.category||"All";activeCollection=group.category?null:new Set(group.items.map(getMovieId));
+      searchQuery="";$search.value="";
+      document.getElementById("libraryHeadingTitle").textContent=group.category||group.title;
       renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});
     });
     head.append(title,note);
@@ -1651,27 +1687,74 @@ document.querySelectorAll(".bottom-nav-item").forEach(function(button){
     else if(activeNav==="search"){$search.focus();window.scrollTo({top:0,behavior:"smooth"});}
   });
 });
-function renderCategories(movies){
-  var categories = new Set(["All"]);
+function getCategoryList(movies){
+  var counts=new Map();
   movies.forEach(function(movie){
-    (typeof movie.categories === "string" ? movie.categories : "").split(",").forEach(function(cat){
-      if(cat.trim()) categories.add(cat.trim());
+    (typeof movie.categories==="string"?movie.categories:"").split(",").forEach(function(raw){
+      var name=raw.trim();if(!name)return;
+      var key=name.toLowerCase();var item=counts.get(key);
+      if(item)item.count++;else counts.set(key,{name:name,count:1});
     });
   });
-  $catBar.textContent = "";
-  categories.forEach(function(category){
-    var button = document.createElement("button");
-    button.type = "button";
-    button.className = "category-btn" + (category === selectedCategory ? " active" : "");
-    var icon = document.createElement("span");
-    icon.className = "material-icons";
-    icon.textContent = "category";
+  return Array.from(counts.values()).sort(function(a,b){return a.name.localeCompare(b.name);});
+}
+function selectCategory(category){
+  selectedCategory=category;activeCollection=null;
+  document.getElementById("categoryMoreModal").style.display="none";
+  if(activeNav==="home")activeNav="movies";
+  document.body.dataset.activeNav=activeNav;
+  document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")===activeNav);});
+  document.getElementById("libraryHeadingTitle").textContent=category==="All"?"Movies":category;
+  renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderCategories(movies){
+  var categories=getCategoryList(movies);
+  $catBar.textContent="";
+  var all=["All"].concat(categories.map(function(item){return item.name;}));
+  var visible=all.slice(0,5);
+  visible.forEach(function(category){
+    var button=document.createElement("button");button.type="button";
+    button.className="category-btn"+(category===selectedCategory?" active":"");
+    var icon=document.createElement("span");icon.className="material-icons";icon.textContent=category==="All"?"apps":"category";
     button.append(icon,document.createTextNode(category));
-    button.setAttribute("aria-pressed",category === selectedCategory ? "true" : "false");
-    button.addEventListener("click",function(){ selectedCategory=category; renderCategories(allMovies); filterMovies(); });
+    button.setAttribute("aria-pressed",category===selectedCategory?"true":"false");
+    button.addEventListener("click",function(){selectCategory(category);});
     $catBar.appendChild(button);
   });
+  if(all.length>5){
+    var more=document.createElement("button");more.type="button";more.className="category-btn category-more-btn";
+    var icon=document.createElement("span");icon.className="material-icons";icon.textContent="expand_more";
+    more.append(icon,document.createTextNode("More"));
+    more.setAttribute("aria-haspopup","dialog");more.setAttribute("aria-expanded","false");
+    more.addEventListener("click",function(){openCategoryMore(categories);});
+    $catBar.appendChild(more);
+  }
 }
+
+
+function openCategoryMore(categories){
+  var modal=document.getElementById("categoryMoreModal"),grid=document.getElementById("categoryMoreGrid");
+  grid.textContent="";
+  var allButton=document.createElement("button");allButton.type="button";allButton.className="category-more-item"+(selectedCategory==="All"?" active":"");
+  allButton.innerHTML='<span class="material-icons">apps</span><span>All</span><small>'+allMovies.length+' titles</small>';
+  allButton.addEventListener("click",function(){selectCategory("All");});grid.appendChild(allButton);
+  categories.forEach(function(item){
+    var button=document.createElement("button");button.type="button";button.className="category-more-item"+(selectedCategory.toLowerCase()===item.name.toLowerCase()?" active":"");
+    var icon=document.createElement("span");icon.className="material-icons";icon.textContent="category";
+    var name=document.createElement("span");name.textContent=item.name;
+    var count=document.createElement("small");count.textContent=item.count+" titles";
+    button.append(icon,name,count);button.addEventListener("click",function(){selectCategory(item.name);});grid.appendChild(button);
+  });
+  modal.style.display="flex";document.body.classList.add("category-modal-open");
+  document.getElementById("categoryMoreClose").focus();
+}
+function closeCategoryMore(){
+  var modal=document.getElementById("categoryMoreModal");if(modal)modal.style.display="none";
+  document.body.classList.remove("category-modal-open");
+}
+document.getElementById("categoryMoreClose").addEventListener("click",closeCategoryMore);
+document.getElementById("categoryMoreModal").addEventListener("click",function(e){if(e.target===this)closeCategoryMore();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeCategoryMore();});
 
 function filterMovies(){
   filteredMovies = allMovies.filter(function(movie){
@@ -1679,7 +1762,7 @@ function filterMovies(){
     var title = String(movie.title || "").toLowerCase();
     var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
     var navMatch=activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true;
-    return navMatch && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
+    return navMatch && (!activeCollection || activeCollection.has(getMovieId(movie))) && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
   displayedCount=0;
   $grid.textContent="";
