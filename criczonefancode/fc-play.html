@@ -85,46 +85,6 @@ margin-bottom:12px;
 100%{transform:rotate(360deg)}
 }
 
-/* ═══════════════════════════════════════════════
-   TELEGRAM BADGE (LEFT SIDE) — FIXED SIZE
-═══════════════════════════════════════════════ */
-#tgBadge{
-  position:fixed;
-  top:max(14px, env(safe-area-inset-top));
-  left:max(14px, env(safe-area-inset-left));
-  z-index:2500;
-
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-
-  padding:9px 16px 9px 12px;
-
-  border-radius:100px;
-  text-decoration:none;
-
-  font-family:'Poppins',sans-serif;
-  font-weight:700;
-  font-size:13px;
-  letter-spacing:.3px;
-
-  color:#fff;
-
-  background:linear-gradient(135deg,#2AABEE 0%,#229ED9 100%);
-  border:1px solid rgba(255,255,255,.25);
-
-  box-shadow:
-    0 6px 20px rgba(42,171,238,.4),
-    0 0 0 1px rgba(42,171,238,.1);
-
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-
-  transition:transform .2s ease, box-shadow .2s ease;
-
-  -webkit-tap-highlight-color:transparent;
-  white-space:nowrap;
-}
 
 #tgBadge:hover{
   transform:translateY(-2px) scale(1.03);
