@@ -1,25 +1,18 @@
-#cz-community-backdrop{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(2,8,18,.76);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .25s ease}
+#cz-community-backdrop{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(2,8,18,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .22s ease}
 #cz-community-backdrop[hidden]{display:none}#cz-community-backdrop.cz-visible{opacity:1}
-.cz-community-modal{--accent:#39a9ff;--accent2:#176bdb;position:relative;isolation:isolate;overflow:hidden;width:min(100%,390px);padding:32px 25px 25px;border:1px solid rgba(255,255,255,.15);border-radius:25px;background:radial-gradient(circle at 90% 0,rgba(41,143,255,.28),transparent 42%),linear-gradient(145deg,#121d31,#080e1b 72%);box-shadow:0 28px 90px rgba(0,0,0,.55);color:#f8fbff;text-align:center;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;transform:translateY(18px) scale(.97);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.cz-community-modal{position:relative;overflow:hidden;width:min(100%,390px);padding:30px 24px 22px;border:1px solid rgba(34,158,217,.38);border-radius:25px;background:radial-gradient(circle at 50% 0,rgba(34,158,217,.22),transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px rgba(0,0,0,.58),0 0 32px rgba(34,158,217,.14);color:#f8fbff;text-align:center;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;transform:translateY(16px) scale(.98);transition:transform .25s ease}
 .cz-visible .cz-community-modal{transform:translateY(0) scale(1)}
-.cz-community-modal:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--accent),#fff,var(--accent2));z-index:-1}
-.cz-community-close{position:absolute;right:13px;top:12px;width:34px;height:34px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:24px;line-height:1;cursor:pointer}
-.cz-community-art{width:82px;height:82px;margin:3px auto 17px;display:grid;place-items:center;position:relative;border-radius:25px;background:linear-gradient(145deg,var(--accent),var(--accent2));box-shadow:0 12px 35px color-mix(in srgb,var(--accent) 35%,transparent)}
-.cz-community-plane{font-size:37px;color:white;transform:rotate(-25deg);text-shadow:0 2px 8px #064d9c}
-.cz-community-orbit{position:absolute;inset:-8px;border:1px solid color-mix(in srgb,var(--accent) 65%,transparent);border-radius:30px;transform:rotate(12deg)}
-.cz-community-kicker{margin:0 0 9px;color:var(--accent);font-size:10px;font-weight:900;letter-spacing:2.2px}
-.cz-community-modal h2{margin:0 auto;max-width:310px;font-size:27px;line-height:1.12;letter-spacing:-.8px;font-weight:850}
-.cz-community-copy{max-width:305px;margin:13px auto 21px;color:#b7c4d7;font-size:13px;line-height:1.6}
-.cz-community-join{display:flex;align-items:center;justify-content:center;gap:12px;min-height:51px;padding:0 20px;border-radius:14px;background:linear-gradient(100deg,var(--accent),var(--accent2));color:#fff!important;text-decoration:none!important;font-size:15px;font-weight:850;box-shadow:0 9px 25px color-mix(in srgb,var(--accent) 30%,transparent);transition:transform .18s,filter .18s}
+.cz-community-modal:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#229ed9,#77d6ff,#229ed9)}
+.cz-community-close{position:absolute;right:12px;top:12px;width:33px;height:33px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:23px;line-height:1;cursor:pointer}
+.cz-community-logo{width:78px;height:78px;margin:5px auto 16px;filter:drop-shadow(0 9px 18px rgba(34,158,217,.34));animation:cz-float 2.6s ease-in-out infinite}
+.cz-community-logo svg{display:block;width:100%;height:100%}
+@keyframes cz-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.cz-community-kicker{margin:0 0 9px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.8px}
+.cz-community-modal h2{margin:0 auto;max-width:315px;font-size:26px;line-height:1.16;letter-spacing:-.6px;font-weight:850}
+.cz-community-copy{max-width:310px;min-height:44px;margin:12px auto 19px;color:#c1d2e1;font-size:13px;line-height:1.6}
+.cz-community-join{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 18px;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff!important;text-decoration:none!important;font-size:14px;font-weight:900;letter-spacing:.45px;box-shadow:0 9px 25px rgba(34,158,217,.3);transition:transform .18s,filter .18s}
 .cz-community-join:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.cz-community-note{margin:13px 0 0;color:#8393aa;font-size:10px;letter-spacing:.2px}
-.cz-style-2{--accent:#f8d34f;--accent2:#ed7b22;background:radial-gradient(circle at 50% -10%,rgba(246,177,40,.25),transparent 48%),linear-gradient(145deg,#211b13,#0d0c0a 75%);border-color:rgba(248,211,79,.3)}
-.cz-style-2 .cz-community-art{border-radius:50%;background:linear-gradient(145deg,#f8d34f,#ed7b22)}
-.cz-style-2 .cz-community-orbit{border-radius:50%;border-style:dashed}
-.cz-style-2 .cz-community-kicker{color:#f8d34f}
-.cz-style-2 .cz-community-join{color:#17130b!important}
-.cz-style-3{--accent:#54e0b2;--accent2:#168fbd;background:radial-gradient(circle at 10% 0,rgba(84,224,178,.2),transparent 45%),linear-gradient(145deg,#102b2b,#08191f 75%);border-color:rgba(84,224,178,.28)}
-.cz-style-3 .cz-community-art{border-radius:22px 22px 22px 7px;background:linear-gradient(145deg,#54e0b2,#168fbd)}
-.cz-style-3 .cz-community-orbit{border-radius:22px 22px 22px 7px}
-@media(max-width:420px){.cz-community-modal{padding:29px 20px 22px;border-radius:22px}.cz-community-modal h2{font-size:24px}.cz-community-copy{font-size:12px}}
-@media(prefers-reduced-motion:reduce){#cz-community-backdrop,.cz-community-modal,.cz-community-join{transition:none}}
+.cz-community-note{margin:13px 0 0;color:#9eb4c8;font-size:10px;letter-spacing:.15px}
+.cz-community-step{margin:12px 0 0;color:#69caff;font-size:10px;font-weight:800;letter-spacing:2px}
+@media(max-width:420px){.cz-community-modal{padding:28px 19px 20px;border-radius:22px}.cz-community-modal h2{font-size:23px}.cz-community-logo{width:70px;height:70px}}
+@media(prefers-reduced-motion:reduce){.cz-community-logo{animation:none}#cz-community-backdrop,.cz-community-modal,.cz-community-join{transition:none}}
