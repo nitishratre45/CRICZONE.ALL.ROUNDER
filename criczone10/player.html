@@ -27,11 +27,10 @@ main{width:min(100%,1050px);margin:0 auto;padding:14px}
 .frame iframe{position:absolute;inset:0;width:100%;height:100%;display:block;border:0;background:#000;max-width:100%}
 .loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(circle,#30270f,#080807 72%);color:#fff0bd;font-size:13px;pointer-events:none}
 .loading.hidden{display:none}.spinner{width:30px;height:30px;border:3px solid #6e571b;border-top-color:#ffd34e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.telegram{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(110deg,#1d190d,#11110d);border-top:1px solid #5d4818}
-.tg-icon{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#ffe37a,#e8ad22);color:#211805;font-size:21px;font-weight:900}
-.tg-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.tg-copy strong{font-size:13px}.tg-copy span{font-size:11px;line-height:1.4;color:var(--muted)}
+
+.tg-copy strong{font-size:13px}.tg-copy span{font-size:11px;line-height:1.4;color:var(--muted)}
 .hint{padding:14px 4px 4px;text-align:center;color:#9f967e;font-size:11px}
-@media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.brand-photo{width:34px;height:34px;flex-basis:34px;border-radius:10px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.telegram{padding:12px;gap:9px;flex-wrap:wrap}.tg-icon{width:36px;height:36px;flex-basis:36px;font-size:18px}.tg-copy{min-width:calc(100% - 60px)}.tg-copy strong{font-size:12px}.tg-copy span{font-size:10px}.telegram .btn{width:100%;min-height:42px}}
+@media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.brand-photo{width:34px;height:34px;flex-basis:34px;border-radius:10px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.tg-copy strong{font-size:12px}.tg-copy span{font-size:10px}.telegram .btn{width:100%;min-height:42px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* Cross-device fallbacks for Safari/iOS, Android WebView and narrow screens. */
@@ -40,7 +39,7 @@ button,a{-webkit-appearance:none;appearance:none;touch-action:manipulation}
 .frame{height:auto;min-height:0}
 @supports not (aspect-ratio:16/9){.frame{height:0;padding-top:56.25%}.frame iframe,.frame .loading{height:100%}}
 @media(max-width:380px){.actions{gap:5px}.btn{padding:8px;font-size:10px}.channel-name{font-size:16px}main{padding-left:6px;padding-right:6px}}
-@media(orientation:landscape) and (max-height:500px){main{padding-top:8px}.top{padding-top:8px;padding-bottom:8px}.player-head{padding:8px 12px}.frame{max-height:calc(100vh - 120px)}.telegram{padding:8px 12px}}
+@media(orientation:landscape) and (max-height:500px){main{padding-top:8px}.top{padding-top:8px;padding-bottom:8px}.player-head{padding:8px 12px}.frame{max-height:calc(100vh - 120px)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
 /* Ensure the iframe has real height on mobile: previous overrides collapsed this wrapper to 0px. */
@@ -66,8 +65,7 @@ html,body{background:#090b0e;color:#f4f0e7}
 .frame{background:#000}
 .loading{background:radial-gradient(circle,#29251b,#08090a 72%);color:#ead8ad}
 .spinner{border-color:#66563a;border-top-color:#d3bb87}
-.telegram{background:linear-gradient(110deg,#211f19,#141516);border-top-color:#5b4c32}
-.tg-icon{background:linear-gradient(145deg,#e0d0a8,#b99b65);color:#211c12}
+
 .tg-copy span{color:#b8b1a3}
 .hint{color:#9f998c}
 
@@ -85,8 +83,7 @@ body{background:radial-gradient(ellipse at top,#102746 0%,#070d17 58%,#05080e 10
 .btn.primary{background:linear-gradient(120deg,#8fc5ff,#347fce)!important;color:#061322!important;border-color:#9acbff!important}
 .btn.primary:hover{background:linear-gradient(120deg,#b0d8ff,#4b96e8)!important}
 .player-card,.player-shell,.now-playing{border-color:#28496d!important}
-.telegram{background:linear-gradient(110deg,#102642,#0b1422)!important;border-top-color:#234b78!important}
-.tg-icon{background:linear-gradient(145deg,#8fc5ff,#347fce)!important;color:#061322!important}
+
 .spinner{border-color:#27496d!important;border-top-color:#58a6ff!important}
 a{accent-color:#58a6ff}
 </style>
@@ -111,7 +108,7 @@ a{accent-color:#58a6ff}
     <div class="player-head"><div><div class="kicker">NOW PLAYING</div><div class="channel-name" id="channel-name">Loading channel…</div>
 <div class="live-watching" role="status" aria-live="polite"><span class="live-watching-dot"></span><span id="live-watching-count">Connecting…</span><span class="live-watching-label">WATCHING LIVE</span></div></div><a class="btn" href="./" aria-label="Back to all channels">✕</a></div>
     <div class="frame"><div class="loading" id="loading"><span class="spinner"></span><span>Connecting to channel…</span></div><iframe id="stream-frame" title="CRICZONE live channel" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen playsinline referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
-    <aside class="telegram"><div class="tg-icon" aria-hidden="true">✈</div><div class="tg-copy"><strong>Join CRICZONE on Telegram</strong><span>Get live updates, channel news and backup links.</span></div><a class="btn primary" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener noreferrer">Join Channel ↗</a></aside>
+    
   </section>
   <p class="hint">Refresh this page to reload the same selected channel.</p>
 </main>
