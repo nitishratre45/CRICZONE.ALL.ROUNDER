@@ -1050,6 +1050,88 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 
 .detail-share-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;align-self:flex-start;margin-top:7px;padding:10px 14px;border-radius:10px;border:1px solid rgba(245,185,40,.34);background:rgba(245,185,40,.10);color:#ffd166;font-weight:750;font-size:.8rem;cursor:pointer}
 .detail-share-btn:hover{background:#f5b928;color:#17130a}
+
+/* ===== MOBILE POLISH & NAVIGATION FIXES ===== */
+html { scroll-padding-top: 86px; }
+body { padding-bottom: calc(124px + env(safe-area-inset-bottom)); }
+.sky-header { min-height:68px; }
+.container { padding-bottom: 28px; }
+.sky-card { min-width:0; }
+.sky-card-media { aspect-ratio: 2 / 3; height:auto; }
+.sky-card-media img { width:100%; height:100%; object-fit:cover; }
+.movie-title { overflow-wrap:anywhere; }
+.bottom-glass-nav {
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 950;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+@media (max-width:768px) {
+  .sky-header { gap:10px; padding:12px 14px; }
+  .sky-logo { font-size:1.05rem; }
+  .sky-logo .material-icons { font-size:25px; }
+  .sky-telegram { padding:9px 12px; font-size:.82rem; gap:7px; }
+  .search-wrapper { margin-top:2px; }
+  .search-input { min-height:48px; font-size:.95rem; border-radius:15px; }
+  .container { padding:14px 12px 30px; }
+  .featured-hero {
+    min-height:0;
+    height:min(112vw,455px);
+    max-height:455px;
+    margin-bottom:25px;
+  }
+  .featured-backdrop { background-position:center 30%; }
+  .featured-backdrop:after {
+    background:linear-gradient(0deg,rgba(4,7,13,.98) 0%,rgba(4,7,13,.84) 42%,rgba(4,7,13,.18) 100%);
+  }
+  .featured-shade { background:linear-gradient(0deg,#07090e 0%,rgba(7,9,14,.2) 58%,transparent 100%); }
+  .featured-copy { padding:18px 16px 25px; }
+  .featured-copy h1 {
+    max-width:100%;
+    font-size:clamp(1.55rem,6.2vw,2.05rem);
+    line-height:1.12;
+    letter-spacing:-.8px;
+    display:-webkit-box;
+    -webkit-line-clamp:4;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .featured-label { margin:10px 0 7px; }
+  .featured-copy p { font-size:.8rem; line-height:1.45; -webkit-line-clamp:2; }
+  .featured-actions { margin-top:13px; }
+  .featured-actions button { min-height:41px; }
+  .featured-pagination { right:14px; bottom:15px; }
+  .home-section-heading { align-items:center; }
+  .grid-layout { grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+  .sky-card { border-radius:14px; }
+  .sky-card-media { aspect-ratio:2/3; }
+  .sky-card-content { padding:10px; gap:10px; }
+  .movie-title { font-size:.82rem; line-height:1.38; min-height:2.28em; }
+  .watch-btn { min-height:40px; padding:8px 5px; font-size:.78rem; }
+  .category-filter-wrapper { margin-bottom:16px; }
+  .category-btn { padding:9px 13px; }
+  .bottom-glass-nav { min-height:64px; width:calc(100vw - 28px); }
+  .bottom-nav-item { min-height:48px; }
+  body { padding-bottom:calc(132px + env(safe-area-inset-bottom)); }
+  body[data-active-nav="movies"] .featured-hero,
+  body[data-active-nav="movies"] .home-section-heading,
+  body[data-active-nav="series"] .featured-hero,
+  body[data-active-nav="series"] .home-section-heading { display:none; }
+}
+@media (max-width:380px) {
+  .sky-logo { font-size:.96rem; }
+  .sky-telegram { padding:8px 10px; }
+  .featured-hero { height:420px; }
+  .featured-copy h1 { font-size:1.55rem; }
+  .grid-layout { gap:9px; }
+  .sky-card-content { padding:9px; }
+  .movie-title { font-size:.78rem; }
+  .watch-btn { font-size:.73rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}
+
 </style>
 </head>
 <body>
@@ -1243,8 +1325,9 @@ document.querySelectorAll(".bottom-nav-item").forEach(function(button){
   button.addEventListener("click",function(){
     activeNav=button.getAttribute("data-nav")||"home";
     document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item===button);});
+    document.body.dataset.activeNav=activeNav;
     if(activeNav==="home"){selectedCategory="All";searchQuery="";$search.value="";setFeatured(allMovies[0]);renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
-    else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";renderCategories(allMovies);filterMovies();document.getElementById("movie-grid").scrollIntoView({behavior:"smooth",block:"start"});}
+    else if(activeNav==="movies"||activeNav==="series"){selectedCategory="All";searchQuery="";$search.value="";renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});}
     else if(activeNav==="search"){$search.focus();window.scrollTo({top:0,behavior:"smooth"});}
   });
 });
