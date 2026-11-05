@@ -1138,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", function(){
     first.querySelector(".cz-tg-join").addEventListener("click",closeFirst);
     document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeFirst();if(second)second.classList.remove("cz-open")}});
     second=document.createElement("div");second.id="cz-tg-fullscreen-modal";
-    second.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-second-title"><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE COMMUNITY</div><h2 id="cz-tg-second-title">Join CRICZONE on Telegram?</h2><p>Get live match updates, cricket news and important alerts directly on Telegram.</p><div class="cz-tg-actions"><a class="cz-tg-yes" href="'+link+'" target="_blank" rel="noopener noreferrer">YES, JOIN 🚀</a><button class="cz-tg-no" type="button">NO, THANKS</button></div><div class="cz-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
+    second.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-second-title"><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE COMMUNITY</div><h2 id="cz-tg-second-title">Join CRICZONE on Telegram?</h2><p>Get live match updates, cricket news and important alerts directly on Telegram.</p><div class="cz-tg-actions"><a class="cz-tg-yes" href="'+link+'" target="_blank" rel="noopener noreferrer">YES</a><button class="cz-tg-no" type="button">NO</button></div><div class="cz-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
     document.body.appendChild(second);
     function closeSecond(){second.classList.remove("cz-open")}
     second.querySelector(".cz-tg-no").addEventListener("click",closeSecond);
