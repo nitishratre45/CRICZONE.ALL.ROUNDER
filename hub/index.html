@@ -1290,7 +1290,7 @@ body { padding-bottom: calc(124px + env(safe-area-inset-bottom)); }
     </div>
 
     <div class="header-right">
-      <a href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" class="sky-telegram">
+      <a href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener noreferrer" class="sky-telegram">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 16 16" fill="white">
           <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23q.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0 -.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"></path>
         </svg>
@@ -1438,11 +1438,17 @@ function setMsg(m)    { if($loadMsg) $loadMsg.textContent = m; }
 function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
 
 async function loadData(){
-  var res = await fetch(API_URL, {cache:"no-store"});
-  if(!res.ok) throw new Error("HTTP " + res.status);
-  var json = await res.json();
-  if (!json || !Array.isArray(json.matches)) throw new Error("Invalid catalog response");
-  return json.matches.filter(function(item){ return item && typeof item === "object" && typeof item.title === "string" && item.title.trim(); });
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 15000);
+  try {
+    var res = await fetch(API_URL, {cache:"no-store",signal:controller.signal});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    var json = await res.json();
+    if (!json || !Array.isArray(json.matches)) throw new Error("Invalid catalog response");
+    return json.matches.filter(function(item){ return item && typeof item === "object" && typeof item.title === "string" && item.title.trim(); });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function setFeatured(movie){
@@ -1491,7 +1497,7 @@ function filterMovies(){
   filteredMovies = allMovies.filter(function(movie){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
-    var isSeries=categories.some(function(x){return /series|web series|tv show|tv series|kdrama|cdrama|drama series/.test(x);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
+    var isSeries=categories.some(function(x){var c=x.replace(/[^a-z]/g,"");return /series|webseries|tvshow|tvseries|kdrama|cdrama|dramaseries/.test(c);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
     var navMatch=activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true;
     return navMatch && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
@@ -1677,18 +1683,26 @@ document.addEventListener("keydown", function(e){
 
 function setupSearch(){
   if(!$search || !$clear) return;
+  var searchTimer = null;
   $search.addEventListener("input", function(e){
-    searchQuery = (e.target.value || "").trim().toLowerCase();
-    $clear.style.display = searchQuery ? "flex" : "none";
-    filterMovies();
+    var value = (e.target.value || "").trim().toLowerCase();
+    $clear.style.display = value ? "flex" : "none";
+    if(searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(function(){
+      searchQuery = value;
+      filterMovies();
+      searchTimer = null;
+    }, 120);
   });
 
   $clear.addEventListener("click", function(){
+    if(searchTimer) clearTimeout(searchTimer);
+    searchTimer = null;
     $search.value = "";
     searchQuery = "";
     $clear.style.display = "none";
-    $search.focus();
     filterMovies();
+    $search.focus();
   });
 }
 
