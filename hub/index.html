@@ -1379,6 +1379,21 @@ body[data-active-nav="mylist"] .featured-hero,body[data-active-nav="mylist"] .ho
 .home-rail-card:focus-visible,.category-more-item:focus-visible,.category-btn:focus-visible{outline:2px solid #f5c34d;outline-offset:3px}
 @media(max-width:420px){.bottom-nav-item span:last-child{font-size:.66rem}.bottom-glass-nav{padding:7px 8px}.detail-actions .detail-share-btn{flex:1;justify-content:center}}
 
+
+/* ===== READABILITY / NO-CUT TEXT FIX ===== */
+.home-rail-card{height:auto;min-height:0;display:flex;flex-direction:column;align-self:stretch}
+.home-rail-card strong{display:block;min-height:0;max-height:none;white-space:normal;overflow:visible;text-overflow:clip;-webkit-line-clamp:unset;-webkit-box-orient:initial;line-height:1.42;padding:11px 11px 13px;font-size:.82rem;overflow-wrap:anywhere;word-break:normal}
+.home-rail-track{align-items:stretch;grid-auto-columns:clamp(158px,43vw,210px);padding-bottom:16px}
+.sky-card-content{min-height:0;height:auto;justify-content:flex-start}
+.movie-title{display:block;-webkit-line-clamp:unset;-webkit-box-orient:initial;overflow:visible;text-overflow:clip;white-space:normal;line-height:1.42;overflow-wrap:anywhere;max-height:none}
+.sky-card{height:auto;min-height:0}
+.bottom-glass-nav{display:flex;justify-content:space-between;gap:3px;width:min(520px,calc(100vw - 20px));padding:7px 8px}
+.bottom-nav-item{flex:1 1 20%;width:20%;max-width:none;min-width:0;padding:4px 1px;white-space:nowrap}
+.bottom-nav-item span:last-child{display:block;font-size:clamp(.58rem,2.7vw,.72rem);line-height:1.15;overflow:visible}
+.bottom-nav-item .material-icons{font-size:21px}
+@media(max-width:390px){.home-rail-track{grid-auto-columns:minmax(0,1fr);grid-auto-columns:44vw;gap:10px}.home-rail-card strong{font-size:.78rem;padding:9px 9px 12px}.bottom-glass-nav{gap:1px;padding:6px 5px}.bottom-nav-item{gap:2px}.bottom-nav-item .material-icons{font-size:19px}.bottom-nav-item span:last-child{font-size:.58rem}}
+@media(min-width:600px){.home-rail-track{grid-auto-columns:clamp(180px,22vw,230px)}}
+
 </style>
 </head>
 <body>
