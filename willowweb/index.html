@@ -77,9 +77,6 @@ body{
   font-size:13.5px;color:#9898a8;font-weight:500;
   line-height:1.5;margin-bottom:24px
 }
-.popup-tg-btn:active{transform:scale(.97);box-shadow:0 2px 10px rgba(0,136,204,.2)}
-.popup-tg-btn svg{width:18px;height:18px;fill:currentColor}
-
 #video-loading{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
@@ -151,17 +148,6 @@ body{
   letter-spacing:.8px
 }
 .stat-divider{width:1px;height:24px;background:rgba(255,255,255,.08)}
-.tg-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;max-width:320px;padding:14px 24px;border-radius:28px;
-  background:linear-gradient(135deg,#0088cc,#00a2ff);
-  color:#fff;font-size:14px;font-weight:800;text-decoration:none;
-  box-shadow:0 6px 24px rgba(0,136,204,.35);
-  transition:transform .2s ease,box-shadow .2s ease;
-  margin-bottom:28px;-webkit-tap-highlight-color:transparent
-}
-.tg-btn:active{transform:scale(.97);box-shadow:0 2px 10px rgba(0,136,204,.2)}
-.tg-btn svg{width:18px;height:18px;fill:currentColor}
 .filters{
   display:flex;align-items:center;justify-content:center;
   gap:10px;padding:0 16px 24px;flex-wrap:wrap
@@ -436,12 +422,6 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.tg-btn{
-  max-width:360px;
-  background:linear-gradient(135deg,#0088cc,#00b7ff);
-  box-shadow:0 10px 30px rgba(0,136,204,.28);
-}
-.tg-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,136,204,.38)}
 .filters{
   position:sticky;top:0;z-index:20;
   padding:10px 16px 16px;
@@ -574,13 +554,6 @@ body{
   flex:none;
 }
 .stat-val{font-size:24px}
-.tg-btn{
-  margin:0;
-  max-width:260px;
-  width:auto;
-  padding:13px 24px;
-}
-
 /* desktop filter/navigation bar */
 .filters{
   position:sticky;
@@ -716,7 +689,6 @@ body{
   .header h1{font-size:28px}
   .header p{margin-left:auto;margin-right:auto}
   .stats-row{width:100%;justify-content:center}
-  .tg-btn{width:100%;max-width:360px;margin-bottom:0}
   .filters{
     padding-left:16px;
     padding-right:16px;
@@ -750,17 +722,6 @@ body{
 <link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
 </head>
 <body>
-<div id="overlay">
-  <div class="popup-card">
-    <button class="popup-close" id="popup-close-btn" type="button">&times;</button>
-    <div class="popup-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-    </div>
-    <div class="popup-title">Join the CricZone Community</div>
-    <div class="popup-desc">Get live match updates, schedules and CricZone alerts directly on Telegram.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:-10px 0 18px;color:#6ee7b7;font-size:11px;font-weight:700;"><span style="width:7px;height:7px;border-radius:50%;background:#22d3a0;box-shadow:0 0 10px rgba(34,211,160,.7);"></span> Fast updates • CricZone Community</div>
-    
-  </div>
 </div>
 <div id="channel-list">
   <div class="hero-box">
