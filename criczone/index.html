@@ -176,7 +176,7 @@ html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,A
 #pc{background:radial-gradient(ellipse at 50% 0%,#10212d,#000 66%)}
 #status{right:16px;top:max(14px,env(safe-area-inset-top));border-color:rgba(0,229,192,.2);background:rgba(5,16,23,.9);color:#e5fbff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 #status.live .st-dot{background:var(--cz-accent)}
-#viewerBadge{position:fixed;z-index:999999;right:18px;bottom:max(92px,calc(env(safe-area-inset-bottom) + 76px));display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;letter-spacing:.25px;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
+#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));bottom:auto;display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;letter-spacing:.25px;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
 #viewerBadge .viewer-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:czPulse 1.8s infinite}
 #watchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
 #viewerBadge .watching-live-label{display:inline-flex;align-items:center;gap:5px}
@@ -229,7 +229,7 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
   .ch-logo{max-width:min(82px,70%);height:46px}
   .ch-card span{font-size:11px;line-height:1.35}
   #status{top:max(10px,env(safe-area-inset-top));font-size:10px;padding:6px 10px}
-  #viewerBadge{right:10px;bottom:max(82px,calc(env(safe-area-inset-bottom) + 66px));padding:8px 10px;font-size:10px}
+  #viewerBadge{right:10px;top:max(12px,calc(env(safe-area-inset-top) + 8px));bottom:auto;padding:8px 10px;font-size:10px}
   #viewerBadge.is-fullscreen{top:max(12px,env(safe-area-inset-top));right:10px;bottom:auto}
   .shaka-controls-container button{min-width:32px;min-height:32px}
 }
@@ -246,7 +246,7 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
   #ch-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
   .ch-card{min-height:88px;padding:8px;gap:5px}
   .ch-logo{height:34px}
-  #viewerBadge{bottom:64px}
+  #viewerBadge{top:10px;bottom:auto}
 }
 
 </style>
