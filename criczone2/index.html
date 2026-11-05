@@ -37,7 +37,7 @@
             --cyan: #29d5ff;
             --green: #20df87;
             --red: #ff465d;
-            --telegram: #229ed9;
+
             --shadow: 0 25px 80px rgba(0,0,0,.38);
             /* A small, reusable type and shape system keeps the interface cohesive. */
             --text-xs: 12px;
@@ -496,39 +496,6 @@
         .info-card h3 { font-size: var(--text-sm); font-weight: 800; }
         .info-card p { margin-top: 6px; color: var(--muted2); font-size: var(--text-xs); line-height: 1.6; }
 
-        .telegram-section { width: 100%; max-width: 1180px; margin: 45px auto 35px; }
-        .telegram-card {
-            position: relative;
-            overflow: hidden;
-            padding: 27px;
-            border: 1px solid rgba(34,158,217,.20);
-            border-radius: var(--radius-lg);
-            background: radial-gradient(circle at 90% 10%, rgba(34,158,217,.13), transparent 35%), linear-gradient(135deg, rgba(34,158,217,.09), rgba(255,255,255,.025));
-        }
-
-        .telegram-content { position: relative; z-index: 2; display: flex; align-items: center; justify-content: flex-start; gap: 24px; }
-        .telegram-left { display: flex; align-items: center; gap: 14px; }
-        .telegram-icon { width: 51px; height: 51px; flex-shrink: 0; display: grid; place-items: center; border-radius: var(--radius-md); color: white; background: #229ed9; }
-        .telegram-left h2 { font-size: var(--text-base); font-weight: 850; }
-        .telegram-left p { margin-top: 5px; color: #8290a4; font-size: var(--text-sm); }
-
-        .telegram-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-width: 145px;
-            height: 42px;
-            padding: 0 17px;
-            border-radius: var(--radius-md);
-            color: white;
-            background: linear-gradient(135deg, #229ed9, #147fb3);
-            font-size: var(--text-xs);
-            font-weight: 850;
-            text-decoration: none;
-            flex: 0 0 auto;
-        }
-
         .footer { padding: 0 0 35px; text-align: center; color: #4f5a6c; font-size: var(--text-xs); }
 
         .loading { min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
@@ -555,9 +522,7 @@
             .channels-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
             .channel-controls { grid-template-columns: 1fr; }
             .info-grid { grid-template-columns: 1fr; }
-            .telegram-content { flex-direction: column; }
-            .telegram-btn { width: 100%; }
-        }
+            }
 
         body { background-attachment: fixed; }
 
@@ -616,7 +581,6 @@
         .channel-card:focus-visible,
         .channel-search input:focus-visible,
         .channel-filter:focus-visible,
-        .telegram-btn:focus-visible,
         .back-btn:focus-visible,
         .action-btn:focus-visible,
         .popup-close:focus-visible {
@@ -624,13 +588,7 @@
             outline-offset: 3px;
         }
 
-        .telegram-card,
         .video-shell { transition: border-color .25s ease, box-shadow .25s ease; }
-
-        .telegram-card:hover {
-            border-color: rgba(34,158,217,.42);
-            box-shadow: 0 18px 45px rgba(0,0,0,.22);
-        }
 
         @keyframes pageEnter {
             from { opacity: 0; transform: translateY(16px); }
@@ -749,24 +707,6 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 </div>
             </main>
 
-            <section class="telegram-section">
-                <div class="telegram-card">
-                    <div class="telegram-content">
-                        <div class="telegram-left">
-                            <div class="telegram-icon"><i class="fa-brands fa-telegram"></i></div>
-                            <div>
-                                <h2>Join Criczone Telegram</h2>
-                                <p>Get live updates, match alerts, stream updates and cricket news.</p>
-                            </div>
-                        </div>
-
-                        <a class="telegram-btn" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener noreferrer">
-                            <i class="fa-brands fa-telegram"></i> JOIN CHANNEL
-                        </a>
-                    </div>
-                </div>
-            </section>
-
             <footer class="footer">
                 © 2026 Criczone Live • Premium Cricket Streaming
             </footer>
@@ -774,24 +714,11 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
         </div>
     </div>
 
-    <div class="overlay" id="telegramOverlay">
-        <div class="popup">
-            <div class="popup-icon"><i class="fa-brands fa-telegram"></i></div>
-            <h2>Join Criczone</h2>
-            <p>Don't miss live cricket updates, match alerts and stream updates.</p>
-            <a class="popup-join" href="https://t.me/+UTSbOtaqVmE2ZWVl" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-telegram"></i> JOIN TELEGRAM CHANNEL
-            </a>
-            <button class="popup-close" id="popupClose" type="button">I'VE ALREADY JOINED</button>
-        </div>
-    </div>
-
     <div class="toast" id="toast"></div>
 
     <script>
         const streamContent = document.getElementById("stream-content");
-        const telegramOverlay = document.getElementById("telegramOverlay");
-        const popupClose = document.getElementById("popupClose");
+
         const toast = document.getElementById("toast");
 
         /* Path Navigation Helper */
@@ -1136,15 +1063,7 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
                 </section>
             `;
             startRealtimeWatching(data.id);
-            setTimeout(showTelegramPopup, 5000);
         }
-
-        function showTelegramPopup() { if (window.__czTelegramPopupShown) return; window.__czTelegramPopupShown = true; telegramOverlay.classList.add("show"); }
-        function hideTelegramPopup() { telegramOverlay.classList.remove("show"); }
-
-        setTimeout(showTelegramPopup, 5000); // Page-load trigger; stream-start trigger is also retained.
-        popupClose.addEventListener("click", hideTelegramPopup);
-        telegramOverlay.addEventListener("click", e => { if (e.target === telegramOverlay) hideTelegramPopup(); });
 
         async function shareStream() {
             const url = window.location.href;
