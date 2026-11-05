@@ -154,6 +154,35 @@ video.mode-cover{object-fit:cover}
   .fit-pill{font-size:9px;padding:2px 5px}
   .sp-btn{padding:0 5px!important}
 }
+
+/* CRICZONE PREMIUM UI REFRESH */
+:root{color-scheme:dark;--cz-accent:#00e5c0;--cz-blue:#28b8ff;--cz-panel:rgba(10,20,29,.94)}
+html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#102433 0%,#071018 48%,#03070b 100%);gap:18px}
+#overlay p{color:#b6c9d4;font-size:13px;letter-spacing:.35px}
+#channel-list{background:radial-gradient(ellipse at 50% -10%,rgba(0,229,192,.12),transparent 42%),linear-gradient(160deg,#08131d,#050a10 62%,#07121a);padding:clamp(20px,4vw,42px) clamp(14px,3vw,34px) max(28px,env(safe-area-inset-bottom))}
+#ch-header{position:relative;justify-content:flex-start;max-width:1120px;width:100%;margin:0 auto 26px;padding:17px 18px;border:1px solid rgba(112,205,222,.15);border-radius:18px;background:rgba(9,22,31,.78);box-shadow:0 16px 42px rgba(0,0,0,.24);backdrop-filter:blur(18px)}
+#ch-header:after{content:"LIVE SPORTS • CRICZONE";margin-left:auto;color:#6e9eaa;font-size:10px;font-weight:800;letter-spacing:1.5px}
+#ch-header h1{font-size:clamp(17px,2vw,22px);font-weight:850;letter-spacing:.2px;color:#f3fbff}
+.brand-dot{background:var(--cz-accent);box-shadow:0 0 16px rgba(0,229,192,.75)}
+#ch-grid{width:100%;max-width:1120px;margin:0 auto;grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr));gap:14px}
+.ch-card{position:relative;min-height:154px;padding:20px 14px;border:1px solid rgba(108,178,200,.17);border-radius:17px;background:linear-gradient(150deg,rgba(15,31,43,.96),rgba(7,15,23,.98));box-shadow:0 10px 28px rgba(0,0,0,.24);gap:13px;overflow:hidden}
+.ch-card:before{content:"";position:absolute;inset:0 20% auto;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,192,.8),transparent)}
+.ch-card:hover{background:linear-gradient(150deg,#132c3b,#091720);border-color:rgba(0,229,192,.42);box-shadow:0 18px 40px rgba(0,0,0,.36),0 0 0 1px rgba(0,229,192,.08);transform:translateY(-4px)}
+.ch-card:active{transform:scale(.975)}
+.ch-card span{font-size:12px;font-weight:750;color:#e8f4fa;line-height:1.45}
+.ch-logo{max-width:104px;height:58px;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.45))}
+.ch-logo-fallback{width:64px;height:58px;border-radius:15px;background:linear-gradient(145deg,rgba(0,229,192,.18),rgba(40,184,255,.12));border:1px solid rgba(0,229,192,.28);color:#8ffff0;font-size:19px}
+#pc{background:radial-gradient(ellipse at 50% 0%,#10212d,#000 66%)}
+#status{right:16px;top:max(14px,env(safe-area-inset-top));border-color:rgba(0,229,192,.2);background:rgba(5,16,23,.9);color:#e5fbff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#status.live .st-dot{background:var(--cz-accent)}
+#viewerBadge{position:fixed;z-index:9996;right:14px;bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.28);border-radius:999px;background:rgba(5,17,24,.88);color:#dffcf7;font-size:12px;font-weight:750;letter-spacing:.2px;box-shadow:0 10px 32px rgba(0,0,0,.4);backdrop-filter:blur(16px)}
+#viewerBadge .viewer-dot{width:8px;height:8px;border-radius:50%;background:#00e5a0;box-shadow:0 0 12px rgba(0,229,160,.85);animation:czPulse 1.8s infinite}
+#watchingCount{color:#67ffe2;font-variant-numeric:tabular-nums}
+@keyframes czPulse{50%{opacity:.45;transform:scale(.75)}}
+@media(max-width:480px){#ch-header{margin-bottom:18px;padding:14px;border-radius:15px}#ch-header:after{font-size:8px;letter-spacing:.8px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{min-height:128px;padding:15px 9px;border-radius:14px}.ch-logo{max-width:82px;height:46px}#viewerBadge{right:10px;bottom:max(12px,env(safe-area-inset-bottom));padding:8px 11px;font-size:11px}}
+@media(min-width:900px){#ch-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
+
 </style>
 </head>
 <body>
@@ -182,6 +211,7 @@ video.mode-cover{object-fit:cover}
     x5-video-player-type="h5"
     x5-video-player-fullscreen="true">
   </video>
+  <div id="viewerBadge" aria-live="polite"><span class="viewer-dot"></span><span><strong id="watchingCount">330</strong> watching live</span></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
@@ -773,11 +803,73 @@ async function main(){
   }
   document.title = ch.name;
   await startPlayer(ch);
+  if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
 }
 
 document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
-<script src="https://pl31358401.profitableratecpmnetwork.com/a3/81/41/a38141b4ff99f6ef8dbf9dc5f76bd86b.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getDatabase, ref, onValue, onDisconnect, set, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDm3DIHJfRPEqNqrUlYJutRQm8XIA6H3fs",
+    authDomain: "cricket-live-39106.firebaseapp.com",
+    databaseURL: "https://cricket-live-39106-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cricket-live-39106",
+    storageBucket: "cricket-live-39106.firebasestorage.app",
+    messagingSenderId: "841890143",
+    appId: "1:841890143:web:ca5b87c9395bdc19145eea",
+    measurementId: "G-ZNEZC8YVMX"
+  };
+
+  let viewerRef = null;
+  let countUnsubscribe = null;
+  let firebaseApp = null;
+
+  window.startRealtimeWatching = async function(streamId) {
+    const count = document.getElementById("watchingCount");
+    if (count) count.textContent = "330";
+    try {
+      if (countUnsubscribe) { countUnsubscribe(); countUnsubscribe = null; }
+      if (viewerRef) { await remove(viewerRef).catch(() => {}); viewerRef = null; }
+
+      firebaseApp = firebaseApp || initializeApp(firebaseConfig, "criczone-live-watch");
+      const db = getDatabase(firebaseApp);
+      const auth = getAuth(firebaseApp);
+      await signInAnonymously(auth);
+
+      const safeId = String(streamId || "all").replace(/[^a-zA-Z0-9_-]/g, "_");
+      const viewerId = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "_" + Math.random().toString(36).slice(2));
+      const path = "liveViewers/" + safeId;
+      viewerRef = ref(db, path + "/" + viewerId);
+      await onDisconnect(viewerRef).remove();
+      await set(viewerRef, { joinedAt: Date.now() });
+
+      countUnsubscribe = onValue(ref(db, path), snapshot => {
+        const actual = snapshot.size ?? snapshot.numChildren();
+        if (count) count.textContent = (330 + actual).toLocaleString("en-IN");
+      }, error => console.warn("Firebase viewer count:", error));
+      console.log("CRICZONE Firebase watching active:", safeId);
+    } catch (error) {
+      console.warn("Firebase watching unavailable; keeping base display:", error);
+      if (count) count.textContent = "330";
+    }
+  };
+
+  window.stopRealtimeWatching = async function() {
+    if (countUnsubscribe) { countUnsubscribe(); countUnsubscribe = null; }
+    if (viewerRef) { await remove(viewerRef).catch(() => {}); viewerRef = null; }
+    const count = document.getElementById("watchingCount");
+    if (count) count.textContent = "330";
+  };
+
+  window.addEventListener("pagehide", () => {
+    if (viewerRef) remove(viewerRef).catch(() => {});
+  });
+</script>
+
 </body>
 </html>
