@@ -3049,6 +3049,34 @@ this.setupBackground();
             this.currentChannelTitle;
 
 
+        this.viewerCount = 0;
+
+        this.updateViewerCount();
+
+
+        this.$.home.classList.add(
+            "hidden"
+        );
+
+
+        this.$.playerView.classList.add(
+            "active"
+        );
+
+
+        history.pushState(
+            {
+                id:
+                    this.currentStreamId
+            },
+            "",
+            "?id=" +
+            encodeURIComponent(
+                this.currentStreamId
+            )
+        );
+
+
         if (!streamUrl) {
             this.stopPreviewTimer();
             this.setPlayerStatus("SOURCE UNAVAILABLE");
@@ -3064,21 +3092,6 @@ this.setupBackground();
             );
             return;
         }
-
-
-        this.viewerCount = 0;
-
-        this.updateViewerCount();
-
-
-        this.$.home.classList.add(
-            "hidden"
-        );
-
-
-        this.$.playerView.classList.add(
-            "active"
-        );
 
 
         history.pushState(
