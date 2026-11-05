@@ -1491,7 +1491,7 @@ function filterMovies(){
   filteredMovies = allMovies.filter(function(movie){
     var categories = typeof movie.categories === "string" ? movie.categories.toLowerCase().split(",").map(function(x){return x.trim();}) : [];
     var title = String(movie.title || "").toLowerCase();
-    var isSeries=categories.some(function(x){return /series|web series|tv show|tv series|kdrama|cdrama|drama series/.test(x);}) || /(?:season\\s*\\d+|s\\d{1,2}(?:e\\d{1,2})?|episode\\s*\\d+|web\\s*series|\\bseries\\b)/i.test(title);
+    var isSeries=categories.some(function(x){return /series|web series|tv show|tv series|kdrama|cdrama|drama series/.test(x);}) || /(?:season\s*\d+|s\d{1,2}(?:e\d{1,2})?|episode\s*\d+|web\s*series|\bseries\b)/i.test(title);
     var navMatch=activeNav==="series"?isSeries:activeNav==="movies"?!isSeries:true;
     return navMatch && (selectedCategory === "All" || categories.indexOf(selectedCategory.toLowerCase()) !== -1) && (!searchQuery || title.indexOf(searchQuery) !== -1);
   });
