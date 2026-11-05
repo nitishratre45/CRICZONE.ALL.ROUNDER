@@ -1317,6 +1317,33 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
  .featured-pagination{right:16px;bottom:14px}
 }
 
+
+/* ===== PREMIUM OTT HOME POLISH ===== */
+.home-rail-seeall{border:0;background:transparent;color:#f4c34e;font:700 .76rem inherit;cursor:pointer;padding:7px 2px}
+.home-rail-seeall:focus-visible,.home-rail-card:focus-visible,.featured-actions button:focus-visible{outline:2px solid #ffd166;outline-offset:3px}
+.home-rail-track{scrollbar-width:none;touch-action:pan-x pan-y}
+.home-rail-card{box-shadow:0 8px 24px #0003}
+.home-rail-card:active{transform:scale(.98)}
+.home-rail-poster{transition:transform .35s ease}
+.home-rail-card:hover .home-rail-poster{transform:scale(1.035)}
+.featured-backdrop{transition:background-image .5s ease,transform 8s ease}
+.featured-hero:hover .featured-backdrop{transform:scale(1.045)}
+.featured-copy{max-width:760px}
+.featured-kicker{margin-bottom:9px}
+.featured-pagination button{min-width:7px;min-height:7px}
+.home-rail-head h3{line-height:1.25}
+.home-rail-seeall:hover{color:#fff}
+@media(max-width:768px){
+ .home-rail-track{grid-auto-columns:clamp(138px,38vw,168px);gap:11px}
+ .home-rail-head h3{font-size:1.02rem}
+ .home-rail-seeall{font-size:.72rem}
+ .featured-hero{touch-action:pan-y}
+ .featured-copy h1{max-width:100%;text-wrap:pretty}
+}
+@media(prefers-reduced-motion:reduce){
+ .featured-backdrop,.home-rail-poster,.home-rail-card{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -1512,13 +1539,14 @@ function setFeatured(movie){
   $featuredBackdrop.style.backgroundImage=poster ? 'url("'+poster+'")' : "linear-gradient(135deg,#1b2638,#080b12)";
   $featuredTitle.textContent=movie.title||"Featured";
   var meta=movie.metadata&&typeof movie.metadata==="object"?movie.metadata:{};
-  $featuredDescription.textContent=String(movie.heading||meta.genre||meta.language||"Stream movies and series on CRICZONE.");
+  var details=[meta.genre,meta.language,meta.quality].filter(Boolean).slice(0,2).join(" • ");
+  $featuredDescription.textContent=String(movie.heading||details||"Discover movies and series picked for you on CRICZONE.");
   var dots=document.getElementById("heroDots");
   if(dots){Array.from(dots.children).forEach(function(dot,index){dot.classList.toggle("active",index===heroIndex);dot.setAttribute("aria-current",index===heroIndex?"true":"false");});}
 }
 function startHeroCarousel(){
-  heroMovies=allMovies.filter(function(movie){return safeHttpUrl(movie.backdrop||movie.poster);}).slice(0,6);
-  if(!heroMovies.length)heroMovies=allMovies.slice(0,6);
+  heroMovies=allMovies.filter(function(movie){return safeHttpUrl(movie.backdrop||movie.poster);}).slice(0,8);
+  if(!heroMovies.length)heroMovies=allMovies.slice(0,8);
   var dots=document.getElementById("heroDots");
   if(dots){
     dots.textContent="";
@@ -1534,28 +1562,73 @@ function startHeroCarousel(){
 }
 function restartHeroTimer(){
   if(heroTimer)clearInterval(heroTimer);
-  if(heroMovies.length>1)heroTimer=setInterval(function(){heroIndex=(heroIndex+1)%heroMovies.length;setFeatured(heroMovies[heroIndex]);},6500);
+  if(heroMovies.length>1&&!document.hidden&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    heroTimer=setInterval(function(){heroIndex=(heroIndex+1)%heroMovies.length;setFeatured(heroMovies[heroIndex]);},7000);
+  }
+}
+document.addEventListener("visibilitychange",function(){if(document.hidden){if(heroTimer)clearInterval(heroTimer);heroTimer=null;}else restartHeroTimer();});
+(function(){
+  var hero=document.getElementById("featuredHero"),startX=0;
+  if(!hero)return;
+  hero.addEventListener("touchstart",function(e){startX=e.changedTouches[0].clientX;},{passive:true});
+  hero.addEventListener("touchend",function(e){
+    var dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>55&&heroMovies.length>1){heroIndex=(heroIndex+(dx<0?1:heroMovies.length-1))%heroMovies.length;setFeatured(heroMovies[heroIndex]);restartHeroTimer();}
+  },{passive:true});
+})();
+function getRecentMovies(){
+  try{
+    var ids=JSON.parse(localStorage.getItem("cz_hub_recent")||"[]");
+    return Array.isArray(ids)?ids.map(function(id){return allMovies.find(function(movie){return getMovieId(movie)===id;});}).filter(Boolean).slice(0,12):[];
+  }catch(e){return [];}
+}
+function saveRecentMovie(movie){
+  try{
+    var ids=JSON.parse(localStorage.getItem("cz_hub_recent")||"[]");
+    if(!Array.isArray(ids))ids=[];
+    var id=getMovieId(movie);
+    localStorage.setItem("cz_hub_recent",JSON.stringify([id].concat(ids.filter(function(x){return x!==id;})).slice(0,12)));
+  }catch(e){}
 }
 function renderHomeRails(){
   var root=document.getElementById("homeRails");if(!root)return;
   root.textContent="";
-  var collections=[{title:"Trending on CRICZONE",items:allMovies.slice(0,14),tag:"TRENDING"}];
+  var collections=[];
+  var recent=getRecentMovies();
+  if(recent.length)collections.push({title:"Pick up where you left off",items:recent,tag:"RECENT"});
+  collections.push({title:"Trending on CRICZONE",items:allMovies.slice(0,16),tag:"TRENDING"});
+  var rated=allMovies.filter(function(movie){var v=Number(movie.metadata&&movie.metadata.imdbRating);return Number.isFinite(v)&&v>0;}).sort(function(a,b){return Number(b.metadata.imdbRating)-Number(a.metadata.imdbRating);}).slice(0,14);
+  if(rated.length>=3)collections.push({title:"Top Rated",items:rated,tag:"TOP RATED"});
+  var newest=allMovies.slice().reverse().slice(0,14);
+  if(newest.length>=3)collections.push({title:"Recently Added",items:newest,tag:"NEW"});
   var seen=new Set();
   allMovies.forEach(function(movie){
-    var category=(typeof movie.categories==="string"?movie.categories.split(",")[0]:"").trim();
-    if(category&&!seen.has(category.toLowerCase())){seen.add(category.toLowerCase());collections.push({title:category+" Picks",items:allMovies.filter(function(item){return typeof item.categories==="string"&&item.categories.split(",").some(function(c){return c.trim().toLowerCase()===category.toLowerCase();});}).slice(0,12),tag:category});}
+    (typeof movie.categories==="string"?movie.categories.split(","):[]).forEach(function(raw){
+      var category=raw.trim();var key=category.toLowerCase();
+      if(!category||seen.has(key)||/^(all|movie|movies|series|web series)$/i.test(category))return;
+      seen.add(key);
+      var items=allMovies.filter(function(item){return typeof item.categories==="string"&&item.categories.split(",").some(function(c){return c.trim().toLowerCase()===key;});}).slice(0,14);
+      if(items.length>=2)collections.push({title:"Popular "+category,items:items,tag:category.toUpperCase()});
+    });
   });
-  collections=collections.filter(function(group){return group.items.length>0;}).slice(0,7);
+  collections=collections.filter(function(group){return group.items.length>0;}).slice(0,9);
   collections.forEach(function(group){
     var section=document.createElement("section");section.className="home-rail";
     var head=document.createElement("div");head.className="home-rail-head";
     var title=document.createElement("h3");title.textContent=group.title;
-    var note=document.createElement("span");note.textContent="Swipe to explore";
+    var note=document.createElement("button");note.type="button";note.className="home-rail-seeall";note.textContent="Explore";
+    note.addEventListener("click",function(){
+      activeNav="movies";document.body.dataset.activeNav="movies";
+      document.querySelectorAll(".bottom-nav-item").forEach(function(item){item.classList.toggle("active",item.getAttribute("data-nav")==="movies");});
+      selectedCategory="All";searchQuery="";$search.value="";
+      document.getElementById("libraryHeadingTitle").textContent="Movies";
+      renderCategories(allMovies);filterMovies();window.scrollTo({top:0,behavior:"smooth"});
+    });
     head.append(title,note);
     var track=document.createElement("div");track.className="home-rail-track";
-    group.items.forEach(function(movie){
-      var card=document.createElement("button");card.type="button";card.className="home-rail-card";
-      var img=document.createElement("img");img.className="home-rail-poster";img.loading="lazy";img.decoding="async";img.alt=movie.title;
+    group.items.forEach(function(movie,index){
+      var card=document.createElement("button");card.type="button";card.className="home-rail-card";card.setAttribute("aria-label","Open "+movie.title);
+      var img=document.createElement("img");img.className="home-rail-poster";img.loading=index<4?"eager":"lazy";img.decoding="async";img.alt=movie.title;
       var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e2430&color=fff";
       img.src=safeHttpUrl(movie.poster)||fallback;img.onerror=function(){this.onerror=null;this.src=fallback;};
       var label=document.createElement("span");label.className="home-rail-tag";label.textContent=group.tag;
@@ -1674,6 +1747,7 @@ function clearMovieSourceFromUrl(){
 }
 function openDetailModal(movie){
   currentMovie=movie;
+  saveRecentMovie(movie);
   updateMovieUrl(movie);
   var fallback="https://ui-avatars.com/api/?name="+encodeURIComponent(movie.title)+"&background=1e88e5&color=fff&rounded=true";
   $detailPoster.onerror=function(){this.onerror=null;this.src=fallback;};
