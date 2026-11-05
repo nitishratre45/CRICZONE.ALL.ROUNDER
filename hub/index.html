@@ -1319,7 +1319,7 @@ body[data-active-nav="series"] .home-section-heading h2{font-size:1.35rem}
 
 
 /* ===== PREMIUM OTT HOME POLISH ===== */
-.home-rail-seeall{border:0;background:transparent;color:#f4c34e;font:700 .76rem inherit;cursor:pointer;padding:7px 2px}
+.home-rail-seeall{border:0;background:transparent;color:#f4c34e;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;padding:7px 2px}
 .home-rail-seeall:focus-visible,.home-rail-card:focus-visible,.featured-actions button:focus-visible{outline:2px solid #ffd166;outline-offset:3px}
 .home-rail-track{scrollbar-width:none;touch-action:pan-x pan-y}
 .home-rail-card{box-shadow:0 8px 24px #0003}
@@ -1595,12 +1595,12 @@ function renderHomeRails(){
   root.textContent="";
   var collections=[];
   var recent=getRecentMovies();
-  if(recent.length)collections.push({title:"Pick up where you left off",items:recent,tag:"RECENT"});
-  collections.push({title:"Trending on CRICZONE",items:allMovies.slice(0,16),tag:"TRENDING"});
+  if(recent.length)collections.push({title:"Your Recent Picks",items:recent,tag:"RECENT"});
+  collections.push({title:"Popular on CRICZONE",items:allMovies.slice(0,16),tag:"TRENDING"});
   var rated=allMovies.filter(function(movie){var v=Number(movie.metadata&&movie.metadata.imdbRating);return Number.isFinite(v)&&v>0;}).sort(function(a,b){return Number(b.metadata.imdbRating)-Number(a.metadata.imdbRating);}).slice(0,14);
   if(rated.length>=3)collections.push({title:"Top Rated",items:rated,tag:"TOP RATED"});
   var newest=allMovies.slice().reverse().slice(0,14);
-  if(newest.length>=3)collections.push({title:"Recently Added",items:newest,tag:"NEW"});
+  if(newest.length>=3)collections.push({title:"More to Explore",items:newest,tag:"NEW"});
   var seen=new Set();
   allMovies.forEach(function(movie){
     (typeof movie.categories==="string"?movie.categories.split(","):[]).forEach(function(raw){
