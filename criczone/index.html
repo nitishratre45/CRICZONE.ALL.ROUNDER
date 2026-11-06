@@ -295,6 +295,9 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
 
 #pc{position:fixed;inset:0;isolation:isolate;background:#000;overflow:hidden}
 #pc .shaka-controls-container{z-index:10!important;padding:0 clamp(12px,3vw,30px) max(14px,env(safe-area-inset-bottom))!important;background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.58) 55%,transparent)!important}
+/* Remove the controls shade completely when Shaka auto-hides its UI */
+#pc .shaka-controls-container.shaka-controls-hidden,
+#pc .shaka-controls-container[aria-hidden="true"]{background:transparent!important;opacity:0!important;pointer-events:none!important;}
 #pc .shaka-controls-button-panel{gap:5px!important}
 #pc .shaka-controls-container button{border-radius:10px!important;transition:background .18s!important}
 #pc .shaka-controls-container button:hover{background:rgba(0,229,192,.15)!important}
