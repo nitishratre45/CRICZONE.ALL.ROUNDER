@@ -872,25 +872,9 @@
 <!-- Player Container -->
 <div id="player-container">
   <video id="player" playsinline webkit-playsinline controls preload="metadata"></video>
-  <iframe id="sonyExternalFrame" title="Sony TEN 2 HD Live" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
+  <iframe id="sonyExternalFrame" title="Sony Live" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
 </div>
 
-<!-- ====== TELEGRAM POPUP ====== -->
-<div id="tgOverlay" role="presentation" aria-hidden="true">
-  <div id="tgCard" role="dialog" aria-modal="true" aria-labelledby="tgTitle" aria-describedby="tgDescription">
-    <button type="button" id="tgClose" aria-label="Close Telegram popup" title="Close">&times;</button>
-    <div id="tgIcon">
-      <svg viewBox="0 0 24 24" fill="white" width="36" height="36">
-        <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/>
-      </svg>
-    </div>
-    <h2 id="tgTitle">Stay Connected with CRICZONE</h2>
-    <p id="tgDescription">Join our official Telegram channel for live match updates, sports news and important CRICZONE alerts.</p>
-    <div class="tgBtns">
-      <button class="tgBtn" id="joinNow">Join Now</button>
-    </div>
-  </div>
-</div>
 
 <script>
 (function(){
@@ -1465,41 +1449,7 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
-<!-- ====== CRICZONE TELEGRAM POPUP ====== -->
-<script>
-(function () {
-  "use strict";
-  var tgOverlay = document.getElementById("tgOverlay");
-  var joinNow = document.getElementById("joinNow");
-  var closeBtn = document.getElementById("tgClose");
-  var telegramUrl = "https://t.me/+pN15_8gc54s2NDU1";
-  if (!tgOverlay || !joinNow || !closeBtn) return;
+<!-- Sony page popup timer disabled. -->
 
-  function closePopup() {
-    tgOverlay.classList.remove("show");
-    tgOverlay.setAttribute("aria-hidden", "true");
-  }
-
-  // Match the 5-second Telegram popup timing used across CRICZONE pages.
-  window.setTimeout(function () {
-    tgOverlay.classList.add("show");
-    tgOverlay.setAttribute("aria-hidden", "false");
-  }, 5000);
-
-  joinNow.addEventListener("click", function () {
-    window.open(telegramUrl, "_blank", "noopener,noreferrer");
-    closePopup();
-  });
-
-  closeBtn.addEventListener("click", closePopup);
-
-  // Keep the popup intentional: tapping the backdrop does not dismiss it.
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && tgOverlay.classList.contains("show")) {
-      closePopup();
-    }
-  });
-})();
-</script>
 </body>
 </html>
