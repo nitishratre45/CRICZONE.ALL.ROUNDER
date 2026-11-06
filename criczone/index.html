@@ -355,6 +355,26 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
     margin-right: 0 !important;
   }
 }
+
+/* HARD FIX: no dark overlay/gradient anywhere on the video, including Shaka UI */
+#pc .shaka-scrim-container,
+#pc .shaka-controls-container,
+#pc .shaka-controls-container[shown="true"],
+#pc .shaka-controls-container[casting="true"] {
+  background: transparent !important;
+  background-image: none !important;
+}
+#pc .shaka-scrim-container { display: none !important; }
+@media (max-width: 900px), (pointer: coarse) {
+  #pc .shaka-scrim-container,
+  #pc .shaka-controls-container,
+  #pc .shaka-controls-container[shown="true"],
+  #pc .shaka-controls-container[casting="true"] {
+    background: transparent !important;
+    background-image: none !important;
+  }
+  #pc .shaka-scrim-container { display: none !important; }
+}
 </style>
 </head>
 <body>
