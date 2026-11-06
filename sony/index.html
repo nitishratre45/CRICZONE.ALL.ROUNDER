@@ -600,7 +600,7 @@
     #tgOverlay.show #tgCard{animation:tgCardEnter .48s cubic-bezier(.2,.8,.2,1) both}
     #tgCard{
       width:min(100%,430px);
-      padding:clamp(28px,5vw,40px) clamp(22px,5vw,34px) 28px;
+      padding:54px clamp(22px,5vw,34px) 28px;
       border:1px solid rgba(111,178,255,.42);
       border-radius:26px;
       background:
@@ -619,6 +619,18 @@
       position:absolute;left:12%;right:12%;top:0;height:1px;
       background:linear-gradient(90deg,transparent,rgba(145,202,255,.9),rgba(241,201,107,.65),transparent);
     }
+    #tgClose{
+      position:absolute;top:13px;right:13px;z-index:3;
+      width:36px;height:36px;display:grid;place-items:center;
+      padding:0;border-radius:50%;
+      color:#d8e7f8;background:rgba(255,255,255,.075);
+      border:1px solid rgba(190,215,245,.2);
+      font:400 25px/1 Arial,sans-serif;cursor:pointer;
+      transition:background .2s ease,color .2s ease,transform .2s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #tgClose:hover{background:rgba(255,255,255,.16);color:#fff;transform:rotate(90deg)}
+    #tgClose:focus-visible{outline:2px solid #f1c66b;outline-offset:3px}
     #tgIcon{
       width:68px;height:68px;margin:0 auto 20px;
       background:linear-gradient(145deg,#299cff,#0860d5);
@@ -734,6 +746,7 @@
 <!-- ====== TELEGRAM POPUP ====== -->
 <div id="tgOverlay" role="presentation" aria-hidden="true">
   <div id="tgCard" role="dialog" aria-modal="true" aria-labelledby="tgTitle" aria-describedby="tgDescription">
+    <button type="button" id="tgClose" aria-label="Close Telegram popup" title="Close">&times;</button>
     <div id="tgIcon">
       <svg viewBox="0 0 24 24" fill="white" width="36" height="36">
         <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/>
@@ -742,7 +755,6 @@
     <h2 id="tgTitle">Stay Connected with CRICZONE</h2>
     <p id="tgDescription">Join our official Telegram channel for live match updates, sports news and important CRICZONE alerts.</p>
     <div class="tgBtns">
-      <button class="tgBtn" id="joinedBtn">Already Joined</button>
       <button class="tgBtn" id="joinNow">Join Now</button>
     </div>
   </div>
@@ -1314,9 +1326,9 @@ document.addEventListener("DOMContentLoaded", main);
   "use strict";
   var tgOverlay = document.getElementById("tgOverlay");
   var joinNow = document.getElementById("joinNow");
-  var joinedBtn = document.getElementById("joinedBtn");
+  var closeBtn = document.getElementById("tgClose");
   var telegramUrl = "https://t.me/+UTSbOtaqVmE2ZWVl";
-  if (!tgOverlay || !joinNow || !joinedBtn) return;
+  if (!tgOverlay || !joinNow || !closeBtn) return;
 
   function closePopup() {
     tgOverlay.classList.remove("show");
@@ -1334,7 +1346,7 @@ document.addEventListener("DOMContentLoaded", main);
     closePopup();
   });
 
-  joinedBtn.addEventListener("click", closePopup);
+  closeBtn.addEventListener("click", closePopup);
 
   // Keep the popup intentional: tapping the backdrop does not dismiss it.
   document.addEventListener("keydown", function (event) {
