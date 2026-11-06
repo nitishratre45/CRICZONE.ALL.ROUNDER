@@ -1,4 +1,4 @@
-const ALLOWED_HOST_SUFFIX = "reborn2.online";
+const ALLOWED_HOST_SUFFIX = "fallinoreborn2.online";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
