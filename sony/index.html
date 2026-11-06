@@ -1433,10 +1433,11 @@ async function main(){
 
   document.title = "CRICZONE · " + ch.name;
   renderList(data);
-  if(id === "sony_ten_2_hd_sayan10_13") {
-    var externalFrame = document.getElementById("sonyExternalFrame");
+  // Route every Sony channel through the external Sony player using its channel ID.
+  var externalFrame = document.getElementById("sonyExternalFrame");
+  if(externalFrame) {
     $video.style.display = "none";
-    externalFrame.src = "https://sportlink-sonyliv10.pages.dev/?id=sony_ten_2_hd_sayan10_13";
+    externalFrame.src = "https://sportlink-sonyliv10.pages.dev/?id=" + encodeURIComponent(ch.id);
     externalFrame.style.display = "block";
     showPlayer();
     hideOverlay();
