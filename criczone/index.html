@@ -316,6 +316,42 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
     background:linear-gradient(0deg,rgba(0,0,0,.76),rgba(0,0,0,.22) 45%,transparent) !important;
   }
 }
+
+/* DESKTOP FULL-WIDTH CHANNEL LAYOUT */
+@media (min-width: 1101px) {
+  #channel-list {
+    padding-left: clamp(22px, 3vw, 56px) !important;
+    padding-right: clamp(22px, 3vw, 56px) !important;
+  }
+  #ch-header,
+  #ch-grid {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #ch-header {
+    margin-bottom: 26px !important;
+  }
+  #ch-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
+    gap: clamp(14px, 1.15vw, 22px) !important;
+  }
+  .ch-card {
+    min-height: clamp(158px, 12vw, 190px) !important;
+    padding: clamp(18px, 1.5vw, 26px) 14px !important;
+  }
+  .ch-logo {
+    max-width: clamp(104px, 8vw, 138px) !important;
+    height: clamp(58px, 4.5vw, 76px) !important;
+  }
+  #cz-tg-local-bar {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
 </style>
 </head>
 <body>
