@@ -300,6 +300,7 @@
       object-fit:contain;
       background:#000;
     }
+    #sonyExternalFrame{display:none;position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;z-index:1}
     .plyr{
       height:100%;
       width:100%;
@@ -871,6 +872,7 @@
 <!-- Player Container -->
 <div id="player-container">
   <video id="player" playsinline webkit-playsinline controls preload="metadata"></video>
+  <iframe id="sonyExternalFrame" title="Sony TEN 2 HD Live" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
 </div>
 
 <!-- ====== TELEGRAM POPUP ====== -->
@@ -1115,6 +1117,9 @@ function hidePlayer(){
 
   $list.style.display = "flex";
   $playerContainer.style.display = "none";
+  var externalFrame = document.getElementById("sonyExternalFrame");
+  if(externalFrame) externalFrame.src = "about:blank";
+  $video.style.display = "";
   $toolbar.classList.remove("show");
 
   if(resumeTmr) { clearInterval(resumeTmr); resumeTmr = null; }
@@ -1428,6 +1433,16 @@ async function main(){
 
   document.title = "CRICZONE · " + ch.name;
   renderList(data);
+  if(id === "sony_ten_2_hd_sayan10_13") {
+    var externalFrame = document.getElementById("sonyExternalFrame");
+    $video.style.display = "none";
+    externalFrame.src = "https://sportlink-sonyliv10.pages.dev/?id=sony_ten_2_hd_sayan10_13";
+    externalFrame.style.display = "block";
+    showPlayer();
+    hideOverlay();
+    toast("● Live", "ok", 3000);
+    return;
+  }
   setupHLSPlayer(ch.stream_url);
 }
 
