@@ -484,6 +484,18 @@
       position: relative;
       overflow: hidden;
     }
+    #tgClose{
+      position:absolute;top:13px;right:13px;z-index:3;
+      width:36px;height:36px;display:grid;place-items:center;
+      padding:0;border-radius:50%;
+      color:#d8e7f8;background:rgba(255,255,255,.075);
+      border:1px solid rgba(190,215,245,.2);
+      font:400 25px/1 Arial,sans-serif;cursor:pointer;
+      transition:background .2s ease,color .2s ease,transform .2s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #tgClose:hover{background:rgba(255,255,255,.16);color:#fff;transform:rotate(90deg)}
+    #tgClose:focus-visible{outline:2px solid #f1c66b;outline-offset:3px}
     #tgCard::before {
       content: "";
       position: absolute;
@@ -1452,6 +1464,7 @@ document.addEventListener("DOMContentLoaded", main);
 <!-- CRICZONE Telegram popup -->
 <div id="tgOverlay" role="dialog" aria-modal="true" aria-labelledby="tgPopupTitle">
   <div id="tgCard">
+    <button type="button" id="tgClose" aria-label="Close Telegram popup" title="Close">&times;</button>
     <div id="tgIcon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="white"><path d="M9.04 15.43 8.9 19.2c.4 0 .58-.17.8-.38l1.92-1.83 3.98 2.91c.73.4 1.25.19 1.44-.68l2.6-12.2c.24-1.1-.4-1.53-1.1-1.24L3.2 11.3c-1.05.41-1.03 1 .18 1.39l3.92 1.22 9.1-5.74c.43-.28.82-.13.5.16z"/></svg>
     </div>
@@ -1468,12 +1481,16 @@ document.addEventListener("DOMContentLoaded", main);
   var popup=document.getElementById("tgOverlay");
   var join=document.getElementById("joinNow");
   var close=document.getElementById("joinedBtn");
+  var closeX=document.getElementById("tgClose");
   if(!popup) return;
   window.setTimeout(function(){ popup.classList.add("show"); },5000);
   if(join) join.addEventListener("click",function(){
     window.open("https://t.me/+pN15_8gc54s2NDU1","_blank","noopener");
   });
-  if(close) close.addEventListener("click",function(){ popup.classList.remove("show"); });
+  function closePopup(){ popup.classList.remove("show"); }
+  if(close) close.addEventListener("click",closePopup);
+  if(closeX) closeX.addEventListener("click",closePopup);
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closePopup(); });
   popup.addEventListener("click",function(e){
     if(e.target===popup) e.preventDefault();
   });
