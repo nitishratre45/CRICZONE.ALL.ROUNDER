@@ -922,6 +922,7 @@ async function startPlayer(ch){
 
   function onPlaying(){
     started = true;
+    window.dispatchEvent(new Event("cz:stream-started"));
     if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
     edgeTried = false;
     if(!refreshing) toast("Live","live",3000);
@@ -1116,6 +1117,35 @@ document.addEventListener("DOMContentLoaded", function(){
 #cz-tg-fullscreen-modal .cz-tg-foot{margin:9px 0 0;color:#91aabe;font-size:9px}
 @media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}#cz-tg-fullscreen-modal .cz-tg-card{width:min(100%,300px);padding:17px 15px 14px}}
 @media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-fullscreen-modal,#cz-tg-local-modal .cz-tg-card,#cz-tg-fullscreen-modal .cz-tg-card{transition:none}}
+/* CRICZONE UI polish: accessible focus, consistent controls and responsive spacing */
+#channel-list{scrollbar-width:thin;scrollbar-color:rgba(0,229,192,.38) transparent}
+#channel-list::-webkit-scrollbar{width:8px}
+#channel-list::-webkit-scrollbar-thumb{background:rgba(0,229,192,.28);border:2px solid transparent;background-clip:padding-box;border-radius:99px}
+.ch-card{isolation:isolate;outline:none}
+.ch-card:focus-visible{outline:2px solid var(--cz-accent);outline-offset:3px;border-color:var(--cz-accent)}
+.ch-card:after{content:"";position:absolute;inset:auto 14px 0;height:2px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--cz-accent),transparent);opacity:0;transition:opacity .18s}
+.ch-card:hover:after,.ch-card:focus-visible:after{opacity:.9}
+.ch-logo{max-width:112px;max-height:64px}
+#ch-header h1{line-height:1.25}
+#status{pointer-events:none}
+#pc .shaka-controls-container{padding-bottom:max(16px,env(safe-area-inset-bottom))!important}
+#pc .shaka-controls-container button:focus-visible{outline:2px solid var(--cz-accent)!important;outline-offset:2px}
+#pc .shaka-seek-bar-container{touch-action:pan-y}
+#viewerBadge{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+@media(max-width:699px){
+  #ch-header{gap:9px}
+  #ch-header:after{max-width:42%;text-align:right;line-height:1.35}
+  #ch-grid{align-items:stretch}
+  .ch-card{min-width:0;overflow:hidden}
+  #cz-tg-local-bar{margin-top:10px}
+}
+@media(hover:none){
+  .ch-card:hover{transform:none}
+  .ch-card:active{transform:scale(.975);border-color:rgba(0,229,192,.55)}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 <script>
 (function(){
@@ -1145,8 +1175,23 @@ document.addEventListener("DOMContentLoaded", function(){
     second.querySelector(".cz-tg-yes").addEventListener("click",closeSecond);
     second.addEventListener("click",function(e){if(e.target===second)closeSecond()});
     document.addEventListener("fullscreenchange",moveSecond);document.addEventListener("webkitfullscreenchange",moveSecond);
-    window.setTimeout(function(){if(first&&!firstShown){firstShown=true;first.classList.add("cz-open")}},5000);
-    window.setTimeout(function(){if(second&&!secondShown){secondShown=true;moveSecond();second.classList.add("cz-open")}},60000);
+    // Start Telegram prompts only after the stream is genuinely playing.
+    var promptTimersStarted=false;
+    function startTelegramPromptTimers(){
+      if(promptTimersStarted) return;
+      promptTimersStarted=true;
+      window.setTimeout(function(){
+        if(first&&!firstShown){firstShown=true;first.classList.add("cz-open")}
+      },5000);
+      window.setTimeout(function(){
+        if(second&&!secondShown){
+          secondShown=true;
+          moveSecond();
+          second.classList.add("cz-open");
+        }
+      },60000);
+    }
+    window.addEventListener("cz:stream-started",startTelegramPromptTimers,{once:true});
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
