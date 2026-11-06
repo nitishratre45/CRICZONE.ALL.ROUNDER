@@ -489,6 +489,62 @@
     .playerbar { padding:5px;border-radius:14px;background:rgba(6,10,16,.58);backdrop-filter:blur(14px); }
     .playerbar button { border-radius:10px; }
     @media(max-width:560px) { .welcome-strip { padding:16px;border-radius:15px; } .welcome-icon { width:49px;height:49px;flex-basis:49px;font-size:24px;border-radius:14px; } .quick-tools { gap:8px 12px;font-size:8px; } }
+
+    /* CRICZONE1 PREMIUM UI + FULL-WIDTH DESKTOP */
+    html { min-width:320px; background:#080b11; scroll-behavior:smooth; }
+    body { overflow-x:hidden; }
+    .toprow, main { max-width:none !important; width:100%; }
+    .topbar { border-bottom:1px solid rgba(255,255,255,.08); }
+    .toprow { min-height:54px; }
+    .brand-mark { transition:transform .2s ease,box-shadow .2s ease; }
+    .brand:hover .brand-mark { transform:translateY(-1px);box-shadow:0 7px 24px rgba(255,184,0,.24); }
+    .intro { align-items:center; }
+    .subtitle { line-height:1.6; }
+    .welcome-strip { position:relative;overflow:hidden;isolation:isolate; }
+    .welcome-strip:after { content:'CRICZONE';position:absolute;z-index:-1;right:2%;bottom:-35%;font:900 clamp(70px,13vw,170px)/1 Archivo,sans-serif;letter-spacing:-.08em;color:rgba(255,255,255,.025);pointer-events:none; }
+    .searchbox { margin-top:8px; }
+    #search { transition:border-color .2s,box-shadow .2s,background .2s; }
+    #filters { gap:9px;padding:8px 2px 16px; }
+    .pill { transition:transform .18s,border-color .18s,background .18s,color .18s; }
+    .pill:hover { border-color:rgba(255,184,0,.48);color:#fff;transform:translateY(-1px); }
+    #grid { align-content:start; }
+    .card { isolation:isolate; }
+    .poster { aspect-ratio:16/9; }
+    .poster:after { transition:opacity .2s; }
+    .card:focus-visible { outline:2px solid #ffd36b;outline-offset:3px; }
+    .cardbody { min-height:66px; }
+    .channelname { letter-spacing:.05px; }
+    #empty { margin-top:8px; }
+    footer { margin-top:24px; }
+    #cz-tg-local-bar { width:100%!important;max-width:none!important;margin:16px 0 20px!important; }
+    @media (min-width:1200px) {
+      .topbar { padding-left:clamp(22px,3vw,58px);padding-right:clamp(22px,3vw,58px); }
+      main { padding:clamp(24px,2.2vw,38px) clamp(22px,3vw,58px) 52px !important; }
+      #grid { grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:clamp(15px,1.25vw,22px) !important; }
+      .card { border-radius:18px; }
+      .poster { aspect-ratio:16/9; }
+      .cardbody { padding:15px 16px 17px; }
+      .channelname { font-size:14px; }
+      .category { font-size:9px; }
+    }
+    @media (min-width:1750px) {
+      #grid { grid-template-columns:repeat(5,minmax(0,1fr)) !important; }
+    }
+    @media (min-width:700px) and (max-width:1199px) {
+      main { padding-left:clamp(20px,3vw,38px);padding-right:clamp(20px,3vw,38px); }
+      #grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    }
+    @media (max-width:560px) {
+      .intro { gap:8px; }
+      .welcome-strip { margin-top:4px; }
+      #filters { margin-right:-2px; }
+      #cz-tg-local-bar { width:100%!important; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      .brand-mark,.pill,#search,.poster:after { transition:none!important; }
+    }
+
     </style>
 
 </head>
