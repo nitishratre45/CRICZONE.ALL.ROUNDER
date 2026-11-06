@@ -925,6 +925,14 @@ function toast(msg,type,dur){
   }
 }
 
+function cleanSourceTag(value){
+  return String(value || "")
+    .replace(/\\s+by\\s+@sayan10\\b/ig, "")
+    .replace(/@sayan10\\b/ig, "")
+    .replace(/\\s{2,}/g, " ")
+    .trim();
+}
+
 function setMsg(m) { $loadMsg && ($loadMsg.textContent = m); }
 function hideOverlay() { $overlay && ($overlay.style.display = "none"); }
 function getChId() { return new URLSearchParams(location.search).get("id") || ""; }
@@ -1020,7 +1028,7 @@ function renderFilters(channels){
   categories.forEach(function(cat){
     var pill = document.createElement('span');
     pill.className = 'filter-pill' + (cat === currentCategory ? ' active' : '');
-    pill.textContent = cat;
+    pill.textContent = cleanSourceTag(cat);
     pill.dataset.category = cat;
     pill.addEventListener('click', function(){
       currentCategory = cat;
@@ -1060,18 +1068,18 @@ function renderChannels(channels){
 
     var badgeHtml = '';
     if(ch.category && ch.category !== 'General') {
-      badgeHtml = '<span class="category-badge">'+ch.category+'</span>';
+      badgeHtml = '<span class="category-badge">'+cleanSourceTag(ch.category)+'</span>';
     }
 
     var logoHtml = '';
     if(ch.logo && ch.logo.trim()) {
-      logoHtml = '<img class="ch-logo" src="'+ch.logo+'" alt="'+ch.name+'" loading="lazy" onerror="this.style.display=\'none\'">';
+      logoHtml = '<img class="ch-logo" src="'+ch.logo+'" alt="'+cleanSourceTag(ch.name)+'" loading="lazy" onerror="this.style.display=\'none\'">';
     } else {
       var initials = ch.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('');
       logoHtml = '<div class="ch-placeholder"><span class="initials">'+initials+'</span></div>';
     }
 
-    a.innerHTML = badgeHtml + logoHtml + '<span class="ch-name">'+ch.name+'</span>';
+    a.innerHTML = badgeHtml + logoHtml + '<span class="ch-name">'+cleanSourceTag(ch.name)+'</span>';
     f.appendChild(a);
   });
 
