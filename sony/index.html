@@ -1472,7 +1472,6 @@ document.addEventListener("DOMContentLoaded", main);
     <p>Join our official Telegram channel for live updates and the latest cricket content.</p>
     <div class="tgBtns">
       <button class="tgBtn" id="joinNow" type="button">JOIN TELEGRAM</button>
-      <button class="tgBtn" id="joinedBtn" type="button">I’M ALREADY JOINED</button>
     </div>
   </div>
 </div>
@@ -1480,7 +1479,6 @@ document.addEventListener("DOMContentLoaded", main);
 (function(){
   var popup=document.getElementById("tgOverlay");
   var join=document.getElementById("joinNow");
-  var close=document.getElementById("joinedBtn");
   var closeX=document.getElementById("tgClose");
   if(!popup) return;
   window.setTimeout(function(){ popup.classList.add("show"); },5000);
@@ -1488,7 +1486,6 @@ document.addEventListener("DOMContentLoaded", main);
     window.open("https://t.me/+pN15_8gc54s2NDU1","_blank","noopener");
   });
   function closePopup(){ popup.classList.remove("show"); }
-  if(close) close.addEventListener("click",closePopup);
   if(closeX) closeX.addEventListener("click",closePopup);
   document.addEventListener("keydown",function(e){ if(e.key==="Escape") closePopup(); });
   popup.addEventListener("click",function(e){
