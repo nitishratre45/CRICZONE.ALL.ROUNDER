@@ -977,7 +977,7 @@
         .match-card:hover .poster-play-hint,.match-open-link:focus-visible .poster-play-hint { opacity:1; }
         .card-actions { display:flex; align-items:center; gap:9px; margin-top:14px; }
         .open-match-btn { flex:1; display:flex; justify-content:center; align-items:center; min-height:42px; border-radius:10px; background:var(--gold-gradient); color:#111; font-weight:800; text-decoration:none; }
-        .card-share-btn { min-height:40px; }
+        .card-share-btn { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:42px; padding:0 14px; border:1px solid rgba(255,194,71,.38); border-radius:10px; background:linear-gradient(145deg,rgba(255,194,71,.13),rgba(255,145,35,.08)); color:#ffd36a; font:800 .82rem/1 inherit; white-space:nowrap; cursor:pointer; transition:background .18s ease,border-color .18s ease,transform .18s ease; }\n        .card-share-btn:hover { background:linear-gradient(145deg,rgba(255,194,71,.24),rgba(255,145,35,.16)); border-color:rgba(255,194,71,.75); transform:translateY(-1px); }\n        .card-share-btn:active { transform:scale(.97); }\n        .card-share-btn:disabled { opacity:.65; cursor:wait; }
         @media (max-width:700px) {
           .matches-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
           .match-card { min-width:0; border-radius:14px; }
@@ -1699,64 +1699,71 @@
 
             $btnClose.addEventListener('click', closePlayer);
 
-            // Unique Share Link Generator
-            function copyShareLink(matchId, serverId) {
+            // Match sharing: share the actual server-selection page for this match.
+            async function copyShareLink(matchId, serverId) {
                 let targetId = matchId;
-                if (!targetId && currentActiveMatch) {
-                    targetId = currentActiveMatch.id;
-                }
+                if (!targetId && currentActiveMatch) targetId = currentActiveMatch.id;
+                if (!targetId) targetId = parseUrlParams().id;
                 if (!targetId) {
-                    const { id } = parseUrlParams();
-                    targetId = id;
-                }
-                if (!targetId && allMatches.length > 0) {
-                    targetId = allMatches[0].id;
-                }
-
-                if (!targetId) {
-                    showToast('No match selected to share', 'error');
+                    showToast('Select a match before sharing', 'error');
                     return;
                 }
 
-                const targetSer = (typeof serverId === 'number' || (typeof serverId === 'string' && !isNaN(parseInt(serverId, 10)))) 
-                    ? parseInt(serverId, 10) 
-                    : (currentActiveServerId || 1);
+                const shareUrl = new URL('play.html', window.location.href);
+                shareUrl.searchParams.set('match', String(targetId));
+                const shareData = {
+                    title: 'CRICZONE - ' + (currentActiveMatch?.event_name || 'Live Cricket Match'),
+                    text: 'Watch this match on CRICZONE',
+                    url: shareUrl.toString()
+                };
 
-                const urlObj = new URL(window.location.href);
-                urlObj.searchParams.set('id', targetId);
-                urlObj.searchParams.set('ser', targetSer);
-                const shareUrl = urlObj.toString();
+                // Use the native share sheet on supported phones/tablets.
+                if (navigator.share) {
+                    try {
+                        await navigator.share(shareData);
+                        return;
+                    } catch (error) {
+                        if (error && error.name === 'AbortError') return;
+                        // Continue to clipboard fallback if native sharing is unavailable.
+                    }
+                }
 
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareUrl).then(() => {
-                        showToast('● UNIQUE MATCH LINK COPIED!', 'success');
-                    }).catch(() => {
-                        fallbackCopy(shareUrl);
-                    });
-                } else {
-                    fallbackCopy(shareUrl);
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(shareUrl.toString());
+                    } else {
+                        throw new Error('Clipboard API unavailable');
+                    }
+                    showToast('✓ Match link copied!', 'success');
+                } catch (error) {
+                    const copied = fallbackCopy(shareUrl.toString());
+                    if (copied) showToast('✓ Match link copied!', 'success');
+                    else showToast('Copy this link: ' + shareUrl.toString(), 'info', 6000);
                 }
             }
 
-            function fallbackCopy(text) {
-                try {
-                    const temp = document.createElement('input');
-                    temp.value = text;
-                    document.body.appendChild(temp);
-                    temp.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(temp);
-                    showToast('● UNIQUE MATCH LINK COPIED!', 'success');
-                } catch(e) {
-                    showToast('Link: ' + text, 'info');
-                }
+            function fallbackCopy(value) {
+                const field = document.createElement('textarea');
+                field.value = value;
+                field.setAttribute('readonly', '');
+                field.style.position = 'fixed';
+                field.style.opacity = '0';
+                field.style.pointerEvents = 'none';
+                document.body.appendChild(field);
+                field.focus();
+                field.select();
+                field.setSelectionRange(0, field.value.length);
+                let copied = false;
+                try { copied = document.execCommand('copy'); } catch (error) { copied = false; }
+                document.body.removeChild(field);
+                return copied;
             }
 
             window.copyMatchLink = copyShareLink;
 
-            // Share Stream Button in player modal
-            $btnShare.addEventListener('click', (e) => {
-                e.preventDefault();
+            // Share button in the player modal.
+            $btnShare.addEventListener('click', (event) => {
+                event.preventDefault();
                 copyShareLink(currentActiveMatch ? currentActiveMatch.id : null, currentActiveServerId);
             });
 
