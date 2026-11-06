@@ -927,9 +927,9 @@ function toast(msg,type,dur){
 
 function cleanSourceTag(value){
   return String(value || "")
-    .replace(/\\s+by\\s+@sayan10\\b/ig, "")
-    .replace(/@sayan10\\b/ig, "")
-    .replace(/\\s{2,}/g, " ")
+    .replace(/\s+by\s+@sayan10\b/ig, "")
+    .replace(/@sayan10\b/ig, "")
+    .replace(/\s{2,}/g, " ")
     .trim();
 }
 
