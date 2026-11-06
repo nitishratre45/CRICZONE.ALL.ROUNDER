@@ -1449,7 +1449,36 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
-<!-- Sony page popup timer disabled. -->
+<!-- CRICZONE Telegram popup -->
+<div id="tgOverlay" role="dialog" aria-modal="true" aria-labelledby="tgPopupTitle">
+  <div id="tgCard">
+    <div id="tgIcon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M9.04 15.43 8.9 19.2c.4 0 .58-.17.8-.38l1.92-1.83 3.98 2.91c.73.4 1.25.19 1.44-.68l2.6-12.2c.24-1.1-.4-1.53-1.1-1.24L3.2 11.3c-1.05.41-1.03 1 .18 1.39l3.92 1.22 9.1-5.74c.43-.28.82-.13.5.16z"/></svg>
+    </div>
+    <h2 id="tgPopupTitle">Join CRICZONE Telegram</h2>
+    <p>Join our official Telegram channel for live updates and the latest cricket content.</p>
+    <div class="tgBtns">
+      <button class="tgBtn" id="joinNow" type="button">JOIN TELEGRAM</button>
+      <button class="tgBtn" id="joinedBtn" type="button">I’M ALREADY JOINED</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var popup=document.getElementById("tgOverlay");
+  var join=document.getElementById("joinNow");
+  var close=document.getElementById("joinedBtn");
+  if(!popup) return;
+  window.setTimeout(function(){ popup.classList.add("show"); },5000);
+  if(join) join.addEventListener("click",function(){
+    window.open("https://t.me/+pN15_8gc54s2NDU1","_blank","noopener");
+  });
+  if(close) close.addEventListener("click",function(){ popup.classList.remove("show"); });
+  popup.addEventListener("click",function(e){
+    if(e.target===popup) e.preventDefault();
+  });
+})();
+</script>
 
 </body>
 </html>
