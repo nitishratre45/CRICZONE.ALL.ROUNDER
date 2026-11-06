@@ -589,14 +589,93 @@
     #status.ok{color:#6ee7b7}
     #status.warn{color:#f5c96b}
     #status.err{color:#ff8585}
-    #tgOverlay{z-index:2147483000;background:rgba(3,8,17,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-    #tgCard{background:radial-gradient(circle at 50% 0,#1b4b7a55,transparent 48%),linear-gradient(155deg,#14243a,#080f1b);border:1px solid #3c6b9b;box-shadow:0 28px 90px #000c,0 0 36px #1685ff20}
-    #tgCard h2{color:#fff}
-    #tgCard p{color:#b8c8dc}
-    #tgIcon{background:linear-gradient(135deg,#238bff,#0755bd);box-shadow:0 0 34px #1685ff35}
-    #joinNow{background:linear-gradient(120deg,#238bff,#0755bd);box-shadow:0 6px 22px #087bff40}
-    #joinedBtn{background:#ffffff0b;color:#c4d4e8;border-color:#ffffff24}
+    /* CRICZONE premium Telegram popup */
+    #tgOverlay{
+      z-index:2147483000;
+      padding:clamp(16px,4vw,28px);
+      background:rgba(2,7,16,.82);
+      backdrop-filter:blur(18px) saturate(125%);
+      -webkit-backdrop-filter:blur(18px) saturate(125%);
+    }
+    #tgOverlay.show #tgCard{animation:tgCardEnter .48s cubic-bezier(.2,.8,.2,1) both}
+    #tgCard{
+      width:min(100%,430px);
+      padding:clamp(28px,5vw,40px) clamp(22px,5vw,34px) 28px;
+      border:1px solid rgba(111,178,255,.42);
+      border-radius:26px;
+      background:
+        radial-gradient(ellipse at 50% -8%,rgba(35,139,255,.25),transparent 54%),
+        linear-gradient(155deg,#172b45 0%,#101d30 48%,#091321 100%);
+      box-shadow:0 34px 100px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.035) inset,0 0 54px rgba(22,133,255,.13);
+    }
+    #tgCard::before{
+      inset:0;
+      top:0;left:0;width:100%;height:100%;
+      background:linear-gradient(125deg,rgba(255,255,255,.055),transparent 35%,transparent 70%,rgba(241,201,107,.035));
+      pointer-events:none;
+    }
+    #tgCard::after{
+      content:"";
+      position:absolute;left:12%;right:12%;top:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(145,202,255,.9),rgba(241,201,107,.65),transparent);
+    }
+    #tgIcon{
+      width:68px;height:68px;margin:0 auto 20px;
+      background:linear-gradient(145deg,#299cff,#0860d5);
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:0 10px 30px rgba(0,105,255,.32),0 0 0 7px rgba(35,139,255,.08);
+    }
+    #tgIcon svg{width:32px;height:32px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+    #tgCard h2{
+      max-width:340px;margin:0 auto 11px;
+      color:#fff;font-size:clamp(1.45rem,3vw,1.85rem);
+      line-height:1.2;letter-spacing:-.035em;font-weight:800;
+    }
+    #tgCard p{
+      max-width:330px;margin:0 auto 26px;
+      color:#bdcce0;font-size:clamp(.9rem,1.5vw,1rem);
+      line-height:1.65;
+    }
+    .tgBtns{gap:11px}
+    .tgBtn{
+      min-height:49px;height:auto;padding:13px 15px;
+      border-radius:14px;font-size:.93rem;font-weight:750;
+      letter-spacing:0; -webkit-tap-highlight-color:transparent;
+    }
+    #joinNow{
+      background:linear-gradient(115deg,#258dff 0%,#0860d5 100%);
+      color:#fff;border:1px solid rgba(151,207,255,.38);
+      box-shadow:0 8px 24px rgba(0,103,230,.32),0 1px 0 rgba(255,255,255,.18) inset;
+    }
+    #joinNow:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 12px 30px rgba(0,103,230,.4)}
+    #joinNow:active,.tgBtn:active{transform:scale(.98)}
+    #joinedBtn{
+      background:rgba(255,255,255,.055);color:#d2deed;
+      border:1px solid rgba(178,202,232,.2);
+    }
+    #joinedBtn:hover{background:rgba(255,255,255,.11);border-color:rgba(178,202,232,.38);color:#fff}
     .tgBtn:focus-visible{outline:2px solid #f1c66b;outline-offset:3px}
+    @keyframes tgCardEnter{
+      from{opacity:0;transform:translateY(18px) scale(.965)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+    @media(max-width:480px){
+      #tgCard{padding:27px 20px 21px;border-radius:22px}
+      #tgIcon{width:60px;height:60px;margin-bottom:17px}
+      #tgIcon svg{width:29px;height:29px}
+      #tgCard h2{font-size:1.35rem}
+      #tgCard p{font-size:.9rem;line-height:1.55;margin-bottom:21px}
+      .tgBtns{gap:9px}
+      .tgBtn{min-height:46px;padding:11px 10px;font-size:.84rem;border-radius:13px}
+    }
+    @media(max-width:350px){
+      .tgBtns{flex-direction:column-reverse}
+      .tgBtn{width:100%}
+    }
+    @media(prefers-reduced-motion:reduce){
+      #tgOverlay.show #tgCard{animation:none}
+      .tgBtn{transition:none}
+    }
 
   </style>
 </head>
@@ -653,15 +732,15 @@
 </div>
 
 <!-- ====== TELEGRAM POPUP ====== -->
-<div id="tgOverlay">
-  <div id="tgCard">
+<div id="tgOverlay" role="presentation" aria-hidden="true">
+  <div id="tgCard" role="dialog" aria-modal="true" aria-labelledby="tgTitle" aria-describedby="tgDescription">
     <div id="tgIcon">
       <svg viewBox="0 0 24 24" fill="white" width="36" height="36">
         <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/>
       </svg>
     </div>
-    <h2>Join CRICZONE on Telegram 🏏</h2>
-    <p>Get live match updates, sports news and CRICZONE channel alerts directly on Telegram.</p>
+    <h2 id="tgTitle">Stay Connected with CRICZONE</h2>
+    <p id="tgDescription">Join our official Telegram channel for live match updates, sports news and important CRICZONE alerts.</p>
     <div class="tgBtns">
       <button class="tgBtn" id="joinedBtn">Already Joined</button>
       <button class="tgBtn" id="joinNow">Join Now</button>
