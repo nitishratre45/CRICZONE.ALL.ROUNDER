@@ -657,7 +657,7 @@ async function handleText({ request, env, message }) {
 
   // Give useful guidance for likely channel searches instead of a confusing generic error.
   if (userText.length >= 3 && /\\b(?:sports|sport|channel|hd|4k|cricket|sony|star|sky|fox|tnt|willow|fancode)\\b/i.test(userText)) {
-    return reply("I couldn't find an exact channel match. 🤔\\nTry a shorter name (e.g. \"Star Sports 2\") or send /help for examples.");
+    return reply("❌ <b>No exact channel match found</b> 🤔\n\n<i>Try a shorter or more specific channel name.</i>\n\n<blockquote>Example: <code>Star Sports 2</code>\nSend /help to see search examples.</blockquote>", undefined, "HTML");
   }
 
   // Do not interrupt unrelated group conversation.
