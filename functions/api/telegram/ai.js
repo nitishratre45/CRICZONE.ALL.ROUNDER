@@ -59,30 +59,38 @@ const DATA_FEEDS = [
   { key: "sony_star", url: "https://sportlink-tv11.pages.dev/Star3.json" }
 ];
 
-function collectRecords(node, out, source, depth = 0) {
+function collectRecords(node, out, source, depth = 0, folderPath = []) {
   if (depth > 12 || node == null) return;
   if (Array.isArray(node)) {
-    for (const item of node) collectRecords(item, out, source, depth + 1);
+    for (const item of node) collectRecords(item, out, source, depth + 1, folderPath);
     return;
   }
   if (typeof node !== "object") return;
 
   const pick = (...keys) => keys.map(k => node[k]).find(v => v !== undefined && v !== null && v !== "");
   const name = pick("name","title","channel_name","channelName","channel","label","station","display_name","t","contentName","event_name","team_name");
-  const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id");
+  const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id","key");
+  const explicitFolder = pick("folder","folder_name","category","group","section","directory");
   const rawUrl = pick("page_url","web_url","website","page","href","url","link","channel_url","watch_url");
   const safeUrl = typeof rawUrl === "string" && /^https?:\/\//i.test(rawUrl) ? rawUrl : "";
   const isMediaFile = /\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(safeUrl);
+  const folder = explicitFolder ? String(explicitFolder) : folderPath.filter(Boolean).join(" / ");
+
   if (name || id || safeUrl) {
     out.push({
       name: String(name || id || safeUrl),
       id: id == null ? "" : String(id),
+      folder,
       url: safeUrl && !isMediaFile ? safeUrl : "",
       source
     });
   }
+
   for (const [key, value] of Object.entries(node)) {
-    if (value && typeof value === "object") collectRecords(value, out, source, depth + 1);
+    if (value && typeof value === "object") {
+      const nextPath = Array.isArray(value) ? folderPath : [...folderPath, key];
+      collectRecords(value, out, source, depth + 1, nextPath);
+    }
   }
 }
 
@@ -176,9 +184,14 @@ async function handleText({ request, env, message }) {
 
   const matches = findMatches(data.records, userText);
   if (matches.length) {
-    const lines = matches.slice(0,5).map((item, i) =>
-      (i + 1) + ". " + item.name + (item.url ? "\n" + item.url : "\nhttps://criczone.pages.dev/")
-    );
+    const lines = matches.slice(0,5).map((item, i) => {
+      const details = [];
+      if (item.id) details.push("ID: " + item.id);
+      if (item.folder) details.push("Folder: " + item.folder);
+      if (item.source) details.push("Source: " + item.source);
+      if (item.url) details.push(item.url);
+      return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
+    });
     return reply("Matches found:\n" + lines.join("\n\n"));
   }
 
