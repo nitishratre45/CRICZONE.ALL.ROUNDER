@@ -5,7 +5,7 @@
       "name": "Star Sports 1 Hindi",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/K?id=H1HD"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=H1HD"
     },
     {
       "id": "SSE1",
@@ -26,42 +26,42 @@
       "name": "Star Sports 2 English",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/K?id=E2HD"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=E2HD"
     },
     {
       "id": "SSE3",
       "name": "Star Sports 3 English",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/K?id=SS3"
+      "iframeSrc": "https://criczone.pages.dev/K?id=SS3"
     },
     {
       "id": "SST",
       "name": "Star Sports Tamil",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/K?id=T1HD"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=T1HD"
     },
     {
       "id": "SSTE",
       "name": "Star Sports Telugu",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/K?id=TE1HD"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=TE1HD"
     },
     {
       "id": "SSK",
       "name": "Star Sports Kannada",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/A?id=1650"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=1650"
     },
     {
       "id": "SSKL",
       "name": "Star Sports khel",
       "category": "Star Sports",
       "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/A?id=1998"
+      "iframeSrc": "https://criczone.pages.dev/criczone?id=1998"
     },
     {
       "id": "Sony1",
