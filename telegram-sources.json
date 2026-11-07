@@ -1,6 +1,7 @@
 {
   "version": 1,
-  "description": "CRICZONE bot data source registry. Add new source objects to the sources array.",
+  "description": "Auto-discovered CRICZONE Telegram data sources",
+  "repository": "nitishratre45/CRICZONE.ALL.ROUNDER",
   "sources": [
     {
       "key": "sports_v7",
@@ -92,6 +93,38 @@
       "kind": "logos",
       "url": "https://aryanstreams2.pages.dev/data/sports.json",
       "enabled": true
+    },
+    {
+      "key": "master",
+      "folder": "criczone4",
+      "kind": "m3u",
+      "url": "https://.../master.m3u8",
+      "enabled": true,
+      "discovered_from": "criczone4/index.html"
+    },
+    {
+      "key": "live_events",
+      "folder": "functions",
+      "kind": "matches",
+      "url": "https://raw.githubusercontent.com/darkbyteprojects/iptv_png/refs/heads/main/provider_2/live_events.json",
+      "enabled": true,
+      "discovered_from": "functions/api/all-feed.js"
+    },
+    {
+      "key": "jtv2_2",
+      "folder": "api",
+      "kind": "sports",
+      "url": "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/main/jtv2.json",
+      "enabled": true,
+      "discovered_from": "api/channels.js"
+    },
+    {
+      "key": "star",
+      "folder": "criczone8",
+      "kind": "sports",
+      "url": "https://sportlink-tv10.pages.dev/Star.json",
+      "enabled": true,
+      "discovered_from": "criczone8/index.html"
     }
   ]
 }
