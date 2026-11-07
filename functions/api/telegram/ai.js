@@ -174,7 +174,7 @@ function findMatches(records, query) {
   }).filter(item => item.score >= (queryUrl ? 100 : Math.max(20, terms.length * 15)));
   const unique = new Map();
   for (const item of scored.sort((x,y)=>y.score-x.score)) {
-    const key = normalize(item.name) + "|" + (item.url || item.source);
+    const key = normalize(item.name) + "|" + (item.id || "") + "|" + (item.page_url || item.url || item.json || item.source || "");
     if (!unique.has(key)) unique.set(key,item);
   }
   return [...unique.values()].slice(0,8);
@@ -219,15 +219,19 @@ async function handleText({ request, env, message }) {
     return reply("Channel data is temporarily unavailable. Please try again shortly.");
   }
 
-  const channelMatches = findMatches(data.records, userText);\n  const teamMatches = findMatches(data.matches, userText);\n  const matches = channelMatches.length ? channelMatches : teamMatches;
+  const channelMatches = findMatches(data.records, userText);
+  const teamMatches = findMatches(data.matches, userText);
+  const matches = channelMatches.length ? channelMatches : teamMatches;
   if (matches.length) {
     const lines = matches.slice(0,5).map((item, i) => {
       const details = [];
       if (item.id) details.push("ID: " + item.id);
       if (item.folder) details.push("Folder: " + item.folder);
-      if (item.category) details.push("Category: " + item.category);\n      if (item.home_team || item.away_team) details.push("Teams: " + [item.home_team,item.away_team].filter(Boolean).join(" vs "));\n      if (item.tournament) details.push("Tournament: " + item.tournament);
-      if (item.source) details.push("JSON: " + item.source);
-      if (item.url) details.push(item.url);
+      if (item.category) details.push("Category: " + item.category);
+      if (item.home_team || item.away_team) details.push("Teams: " + [item.home_team,item.away_team].filter(Boolean).join(" vs "));
+      if (item.tournament) details.push("Tournament: " + item.tournament);
+      if (item.json || item.source) details.push("JSON: " + (item.json || item.source));
+      if (item.page_url || item.url) details.push(item.page_url || item.url);
       return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
     });
     return reply("Matches found:\n" + lines.join("\n\n"));
