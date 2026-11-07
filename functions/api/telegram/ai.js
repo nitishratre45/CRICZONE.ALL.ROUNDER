@@ -296,7 +296,7 @@ async function handleText({ request, env, message }) {
 
   // A standalone "Sony" request returns the complete Sony channel directory.
   // Use only the two Sony source folders and always share the Sony page base URL.
-  if (value === "sony" || value === "sony sports") {
+  if (value === "sony") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("All Sony channels: https://criczone.pages.dev/sony/");
   }
