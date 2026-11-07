@@ -212,6 +212,10 @@ async function handleText({ request, env, message }) {
   const value = normalize(userText);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
+  // Ignore ordinary group conversation and thank-you messages.
+  const casual = /^(thanks?|thank you|thankyou|thanku|thx|ty|welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
+  if (casual.test(value) || /\\b(thank you|thankyou|thanku|thanks|thx|ho gaya|ho gya)\\b/i.test(value)) return;
+
   if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("Cancelled.");
@@ -248,9 +252,9 @@ async function handleText({ request, env, message }) {
   }
 
   if (/\b(schedule|fixture|score|result|vs|versus|playing|playing xi)\b/.test(value)) {
-    return reply("No matching fixture found in the connected feeds. Try the full team or tournament name.");
+    return;
   }
-  return reply("No matching channel found. Try the full channel name or paste its URL.");
+  // Stay silent when no channel matches; do not clutter the group.\n  return;
 }
 
 export async function onRequestPost({ request, env }) {
