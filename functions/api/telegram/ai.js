@@ -52,7 +52,10 @@ async function clearState(db, chatId, userId) {
 const DATA_FEEDS = [
   { key: "sports", url: "https://sonujson-v7.pages.dev/Data/sports.json" },
   { key: "directory", url: "https://allrounder3-0.pages.dev/id.json" },
-  { key: "jtv2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" }
+  { key: "jtv2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" },
+  { key: "willow_v4", url: "https://sonujson-v4.pages.dev/Data/willow.json" },
+  { key: "prime_v4", url: "https://sonujson-v4.pages.dev/Data/prime.json" },
+  { key: "willow_v5", url: "https://sonujson-v5.pages.dev/Data/willow.json" }
 ];
 
 function collectRecords(node, out, source, depth = 0) {
