@@ -3,7 +3,7 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
   headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
 });
 
-const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9\\s]/g, " ").replace(/\\s+/g, " ").trim();
+const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 
 async function send(env, chatId, text, replyTo) {
   const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
@@ -79,7 +79,7 @@ const FOLDER_URLS = {
 function parseM3U(text, feed) {
   const records = [];
   let current = null;
-  for (const raw of String(text || "").split(/\\r?\\n/)) {
+  for (const raw of String(text || "").split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
     if (line.startsWith("#EXTINF:")) {
@@ -92,7 +92,7 @@ function parseM3U(text, feed) {
       current = { name: name || id || "Unknown channel", id, folder: feed.folder, category: group, logo, url: FOLDER_URLS[feed.folder] || "", source: feed.key };
     } else if (line.startsWith("#EXTGRP:") && current) {
       current.category = line.slice(8).trim() || current.category;
-    } else if (/^https?:\\/\\//i.test(line) && current) {
+    } else if (/^https?:\/\//i.test(line) && current) {
       // Keep the upstream media URL private; expose the channel's folder page instead.
       records.push(current);
       current = null;
@@ -114,8 +114,8 @@ function collectRecords(node, out, feed, depth = 0, folderPath = []) {
   const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id","key","match_id","fixture_id");
   const category = pick("category","genre","group","sport","tournament","competition");
   const rawUrl = pick("page_url","web_url","website","page","href","channel_url","watch_url","iframeSrc","iframe_src","embedUrl","embed_url");
-  const safeUrl = typeof rawUrl === "string" && /^https?:\\/\\//i.test(rawUrl) ? rawUrl : "";
-  const streamOnly = typeof safeUrl === "string" && /\\.(m3u8|mpd|mp4|ts)(\\?|$)/i.test(safeUrl);
+  const safeUrl = typeof rawUrl === "string" && /^https?:\/\//i.test(rawUrl) ? rawUrl : "";
+  const streamOnly = typeof safeUrl === "string" && /\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(safeUrl);
   const folder = String(pick("folder","folder_name","directory") || feed.folder || folderPath.filter(Boolean).join(" / "));
   const url = safeUrl && !streamOnly ? safeUrl : (FOLDER_URLS[feed.folder] || "https://criczone.pages.dev/");
 
