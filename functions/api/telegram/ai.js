@@ -379,7 +379,7 @@ async function handleText({ request, env, message }) {
 
   const greeting = /^(?:hi|hello|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
   if (greeting.test(userText.trim())) {
-    return reply("Hello! 👋 Welcome to CRICZONE. 🏏\\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
+    return reply("Hello! 👋 Welcome to CRICZONE. 🏏\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
   }
 
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
