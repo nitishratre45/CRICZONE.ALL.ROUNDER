@@ -308,13 +308,13 @@ async function handleText({ request, env, message }) {
     if (!sonyNames.length) {
       return reply("Sony channel list is temporarily unavailable. Please try again shortly.");
     }
-    return reply("SONY CHANNELS (" + sonyNames.length + ")\\n" +
-      sonyNames.map((name, index) => (index + 1) + ". " + name).join("\\n") +
-      "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
+    return reply("SONY CHANNELS (" + sonyNames.length + ")\n" +
+      sonyNames.map((name, index) => (index + 1) + ". " + name).join("\n") +
+      "\n\nAll Sony channels: https://criczone.pages.dev/sony/");
   }
 
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
-  const isTeamMatchQuery = /\\b(?:vs|versus|v|against)\\b/i.test(value);
+  const isTeamMatchQuery = /\b(?:vs|versus|v|against)\b/i.test(value);
   const providerDefinitions = [
     { name: "Sony Sports", keys: ["sony sports"], sources: ["sony_playlist", "sony_playlist_backup"] },
     { name: "Star Sports", keys: ["star sports"], sources: ["sony_star"] },
@@ -336,9 +336,9 @@ async function handleText({ request, env, message }) {
     if (!availableProviders.length) {
       return reply("No broadcaster channels are currently available in the connected feeds.");
     }
-    return reply("AVAILABLE PROVIDERS FOR " + userText + "\\n\\n" +
-      availableProviders.map((provider, index) => (index + 1) + ". " + provider.name).join("\\n") +
-      "\\n\\nSend a provider name to see its channel names.");
+    return reply("AVAILABLE PROVIDERS FOR " + userText + "\n\n" +
+      availableProviders.map((provider, index) => (index + 1) + ". " + provider.name).join("\n") +
+      "\n\nSend a provider name to see its channel names.");
   }
 
   if (state?.step === "awaiting_provider") {
@@ -357,9 +357,9 @@ async function handleText({ request, env, message }) {
       const unique = [...new Map(providerChannels.map(item => [normalize(item.name), item])).values()];
       if (unique.length) {
         await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, selectedProvider.name);
-        const list = unique.map((item, index) => (index + 1) + ". " + item.name).join("\\n");
-        return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\\n\\n" +
-          list + "\\n\\nSend an exact channel name to get its CRICZONE URL.");
+        const list = unique.map((item, index) => (index + 1) + ". " + item.name).join("\n");
+        return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
+          list + "\n\nSend an exact channel name to get its CRICZONE URL.");
       }
       return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
     }
