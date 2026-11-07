@@ -386,7 +386,11 @@ async function handleText({ request, env, message }) {
   // Ask for the teams when someone sends only the word "match".
   // A complete query such as "India vs New Zealand" continues to the match finder below.
   if (/^(?:match|matches)$/i.test(value)) {
-    return reply("🏏 Which match are you looking for?\nPlease send the team names, for example: India vs New Zealand.");
+    const matchPrompt =
+      "🏏 <b>Which match are you looking for?</b>\n\n" +
+      "<i>Please send the team names.</i>\n\n" +
+      "<blockquote>Example: <code>India vs New Zealand</code></blockquote>";
+    return reply(matchPrompt, undefined, "HTML");
   }
 
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
