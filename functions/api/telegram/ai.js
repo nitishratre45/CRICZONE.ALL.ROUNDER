@@ -49,43 +49,91 @@ async function clearState(db, chatId, userId) {
     .bind(String(chatId), String(userId)).run();
 }
 
-function walkChannels(node, out, depth = 0) {
-  if (depth > 8 || node == null) return;
+const DATA_FEEDS = [
+  { key: "sports", url: "https://sonujson-v7.pages.dev/Data/sports.json" },
+  { key: "directory", url: "https://allrounder3-0.pages.dev/id.json" },
+  { key: "jtv2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" }
+];
+
+function collectRecords(node, out, source, depth = 0) {
+  if (depth > 10 || node == null) return;
   if (Array.isArray(node)) {
-    for (const item of node) walkChannels(item, out, depth + 1);
+    for (const item of node) collectRecords(item, out, source, depth + 1);
     return;
   }
   if (typeof node !== "object") return;
-  const name = node.name || node.title || node.channel_name || node.channelName || node.label;
-  const link = node.url || node.link || node.page || node.href || node.web_url;
-  if (name && link && typeof link === "string" && link.startsWith("https://")) {
-    out.push({ name: String(name), link });
+
+  const name = node.name || node.title || node.channel_name || node.channelName ||
+    node.channel || node.label || node.station || node.display_name || node.t;
+  const id = node.id || node.channel_id || node.channelId || node.content_id || node.cid;
+  const pageUrl = node.page_url || node.web_url || node.website || node.page || node.href;
+  const externalUrl = node.url || node.link || node.stream_url || node.streamUrl ||
+    node.m3u8 || node.hls || node.dash || node.mp4 || pageUrl;
+  const safePage = typeof pageUrl === "string" && /^https?:\\/\\//i.test(pageUrl) ? pageUrl : "";
+  const safeExternal = typeof externalUrl === "string" && /^https?:\\/\\//i.test(externalUrl) ? externalUrl : "";
+
+  if (name || id) {
+    out.push({
+      name: String(name || id),
+      id: id == null ? "" : String(id),
+      pageUrl: safePage,
+      externalUrl: safeExternal,
+      source
+    });
   }
+
   for (const [key, value] of Object.entries(node)) {
-    if (key !== "url" && key !== "link" && key !== "page" && key !== "href" && key !== "web_url") {
-      walkChannels(value, out, depth + 1);
+    if (!["url","link","stream_url","streamUrl","m3u8","hls","dash","mp4","page_url","web_url","website","page","href"].includes(key)) {
+      collectRecords(value, out, source, depth + 1);
     }
   }
 }
 
-async function loadChannels(requestUrl) {
-  const base = new URL(requestUrl).origin;
-  const response = await fetch(base + "/api/channels?feed=directory", {
-    headers: { "Accept": "application/json" },
-    signal: AbortSignal.timeout(9000)
-  });
-  if (!response.ok) throw new Error("Channel directory HTTP " + response.status);
-  const data = await response.json();
-  const channels = [];
-  walkChannels(data, channels);
+async function loadAllData() {
+  const results = await Promise.all(DATA_FEEDS.map(async feed => {
+    try {
+      const response = await fetch(feed.url, {
+        headers: { "Accept": "application/json" },
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return { feed: feed.key, data: await response.json(), ok: true };
+    } catch (error) {
+      console.error("CRICZONE feed failed", feed.key, error);
+      return { feed: feed.key, data: null, ok: false };
+    }
+  }));
+
+  const records = [];
+  for (const result of results) {
+    if (result.ok) collectRecords(result.data, records, result.feed);
+  }
   const seen = new Set();
-  return channels.filter(item => {
-    const key = normalize(item.name) + "|" + item.link;
+  const unique = records.filter(item => {
+    const key = normalize(item.name) + "|" + item.id + "|" + item.source;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+  return { feeds: results.map(x => ({ name: x.feed, ok: x.ok })), records: unique };
 }
+
+function findMatches(records, query) {
+  const q = normalize(query);
+  if (!q) return [];
+  const terms = q.split(" ").filter(Boolean);
+  return records
+    .map(item => {
+      const n = normalize(item.name);
+      const score = (n === q ? 100 : n.includes(q) || q.includes(n) ? 60 :
+        terms.filter(term => n.includes(term)).length * 15);
+      return { ...item, score };
+    })
+    .filter(item => item.score >= Math.max(15, terms.length * 10))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+}
+
 
 function firstName(message) {
   return message?.from?.first_name || message?.from?.username || "there";
@@ -120,11 +168,10 @@ async function handleText({ request, env, message }) {
 
   if (state?.step === "need_provider") {
     await saveState(env.TELEGRAM_DB, chatId, userId, "search_channel", state.topic || "", userText);
-    let channels = [];
-    try { channels = await loadChannels(request.url); }
-    catch (error) { console.error("Channel directory lookup failed", error); }
-    const query = normalize(userText);
-    const matches = channels.filter(item => normalize(item.name).includes(query) || query.includes(normalize(item.name))).slice(0, 5);
+    let allData = { records: [], feeds: [] };
+    try { allData = await loadAllData(); }
+    catch (error) { console.error("CRICZONE feed lookup failed", error); }
+    const matches = findMatches(allData.records, userText);
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (matches.length) {
       return reply("Ye matching channel pages mile hain:\n" + matches.map((item, i) => (i + 1) + ". " + item.name + "\n" + item.link).join("\n\n") + "\n\nAgar exact channel nahi mila, uska naam bhejo.");
