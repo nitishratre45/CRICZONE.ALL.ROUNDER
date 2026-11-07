@@ -55,7 +55,8 @@ const DATA_FEEDS = [
   { key: "jtv2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" },
   { key: "willow_v4", url: "https://sonujson-v4.pages.dev/Data/willow.json" },
   { key: "prime_v4", url: "https://sonujson-v4.pages.dev/Data/prime.json" },
-  { key: "willow_v5", url: "https://sonujson-v5.pages.dev/Data/willow.json" }
+  { key: "willow_v5", url: "https://sonujson-v5.pages.dev/Data/willow.json" },
+  { key: "sony_star", url: "https://sportlink-tv11.pages.dev/Star3.json" }
 ];
 
 function collectRecords(node, out, source, depth = 0) {
@@ -177,7 +178,7 @@ async function handleText({ request, env, message }) {
     const matches = findMatches(allData.records, userText);
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (matches.length) {
-      return reply("Ye matching channel pages mile hain:\n" + matches.map((item, i) => (i + 1) + ". " + item.name + "\n" + item.link).join("\n\n") + "\n\nAgar exact channel nahi mila, uska naam bhejo.");
+      return reply("Ye matching channel pages mile hain:\n" + matches.map((item, i) => (i + 1) + ". " + item.name + "\n" + (item.pageUrl || "https://criczone.pages.dev/")).join("\n\n") + "\n\nAgar exact channel nahi mila, uska naam bhejo.");
     }
     return reply("Abhi directory mein \"" + userText + "\" ka exact match nahi mila. Channel ka poora naam ya spelling bhejo, main dobara check karne mein help karunga.\n\n🌐 CRICZONE Website: https://criczone.pages.dev/");
   }
