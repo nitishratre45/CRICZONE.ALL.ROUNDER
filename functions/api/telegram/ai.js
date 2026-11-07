@@ -162,7 +162,7 @@ function findMatches(records, query) {
 
   let queryUrl = "";
   try {
-    if (/^https?:\\/\\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase();
+    if (/^https?:\/\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase();
   } catch {}
 
   if (queryUrl) {
@@ -197,7 +197,7 @@ function findMatches(records, query) {
 
     // Prefer descriptive channel names over short aliases and generic directory entries.
     score += Math.min(nameTokens.length, 7);
-    if (/\\b(hd|fhd|4k|hindi|english|ten|sports)\\b/i.test(name)) score += 15;
+    if (/\b(hd|fhd|4k|hindi|english|ten|sports)\b/i.test(name)) score += 15;
 
     candidates.push({ ...item, _score: score, _normalizedName: normalizedName });
   }
