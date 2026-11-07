@@ -339,7 +339,7 @@ async function handleText({ request, env, message }) {
   }
 
   // Team-vs-team query: show only the requested broadcaster/provider names.
-  const isTeamMatchQuery = /\\b(vs|versus|v)\\b/i.test(userText);
+  const isTeamMatchQuery = /\b(vs|versus|v)\b/i.test(userText);
   const providerNames = ["Sony Sports", "Star Sports", "FanCode", "Willow", "Sky", "Fox", "TNT"];
   if (isTeamMatchQuery) {
     const availableProviders = providerNames.filter(provider =>
@@ -359,36 +359,6 @@ async function handleText({ request, env, message }) {
     return reply("No requested broadcaster channels were found in the current source feeds.");
   }
 
-  // "Willow" alone lists the current fixtures from the Willow JSON, not channel aliases.
-  if (value === "willow" || value === "willow matches" || value === "willow match") {
-    await clearState(env.TELEGRAM_DB, chatId, userId);
-    const fixtures = (data.matches || []).filter(item => item.id && item.name &&
-      String(item.folder || "").toLowerCase() === "criczonebuzz").slice(0, 12);
-    if (!fixtures.length) return reply("Willow match data is temporarily unavailable. Please try again shortly.");
-    const lines = fixtures.map((item, index) =>
-      (index + 1) + ". " + item.name +
-      "\nCRICZONE Match: https://criczone.pages.dev/criczonebuzz/?id=" + encodeURIComponent(item.id) +
-      "\nWillow Web: https://criczone.pages.dev/criczonebuzz/"
-    );
-    return reply("WILLOW MATCHES (" + fixtures.length + ")\n\n" + lines.join("\n\n"));
-  }
-
-  // Resolve Willow fixtures by event name and expose the CRICZONE ID route plus Willow web.
-  const willowMatches = findWillowMatches(data.matches || [], userText);
-  if (willowMatches.length) {
-    await clearState(env.TELEGRAM_DB, chatId, userId);
-    const lines = willowMatches.map((item, index) => {
-      const matchUrl = "https://criczone.pages.dev/criczonebuzz/?id=" + encodeURIComponent(item.id);
-      return (index + 1) + ". " + item.name +
-        "\nCRICZONE Match: " + matchUrl +
-        "\nWillow Web: https://criczone.pages.dev/criczonebuzz/";
-    });
-    return reply("WILLOW MATCH FOUND\n\n" + lines.join("\n\n"));
-  }
-
-  // A match query starts a short, user-specific follow-up flow.
-  const isMatchQuery = /\b(vs|versus)\b/i.test(userText) ||
-    (/\b(live|playing|match|cricket)\b/i.test(value) && /\b(india|ind|nz|new zealand|australia|aus|england|eng|pakistan|pak|south africa|sa|sri lanka|sl|bangladesh|ban|west indies|wi)\b/i.test(value));
 
   if (state?.step === "awaiting_channel") {
     const channelMatches = findMatches(data.records, userText);
