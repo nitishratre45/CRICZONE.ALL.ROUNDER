@@ -498,7 +498,10 @@ async function handleText({ request, env, message }) {
   }
 
   if (state?.step === "awaiting_channel") {
-    const channelMatches = findMatches(data.records, userText, state.provider || "");
+    // First respect the selected provider; if stale or incomplete group state filters it out,
+    // retry globally so a fully-qualified channel name still works in every group.
+    let channelMatches = findMatches(data.records, userText, state.provider || "");
+    if (!channelMatches.length) channelMatches = findMatches(data.records, userText);
     if (!channelMatches.length) {
       return reply("I couldn't find that channel in the source list. Try another part of its name.");
     }
