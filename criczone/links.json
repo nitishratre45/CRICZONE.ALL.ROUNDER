@@ -104,20 +104,7 @@
       "category": "Sony Sports",
       "type": "iframe",
       "iframeSrc": "https://criczone.pages.dev/criczone?id=3585"
-    },
-    {
-      "id": "Sony7",
-      "name": "Sony Sports 5",
-      "category": "Sony Sports",
-      "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/A?id=155"
-    },
-    {
-      "id": "M1",
-      "name": "Ramayan Movie",
-      "category": "Movies",
-      "type": "iframe",
-      "iframeSrc": "https://cricket-yoddha-channel-list.pages.dev/movie"
     }
+    
   ]
 }
