@@ -338,24 +338,25 @@ async function handleText({ request, env, message }) {
       "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
   }
 
-  // Team-vs-team query: list available channel names across every configured provider.
-  // The channel feeds describe channels, not per-fixture broadcast schedules, so do not
-  // falsely filter Sony/Star/FanCode/Fox/TNT channels by team words in their channel names.
-  const isTeamMatchQuery = /\b(vs|versus|v)\b/i.test(userText);
+  // Team-vs-team query: show only the requested broadcaster/provider names.
+  const isTeamMatchQuery = /\\b(vs|versus|v)\\b/i.test(userText);
+  const providerNames = ["Sony Sports", "Star Sports", "FanCode", "Willow", "Sky", "Fox", "TNT"];
   if (isTeamMatchQuery) {
-    const allChannels = [...new Map(
-      data.records
-        .filter(item => item.name && item.page_url)
-        .filter(item => !/logo|poster|banner|image/i.test(String(item.name)))
-        .map(item => [normalize(item.name), item])
-    ).values()];
-    if (allChannels.length) {
+    const availableProviders = providerNames.filter(provider =>
+      data.records.some(item => {
+        const text = normalize(item.name + " " + (item.folder || "") + " " + (item.category || ""));
+        const key = normalize(provider);
+        return text.includes(key);
+      })
+    );
+    if (availableProviders.length) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", userText, "");
-      const lines = allChannels.slice(0, 40).map((item, index) => (index + 1) + ". " + item.name);
-      return reply("CHANNELS AVAILABLE FOR " + userText + "\\n\\n" +
-        lines.join("\\n") +
-        "\\n\\nProviders are taken from all available channel feeds. Send an exact channel name to get its CRICZONE link.");
+      return reply("AVAILABLE SPORTS CHANNELS FOR " + userText + "\\n\\n" +
+        availableProviders.map((name, index) => (index + 1) + ". " + name).join("\\n") +
+        "\\n\\nSend a provider name to get its CRICZONE link.");
     }
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    return reply("No requested broadcaster channels were found in the current source feeds.");
   }
 
   // "Willow" alone lists the current fixtures from the Willow JSON, not channel aliases.
