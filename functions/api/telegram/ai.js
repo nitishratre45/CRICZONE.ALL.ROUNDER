@@ -215,7 +215,7 @@ function findMatches(records, query) {
 
 function findWillowMatches(matches, query) {
   const normalized = normalize(query);
-  const parts = normalized.split(/\\s+(?:vs|versus)\\s+/).filter(Boolean);
+  const parts = normalized.split(/\s+(?:vs|versus)\s+/).filter(Boolean);
   const aliases = {
     ind: ["india"], india: ["india"], nz: ["new zealand"], "new zealand": ["new zealand"],
     aus: ["australia"], australia: ["australia"], eng: ["england"], england: ["england"],
