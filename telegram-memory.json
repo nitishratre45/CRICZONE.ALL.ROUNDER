@@ -8,8 +8,8 @@
     "channel_selection": "When a user selects a channel, return only that channel name and its page URL.",
     "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
     "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID.",
-    "sony_primary": "When user asks Sony or Sony Sports, show only the five preferred channels configured in sony_channel_sets.primary. Do not mix other feeds or Sony TV entertainment channels.",
-    "sony_backup": "Only when the user reports that the primary Sony Sports channel is not working, show the seven Sony channel-ID backup entries in sony_channel_sets.backup. Do not show backup links in the first reply."
+    "sony_primary": "Show the seven Sony Sports channel-ID entries in sony_channel_sets.primary first. Each item includes its exact name and URL.",
+    "sony_backup": "Only if the user reports the primary Sony channel is not working, show the criczone1 alternate entries in sony_channel_sets.backup."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -110,38 +110,6 @@
   "sony_channel_sets": {
     "primary": [
       {
-        "id": "sony1",
-        "name": "Sony Sports 1 SD",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=sony1"
-      },
-      {
-        "id": "sony2",
-        "name": "Sony Sports 2 SD",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=sony2"
-      },
-      {
-        "id": "sony3",
-        "name": "Sony Sports 3 SD",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=sony3"
-      },
-      {
-        "id": "sony4T",
-        "name": "Sony Sports 4 Tamil",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=sony4T"
-      },
-      {
-        "id": "sony5",
-        "name": "Sony Sports 5 SD",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=sony5"
-      }
-    ],
-    "backup": [
-      {
         "id": "162",
         "name": "Sony Sports Ten 1 HD",
         "folder": "criczone",
@@ -182,6 +150,44 @@
         "name": "Sony Sports Ten 5 HD",
         "folder": "criczone",
         "url": "https://criczone.pages.dev/criczone/?id=155"
+      }
+    ],
+    "backup": [
+      {
+        "id": "sony1",
+        "name": "Sony Sports 1 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony1"
+      },
+      {
+        "id": "sony2",
+        "name": "Sony Sports 2 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony2"
+      },
+      {
+        "id": "sony3",
+        "name": "Sony Sports 3 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony3"
+      },
+      {
+        "id": "sony4T",
+        "name": "Sony Sports 4 Tamil",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony4T"
+      },
+      {
+        "id": "sony4",
+        "name": "Sony Sports 4 Telugu",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony4"
+      },
+      {
+        "id": "sony5",
+        "name": "Sony Sports 5 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony5"
       }
     ]
   }
