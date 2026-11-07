@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "purpose": "Persistent CRICZONE Telegram assistant rules and provider directory. Edit this file to change bot behavior without repeating instructions.",
+  "response_rules": {
+    "match_query": "For any two teams and any separator (vs, v, versus, against), show provider names only.",
+    "provider_query": "After provider selection, show each real channel name with its CRICZONE page URL.",
+    "exact_sony": "Only exact 'sony' returns https://criczone.pages.dev/sony/. 'sony sports' must use the Sony Sports provider channel list.",
+    "channel_selection": "When a user selects a channel, return only that channel name and its page URL.",
+    "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
+    "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID."
+  },
+  "folders": {
+    "criczone": "https://criczone.pages.dev/criczone/",
+    "criczone1": "https://criczone.pages.dev/criczone1/",
+    "criczone2": "https://criczone.pages.dev/criczone2/",
+    "criczone3": "https://criczone.pages.dev/criczone3/",
+    "criczonebuzz": "https://criczone.pages.dev/criczonebuzz/",
+    "criczonefancode": "https://criczone.pages.dev/criczonefancode/",
+    "sony": "https://criczone.pages.dev/sony/",
+    "criczonesony": "https://criczone.pages.dev/criczonesony/"
+  },
+  "providers": [
+    {
+      "name": "Sony Sports",
+      "aliases": [
+        "sony sports",
+        "sony ten",
+        "sony sports ten"
+      ],
+      "sources": [
+        "sony_playlist",
+        "sony_playlist_backup"
+      ],
+      "name_pattern": "^(sony sports|sony ten)\\b"
+    },
+    {
+      "name": "Star Sports",
+      "aliases": [
+        "star sports"
+      ],
+      "sources": [
+        "sony_star"
+      ],
+      "name_pattern": "^star sports\\b"
+    },
+    {
+      "name": "FanCode",
+      "aliases": [
+        "fancode"
+      ],
+      "sources": [
+        "fancode"
+      ],
+      "name_pattern": "fancode"
+    },
+    {
+      "name": "Willow",
+      "aliases": [
+        "willow"
+      ],
+      "sources": [
+        "willow_v4",
+        "willow_v5"
+      ],
+      "name_pattern": "willow"
+    },
+    {
+      "name": "Sky",
+      "aliases": [
+        "sky",
+        "sky sports"
+      ],
+      "sources": [
+        "sky"
+      ],
+      "name_pattern": "\\bsky\\b"
+    },
+    {
+      "name": "Fox",
+      "aliases": [
+        "fox",
+        "fox sports",
+        "fox cricket"
+      ],
+      "sources": [
+        "fox"
+      ],
+      "name_pattern": "\\bfox\\b"
+    },
+    {
+      "name": "TNT",
+      "aliases": [
+        "tnt",
+        "tnt sports"
+      ],
+      "sources": [
+        "tnt"
+      ],
+      "name_pattern": "\\btnt\\b"
+    }
+  ],
+  "curated_directory": {
+    "file": "telegram-channels.json",
+    "rule": "Use channel id + name + folder + url from this file as trusted CRICZONE metadata; do not re-scrape or ask the user to resend it."
+  },
+  "data_sources_file": "telegram-sources.json",
+  "state_storage": "D1 table telegram_ai_conversations"
+}
