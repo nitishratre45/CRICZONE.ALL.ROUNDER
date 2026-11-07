@@ -107,5 +107,30 @@ export async function onRequestGet({ request }) {
     if(seen.has(key)) continue; seen.add(key);
     (row.type==="channel"?channels:matches).push(row);
   }
+  // Merge the manually curated CRICZONE directory (ID + name + folder + page URL).
+  // This registry intentionally contains no upstream stream URLs, cookies or DRM keys.
+  try {
+    const directoryResponse = await fetch(origin + "/telegram-channels.json", {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (directoryResponse.ok) {
+      const directory = await directoryResponse.json();
+      for (const item of Array.isArray(directory.channels) ? directory.channels : []) {
+        const id = String(item.id || "").trim();
+        const name = String(item.name || "").trim();
+        const folder = String(item.folder || "criczone").trim();
+        const pageUrl = String(item.url || "").trim();
+        if (!id || !name || folder !== "criczone" || !/^https:\/\/criczone\.pages\.dev\/criczone\/\?id=\d+$/.test(pageUrl)) continue;
+        const key = norm(name) + "|" + id + "|" + folder;
+        if (seenChannels.has(key)) continue;
+        seenChannels.add(key);
+        channels.push({ type: "channel", name, id, category: "", folder, json: "manual_directory", page_url: pageUrl });
+      }
+    }
+  } catch (error) {
+    console.error("Curated channel directory unavailable", error);
+  }
+
   return Response.json({version:1,generated_at:new Date().toISOString(),summary:{channels:channels.length,matches:matches.length,feeds_ok:results.filter(x=>x.ok).length,feeds_failed:results.filter(x=>!x.ok).length},sources:results.map(x=>({feed:x.feed,ok:x.ok,count:(x.rows||[]).length})),channels,matches},{headers:{"Cache-Control":"public, max-age=60","Content-Type":"application/json; charset=utf-8"}});
 }
