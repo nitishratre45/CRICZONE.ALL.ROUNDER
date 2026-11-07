@@ -690,6 +690,35 @@ export async function onRequestPost({ request, env }) {
   }
   let update;
   try { update = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+  // Automatically approve Telegram channel join requests.
+  // The bot must be an administrator in the channel with the invite-users right.
+  const joinRequest = update?.chat_join_request;
+  if (joinRequest?.chat?.type === "channel" && joinRequest?.from?.id) {
+    try {
+      const approval = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/approveChatJoinRequest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: joinRequest.chat.id,
+          user_id: joinRequest.from.id
+        })
+      });
+      const result = await approval.json();
+      if (!approval.ok || !result.ok) {
+        console.error("CRICZONE channel join-request approval failed", result);
+        return json({ ok: false, error: "Channel join request approval failed" }, 500);
+      }
+      console.log("CRICZONE channel join request approved", {
+        chat_id: joinRequest.chat.id,
+        user_id: joinRequest.from.id
+      });
+    } catch (error) {
+      console.error("CRICZONE channel join-request approval error", error);
+      return json({ ok: false, error: "Channel join request approval failed" }, 500);
+    }
+    return json({ ok: true, received: true, join_request_approved: true });
+  }
+
   const callback = update?.callback_query;
   if (callback) {
     const callbackData = String(callback.data || "");
