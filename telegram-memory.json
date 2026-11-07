@@ -9,7 +9,8 @@
     "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
     "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID.",
     "sony_primary": "Show the seven Sony Sports channel-ID entries in sony_channel_sets.primary first. Each item includes its exact name and URL.",
-    "sony_backup": "Only if the user reports the primary Sony channel is not working, show the criczone1 alternate entries in sony_channel_sets.backup."
+    "sony_backup": "Only if the user reports the primary Sony channel is not working, show the criczone1 alternate entries in sony_channel_sets.backup.",
+    "willow_cricbuzz": "For direct Willow or Cricbuzz requests, reply only with https://criczone.pages.dev/criczonebuzz/. This is the shared folder URL; do not list channel names or individual IDs."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
