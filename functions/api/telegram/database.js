@@ -3,6 +3,7 @@ const PAGES = {
   criczone1:"https://criczone.pages.dev/criczone1/",
   criczone2:"https://criczone.pages.dev/criczone2/",
   criczone3:"https://criczone.pages.dev/criczone3/",
+  e:"https://criczone.pages.dev/e/",
   criczonebuzz:"https://criczone.pages.dev/criczonebuzz/",
   criczonefancode:"https://criczone.pages.dev/criczonefancode/",
   sony:"https://criczone.pages.dev/sony/",
@@ -131,7 +132,7 @@ export async function onRequestGet({ request }) {
         const name = String(item.name || "").trim();
         const folder = String(item.folder || "criczone").trim();
         const pageUrl = String(item.url || "").trim();
-        const safeFolder = /^(?:criczone|criczone1)$/.test(folder);
+        const safeFolder = /^(?:criczone|criczone1|e)$/.test(folder);
         const expectedUrl = "https://criczone.pages.dev/" + folder + "/?id=" + encodeURIComponent(id);
         if (!id || !name || !safeFolder || !/^[A-Za-z0-9_-]+$/.test(id) || pageUrl !== expectedUrl) continue;
         const key = norm(name) + "|" + id + "|" + folder;
