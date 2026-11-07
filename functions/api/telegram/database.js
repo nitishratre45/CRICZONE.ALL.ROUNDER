@@ -30,6 +30,12 @@ function channelRows(payload, feed) {
   const rows=[];
   for(const list of arrays(payload)) for(let i=0;i<list.length;i++) {
     const x=list[i]; if(!x || typeof x!=="object") continue;
+    const eventTitle=first(x,["event_name","match_title","match","fixture"]);
+    const eventId=first(x,["id","match_id","event_id","fixture_id"]);
+    if(eventTitle && eventId) {
+      rows.push({type:"match",name:eventTitle,id:eventId,home_team:"",away_team:"",tournament:first(x,["tournament","competition","series","league"]),folder:feed.folder,json:feed.key,page_url:PAGES.criczonebuzz});
+      continue;
+    }
     const name=first(x,["name","title","channel_name","channelName","channel","label","station","display_name","contentName"]);
     const id=first(x,["id","channel_id","channelId","content_id","cid","key"]);
     const category=first(x,["category","genre","group","group_title","groupTitle"]);
