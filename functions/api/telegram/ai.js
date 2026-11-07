@@ -295,8 +295,18 @@ async function handleText({ request, env, message }) {
       const url = String(item.page_url || item.url || "").trim();
       if (folder && url && !sites.has(folder)) sites.set(folder, { label: siteLabels[folder] || folder.toUpperCase(), url });
     }
-    const siteLines = [...sites.values()].map(site => site.label + ": " + site.url);
-    return reply("Match: " + userText + "\\nWebsites:\\n" + siteLines.join("\\n") + "\\nReply with a channel name for its link.");
+    const siteUrls = {
+      criczone: "https://criczone.pages.dev/criczone/",
+      criczone1: "https://criczone.pages.dev/criczone1/",
+      criczone2: "https://criczone.pages.dev/criczone2/",
+      criczone3: "https://criczone.pages.dev/criczone3/",
+      criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
+      criczonefancode: "https://criczone.pages.dev/criczonefancode/",
+      sony: "https://criczone.pages.dev/sony/",
+      criczonesony: "https://criczone.pages.dev/criczonesony/"
+    };
+    const siteLines = [...sites.entries()].map(([folder, site]) => site.label + ": " + (siteUrls[folder] || site.url));
+    return reply("Match: " + userText + "\nWebsites:\n" + siteLines.join("\n") + "\nSend a channel name for its link.");
   }
 
   const channelMatches = findMatches(data.records, userText);
