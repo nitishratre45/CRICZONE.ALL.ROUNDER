@@ -40,7 +40,7 @@ function channelRows(payload, feed) {
     const isMedia=/\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(playable);
     const basePage=/^https?:\/\//i.test(explicitPage) && !/\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(explicitPage) ? explicitPage : PAGES[feed.folder];
     const isFancode = feed.key === "fancode" || feed.folder === "criczonefancode";
-    const isCricbuzz = /cricbuzz/i.test(name) || feed.folder === "criczonebuzz";
+    const isCricbuzz = /cricbuzz/i.test(name);
     const page = isFancode ? PAGES.criczonefancode : (isCricbuzz ? PAGES.criczonebuzz : (basePage && id ? basePage + (basePage.includes("?") ? "&" : "?") + "id=" + encodeURIComponent(id) : basePage));
     rows.push({type:"channel",name,id,category,folder:feed.folder,json:feed.key,page_url:page});
   }
