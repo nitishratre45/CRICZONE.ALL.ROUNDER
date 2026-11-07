@@ -1231,13 +1231,17 @@ document.addEventListener("DOMContentLoaded", function(){
   object-position:center center!important;
 }
 #pc .shaka-controls-container{
-  position:absolute!important;
+  /* Shaka's video surface can be letterboxed in portrait mode.
+     Fixed positioning anchors controls to the actual device viewport. */
+  position:fixed!important;
   left:0!important;
   right:0!important;
   top:auto!important;
   bottom:0!important;
-  z-index:30!important;
-  width:100%!important;
+  z-index:2147483000!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin:0!important;
   min-height:54px!important;
   padding:8px max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
   pointer-events:auto!important;
