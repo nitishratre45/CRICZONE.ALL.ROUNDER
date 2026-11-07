@@ -1205,6 +1205,84 @@ document.addEventListener("DOMContentLoaded", function(){
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* CRICZONE SHAKA MOBILE TOUCH + BOTTOM CONTROLS FIX */
+/* Keep Shaka's control bar anchored to the bottom edge of the full player,
+   not to the centered 16:9 video picture on portrait screens. */
+#pc.shaka-video-container{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+#pc video{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-position:center center!important;
+}
+#pc .shaka-controls-container{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:auto!important;
+  bottom:0!important;
+  z-index:30!important;
+  width:100%!important;
+  min-height:54px!important;
+  padding:8px max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+#pc .shaka-controls-container button,
+#pc .shaka-controls-container [role="button"],
+#pc .shaka-controls-container input{
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+#pc .shaka-controls-container button{
+  min-width:42px!important;
+  min-height:42px!important;
+}
+#pc .shaka-seek-bar-container,
+#pc .shaka-range-container{
+  touch-action:pan-y!important;
+  pointer-events:auto!important;
+}
+/* Shaka's scrim receives taps on the video to reveal controls.
+   Earlier display:none rules disabled that mobile interaction. */
+#pc .shaka-scrim-container{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:5!important;
+  background:transparent!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+#pc .shaka-controls-container.shaka-controls-hidden,
+#pc .shaka-controls-container[aria-hidden="true"]{
+  pointer-events:none!important;
+}
+@media(max-width:699px){
+  #pc .shaka-controls-container{
+    padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+  }
+  #pc .shaka-controls-container button{
+    min-width:40px!important;
+    min-height:40px!important;
+  }
+}
+
 </style>
 <script>
 (function(){
