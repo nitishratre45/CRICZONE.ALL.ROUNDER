@@ -119,7 +119,7 @@ function findMatches(records, query) {
   const q = normalize(query);
   if (!q) return [];
   let queryUrl = "";
-  try { if (/^https?:\\/\\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase(); } catch {}
+  try { if (/^https?:\/\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase(); } catch {}
   const terms = q.split(" ").filter(Boolean);
   const scored = records.map(item => {
     const n = normalize(item.name);
@@ -153,18 +153,18 @@ async function handleText({ request, env, message }) {
   const value = normalize(userText);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
-  if (/^\\/(cancel|stop)(@\\w+)?$/i.test(userText)) {
+  if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("Cancelled.");
   }
-  if (/^\\/(start|ping)(@\\w+)?$/i.test(userText)) {
+  if (/^\/(start|ping)(@\w+)?$/i.test(userText)) {
     return reply("CRICZONE bot is online. Send a channel name, team name, or channel URL.");
   }
 
   const greeting = /^(hi|hello|hey|hii|good morning|good evening|gm)$/.test(value);
   if (greeting) return reply("Hello! Send a channel name, team name, or URL to find matching channel links.");
 
-  const help = /\\b(help|problem|issue|not working|error|buffer|black screen)\\b/.test(value);
+  const help = /\b(help|problem|issue|not working|error|buffer|black screen)\b/.test(value);
   if (help) return reply("Please describe the issue: channel not opening, buffering, or black screen.");
 
   let data;
@@ -177,12 +177,12 @@ async function handleText({ request, env, message }) {
   const matches = findMatches(data.records, userText);
   if (matches.length) {
     const lines = matches.slice(0,5).map((item, i) =>
-      (i + 1) + ". " + item.name + (item.url ? "\\n" + item.url : "\\nhttps://criczone.pages.dev/")
+      (i + 1) + ". " + item.name + (item.url ? "\n" + item.url : "\nhttps://criczone.pages.dev/")
     );
-    return reply("Matches found:\\n" + lines.join("\\n\\n"));
+    return reply("Matches found:\n" + lines.join("\n\n"));
   }
 
-  if (/\\b(schedule|fixture|score|result|vs|versus|playing|playing xi)\\b/.test(value)) {
+  if (/\b(schedule|fixture|score|result|vs|versus|playing|playing xi)\b/.test(value)) {
     return reply("No matching fixture found in the connected feeds. Try the full team or tournament name.");
   }
   return reply("No matching channel found. Try the full channel name or paste its URL.");
