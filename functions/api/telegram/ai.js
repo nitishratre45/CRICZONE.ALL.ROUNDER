@@ -164,7 +164,7 @@ function findMatches(records, query) {
   const terms = q.split(" ").filter(Boolean);
   const scored = records.map(item => {
     const n = normalize(item.name);
-    const url = String(item.url || "").toLowerCase();
+    const url = String(item.page_url || item.url || "").toLowerCase();
     let score = 0;
     if (queryUrl && (url === queryUrl || url.includes(queryUrl) || queryUrl.includes(url))) score = 150;
     else if (n === q) score = 120;
