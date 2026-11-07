@@ -214,7 +214,7 @@ async function handleText({ request, env, message }) {
 
   // Ignore ordinary group conversation and thank-you messages.
   const casual = /^(thanks?|thank you|thankyou|thanku|thx|ty|welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
-  if (casual.test(value) || /\\b(thank you|thankyou|thanku|thanks|thx|ho gaya|ho gya)\\b/i.test(value)) return;
+  if (casual.test(value) || /\b(thank you|thankyou|thanku|thanks|thx|ho gaya|ho gya)\b/i.test(value)) return;
 
   if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
