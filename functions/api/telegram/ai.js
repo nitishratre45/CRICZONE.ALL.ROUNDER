@@ -359,10 +359,10 @@ async function handleText({ request, env, message }) {
     const lines = willowMatches.map((item, index) => {
       const matchUrl = "https://criczone.pages.dev/criczonebuzz/?id=" + encodeURIComponent(item.id);
       return (index + 1) + ". " + item.name +
-        "\\nCRICZONE Match: " + matchUrl +
-        "\\nWillow Web: https://criczone.pages.dev/criczonebuzz/";
+        "\nCRICZONE Match: " + matchUrl +
+        "\nWillow Web: https://criczone.pages.dev/criczonebuzz/";
     });
-    return reply("WILLOW MATCH FOUND\\n\\n" + lines.join("\\n\\n"));
+    return reply("WILLOW MATCH FOUND\n\n" + lines.join("\n\n"));
   }
 
   // A match query starts a short, user-specific follow-up flow.
@@ -389,34 +389,6 @@ async function handleText({ request, env, message }) {
   if (isMatchQuery) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("I couldn't find that match in the Willow JSON. Try the team names, for example: India vs New Zealand.");
-    const siteLabels = {
-      criczone: "CRICZONE",
-      criczone1: "CRICZONE 1",
-      criczone2: "CRICZONE 2",
-      criczone3: "CRICZONE 3",
-      criczonebuzz: "WILLOW / CRICBUZZ",
-      criczonefancode: "FANCODE",
-      sony: "SONY",
-      criczonesony: "SONY SPORTS"
-    };
-    const sites = new Map();
-    for (const item of data.records) {
-      const folder = String(item.folder || "").trim();
-      const url = String(item.page_url || item.url || "").trim();
-      if (folder && url && !sites.has(folder)) sites.set(folder, { label: siteLabels[folder] || folder.toUpperCase(), url });
-    }
-    const siteUrls = {
-      criczone: "https://criczone.pages.dev/criczone/",
-      criczone1: "https://criczone.pages.dev/criczone1/",
-      criczone2: "https://criczone.pages.dev/criczone2/",
-      criczone3: "https://criczone.pages.dev/criczone3/",
-      criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
-      criczonefancode: "https://criczone.pages.dev/criczonefancode/",
-      sony: "https://criczone.pages.dev/sony/",
-      criczonesony: "https://criczone.pages.dev/criczonesony/"
-    };
-    const siteLines = [...sites.entries()].map(([folder, site]) => site.label + ": " + (siteUrls[folder] || site.url));
-    return reply("Match: " + userText + "\nWebsites:\n" + siteLines.join("\n") + "\nSend a channel name for its link.");
   }
 
   const channelMatches = findMatches(data.records, userText);
