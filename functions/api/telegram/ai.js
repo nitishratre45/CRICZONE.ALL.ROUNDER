@@ -452,7 +452,7 @@ async function handleText({ request, env, message }) {
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
   // Natural-language broadcaster link requests, e.g. "Sony HD link?" or "Fox hd link".
-  const linkIntent = /\b(?:link|url|website|web|send|show|give)\b/i.test(userText);
+  const linkIntent = /\b(?:link|url|website|web|send|show|give|hd|4k)\b/i.test(userText);
   const channelQuery = userText
     .replace(/\b(?:link|url|website|web|send|show|give|please|hd|4k)\b/gi, " ")
     .replace(/[?!.]/g, " ")
