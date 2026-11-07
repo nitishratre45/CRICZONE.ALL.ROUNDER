@@ -1223,16 +1223,16 @@ document.addEventListener("DOMContentLoaded", function(){
     document.body.appendChild(first);
     function closeFirst(){first.classList.remove("cz-open")}
     first.querySelector(".cz-tg-x").addEventListener("click",closeFirst);
-    first.addEventListener("click",function(e){if(e.target===first)closeFirst()});
-    first.querySelector(".cz-tg-join").addEventListener("click",closeFirst);
-    document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeFirst();if(second)second.classList.remove("cz-open")}});
+    
+    
+    
     second=document.createElement("div");second.id="cz-tg-fullscreen-modal";
-    second.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-second-title"><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE COMMUNITY</div><h2 id="cz-tg-second-title">Get CRICZONE Updates on Telegram?</h2><p>Join our Telegram channel for live cricket updates, match news and important announcements.</p><div class="cz-tg-actions"><a class="cz-tg-yes" href="'+link+'" target="_blank" rel="noopener noreferrer">YES</a><button class="cz-tg-no" type="button">NO</button></div><div class="cz-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
+    second.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-second-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE COMMUNITY</div><h2 id="cz-tg-second-title">Get CRICZONE Updates on Telegram?</h2><p>Join our Telegram channel for live cricket updates, match news and important announcements.</p><div class="cz-tg-actions"><a class="cz-tg-yes" href="'+link+'" target="_blank" rel="noopener noreferrer">YES</a><button class="cz-tg-no" type="button">NO</button></div><div class="cz-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
     document.body.appendChild(second);
     function closeSecond(){second.classList.remove("cz-open")}
     second.querySelector(".cz-tg-no").addEventListener("click",closeSecond);
-    second.querySelector(".cz-tg-yes").addEventListener("click",closeSecond);
-    second.addEventListener("click",function(e){if(e.target===second)closeSecond()});
+    second.querySelector(".cz-tg-x").addEventListener("click",closeSecond);
+    
     document.addEventListener("fullscreenchange",moveSecond);document.addEventListener("webkitfullscreenchange",moveSecond);
     // Start Telegram prompts only after the stream is genuinely playing.
     var promptTimersStarted=false;
