@@ -377,7 +377,7 @@ async function handleText({ request, env, message }) {
     return reply("You're most welcome! ❤️😊 Always happy to help. Thanks for being part of the CRICZONE family. Enjoy the cricket! 🏏💙");
   }
 
-  const greeting = /^(?:hi|hello|hey|hii+|helo+|namaste|good morning|good afternoon|good evening|match|matches|cricket)[.!\\s😊👋❤️]*$/i;
+  const greeting = /^(?:hi|hello|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
   if (greeting.test(userText.trim())) {
     return reply("Hello! 👋 Welcome to CRICZONE. 🏏\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
   }
