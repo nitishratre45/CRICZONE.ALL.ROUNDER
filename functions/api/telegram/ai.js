@@ -712,6 +712,33 @@ export async function onRequestPost({ request, env }) {
         chat_id: joinRequest.chat.id,
         user_id: joinRequest.from.id
       });
+      // Send the newly approved member a private welcome message.
+      // Telegram only allows bot-initiated DMs if the user has previously started the bot;
+      // a DM failure must not undo or retry an already successful channel approval.
+      try {
+        const notice = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: joinRequest.from.id,
+            text: "🎉 <b>WELCOME TO CRICZONE!</b>\n\n✅ Your request has been approved and you are now a channel member.\n\n🏏 Stay connected for cricket updates and live channel links.\n\n👇 <i>Tap the button below to open our Telegram channel.</i>",
+            parse_mode: "HTML",
+            disable_web_page_preview: true,
+            reply_markup: {
+              inline_keyboard: [[{
+                text: "📢 JOIN CRICZONE CHANNEL",
+                url: "https://t.me/+zAubvy7Li2VmMWY9"
+              }]]
+            }
+          })
+        });
+        const noticeResult = await notice.json();
+        if (!notice.ok || !noticeResult.ok) {
+          console.warn("CRICZONE approved member DM could not be delivered", noticeResult);
+        }
+      } catch (noticeError) {
+        console.warn("CRICZONE approved member DM failed", noticeError);
+      }
     } catch (error) {
       console.error("CRICZONE channel join-request approval error", error);
       return json({ ok: false, error: "Channel join request approval failed" }, 500);
