@@ -53,9 +53,24 @@ function buildInlineLinkKeyboard(text) {
       const candidate = lines[j].replace(/^\s*\d+[.)]\s*/, "").replace(/^🌐\s*Open in Chrome:\s*/i, "").trim();
       if (candidate && !/^🌐/u.test(candidate) && !/^OPEN IN CHROME/i.test(candidate)) { label = candidate; break; }
     }
-    label = (label || "Open link").replace(/\s+/g, " ").slice(0, 58);
+    // Compact mobile labels: Telegram does not expose inline-keyboard font sizing.
+    // Strip repeated brand words while preserving channel number/language/quality.
+    label = (label || "Open link").replace(/\s+/g, " ").trim();
+    label = label
+      .replace(/^Fox Sports\s+/i, "Fox ")
+      .replace(/^Sony Sports Ten\s+/i, "Sony ")
+      .replace(/^Sony Sports\s+/i, "Sony ")
+      .replace(/\bHindi\b/gi, "Hin")
+      .replace(/\bTamil\b/gi, "Tam")
+      .replace(/\bTelugu\b/gi, "Tel")
+      .replace(/\bKannada\b/gi, "Kan")
+      .replace(/\bBengali\b/gi, "Ben")
+      .replace(/\bMalayalam\b/gi, "Mal")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 24);
     const button = { text: "🔗 " + label, url };
-    // Two compact buttons per row instead of one full-width button.
+    // Keep two compact buttons per row for mobile readability.
     if (!rows.length || rows[rows.length - 1].length >= 2) rows.push([]);
     rows[rows.length - 1].push(button);
     if (rows.reduce((count, row) => count + row.length, 0) >= 100) break;
