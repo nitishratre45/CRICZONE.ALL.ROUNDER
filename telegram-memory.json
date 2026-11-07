@@ -14,7 +14,7 @@
     "fancode_web": "For 'fancode' or provider selection FanCode, list available FanCode channels and append FANCODE WEB with https://criczone.pages.dev/criczonefancode/. For exact 'fancode web' or 'fan code web', reply only with the folder URL.",
     "sky_fox_tnt": "Sky provider must return only the 28 curated Sky Sports records from telegram-channels.json source manual_directory. Preserve each record's exact folder and ID URL. Deduplicate by folder+ID and normalized channel name; do not mix other feeds.",
     "tnt": "For TNT requests, return only the four curated TNT Sports channels from telegram-channels.json source manual_directory. Use exact /e/?id= URLs. Do not mix unrelated feeds.",
-    "star_sports": "For Star Sports requests, use curated Star Sports channel records from telegram-channels.json (source manual_directory), return channel names with their exact folder-specific CRICZONE page URLs, deduplicate by folder+ID and normalized name, and do not rely on sony_star feed."
+    "star_sports": "Return exactly the 24 primary Star Sports channels listed in provider.channel_keys. Exclude all criczone1 backup/event-specific records. Preserve exact CRICZONE URL and channel name."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -49,7 +49,33 @@
       "sources": [
         "manual_directory"
       ],
-      "name_pattern": "^star sports\\b"
+      "name_pattern": "^star sports\\b",
+      "channel_keys": [
+        "criczone|1142",
+        "criczone|1106",
+        "criczone|362",
+        "criczone|1108",
+        "criczone|1650",
+        "criczone|1124",
+        "criczone|3277",
+        "criczone|1651",
+        "criczone|3278",
+        "criczone|1141",
+        "criczone|1109",
+        "criczone|1985",
+        "criczone|1984",
+        "criczone|1122",
+        "criczone|2853",
+        "criczone|3273",
+        "criczone|2852",
+        "criczone|3274",
+        "criczone|1389",
+        "criczone|1998",
+        "criczone|1123",
+        "criczone|460",
+        "criczone|1114",
+        "criczone|461"
+      ]
     },
     {
       "name": "FanCode",
