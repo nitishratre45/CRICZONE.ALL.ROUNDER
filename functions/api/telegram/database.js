@@ -1,18 +1,3 @@
-const FEEDS = [
-  { key:"sports_v7", folder:"criczone", kind:"sports", url:"https://sonujson-v7.pages.dev/Data/sports.json" },
-  { key:"directory_v3", folder:"criczone2", kind:"channels", url:"https://allrounder3-0.pages.dev/id.json" },
-  { key:"directory_v1", folder:"criczone1", kind:"channels", url:"https://sportlink-json.pages.dev/id.json" },
-  { key:"sports_v5", folder:"criczone3", kind:"sports", url:"https://sonujson-v5.pages.dev/Data/sports.json" },
-  { key:"willow_v4", folder:"criczonebuzz", kind:"channels", url:"https://sonujson-v4.pages.dev/Data/willow.json" },
-  { key:"prime_v4", folder:"criczonebuzz", kind:"channels", url:"https://sonujson-v4.pages.dev/Data/prime.json" },
-  { key:"willow_v5", folder:"criczonebuzz", kind:"channels", url:"https://sonujson-v5.pages.dev/Data/willow.json" },
-  { key:"fancode", folder:"criczonefancode", kind:"matches", url:"https://sportlink-fancode10.pages.dev/fan.json" },
-  { key:"sony_star", folder:"criczonesony", kind:"channels", url:"https://sportlink-tv11.pages.dev/Star3.json" },
-  { key:"sony_playlist", folder:"sony", kind:"m3u", url:"https://sportlink-jtv.pages.dev/sony3.m3u" },
-  { key:"sony_playlist_backup", folder:"criczonesony", kind:"m3u", url:"https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sony.m3u" },
-  { key:"jtv2", folder:"criczone2", kind:"channels", url:"https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" },
-  { key:"sports_logos", folder:"criczonesony", kind:"logos", url:"https://aryanstreams2.pages.dev/data/sports.json" }
-];
 const PAGES = {
   criczone:"https://criczone.pages.dev/criczone/",
   criczone1:"https://criczone.pages.dev/criczone1/",
@@ -88,8 +73,13 @@ function m3uRows(text, feed) {
   }
   return rows;
 }
-export async function onRequestGet() {
-  const results=await Promise.all(FEEDS.map(async feed=>{
+export async function onRequestGet({ request }) {
+  const origin = new URL(request.url).origin;
+  const manifestResponse = await fetch(origin + "/telegram-sources.json", { headers: { Accept: "application/json" } });
+  if (!manifestResponse.ok) return Response.json({ error: "Source registry unavailable", status: manifestResponse.status }, { status: 503 });
+  const manifest = await manifestResponse.json();
+  const feeds = Array.isArray(manifest.sources) ? manifest.sources.filter(feed => feed && feed.enabled !== false && typeof feed.url === "string" && /^https?:\\/\\//i.test(feed.url) && typeof feed.key === "string" && typeof feed.folder === "string") : [];
+  const results=await Promise.all(feeds.map(async feed=>{
     try {
       const r=await fetch(feed.url,{headers:{Accept:feed.kind==="m3u"?"text/plain,application/json,*/*":"application/json"},signal:AbortSignal.timeout(12000)});
       if(!r.ok) throw new Error("HTTP "+r.status);
