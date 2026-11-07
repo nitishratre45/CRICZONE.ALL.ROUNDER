@@ -54,8 +54,11 @@ function buildInlineLinkKeyboard(text) {
       if (candidate && !/^🌐/u.test(candidate) && !/^OPEN IN CHROME/i.test(candidate)) { label = candidate; break; }
     }
     label = (label || "Open link").replace(/\s+/g, " ").slice(0, 58);
-    rows.push([{ text: "🔗 " + label, url }]);
-    if (rows.length >= 100) break;
+    const button = { text: "🔗 " + label, url };
+    // Two compact buttons per row instead of one full-width button.
+    if (!rows.length || rows[rows.length - 1].length >= 2) rows.push([]);
+    rows[rows.length - 1].push(button);
+    if (rows.reduce((count, row) => count + row.length, 0) >= 100) break;
   }
   return rows.length ? { inline_keyboard: rows } : null;
 }
