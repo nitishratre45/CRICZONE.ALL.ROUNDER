@@ -394,10 +394,12 @@ async function handleText({ request, env, message }) {
         .filter(item => item && item.id && item.name && item.url)
         .map(item => ({ type: "channel", id: String(item.id), name: item.name, folder: item.folder || "criczone1", page_url: item.url }));
     }
+    const allowedSources = Array.isArray(provider.sources) ? new Set(provider.sources) : null;
     const rows = data.records.filter(item =>
       item.type !== "match" && item.name && item.page_url &&
+      (!allowedSources || allowedSources.has(String(item.json || ""))) &&
       provider.namePattern.test(String(item.name).trim()) &&
-      !/\b(?:ind|india|nz|new zealand|match|vs|versus)\b/i.test(String(item.name))
+      !/\\b(?:ind|india|nz|new zealand|match|vs|versus)\\b/i.test(String(item.name))
     );
     return [...new Map(rows.map(item => [normalize(item.name), item])).values()]
       .sort((a, b) => String(a.name).localeCompare(String(b.name)));
