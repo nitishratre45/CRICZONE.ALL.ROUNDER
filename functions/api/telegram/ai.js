@@ -344,15 +344,16 @@ async function handleText({ request, env, message }) {
   // Provider matching is based on the actual channel name, never folder/source metadata.
   // This prevents "Sony Sports" from matching unrelated Sony TV channels or match-labelled aliases.
   const getProviderChannels = (provider) => {
-    // Sony uses a curated five-channel shortlist from telegram-memory.json.
+    // Sony primary list comes directly from memory JSON: exactly five curated entries.
     if (normalize(provider.name) === "sony sports" && Array.isArray(memory.sony_channel_sets?.primary)) {
-      const ids = new Set(memory.sony_channel_sets.primary.map(String));
-      return data.records.filter(item => item.type !== "match" && ids.has(String(item.id)) && item.name && item.page_url);
+      return memory.sony_channel_sets.primary
+        .filter(item => item && item.id && item.name && item.url)
+        .map(item => ({ type: "channel", id: String(item.id), name: item.name, folder: item.folder || "criczone1", page_url: item.url }));
     }
     const rows = data.records.filter(item =>
       item.type !== "match" && item.name && item.page_url &&
       provider.namePattern.test(String(item.name).trim()) &&
-      !/\\b(?:ind|india|nz|new zealand|match|vs|versus)\\b/i.test(String(item.name))
+      !/\b(?:ind|india|nz|new zealand|match|vs|versus)\b/i.test(String(item.name))
     );
     return [...new Map(rows.map(item => [normalize(item.name), item])).values()]
       .sort((a, b) => String(a.name).localeCompare(String(b.name)));
