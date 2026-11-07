@@ -58,7 +58,7 @@ function walkChannels(node, out, depth = 0) {
   if (typeof node !== "object") return;
   const name = node.name || node.title || node.channel_name || node.channelName || node.label;
   const link = node.url || node.link || node.page || node.href || node.web_url;
-  if (name && link && typeof link === "string" && /^https:\\/\\//i.test(link)) {
+  if (name && link && typeof link === "string" && link.startsWith("https://")) {
     out.push({ name: String(name), link });
   }
   for (const [key, value] of Object.entries(node)) {
