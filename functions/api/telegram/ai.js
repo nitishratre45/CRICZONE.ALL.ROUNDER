@@ -50,46 +50,90 @@ async function clearState(db, chatId, userId) {
 }
 
 const DATA_FEEDS = [
-  { key: "sports", url: "https://sonujson-v7.pages.dev/Data/sports.json" },
-  { key: "directory", url: "https://allrounder3-0.pages.dev/id.json" },
-  { key: "jtv2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" },
-  { key: "willow_v4", url: "https://sonujson-v4.pages.dev/Data/willow.json" },
-  { key: "prime_v4", url: "https://sonujson-v4.pages.dev/Data/prime.json" },
-  { key: "willow_v5", url: "https://sonujson-v5.pages.dev/Data/willow.json" },
-  { key: "sony_star", url: "https://sportlink-tv11.pages.dev/Star3.json" }
+  { key: "sports_v7", folder: "criczone", url: "https://sonujson-v7.pages.dev/Data/sports.json" },
+  { key: "directory_v3", folder: "criczone2", url: "https://allrounder3-0.pages.dev/id.json" },
+  { key: "directory_v1", folder: "criczone1", url: "https://sportlink-json.pages.dev/id.json" },
+  { key: "sports_v5", folder: "criczone3", url: "https://sonujson-v5.pages.dev/Data/sports.json" },
+  { key: "willow_v4", folder: "criczonebuzz", url: "https://sonujson-v4.pages.dev/Data/willow.json" },
+  { key: "prime_v4", folder: "criczonebuzz", url: "https://sonujson-v4.pages.dev/Data/prime.json" },
+  { key: "willow_v5", folder: "criczonebuzz", url: "https://sonujson-v5.pages.dev/Data/willow.json" },
+  { key: "fancode", folder: "criczonefancode", url: "https://sportlink-fancode10.pages.dev/fan.json" },
+  { key: "sony_star", folder: "criczonesony", url: "https://sportlink-tv11.pages.dev/Star3.json" },
+  { key: "sony_playlist", folder: "sony", url: "https://sportlink-jtv.pages.dev/sony3.m3u", format: "m3u" },
+  { key: "sony_playlist_backup", folder: "criczonesony", url: "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sony.m3u", format: "m3u" },
+  { key: "jtv2", folder: "criczone2", url: "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json" },
+  { key: "sports_logos", folder: "criczonesony", url: "https://aryanstreams2.pages.dev/data/sports.json" }
 ];
 
-function collectRecords(node, out, source, depth = 0, folderPath = []) {
+const FOLDER_URLS = {
+  criczone: "https://criczone.pages.dev/criczone/",
+  criczone1: "https://criczone.pages.dev/criczone1/",
+  criczone2: "https://criczone.pages.dev/criczone2/",
+  criczone3: "https://criczone.pages.dev/criczone3/",
+  criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
+  criczonefancode: "https://criczone.pages.dev/criczonefancode/",
+  sony: "https://criczone.pages.dev/sony/",
+  criczonesony: "https://criczone.pages.dev/criczonesony/"
+};
+
+function parseM3U(text, feed) {
+  const records = [];
+  let current = null;
+  for (const raw of String(text || "").split(/\\r?\\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (line.startsWith("#EXTINF:")) {
+      const comma = line.lastIndexOf(",");
+      const attrs = comma >= 0 ? line.slice(8, comma) : line.slice(8);
+      const name = comma >= 0 ? line.slice(comma + 1).trim() : "";
+      const id = attrs.match(/tvg-id="([^"]*)"/i)?.[1] || "";
+      const group = attrs.match(/group-title="([^"]*)"/i)?.[1] || "General";
+      const logo = attrs.match(/tvg-logo="([^"]*)"/i)?.[1] || "";
+      current = { name: name || id || "Unknown channel", id, folder: feed.folder, category: group, logo, url: FOLDER_URLS[feed.folder] || "", source: feed.key };
+    } else if (line.startsWith("#EXTGRP:") && current) {
+      current.category = line.slice(8).trim() || current.category;
+    } else if (/^https?:\\/\\//i.test(line) && current) {
+      // Keep the upstream media URL private; expose the channel's folder page instead.
+      records.push(current);
+      current = null;
+    }
+  }
+  return records;
+}
+
+function collectRecords(node, out, feed, depth = 0, folderPath = []) {
   if (depth > 12 || node == null) return;
   if (Array.isArray(node)) {
-    for (const item of node) collectRecords(item, out, source, depth + 1, folderPath);
+    for (const item of node) collectRecords(item, out, feed, depth + 1, folderPath);
     return;
   }
   if (typeof node !== "object") return;
 
   const pick = (...keys) => keys.map(k => node[k]).find(v => v !== undefined && v !== null && v !== "");
-  const name = pick("name","title","channel_name","channelName","channel","label","station","display_name","t","contentName","event_name","team_name");
-  const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id","key");
-  const explicitFolder = pick("folder","folder_name","category","group","section","directory");
-  const rawUrl = pick("page_url","web_url","website","page","href","url","link","channel_url","watch_url");
-  const safeUrl = typeof rawUrl === "string" && /^https?:\/\//i.test(rawUrl) ? rawUrl : "";
-  const isMediaFile = /\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(safeUrl);
-  const folder = explicitFolder ? String(explicitFolder) : folderPath.filter(Boolean).join(" / ");
+  const name = pick("name","title","channel_name","channelName","channel","label","station","display_name","t","contentName","event_name","team_name","match","event");
+  const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id","key","match_id","fixture_id");
+  const category = pick("category","genre","group","sport","tournament","competition");
+  const rawUrl = pick("page_url","web_url","website","page","href","channel_url","watch_url","iframeSrc","iframe_src","embedUrl","embed_url");
+  const safeUrl = typeof rawUrl === "string" && /^https?:\\/\\//i.test(rawUrl) ? rawUrl : "";
+  const streamOnly = typeof safeUrl === "string" && /\\.(m3u8|mpd|mp4|ts)(\\?|$)/i.test(safeUrl);
+  const folder = String(pick("folder","folder_name","directory") || feed.folder || folderPath.filter(Boolean).join(" / "));
+  const url = safeUrl && !streamOnly ? safeUrl : (FOLDER_URLS[feed.folder] || "https://criczone.pages.dev/");
 
-  if (name || id || safeUrl) {
+  if (name || id) {
     out.push({
-      name: String(name || id || safeUrl),
+      name: String(name || id),
       id: id == null ? "" : String(id),
       folder,
-      url: safeUrl && !isMediaFile ? safeUrl : "",
-      source
+      category: category == null ? "" : String(category),
+      url,
+      source: feed.key
     });
   }
 
   for (const [key, value] of Object.entries(node)) {
     if (value && typeof value === "object") {
       const nextPath = Array.isArray(value) ? folderPath : [...folderPath, key];
-      collectRecords(value, out, source, depth + 1, nextPath);
+      collectRecords(value, out, feed, depth + 1, nextPath);
     }
   }
 }
@@ -98,24 +142,31 @@ async function loadAllData() {
   const results = await Promise.all(DATA_FEEDS.map(async feed => {
     try {
       const response = await fetch(feed.url, {
-        headers: { "Accept": "application/json" },
-        signal: AbortSignal.timeout(10000)
+        headers: { "Accept": feed.format === "m3u" ? "application/x-mpegURL,text/plain,*/*" : "application/json" },
+        signal: AbortSignal.timeout(12000)
       });
       if (!response.ok) throw new Error("HTTP " + response.status);
-      return { feed: feed.key, data: await response.json(), ok: true };
+      if (feed.format === "m3u") {
+        return { feed: feed.key, data: await response.text(), ok: true, format: "m3u", folder: feed.folder };
+      }
+      const data = await response.json();
+      return { feed: feed.key, data, ok: true, format: "json", folder: feed.folder };
     } catch (error) {
       console.error("CRICZONE feed failed", feed.key, error);
-      return { feed: feed.key, data: null, ok: false };
+      return { feed: feed.key, data: null, ok: false, format: feed.format || "json", folder: feed.folder };
     }
   }));
 
   const records = [];
   for (const result of results) {
-    if (result.ok) collectRecords(result.data, records, result.feed);
+    if (!result.ok) continue;
+    if (result.format === "m3u") records.push(...parseM3U(result.data, { key: result.feed, folder: result.folder }));
+    else collectRecords(result.data, records, { key: result.feed, folder: result.folder });
   }
+
   const seen = new Set();
   const unique = records.filter(item => {
-    const key = normalize(item.name) + "|" + item.id + "|" + item.source;
+    const key = normalize(item.name) + "|" + item.id + "|" + item.folder;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -188,7 +239,8 @@ async function handleText({ request, env, message }) {
       const details = [];
       if (item.id) details.push("ID: " + item.id);
       if (item.folder) details.push("Folder: " + item.folder);
-      if (item.source) details.push("Source: " + item.source);
+      if (item.category) details.push("Category: " + item.category);
+      if (item.source) details.push("JSON: " + item.source);
       if (item.url) details.push(item.url);
       return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
     });
