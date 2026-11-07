@@ -544,8 +544,10 @@ async function handleText({ request, env, message }) {
         callback_data: "provider:" + provider.name
       }])
     };
+    const providerNames = availableProviders.map((provider, index) => (index + 1) + ". " + provider.name).join("\n");
     return reply("🏏 CRICZONE MATCH FINDER\n\n" + userText +
-      "\n\n📺 Choose a broadcaster to view its available channels:", providerKeyboard);
+      "\n\n📺 AVAILABLE BROADCASTERS\n" + providerNames +
+      "\n\n👇 Tap a button OR type a broadcaster name to view its channels.", providerKeyboard);
   }
 
   // Show Sony alternate links only after the user reports primary playback trouble.
