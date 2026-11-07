@@ -732,55 +732,64 @@
       "id": "sky1",
       "name": "Sky Sport 1",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky1"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky1",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky2",
       "name": "Sky Sport 2",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky2"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky2",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky3",
       "name": "Sky Sport 3",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky3"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky3",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky4",
       "name": "Sky Sport 4",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky4"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky4",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky5",
       "name": "Sky Sport 5",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky5"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky5",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky6",
       "name": "Sky Sport 6",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky6"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky6",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky7",
       "name": "Sky Sport 7",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky7"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky7",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky8",
       "name": "Sky Sport 8",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky8"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky8",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sky9",
       "name": "Sky Sport 9",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=sky9"
+      "url": "https://criczone.pages.dev/criczone1/?id=sky9",
+      "category": "SKY SPORTS"
     },
     {
       "id": "fox502",
@@ -846,7 +855,8 @@
       "id": "skysportscricket-uk",
       "name": "Sky Sports Cricket",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportscricket-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportscricket-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sony2",
@@ -864,91 +874,106 @@
       "id": "skysportsf1-uk",
       "name": "Sky Sports F1",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skyf1",
       "name": "Sky Sports F1 2",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skyf1"
+      "url": "https://criczone.pages.dev/criczone1/?id=skyf1",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsf1uhd-uk",
       "name": "Sky Sports F1 4K HEVC",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1uhd-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1uhd-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportf1-de",
       "name": "Sky Sports F1 German",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-de"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-de",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportf1-it",
       "name": "Sky Sports F1 Italian",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-it"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-it",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsfootball-uk",
       "name": "Sky Sports Football",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsfootball-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsfootball-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsgolf-uk",
       "name": "Sky Sports Golf",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsgolf-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsgolf-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsmainevent-uk",
       "name": "Sky Sports Main Event",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmainevent-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmainevent-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsmaineventuhd-uk",
       "name": "Sky Sports Main Event 4K HEVC",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmaineventuhd-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmaineventuhd-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsmix-uk",
       "name": "Sky Sports Mix",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmix-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmix-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsnews-uk",
       "name": "Sky Sports News",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsnews-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsnews-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportspremierleague-uk",
       "name": "Sky Sports Premier League",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportspremierleague-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportspremierleague-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsracing-uk",
       "name": "Sky Sports Racing",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsracing-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsracing-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportstennis-uk",
       "name": "Sky Sports Tennis",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportstennis-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportstennis-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "skysportsplus-uk",
       "name": "Sky Sports+",
       "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=skysportsplus-uk"
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsplus-uk",
+      "category": "SKY SPORTS"
     },
     {
       "id": "sonysportsnetwork-in",
