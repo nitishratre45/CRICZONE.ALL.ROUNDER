@@ -400,11 +400,12 @@ async function handleText({ request, env, message }) {
       const item = channelMatches.find(row => /fancode/i.test(String(row.folder || "") + " " + String(row.name || ""))) || channelMatches[0];
       return reply("FANCODE\nhttps://criczone.pages.dev/criczonefancode/");
     }
-    const lines = channelMatches.slice(0, 4).map((item, i) => {
-      const pageUrl = item.page_url || item.url || "";
-      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
-    });
-    return reply("Channel matches for " + state.topic + ":\n" + lines.join("\n\n"));
+    // Once a user chooses a channel name, return only the single best matching channel URL.
+    const exact = channelMatches.find(item => normalize(item.name) === normalize(userText));
+    const selected = exact || channelMatches[0];
+    const pageUrl = selected.page_url || selected.url || "";
+    if (!pageUrl) return reply("I found " + selected.name + " but its CRICZONE page URL is not available.");
+    return reply(selected.name + "\n" + pageUrl);
   }
 
   if (isMatchQuery) {
