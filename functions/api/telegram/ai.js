@@ -367,6 +367,12 @@ async function handleText({ request, env, message }) {
     return reply("All Sony channels: https://criczone.pages.dev/sony/");
   }
 
+  // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
+  if (/^(?:willow|willow channels|cricbuzz|cricbuzz channels)$/i.test(value)) {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    return reply("https://criczone.pages.dev/criczonebuzz/");
+  }
+
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
   const isTeamMatchQuery = /\b(?:vs|versus|v|against)\b/i.test(value);
   const providerDefinitions = memory.providers.map(provider => ({
