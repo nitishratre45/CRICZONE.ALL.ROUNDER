@@ -31,7 +31,7 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .channel{display:flex;align-items:center;gap:11px;min-width:0;min-height:76px;padding:12px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,rgba(18,34,55,.96),rgba(8,17,30,.96));color:#f5f8ff;text-align:left;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
 .channel:active{transform:scale(.98)}.channel:hover,.channel:focus-visible{border-color:#318bff;outline:none;background:#102747}
-.channel-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#176be9,#083eaa);font-size:19px;font-weight:900}
+.channel-icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;overflow:hidden;border-radius:12px;background:linear-gradient(145deg,#176be9,#083eaa);font-size:19px;font-weight:900}.channel-icon img{display:block;width:100%;height:100%;object-fit:contain;border-radius:10px;background:#fff}
 .channel-info{min-width:0;flex:1}.channel-name{display:block;font-size:12px;font-weight:850;line-height:1.35;overflow-wrap:anywhere}.channel-category{display:block;margin-top:5px;color:#8fa8c4;font-size:9px;font-weight:700;letter-spacing:.4px}.channel-arrow{color:#7fbaff;font-size:18px}
 .status{padding:26px 12px;text-align:center;color:var(--muted);font-size:12px}
 .player-view{display:none}.player-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}.back,.player-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#0d1a2b;color:#edf5ff;font:800 11px Inter,sans-serif;cursor:pointer}.back{border-color:#d6ae5144;color:#ffdc8b}.player-title{min-width:0;flex:1;text-align:right;font-size:12px;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -92,7 +92,11 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
   let groups={};
   let activeCategory="";
   let channels=[];
+  let logoByName={};
   let toastTimer=null;
+  const LOGO_DATA_URL="https://sportlink-tv11.pages.dev/Star3.json";
+  function normalizeChannelName(value){return safeText(value).toLowerCase().replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");}
+  function getChannelLogo(channel){return logoByName[normalizeChannelName(channel&&channel.name)]||"";}
 
   function notify(message){
     toast.textContent=message;
@@ -148,7 +152,18 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
       button.className="channel";
       const icon=document.createElement("span");
       icon.className="channel-icon";
-      icon.textContent="▶";
+      const logo=getChannelLogo(channel);
+      if(logo){
+        const image=document.createElement("img");
+        image.src=logo;
+        image.alt=safeText(channel.name)+" logo";
+        image.loading="lazy";
+        image.referrerPolicy="no-referrer";
+        image.onerror=()=>{icon.textContent="▶";};
+        icon.appendChild(image);
+      }else{
+        icon.textContent="▶";
+      }
       const info=document.createElement("span");
       info.className="channel-info";
       const name=document.createElement("span");
@@ -171,6 +186,19 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
       const response=await fetch(DATA_URL+"?t="+Date.now(),{cache:"no-store"});
       if(!response.ok)throw new Error("Channel list request failed ("+response.status+")");
       const data=await response.json();
+      // Read only channel names and logo URLs from the external JSON; never use its stream/key fields.
+      try{
+        const logoResponse=await fetch(LOGO_DATA_URL+"?t="+Date.now(),{cache:"no-store"});
+        if(logoResponse.ok){
+          const logoData=await logoResponse.json();
+          logoByName={};
+          (Array.isArray(logoData.channels)?logoData.channels:[]).forEach(item=>{
+            const name=normalizeChannelName(item&&item.name);
+            const logo=safeText(item&&item.logo);
+            if(name&&/^https:\/\//i.test(logo))logoByName[name]=logo;
+          });
+        }
+      }catch(logoError){console.warn("CRICZONE channel logos unavailable; using fallback icons.",logoError);}
       channels=Array.isArray(data.iframes)?data.iframes:[];
       channels=channels.filter(ch=>ch&&ch.iframeSrc&&validStream(ch.iframeSrc)&&String(ch.category||"").trim().toLowerCase()==="sony sports");
       const preferred=["Star Sports","Sony Sports","iPhone","World Wide"];
