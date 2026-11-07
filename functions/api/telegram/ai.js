@@ -474,15 +474,15 @@ async function handleText({ request, env, message }) {
           await clearState(env.TELEGRAM_DB, chatId, userId);
           const lines = list.map((item, index) => {
             const url = item.page_url || item.url || "";
-            return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
+            return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
           }).join("\n\n");
           const providerKey = normalize(requestedProvider.name);
           const extra = providerKey === "fancode"
-            ? "\n\n🎬 FANCODE WEB\n🌐 Open in Chrome: https://criczone.pages.dev/criczonefancode/"
+            ? "\n\n🎬 FANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
             : providerKey === "sony sports"
-              ? "\n\n📺 SONY WEB\n🌐 Open in Chrome: https://criczone.pages.dev/sony/"
+              ? "\n\n📺 SONY WEB\nhttps://criczone.pages.dev/sony/"
               : "";
-          return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")\n\n" + lines + extra);
+          return reply("🌐 OPEN IN CHROME — tap any channel link below\n\n" + requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")\n\n" + lines + extra);
         }
       }
     }
@@ -514,7 +514,7 @@ async function handleText({ request, env, message }) {
     if (backups.length) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", recentSonyState?.topic || "Sony Sports", "Sony Sports");
       return reply("📺 SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
-        backups.map((item, index) => (index + 1) + ". " + item.name + "\n🌐 Open in Chrome: " + item.url).join("\n\n"));
+        backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.url).join("\n\n"));
     }
     return reply("Sony backup channels are not available right now. Please try again later.");
   }
@@ -532,12 +532,12 @@ async function handleText({ request, env, message }) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "", requestedProvider.name);
       const list = unique.map((item, index) => {
         const url = item.page_url || item.url || "";
-        return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
+        return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
       }).join("\n\n");
       const webLink = normalize(requestedProvider.name) === "fancode"
         ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
         : "";
-      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list + webLink);
+      return reply("🌐 OPEN IN CHROME — tap any channel link below\n\n" + requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list + webLink);
     }
     return reply("No " + requestedProvider.name + " channels were found in the current directory.");
   }
@@ -553,15 +553,15 @@ async function handleText({ request, env, message }) {
         await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, selectedProvider.name);
         const list = unique.map((item, index) => {
           const url = item.page_url || item.url || "";
-          return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
+          return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
         }).join("\n\n");
         const selectedProviderKey = normalize(selectedProvider.name);
         const webLink = selectedProviderKey === "fancode"
-          ? "\n\n🎬 FANCODE WEB\n🌐 Open in Chrome: https://criczone.pages.dev/criczonefancode/"
+          ? "\n\n🎬 FANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
           : selectedProviderKey === "sony sports"
-            ? "\n\n📺 SONY WEB\n🌐 Open in Chrome: https://criczone.pages.dev/sony/"
+            ? "\n\n📺 SONY WEB\nhttps://criczone.pages.dev/sony/"
             : "";
-        return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
+        return reply("🌐 OPEN IN CHROME — tap any channel link below\n\n" + selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
           list + webLink);
       }
       return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
@@ -586,7 +586,7 @@ async function handleText({ request, env, message }) {
     const selected = exact || channelMatches[0];
     const pageUrl = selected.page_url || selected.url || "";
     if (!pageUrl) return reply("I found " + selected.name + " but its CRICZONE page URL is not available.");
-    return reply(selected.name + "\n🌐 Open in Chrome: " + pageUrl);
+    return reply(selected.name + "\n" + pageUrl);
   }
 
   const channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
@@ -596,9 +596,9 @@ async function handleText({ request, env, message }) {
     }
     const lines = channelMatches.slice(0, 4).map((item, i) => {
       const pageUrl = item.page_url || item.url || "";
-      return (i + 1) + ". " + item.name + (pageUrl ? "\n🌐 Open in Chrome: " + pageUrl : "");
+      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
     });
-    return reply("Channel matches:\n" + lines.join("\n\n"));
+    return reply("🌐 OPEN IN CHROME — tap any channel link below\n\nChannel matches:\n" + lines.join("\n\n"));
   }
 
   // Give useful guidance for likely channel searches instead of a confusing generic error.
