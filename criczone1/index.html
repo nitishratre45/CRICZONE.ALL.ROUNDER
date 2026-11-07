@@ -438,6 +438,12 @@
             }
         }
 
+    .cz-player-stats{position:absolute;z-index:3;top:76px;left:12px;right:12px;display:flex;justify-content:center;gap:9px;pointer-events:none}
+    .cz-player-stats>div{display:flex;align-items:center;gap:7px;min-height:35px;padding:7px 11px;border:1px solid #31445e;border-radius:11px;background:rgba(12,21,35,.88);box-shadow:0 5px 18px #0005;backdrop-filter:blur(12px);color:#c4d0df;font:800 9px Manrope,sans-serif;letter-spacing:.65px}
+    .cz-player-stats i{width:7px;height:7px;border-radius:50%;background:#2be4a4;box-shadow:0 0 9px #2be4a4}
+    .cz-player-stats strong{color:#fff;font:900 14px Archivo,sans-serif;letter-spacing:0;font-variant-numeric:tabular-nums}
+    .cz-player-total-icon{color:#ffc75e;font-size:14px}
+    @media(max-width:420px){.cz-player-stats{top:72px;gap:6px}.cz-player-stats>div{gap:5px;padding:6px 8px;font-size:8px}.cz-player-stats strong{font-size:13px}}
     /* CRICZONE1 live audience counters */
     .cz-live-stats{max-width:1500px;margin:14px auto 0;padding:0 clamp(14px,4vw,48px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .cz-stat-card{position:relative;min-width:0;display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:9px;row-gap:3px;padding:12px 14px;border:1px solid rgba(255,190,75,.24);border-radius:15px;background:linear-gradient(135deg,rgba(24,37,57,.97),rgba(11,19,32,.98));box-shadow:inset 0 1px rgba(255,255,255,.045),0 8px 24px rgba(0,0,0,.18)}
@@ -965,6 +971,10 @@
         <div class="playerbar"><button id="back" type="button">← All channels</button>
             <div class="playertitle" id="playerTitle"></div>
         </div>
+        <div class="cz-player-stats" aria-label="Live audience statistics">
+            <div><i></i><span>LIVE WATCHING</span><strong id="czPlayerLive">245</strong></div>
+            <div><span class="cz-player-total-icon">◉</span><span>TOTAL VISITS</span><strong id="czPlayerTotal">245</strong></div>
+        </div>
         <a class="cz-tg-player-banner" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer"><span class="cz-tg-player-icon">➤</span><span class="cz-tg-player-copy"><strong>JOIN OFFICIAL TELEGRAM</strong><small>Live match updates · Cricket news · CRICZONE community</small></span><span class="cz-tg-player-cta">JOIN NOW <b>→</b></span></a>
     </section>
     <script>
@@ -1076,15 +1086,18 @@ const firebaseConfig = {
 const BASE_COUNT = 245;
 const liveEl = document.getElementById("czLiveWatching");
 const totalEl = document.getElementById("czTotalVisits");
+const liveEls = [liveEl, document.getElementById("czPlayerLive")];
+const totalEls = [totalEl, document.getElementById("czPlayerTotal")];
 let presenceRef = null, liveUnsubscribe = null;
 
-function display(el, value) {
-  if (el) el.textContent = Math.max(BASE_COUNT, Number(value) || BASE_COUNT).toLocaleString("en-IN");
+function displayMany(elements, value) {
+  const formatted = Math.max(BASE_COUNT, Number(value) || BASE_COUNT).toLocaleString("en-IN");
+  elements.forEach(el => { if (el) el.textContent = formatted; });
 }
 
 (async function startCriczone1Stats() {
-  display(liveEl, BASE_COUNT);
-  display(totalEl, BASE_COUNT);
+  displayMany(liveEls, BASE_COUNT);
+  displayMany(totalEls, BASE_COUNT);
   try {
     const appName = "criczone1-audience";
     const app = getApps().find(item => item.name === appName) || initializeApp(firebaseConfig, appName);
@@ -1095,7 +1108,7 @@ function display(el, value) {
     // Count one page visit per load. The shared database keeps the counter persistent.
     const totalRef = ref(db, "siteStats/criczone1TotalVisits");
     await runTransaction(totalRef, current => current === null ? BASE_COUNT + 1 : Math.max(BASE_COUNT, Number(current) || BASE_COUNT) + 1);
-    onValue(totalRef, snapshot => display(totalEl, snapshot.val()), error => console.warn("CRICZONE1 total visits listener:", error));
+    onValue(totalRef, snapshot => displayMany(totalEls, snapshot.val()), error => console.warn("CRICZONE1 total visits listener:", error));
 
     // Realtime presence; Firebase removes the viewer automatically after disconnect.
     const viewerId = globalThis.crypto?.randomUUID?.() || (Date.now() + "_" + Math.random().toString(36).slice(2));
@@ -1104,7 +1117,7 @@ function display(el, value) {
     await set(presenceRef, { online: true, joinedAt: Date.now(), page: "criczone1" });
     liveUnsubscribe = onValue(ref(db, "liveViewers/criczone1"), snapshot => {
       const active = snapshot.numChildren();
-      display(liveEl, BASE_COUNT + active);
+      displayMany(liveEls, BASE_COUNT + active);
     }, error => console.warn("CRICZONE1 live watching listener:", error));
   } catch (error) {
     console.warn("CRICZONE1 Firebase audience counters unavailable:", error);
