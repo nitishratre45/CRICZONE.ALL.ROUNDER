@@ -3,7 +3,7 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
   headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
 });
 
-const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9\\s]/g, " ").replace(/\\s+/g, " ").trim();
 
 async function send(env, chatId, text, replyTo) {
   const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
@@ -60,36 +60,29 @@ const DATA_FEEDS = [
 ];
 
 function collectRecords(node, out, source, depth = 0) {
-  if (depth > 10 || node == null) return;
+  if (depth > 12 || node == null) return;
   if (Array.isArray(node)) {
     for (const item of node) collectRecords(item, out, source, depth + 1);
     return;
   }
   if (typeof node !== "object") return;
 
-  const name = node.name || node.title || node.channel_name || node.channelName ||
-    node.channel || node.label || node.station || node.display_name || node.t;
-  const id = node.id || node.channel_id || node.channelId || node.content_id || node.cid;
-  const pageUrl = node.page_url || node.web_url || node.website || node.page || node.href;
-  const externalUrl = node.url || node.link || node.stream_url || node.streamUrl ||
-    node.m3u8 || node.hls || node.dash || node.mp4 || pageUrl;
-  const safePage = typeof pageUrl === "string" && /^https?:\/\//i.test(pageUrl) ? pageUrl : "";
-  const safeExternal = typeof externalUrl === "string" && /^https?:\/\//i.test(externalUrl) ? externalUrl : "";
-
-  if (name || id) {
+  const pick = (...keys) => keys.map(k => node[k]).find(v => v !== undefined && v !== null && v !== "");
+  const name = pick("name","title","channel_name","channelName","channel","label","station","display_name","t","contentName","event_name","team_name");
+  const id = pick("id","channel_id","channelId","content_id","cid","event_id","team_id");
+  const rawUrl = pick("page_url","web_url","website","page","href","url","link","channel_url","watch_url");
+  const safeUrl = typeof rawUrl === "string" && /^https?:\/\//i.test(rawUrl) ? rawUrl : "";
+  const isMediaFile = /\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(safeUrl);
+  if (name || id || safeUrl) {
     out.push({
-      name: String(name || id),
+      name: String(name || id || safeUrl),
       id: id == null ? "" : String(id),
-      pageUrl: safePage,
-      externalUrl: safeExternal,
+      url: safeUrl && !isMediaFile ? safeUrl : "",
       source
     });
   }
-
   for (const [key, value] of Object.entries(node)) {
-    if (!["url","link","stream_url","streamUrl","m3u8","hls","dash","mp4","page_url","web_url","website","page","href"].includes(key)) {
-      collectRecords(value, out, source, depth + 1);
-    }
+    if (value && typeof value === "object") collectRecords(value, out, source, depth + 1);
   }
 }
 
@@ -125,19 +118,26 @@ async function loadAllData() {
 function findMatches(records, query) {
   const q = normalize(query);
   if (!q) return [];
+  let queryUrl = "";
+  try { if (/^https?:\\/\\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase(); } catch {}
   const terms = q.split(" ").filter(Boolean);
-  return records
-    .map(item => {
-      const n = normalize(item.name);
-      const score = (n === q ? 100 : n.includes(q) || q.includes(n) ? 60 :
-        terms.filter(term => n.includes(term)).length * 15);
-      return { ...item, score };
-    })
-    .filter(item => item.score >= Math.max(15, terms.length * 10))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8);
+  const scored = records.map(item => {
+    const n = normalize(item.name);
+    const url = String(item.url || "").toLowerCase();
+    let score = 0;
+    if (queryUrl && (url === queryUrl || url.includes(queryUrl) || queryUrl.includes(url))) score = 150;
+    else if (n === q) score = 120;
+    else if (n.includes(q) || q.includes(n)) score = 85;
+    else score = terms.reduce((sum, term) => sum + (n.includes(term) ? 20 : 0), 0);
+    return { ...item, score };
+  }).filter(item => item.score >= (queryUrl ? 100 : Math.max(20, terms.length * 15)));
+  const unique = new Map();
+  for (const item of scored.sort((x,y)=>y.score-x.score)) {
+    const key = normalize(item.name) + "|" + (item.url || item.source);
+    if (!unique.has(key)) unique.set(key,item);
+  }
+  return [...unique.values()].slice(0,8);
 }
-
 
 function firstName(message) {
   return message?.from?.first_name || message?.from?.username || "there";
@@ -147,58 +147,45 @@ async function handleText({ request, env, message }) {
   const chatId = message.chat.id;
   const userId = message.from?.id;
   const userText = String(message.text || "").trim();
-  if (!userId || !userText || message.from?.is_bot) return;
-  if (message.chat.type === "private") return;
+  if (!userId || !userText || message.from?.is_bot || message.chat.type === "private") return;
 
   await ensureTable(env.TELEGRAM_DB);
-  const state = await getState(env.TELEGRAM_DB, chatId, userId);
   const value = normalize(userText);
-  const name = firstName(message);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
-  if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
+  if (/^\\/(cancel|stop)(@\\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("Theek hai! Request cancel kar di. Jab help chahiye, bas message karna. 🏏");
+    return reply("Cancelled.");
+  }
+  if (/^\\/(start|ping)(@\\w+)?$/i.test(userText)) {
+    return reply("CRICZONE bot is online. Send a channel name, team name, or channel URL.");
   }
 
-  if (/^\/(start|ping)(@\w+)?$/i.test(userText)) {
-    return reply("🤖 CRICZONE BOT online hai!\n\nLive channel, match schedule ya technical help chahiye? Apni requirement likho. Hindi / English dono supported hain.");
+  const greeting = /^(hi|hello|hey|hii|good morning|good evening|gm)$/.test(value);
+  if (greeting) return reply("Hello! Send a channel name, team name, or URL to find matching channel links.");
+
+  const help = /\\b(help|problem|issue|not working|error|buffer|black screen)\\b/.test(value);
+  if (help) return reply("Please describe the issue: channel not opening, buffering, or black screen.");
+
+  let data;
+  try { data = await loadAllData(); }
+  catch (error) {
+    console.error("CRICZONE data load error", error);
+    return reply("Channel data is temporarily unavailable. Please try again shortly.");
   }
 
-  if (state?.step === "need_topic") {
-    await saveState(env.TELEGRAM_DB, chatId, userId, "need_provider", userText, "");
-    return reply("Samajh gaya, " + name + "! Kis broadcaster/channel par dekhna chahte ho?\n\nSony Sports, Star Sports, Willow, FanCode ya koi aur?");
+  const matches = findMatches(data.records, userText);
+  if (matches.length) {
+    const lines = matches.slice(0,5).map((item, i) =>
+      (i + 1) + ". " + item.name + (item.url ? "\\n" + item.url : "\\nhttps://criczone.pages.dev/")
+    );
+    return reply("Matches found:\\n" + lines.join("\\n\\n"));
   }
 
-  if (state?.step === "need_provider") {
-    await saveState(env.TELEGRAM_DB, chatId, userId, "search_channel", state.topic || "", userText);
-    let allData = { records: [], feeds: [] };
-    try { allData = await loadAllData(); }
-    catch (error) { console.error("CRICZONE feed lookup failed", error); }
-    const matches = findMatches(allData.records, userText);
-    await clearState(env.TELEGRAM_DB, chatId, userId);
-    if (matches.length) {
-      return reply("Ye matching channel pages mile hain:\n" + matches.map((item, i) => (i + 1) + ". " + item.name + "\n" + (item.pageUrl || "https://criczone.pages.dev/")).join("\n\n") + "\n\nAgar exact channel nahi mila, uska naam bhejo.");
-    }
-    return reply("Abhi directory mein \"" + userText + "\" ka exact match nahi mila. Channel ka poora naam ya spelling bhejo, main dobara check karne mein help karunga.\n\n🌐 CRICZONE Website: https://criczone.pages.dev/");
+  if (/\\b(schedule|fixture|score|result|vs|versus|playing|playing xi)\\b/.test(value)) {
+    return reply("No matching fixture found in the connected feeds. Try the full team or tournament name.");
   }
-
-  const asksChannel = /\b(channel|live|stream|link|watch|dekhna|dekhu|dikha|sony|star sports|willow|fancode|jio|match)\b/.test(value);
-  const asksHelp = /\b(help|problem|issue|not working|nahi chal|error|buffer|black screen)\b/.test(value);
-  const greeting = /^(hi|hello|hey|hii|namaste|good morning|good evening|gm|hlo)$/.test(value);
-
-  if (greeting) return reply("Hello " + name + "! 👋 CRICZONE group mein welcome. Live channel, match info ya technical help chahiye?");
-  if (asksHelp) {
-    await saveState(env.TELEGRAM_DB, chatId, userId, "need_topic", "technical_help", "");
-    return reply("Main help karta hoon. Kaunsi problem aa rahi hai?\n1. Channel open nahi ho raha\n2. Video load/buffer ho raha hai\n3. Black screen\n4. Dusri problem\n\nProblem detail likho. /cancel se cancel kar sakte ho.");
-  }
-  if (asksChannel) {
-    await saveState(env.TELEGRAM_DB, chatId, userId, "need_topic", "live_channel", "");
-    return reply("Zaroor! 🏏 Kaunsa match ya sport dekhna hai? Team ya tournament ka naam batao. Phir broadcaster/channel select karenge.");
-  }
-  if (/\b(schedule|fixture|kab hai|when|timing|time table)\b/.test(value)) {
-    return reply("Kis team ya tournament ka schedule chahiye? Naam batao, main available CRICZONE information ke hisaab se guide karunga.");
-  }
+  return reply("No matching channel found. Try the full channel name or paste its URL.");
 }
 
 export async function onRequestPost({ request, env }) {
