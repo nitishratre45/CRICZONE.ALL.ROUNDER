@@ -365,6 +365,26 @@ async function handleText({ request, env, message }) {
       "\n\nSend a provider name to see its channel names.");
   }
 
+  const requestedProvider = providerDefinitions.find(provider =>
+    normalize(provider.name) === value ||
+    provider.keys.some(key => normalize(key) === value)
+  );
+
+  // Allow a provider name to be queried directly, even without a preceding match query.
+  // Exact "sony" is handled above as the Sony folder shortcut; "sony sports" lists sports channels.
+  if (requestedProvider && (state?.step === "awaiting_provider" || value !== "sony")) {
+    const unique = getProviderChannels(requestedProvider);
+    if (unique.length) {
+      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "", requestedProvider.name);
+      const list = unique.map((item, index) => {
+        const url = item.page_url || item.url || "";
+        return (index + 1) + ". " + item.name + (url ? "\\n" + url : "");
+      }).join("\\n\\n");
+      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\\n\\n" + list);
+    }
+    return reply("No " + requestedProvider.name + " channels were found in the current directory.");
+  }
+
   if (state?.step === "awaiting_provider") {
     const selectedProvider = providerDefinitions.find(provider =>
       normalize(provider.name) === value ||
