@@ -234,13 +234,8 @@ async function handleText({ request, env, message }) {
     }
     await clearState(env.TELEGRAM_DB, chatId, userId);
     const lines = channelMatches.slice(0, 4).map((item, i) => {
-      const details = [];
-      if (item.id) details.push("ID: " + item.id);
-      if (item.folder) details.push("Folder: " + item.folder);
-      if (item.category) details.push("Category: " + item.category);
-      if (item.json || item.source) details.push("Source: " + (item.json || item.source));
-      if (item.page_url || item.url) details.push(item.page_url || item.url);
-      return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
+      const pageUrl = item.page_url || item.url || "";
+      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
     });
     return reply("Channel matches for " + state.topic + ":\n" + lines.join("\n\n"));
   }
@@ -253,13 +248,8 @@ async function handleText({ request, env, message }) {
   const channelMatches = findMatches(data.records, userText);
   if (channelMatches.length) {
     const lines = channelMatches.slice(0, 4).map((item, i) => {
-      const details = [];
-      if (item.id) details.push("ID: " + item.id);
-      if (item.folder) details.push("Folder: " + item.folder);
-      if (item.category) details.push("Category: " + item.category);
-      if (item.json || item.source) details.push("Source: " + (item.json || item.source));
-      if (item.page_url || item.url) details.push(item.page_url || item.url);
-      return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
+      const pageUrl = item.page_url || item.url || "";
+      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
     });
     return reply("Channel matches:\n" + lines.join("\n\n"));
   }
