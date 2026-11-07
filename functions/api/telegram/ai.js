@@ -63,8 +63,18 @@ async function send(env, chatId, text, replyTo, replyMarkup) {
   // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
   const source = String(text || "");
   const keyboard = replyMarkup || buildInlineLinkKeyboard(source);
+  // When URL buttons exist, keep URLs only in the buttons to avoid duplicate links in the message.
+  const displaySource = keyboard
+    ? source
+        .split(/\\r?\\n/)
+        .filter(line => !/https:\\/\\/[^\\s<>]+/i.test(line))
+        .join("\\n")
+        .replace(/🌐\\s*OPEN IN CHROME[^\\n]*(?:\\n)?/i, "🌐 OPEN IN CHROME\\n👇 Select a channel using the buttons below.\\n")
+        .replace(/\\n{3,}/g, "\\n\\n")
+        .trim()
+    : source;
   const chunks = [];
-  let remaining = source;
+  let remaining = displaySource;
   while (remaining.length > 3900) {
     let cut = remaining.lastIndexOf("\n", 3900);
     if (cut < 1000) cut = 3900;
