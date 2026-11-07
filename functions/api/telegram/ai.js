@@ -382,6 +382,12 @@ async function handleText({ request, env, message }) {
     return reply("Hello! 👋 Welcome to CRICZONE. 🏏\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
   }
 
+  // Ask for the teams when someone sends only the word "match".
+  // A complete query such as "India vs New Zealand" continues to the match finder below.
+  if (/^(?:match|matches)$/i.test(value)) {
+    return reply("🏏 Which match are you looking for?\nPlease send the team names, for example: India vs New Zealand.");
+  }
+
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
   const casual = /^(?:welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
   if (casual.test(value)) return;
