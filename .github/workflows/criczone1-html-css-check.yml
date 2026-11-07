@@ -1,0 +1,202 @@
+name: CRICZONE1 HTML CSS Double Check
+
+on:
+  schedule:
+    # Daily at 08:00 IST (02:30 UTC)
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "criczone1/**/*.html"
+      - "criczone1/**/*.css"
+      - ".github/workflows/criczone1-html-css-check.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: criczone1-html-css-check
+  cancel-in-progress: false
+
+jobs:
+  audit-and-fix:
+    name: Format, validate twice, and commit safe fixes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Find CRICZONE1 HTML and CSS files
+        id: files
+        shell: bash
+        run: |
+          mapfile -t files < <(find criczone1 -type f \( -iname '*.html' -o -iname '*.css' \) | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "::error::No HTML or CSS files found in criczone1/."
+            exit 1
+          fi
+          printf '%s\n' "${files[@]}" > /tmp/criczone1-web-files.txt
+          echo "Found ${#files[@]} HTML/CSS files:"
+          cat /tmp/criczone1-web-files.txt
+
+      - name: Safe automatic formatting fixes
+        run: |
+          mapfile -t files < /tmp/criczone1-web-files.txt
+          npx --yes prettier@3.6.2 --write "${files[@]}"
+
+      - name: First check - Prettier HTML/CSS parser
+        run: |
+          mapfile -t files < /tmp/criczone1-web-files.txt
+          npx --yes prettier@3.6.2 --check "${files[@]}"
+
+      - name: Second check - line-aware HTML and CSS structural audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from collections import Counter
+          import re, sys
+
+          root = Path("criczone1")
+          files = sorted(
+              p for p in root.rglob("*")
+              if p.is_file() and p.suffix.lower() in {".html", ".css"}
+          )
+          errors = []
+
+          class HTMLAudit(HTMLParser):
+              VOID = {"area","base","br","col","embed","hr","img","input",
+                      "link","meta","param","source","track","wbr"}
+              def __init__(self, path):
+                  super().__init__(convert_charrefs=True)
+                  self.path = path
+                  self.ids = []
+                  self.errors = []
+                  self.stack = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if attrs.get("id"):
+                      self.ids.append((attrs["id"], self.getpos()[0]))
+                  if tag not in self.VOID:
+                      self.stack.append((tag, self.getpos()[0]))
+
+              def handle_startendtag(self, tag, attrs):
+                  pass
+
+              def handle_endtag(self, tag):
+                  line = self.getpos()[0]
+                  if tag in self.VOID:
+                      self.errors.append(f"{self.path}:{line}: void element </{tag}> must not have a closing tag")
+                      return
+                  if not self.stack:
+                      self.errors.append(f"{self.path}:{line}: unexpected closing tag </{tag}>")
+                      return
+                  names = [item[0] for item in self.stack]
+                  if tag not in names:
+                      self.errors.append(f"{self.path}:{line}: closing tag </{tag}> has no matching opening tag")
+                      return
+                  while self.stack:
+                      opened, opened_line = self.stack.pop()
+                      if opened == tag:
+                          break
+
+          for path in files:
+              source = path.read_text(encoding="utf-8")
+              if path.suffix.lower() == ".html":
+                  parser = HTMLAudit(path)
+                  try:
+                      parser.feed(source)
+                      parser.close()
+                  except Exception as exc:
+                      parser.errors.append(f"{path}:{parser.getpos()[0]}: HTML parser error: {exc}")
+                  for tag, line in parser.stack:
+                      parser.errors.append(f"{path}:{line}: unclosed <{tag}>")
+                  counts = Counter(value for value, _ in parser.ids)
+                  for duplicate in sorted(k for k, v in counts.items() if v > 1):
+                      lines = [str(line) for value, line in parser.ids if value == duplicate]
+                      parser.errors.append(f"{path}:{','.join(lines)}: duplicate id '{duplicate}'")
+                  for err in parser.errors:
+                      errors.append(err)
+                  if not re.search(r"</html\s*>\s*$", source, re.I):
+                      errors.append(f"{path}: missing closing </html> at end of document")
+                  for tag in ("style", "script"):
+                      opens = len(re.findall(r"<" + tag + r"\b", source, re.I))
+                      closes = len(re.findall(r"</" + tag + r"\s*>", source, re.I))
+                      if opens != closes:
+                          errors.append(f"{path}: unbalanced <{tag}> tags (open={opens}, close={closes})")
+              elif path.suffix.lower() == ".css":
+                  # Independent line-aware delimiter/string/comment check.
+                  stack = []
+                  quote = None
+                  escaped = False
+                  comment = False
+                  line = 1
+                  i = 0
+                  while i < len(source):
+                      ch = source[i]
+                      nxt = source[i + 1] if i + 1 < len(source) else ""
+                      if ch == "\n":
+                          line += 1
+                      if comment:
+                          if ch == "*" and nxt == "/":
+                              comment = False
+                              i += 2
+                              continue
+                      elif quote:
+                          if escaped:
+                              escaped = False
+                          elif ch == "\\\\":
+                              escaped = True
+                          elif ch == quote:
+                              quote = None
+                      elif ch == "/" and nxt == "*":
+                          comment = True
+                          i += 2
+                          continue
+                      elif ch in ("'", '"'):
+                          quote = ch
+                      elif ch == "{":
+                          stack.append(line)
+                      elif ch == "}":
+                          if not stack:
+                              errors.append(f"{path}:{line}: unmatched closing '}}'")
+                          else:
+                              stack.pop()
+                      i += 1
+                  if quote:
+                      errors.append(f"{path}:{line}: unterminated CSS string")
+                  if comment:
+                      errors.append(f"{path}:{line}: unterminated CSS comment")
+                  for opened_line in stack:
+                      errors.append(f"{path}:{opened_line}: unclosed CSS '{{'")
+
+          if errors:
+              print("Second-pass audit found issues:")
+              for err in errors:
+                  print("::error::" + err)
+              sys.exit(1)
+          print(f"Second-pass audit passed for {len(files)} HTML/CSS files.")
+          PY
+
+      - name: Git whitespace and patch check
+        run: git diff --check
+
+      - name: Commit safe formatting fixes
+        run: |
+          if git diff --quiet -- criczone1; then
+            echo "No formatting fixes needed; no commit created."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add criczone1
+          git commit -m "chore(criczone1): format and validate HTML CSS"
+          git push
