@@ -87,10 +87,10 @@ function buildInlineLinkKeyboard(text) {
     }
     label = label.slice(0, 16).trim() || "Open";
     const button = { text: label, url };
-    // Two short labels per row retain a compact keyboard without clipping.
-    if (!rows.length || rows[rows.length - 1].length >= 2) rows.push([]);
-    rows[rows.length - 1].push(button);
-    if (rows.reduce((count, row) => count + row.length, 0) >= 100) break;
+    // Telegram does not expose screen width to bots, so use one full-width
+    // button per row. This is the safest layout across narrow phones and desktop.
+    rows.push([button]);
+    if (rows.length >= 30) break;
   }
   return rows.length ? { inline_keyboard: rows } : null;
 }
