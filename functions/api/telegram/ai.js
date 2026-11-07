@@ -138,40 +138,22 @@ function collectRecords(node, out, feed, depth = 0, folderPath = []) {
   }
 }
 
-async function loadAllData() {
-  const results = await Promise.all(DATA_FEEDS.map(async feed => {
-    try {
-      const response = await fetch(feed.url, {
-        headers: { "Accept": feed.format === "m3u" ? "application/x-mpegURL,text/plain,*/*" : "application/json" },
-        signal: AbortSignal.timeout(12000)
-      });
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      if (feed.format === "m3u") {
-        return { feed: feed.key, data: await response.text(), ok: true, format: "m3u", folder: feed.folder };
-      }
-      const data = await response.json();
-      return { feed: feed.key, data, ok: true, format: "json", folder: feed.folder };
-    } catch (error) {
-      console.error("CRICZONE feed failed", feed.key, error);
-      return { feed: feed.key, data: null, ok: false, format: feed.format || "json", folder: feed.folder };
-    }
-  }));
-
-  const records = [];
-  for (const result of results) {
-    if (!result.ok) continue;
-    if (result.format === "m3u") records.push(...parseM3U(result.data, { key: result.feed, folder: result.folder }));
-    else collectRecords(result.data, records, { key: result.feed, folder: result.folder });
-  }
-
-  const seen = new Set();
-  const unique = records.filter(item => {
-    const key = normalize(item.name) + "|" + item.id + "|" + item.folder;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+async function loadAllData(request) {
+  const origin = new URL(request.url).origin;
+  const response = await fetch(origin + "/api/telegram/database", {
+    headers: { "Accept": "application/json" },
+    signal: AbortSignal.timeout(15000)
   });
-  return { feeds: results.map(x => ({ name: x.feed, ok: x.ok })), records: unique };
+  if (!response.ok) throw new Error("Canonical database HTTP " + response.status);
+  const database = await response.json();
+  if (!database || !Array.isArray(database.channels) || !Array.isArray(database.matches)) {
+    throw new Error("Canonical database has an invalid schema");
+  }
+  return {
+    records: database.channels,
+    matches: database.matches,
+    summary: database.summary
+  };
 }
 
 function findMatches(records, query) {
@@ -231,19 +213,19 @@ async function handleText({ request, env, message }) {
   if (help) return reply("Please describe the issue: channel not opening, buffering, or black screen.");
 
   let data;
-  try { data = await loadAllData(); }
+  try { data = await loadAllData(request); }
   catch (error) {
     console.error("CRICZONE data load error", error);
     return reply("Channel data is temporarily unavailable. Please try again shortly.");
   }
 
-  const matches = findMatches(data.records, userText);
+  const channelMatches = findMatches(data.records, userText);\n  const teamMatches = findMatches(data.matches, userText);\n  const matches = channelMatches.length ? channelMatches : teamMatches;
   if (matches.length) {
     const lines = matches.slice(0,5).map((item, i) => {
       const details = [];
       if (item.id) details.push("ID: " + item.id);
       if (item.folder) details.push("Folder: " + item.folder);
-      if (item.category) details.push("Category: " + item.category);
+      if (item.category) details.push("Category: " + item.category);\n      if (item.home_team || item.away_team) details.push("Teams: " + [item.home_team,item.away_team].filter(Boolean).join(" vs "));\n      if (item.tournament) details.push("Tournament: " + item.tournament);
       if (item.source) details.push("JSON: " + item.source);
       if (item.url) details.push(item.url);
       return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
