@@ -186,9 +186,11 @@ function firstName(message) {
 
 async function handleText({ request, env, message }) {
   const chatId = message.chat.id;
-  const userId = message.from?.id;
+  // Anonymous group admins are represented by sender_chat (and often GroupAnonymousBot).
+  // Use the sender_chat ID as a stable state key when Telegram hides the real user ID.
+  const userId = message.sender_chat?.id ? "sender_chat:" + message.sender_chat.id : message.from?.id;
   const userText = String(message.text || "").trim();
-  if (!userId || !userText || message.from?.is_bot || message.chat.type === "private") return;
+  if (!userId || !userText || (message.from?.is_bot && !message.sender_chat) || message.chat.type === "private") return;
 
   await ensureTable(env.TELEGRAM_DB);
   const value = normalize(userText);
@@ -216,6 +218,9 @@ async function handleText({ request, env, message }) {
   } catch (error) {
     console.error("CRICZONE data load error", error);
     return reply("Channel data is temporarily unavailable. Please try again shortly.");
+  }
+  if (!data.records.length && !data.matches.length) {
+    return reply("The channel list is currently empty or unavailable. Please contact the CRICZONE admin.");
   }
 
   // A match query starts a short, user-specific follow-up flow.
