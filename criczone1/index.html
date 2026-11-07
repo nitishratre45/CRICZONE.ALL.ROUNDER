@@ -3491,11 +3491,17 @@
           $("frame").focus();
         }
         function closePlayer(push = true) {
-          // The player is a history entry. Go back to the exact channel-list state
-          // so the previous category, search query and scroll position are retained.
-          if (push && new URLSearchParams(location.search).has("id")) {
-            history.back();
-            return;
+          // Close directly instead of relying on history.back(), which can be
+          // swallowed by mobile in-app browsers while the iframe has focus.
+          // Remove only the channel id and preserve other query parameters.
+          if (push) {
+            const next = new URL(location.href);
+            next.searchParams.delete("id");
+            history.replaceState(
+              { ...(history.state || {}), id: null, scrollY: savedScrollY },
+              "",
+              next,
+            );
           }
           $("frame").src = "about:blank";
           $("player").style.display = "none";
