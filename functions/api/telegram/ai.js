@@ -333,8 +333,14 @@ async function handleText({ request, env, message }) {
   const memory = await loadBotMemory(request);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
+  // Respond warmly to gratitude without loading channel feeds or changing conversation state.
+  const gratitude = /^(?:thanks?|thank\s*u|thank\s+you|thankyou|thanku|thnks|thx|ty|many\s+thanks|thanks\s+a\s+lot|thank\s+you\s+so\s+much|thankyou\s+so\s+much|shukriya|dhanyawad)(?:\s+(?:so\s+much|a\s+lot|bro|bhai|dear|❤️+|🙏+))*[.!\s❤️🙏😊]*$/i;
+  if (gratitude.test(userText.trim())) {
+    return reply("You're most welcome! ❤️😊 Always happy to help. Thanks for being part of the CRICZONE family. Enjoy the cricket! 🏏💙");
+  }
+
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
-  const casual = /^(thanks?|thank you|thankyou|thanku|thx|ty|welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
+  const casual = /^(?:welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
   if (casual.test(value)) return;
 
   if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
