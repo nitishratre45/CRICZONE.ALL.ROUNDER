@@ -41,51 +41,63 @@ jobs:
           import json, os, re, urllib.request
           from pathlib import Path
 
+          import time
           path = Path("criczone1/index.html")
           html = path.read_text(encoding="utf-8")
 
-          prompt = """You are improving the CRICZONE1 cricket streaming website.
-          Return ONLY plain CSS, with no markdown fences and no <style> tags.
-          Make at most ONE small, high-quality visual-only improvement.
-          Scope strictly to CSS. Prefer mobile responsiveness, accessibility,
-          visual consistency, or performance. Use selectors grounded in the HTML.
-          Do not use @import, external URLs, JavaScript, HTML, !important-heavy
-          overrides, or broad destructive resets. Do not hide existing controls,
-          channels, banners, popups, stats, or player UI. Preserve all functionality.
-          If no worthwhile safe improvement exists, return exactly: NO_CHANGE
-          
-          Existing HTML (including its CSS):
-          """ + html[:90000]
+          # Send the page's existing styles and a compact markup sample to Gemini.
+          styles = "\\n\\n".join(re.findall(r"<style\\b[^>]*>(.*?)</style>", html, flags=re.I | re.S))
+          markup = re.sub(r"<(script|style)\\b[^>]*>.*?</\\1>", "", html, flags=re.I | re.S)
+          markup = re.sub(r"\\s+", " ", markup)[:18000]
+
+          prompt = """Improve the CRICZONE1 cricket streaming website with ONE small,
+          high-quality visual-only CSS improvement. Return ONLY plain CSS, no fences,
+          no style tags. Prioritize responsive layout, accessibility, consistency,
+          or performance. Use selectors grounded in this markup. Do not use @import,
+          url(), JavaScript, HTML, destructive resets, or hide any controls, channels,
+          banners, popups, stats, or player UI. Preserve all functionality.
+          If no worthwhile safe improvement exists, return exactly NO_CHANGE.
+
+          EXISTING CSS:
+          """ + styles[:26000] + """
+
+          PAGE MARKUP SAMPLE:
+          """ + markup
 
           payload = {
               "systemInstruction": {
                   "parts": [{"text": "You are a cautious senior frontend engineer. Output CSS only."}]
               },
-              "contents": [{
-                  "role": "user",
-                  "parts": [{"text": prompt}]
-              }],
-              "generationConfig": {
-                  "temperature": 0.2,
-                  "maxOutputTokens": 1800
-              }
+              "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+              "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1200}
           }
-          req = urllib.request.Request(
-              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
-              data=json.dumps(payload).encode(),
-              headers={
-                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
-                  "Content-Type": "application/json"
-              },
-              method="POST"
-          )
-          with urllib.request.urlopen(req, timeout=90) as response:
-              result = json.loads(response.read())
+          endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+          data = json.dumps(payload).encode()
+          headers = {
+              "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+              "Content-Type": "application/json"
+          }
+          result = None
+          for attempt in range(1, 4):
+              try:
+                  req = urllib.request.Request(endpoint, data=data, headers=headers, method="POST")
+                  with urllib.request.urlopen(req, timeout=180) as response:
+                      result = json.loads(response.read())
+                  break
+              except Exception as exc:
+                  print(f"Gemini request attempt {attempt}/3 failed: {type(exc).__name__}: {exc}")
+                  if attempt == 3:
+                      raise
+                  time.sleep(15 * attempt)
+
+          candidates = result.get("candidates", [])
+          if not candidates:
+              raise SystemExit("Gemini returned no candidate content: " + json.dumps(result)[:1200])
           css = "".join(
               part.get("text", "")
-              for part in result["candidates"][0]["content"]["parts"]
+              for part in candidates[0].get("content", {}).get("parts", [])
           ).strip()
-          css = re.sub(r"^\x60{3}(?:css)?\s*|\s*\x60{3}$", "", css, flags=re.I).strip()
+          css = re.sub(r"^\\x60{3}(?:css)?\\s*|\\s*\\x60{3}$", "", css, flags=re.I).strip()
 
           if css == "NO_CHANGE" or not css:
               print("No worthwhile safe CSS improvement found; no commit created.")
