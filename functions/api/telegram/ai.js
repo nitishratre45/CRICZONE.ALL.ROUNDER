@@ -395,9 +395,11 @@ async function handleText({ request, env, message }) {
         .map(item => ({ type: "channel", id: String(item.id), name: item.name, folder: item.folder || "criczone1", page_url: item.url }));
     }
     const allowedSources = Array.isArray(provider.sources) ? new Set(provider.sources) : null;
+    const allowedChannelKeys = Array.isArray(provider.channel_keys) ? new Set(provider.channel_keys.map(String)) : null;
     const rows = data.records.filter(item =>
       item.type !== "match" && item.name && item.page_url &&
       (!allowedSources || allowedSources.has(String(item.json || ""))) &&
+      (!allowedChannelKeys || allowedChannelKeys.has(String(item.folder || "criczone") + "|" + String(item.id || ""))) &&
       provider.namePattern.test(String(item.name).trim()) &&
       !/\\b(?:ind|india|nz|new zealand|match|vs|versus)\\b/i.test(String(item.name))
     );
