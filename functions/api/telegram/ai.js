@@ -213,6 +213,33 @@ function findMatches(records, query) {
   return [...unique.values()].slice(0, 4).map(({ _score, _normalizedName, ...item }) => item);
 }
 
+function findWillowMatches(matches, query) {
+  const normalized = normalize(query);
+  const parts = normalized.split(/\\s+(?:vs|versus)\\s+/).filter(Boolean);
+  const aliases = {
+    ind: ["india"], india: ["india"], nz: ["new zealand"], "new zealand": ["new zealand"],
+    aus: ["australia"], australia: ["australia"], eng: ["england"], england: ["england"],
+    pak: ["pakistan"], pakistan: ["pakistan"], sa: ["south africa"], "south africa": ["south africa"],
+    sl: ["sri lanka"], "sri lanka": ["sri lanka"], ban: ["bangladesh"], bangladesh: ["bangladesh"],
+    wi: ["west indies"], "west indies": ["west indies"]
+  };
+  const hasSide = (event, side) => {
+    const terms = aliases[side] || [side];
+    return terms.some(term => normalize(event).includes(term));
+  };
+  let found = [];
+  if (parts.length === 2) {
+    found = matches.filter(item => hasSide(item.name, parts[0]) && hasSide(item.name, parts[1]));
+  } else {
+    const tokens = normalized.split(" ").filter(t => !["match","live","cricket","today"].includes(t));
+    found = matches.filter(item => tokens.length && tokens.every(token => {
+      const expanded = aliases[token] || [token];
+      return expanded.some(term => normalize(item.name).includes(term));
+    }));
+  }
+  return found.slice(0, 5);
+}
+
 function firstName(message) {
   return message?.from?.first_name || message?.from?.username || "there";
 }
@@ -273,6 +300,19 @@ async function handleText({ request, env, message }) {
     return reply("SONY CHANNELS (" + sonyNames.length + ")\\n" +
       sonyNames.map((name, index) => (index + 1) + ". " + name).join("\\n") +
       "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
+  }
+
+  // Resolve Willow fixtures by event name and expose the CRICZONE ID route plus Willow web.
+  const willowMatches = findWillowMatches(data.matches || [], userText);
+  if (willowMatches.length) {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    const lines = willowMatches.map((item, index) => {
+      const matchUrl = "https://criczone.pages.dev/criczonebuzz/?id=" + encodeURIComponent(item.id);
+      return (index + 1) + ". " + item.name +
+        "\\nCRICZONE Match: " + matchUrl +
+        "\\nWillow Web: https://criczone.pages.dev/criczonebuzz/";
+    });
+    return reply("WILLOW MATCH FOUND\\n\\n" + lines.join("\\n\\n"));
   }
 
   // A match query starts a short, user-specific follow-up flow.
