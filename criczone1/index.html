@@ -686,6 +686,13 @@
       .live{font-size:7px;padding:5px 6px}
     }
 
+
+    /* Clean text-only CRICZONE navbar mark */
+    .brand-mark.brand-monogram{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid #ffc24785;border-radius:14px;background:linear-gradient(145deg,#26364b,#101927);color:#ffd16f;font:1000 15px/1 Manrope,sans-serif;letter-spacing:-1px;box-shadow:0 5px 18px #ffc24720,inset 0 1px #ffffff20}
+    .brand-mark.brand-monogram img{display:none}
+    @media(max-width:599px){.brand-mark.brand-monogram{flex-basis:37px;width:37px;height:37px;border-radius:12px;font-size:13px}}
+    @media(max-width:360px){.brand-mark.brand-monogram{flex-basis:33px;width:33px;height:33px;border-radius:10px;font-size:12px}}
+
     /* FINAL RESPONSIVE POLISH — CRICZONE1 */
     html,body{width:100%;min-height:100%;overflow-x:hidden}
     body{background:
@@ -812,7 +819,7 @@
     <div id="app">
         <header class="topbar">
             <div class="toprow">
-                <a class="brand" href="./" aria-label="CRICZONE home"><span class="brand-mark"><img src="../photos/photo_2026-10-28_14-52-23.jpg" alt=""></span><span>CRIC<span>ZONE</span><small>LIVE CRICKET • MATCH CENTRE</small></span></a><span class="live">● LIVE</span>
+                <a class="brand" href="./" aria-label="CRICZONE home"><span class="brand-mark brand-monogram" aria-hidden="true">CZ</span><span>CRIC<span>ZONE</span><small>LIVE CRICKET • MATCH CENTRE</small></span></a><span class="live">● LIVE</span>
                 <div class="spacer"></div>
                 
             </div>
