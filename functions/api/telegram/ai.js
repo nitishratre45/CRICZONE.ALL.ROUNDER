@@ -341,11 +341,11 @@ async function handleText({ request, env, message }) {
   // Team-vs-team query: list available channel names across every configured provider.
   // The channel feeds describe channels, not per-fixture broadcast schedules, so do not
   // falsely filter Sony/Star/FanCode/Fox/TNT channels by team words in their channel names.
-  const isTeamMatchQuery = /\\b(vs|versus|v)\\b/i.test(userText);
+  const isTeamMatchQuery = /\b(vs|versus|v)\b/i.test(userText);
   if (isTeamMatchQuery) {
     const allChannels = [...new Map(
       data.records
-        .filter(item => item.name && item.id && item.page_url)
+        .filter(item => item.name && item.page_url)
         .filter(item => !/logo|poster|banner|image/i.test(String(item.name)))
         .map(item => [normalize(item.name), item])
     ).values()];
