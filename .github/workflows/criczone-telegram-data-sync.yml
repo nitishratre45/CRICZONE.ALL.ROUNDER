@@ -1,0 +1,35 @@
+name: CRICZONE Telegram Data Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 0 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: criczone-telegram-data-sync
+  cancel-in-progress: false
+
+jobs:
+  scan-and-update:
+    name: Scan repository APIs and update Telegram JSON registry
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scan repository and refresh telegram-sources.json
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/setup_criczone_telegram.py
