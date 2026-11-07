@@ -452,8 +452,12 @@ async function handleText({ request, env, message }) {
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
   // Natural-language broadcaster link requests, e.g. "Sony HD link?" or "Fox hd link".
-  const linkIntent = /\\b(?:link|url|website|web|send|show|give)\\b/i.test(userText);
-  const channelQuery = userText.replace(/\\b(?:link|url|website|web|send|show|give|please|hd|4k)\\b/gi, " ").replace(/[?!.]/g, " ").replace(/\\s+/g, " ").trim();
+  const linkIntent = /\b(?:link|url|website|web|send|show|give)\b/i.test(userText);
+  const channelQuery = userText
+    .replace(/\b(?:link|url|website|web|send|show|give|please|hd|4k)\b/gi, " ")
+    .replace(/[?!.]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (linkIntent) {
     const requestedProvider = providerDefinitions.find(provider =>
       provider.keys.some(key => {
@@ -463,19 +467,22 @@ async function handleText({ request, env, message }) {
     );
     if (requestedProvider) {
       const remainder = value.replace(normalize(requestedProvider.name), " ").trim();
-      const hasSpecificChannelNumber = /\\b(?:[1-9]|ten\\s*[1-5]|select\\s*[12])\\b/i.test(remainder);
+      const hasSpecificChannelNumber = /\b(?:[1-9]|ten\s*[1-5]|select\s*[12])\b/i.test(remainder);
       if (!hasSpecificChannelNumber) {
         const list = getProviderChannels(requestedProvider);
         if (list.length) {
           await clearState(env.TELEGRAM_DB, chatId, userId);
           const lines = list.map((item, index) => {
             const url = item.page_url || item.url || "";
-            return (index + 1) + ". " + item.name + (url ? "\\n🌐 Open in Chrome: " + url : "");
-          }).join("\\n\\n");
-          const extra = normalize(requestedProvider.name) === "fancode"
-            ? "\\n\\nFANCODE WEB\\nhttps://criczone.pages.dev/criczonefancode/"
-            : "";
-          return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")\\n\\n" + lines + extra);
+            return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
+          }).join("\n\n");
+          const providerKey = normalize(requestedProvider.name);
+          const extra = providerKey === "fancode"
+            ? "\n\n🎬 FANCODE WEB\n🌐 Open in Chrome: https://criczone.pages.dev/criczonefancode/"
+            : providerKey === "sony sports"
+              ? "\n\n📺 SONY WEB\n🌐 Open in Chrome: https://criczone.pages.dev/sony/"
+              : "";
+          return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")\n\n" + lines + extra);
         }
       }
     }
