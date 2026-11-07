@@ -14,13 +14,13 @@ function arrays(payload) {
   const out=[];
   const queue=[{v:payload,d:0}];
   const seen=new Set();
-  const keys=["channels","streams","data","results","items","list","iframes","tv","matches","events","fixtures","live","upcoming"];
+  const keys=new Set(["channels","streams","data","results","items","list","iframes","tv","matches","events","fixtures","live","upcoming"]);
   while(queue.length) {
     const {v,d}=queue.shift();
-    if(!v || typeof v!=="object" || seen.has(v) || d>3) continue;
+    if(!v || typeof v!=="object" || seen.has(v) || d>4) continue;
     seen.add(v);
     if(Array.isArray(v)) { if(v.length && v.every(x=>x && typeof x==="object" && !Array.isArray(x))) out.push(v); continue; }
-    for(const k of keys) if(v[k] && typeof v[k]==="object") queue.push({v:v[k],d:d+1});
+    // Match root keys case-insensitively: Willow source uses "Matches" with a capital M.\n    for(const [key,value] of Object.entries(v)) if(value && typeof value==="object" && keys.has(String(key).toLowerCase())) queue.push({v:value,d:d+1});
     const vals=Object.values(v);
     if(vals.length && vals.every(x=>x && typeof x==="object" && !Array.isArray(x))) out.push(vals);
   }
