@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "description": "Channel IDs and names only. No stream URLs, cookies or DRM keys.",
+  "channels": [
+    {
+      "id": "162",
+      "name": "Sony Sports Ten 1 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=162"
+    },
+    {
+      "id": "155",
+      "name": "Sony Sports Ten 5 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=155"
+    },
+    {
+      "id": "362",
+      "name": "Star Sports 1 Hindi",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=362"
+    },
+    {
+      "id": "461",
+      "name": "Star Sports Select 2 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=461"
+    },
+    {
+      "id": "460",
+      "name": "Star Sports Select 1 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=460"
+    },
+    {
+      "id": "891",
+      "name": "Sony Sports Ten 2 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=891"
+    },
+    {
+      "id": "892",
+      "name": "Sony Sports Ten 3 Hindi HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=892"
+    },
+    {
+      "id": "1106",
+      "name": "Star Sports 1 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1106"
+    },
+    {
+      "id": "1108",
+      "name": "Star Sports 1 Hindi HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1108"
+    },
+    {
+      "id": "1109",
+      "name": "Star Sports 2 HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1109"
+    },
+    {
+      "id": "1123",
+      "name": "Star Sports Select 1",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1123"
+    },
+    {
+      "id": "1122",
+      "name": "Star Sports 2 Kannada",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1122"
+    },
+    {
+      "id": "1124",
+      "name": "Star Sports 1 Tamil",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1124"
+    },
+    {
+      "id": "1114",
+      "name": "Star Sports Select 2",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1114"
+    },
+    {
+      "id": "1141",
+      "name": "Star Sports 2",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1141"
+    },
+    {
+      "id": "1142",
+      "name": "Star Sports 1",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1142"
+    },
+    {
+      "id": "1389",
+      "name": "Star Sports 3",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1389"
+    },
+    {
+      "id": "1651",
+      "name": "Star Sports 1 Telugu",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1651"
+    },
+    {
+      "id": "1650",
+      "name": "Star Sports 1 Kannada",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1650"
+    },
+    {
+      "id": "1773",
+      "name": "Sony Sports Ten 4 Telugu",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1773"
+    },
+    {
+      "id": "1985",
+      "name": "Star Sports 2 Hindi",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1985"
+    },
+    {
+      "id": "1984",
+      "name": "Star Sports 2 Hindi HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1984"
+    },
+    {
+      "id": "1998",
+      "name": "Star Sports Khel",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=1998"
+    },
+    {
+      "id": "2852",
+      "name": "Star Sports 2 Telugu",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=2852"
+    },
+    {
+      "id": "2853",
+      "name": "Star Sports 2 Tamil",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=2853"
+    },
+    {
+      "id": "3273",
+      "name": "Star Sports 2 Tamil HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3273"
+    },
+    {
+      "id": "3277",
+      "name": "Star Sports 1 Tamil HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3277"
+    },
+    {
+      "id": "3274",
+      "name": "Star Sports 2 Telugu HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3274"
+    },
+    {
+      "id": "3278",
+      "name": "Star Sports 1 Telugu HD",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3278"
+    },
+    {
+      "id": "3514",
+      "name": "Sony Sports Ten 4 Tamil",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3514"
+    },
+    {
+      "id": "3585",
+      "name": "Sony Sports Ten 4 Kannada",
+      "folder": "criczone",
+      "url": "https://criczone.pages.dev/criczone/?id=3585"
+    }
+  ]
+}
