@@ -316,13 +316,13 @@ async function handleText({ request, env, message }) {
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
   const isTeamMatchQuery = /\b(?:vs|versus|v|against)\b/i.test(value);
   const providerDefinitions = [
-    { name: "Sony Sports", keys: ["sony sports"], sources: ["sony_playlist", "sony_playlist_backup"], namePattern: /^(sony sports|sony ten)\\b/i },
-    { name: "Star Sports", keys: ["star sports"], sources: ["sony_star"], namePattern: /^star sports\\b/i },
+    { name: "Sony Sports", keys: ["sony sports"], sources: ["sony_playlist", "sony_playlist_backup"], namePattern: /^(sony sports|sony ten)\b/i },
+    { name: "Star Sports", keys: ["star sports"], sources: ["sony_star"], namePattern: /^star sports\b/i },
     { name: "FanCode", keys: ["fancode"], sources: ["fancode"], namePattern: /fancode/i },
     { name: "Willow", keys: ["willow"], sources: ["willow_v4", "willow_v5"], namePattern: /willow/i },
-    { name: "Sky", keys: ["sky sports", "sky"], sources: ["sky"], namePattern: /\\bsky\\b/i },
-    { name: "Fox", keys: ["fox sports", "fox cricket", "fox"], sources: ["fox"], namePattern: /\\bfox\\b/i },
-    { name: "TNT", keys: ["tnt sports", "tnt"], sources: ["tnt"], namePattern: /\\btnt\\b/i }
+    { name: "Sky", keys: ["sky sports", "sky"], sources: ["sky"], namePattern: /\bsky\b/i },
+    { name: "Fox", keys: ["fox sports", "fox cricket", "fox"], sources: ["fox"], namePattern: /\bfox\b/i },
+    { name: "TNT", keys: ["tnt sports", "tnt"], sources: ["tnt"], namePattern: /\btnt\b/i }
   ];
   // Provider matching is based on the actual channel name, never folder/source metadata.
   // This prevents "Sony Sports" from matching unrelated Sony TV channels or match-labelled aliases.
@@ -330,7 +330,7 @@ async function handleText({ request, env, message }) {
     const rows = data.records.filter(item =>
       item.type !== "match" && item.name && item.page_url &&
       provider.namePattern.test(String(item.name).trim()) &&
-      !/\\b(?:ind|india|nz|new zealand|match|vs|versus)\\b/i.test(String(item.name))
+      !/\b(?:ind|india|nz|new zealand|match|vs|versus)\b/i.test(String(item.name))
     );
     return [...new Map(rows.map(item => [normalize(item.name), item])).values()]
       .sort((a, b) => String(a.name).localeCompare(String(b.name)));
