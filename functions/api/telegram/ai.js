@@ -296,21 +296,9 @@ async function handleText({ request, env, message }) {
 
   // A standalone "Sony" request returns the complete Sony channel directory.
   // Use only the two Sony source folders and always share the Sony page base URL.
-  if (value === "sony") {
+  if (value === "sony" || value === "sony sports") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    const sonyNames = [...new Map(
-      data.records
-        .filter(item => ["sony", "criczonesony"].includes(String(item.folder || "").toLowerCase()))
-        .map(item => String(item.name || "").trim())
-        .filter(name => name && normalize(name) !== "sony")
-        .map(name => [normalize(name), name])
-    ).values()].sort((a, b) => a.localeCompare(b));
-    if (!sonyNames.length) {
-      return reply("Sony channel list is temporarily unavailable. Please try again shortly.");
-    }
-    return reply("SONY CHANNELS (" + sonyNames.length + ")\n" +
-      sonyNames.map((name, index) => (index + 1) + ". " + name).join("\n") +
-      "\n\nAll Sony channels: https://criczone.pages.dev/sony/");
+    return reply("All Sony channels: https://criczone.pages.dev/sony/");
   }
 
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
