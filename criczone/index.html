@@ -496,9 +496,11 @@ function getTier(){
 
 var TIER = getTier();
 var PROF = {
-  low:  {buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000 },
-  mid:  {buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000},
-  high: {buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000}
+  // Slightly larger forward buffers reduce repeated stalls on live HLS/DASH feeds.
+  // Keep an explicit bandwidth ceiling so ABR does not jump to an unstable rendition.
+  low:  {buf:8,  reBuf:3, behind:20, maxH:480,  maxBw:1400000, bwEst:700000 },
+  mid:  {buf:12, reBuf:3, behind:25, maxH:720,  maxBw:2800000, bwEst:1400000},
+  high: {buf:15, reBuf:3, behind:30, maxH:1080, maxBw:4500000, bwEst:2200000}
 }[TIER];
 
 var FITS       = ["contain","fill","cover"];
@@ -857,17 +859,17 @@ async function startPlayer(ch){
         bufferingGoal:PROF.buf,
         rebufferingGoal:PROF.reBuf,
         bufferBehind:PROF.behind,
-        safeSeekOffset:4,
+        safeSeekOffset:3,
         stallEnabled:true,
-        stallThreshold:1,
-        stallSkip:.3,
+        stallThreshold:2,
+        stallSkip:.2,
         inaccurateManifestTolerance:0,
         retryParameters:{maxAttempts:5,baseDelay:500,backoffFactor:2,fuzzFactor:.5,timeout:30000}
       },
       abr:{
         enabled:true,
         defaultBandwidthEstimate:PROF.bwEst,
-        switchInterval:4,
+        switchInterval:6,
         restrictions:restr
       }
     };
