@@ -172,7 +172,7 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
       if(!response.ok)throw new Error("Channel list request failed ("+response.status+")");
       const data=await response.json();
       channels=Array.isArray(data.iframes)?data.iframes:[];
-      channels=channels.filter(ch=>ch&&ch.iframeSrc&&validStream(ch.iframeSrc));
+      channels=channels.filter(ch=>ch&&ch.iframeSrc&&validStream(ch.iframeSrc)&&String(ch.category||"").trim().toLowerCase()==="sony sports");
       const preferred=["Star Sports","Sony Sports","iPhone","World Wide"];
       const found=[...new Set(channels.map(ch=>safeText(ch.category||"Other")))];
       const order=[...preferred.filter(x=>found.includes(x)),...found.filter(x=>!preferred.includes(x))];
