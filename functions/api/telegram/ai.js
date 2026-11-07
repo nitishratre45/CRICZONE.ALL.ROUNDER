@@ -159,25 +159,58 @@ async function loadAllData(request) {
 function findMatches(records, query) {
   const q = normalize(query);
   if (!q) return [];
+
   let queryUrl = "";
-  try { if (/^https?:\/\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase(); } catch {}
-  const terms = q.split(" ").filter(Boolean);
-  const scored = records.map(item => {
-    const n = normalize(item.name);
-    const url = String(item.page_url || item.url || "").toLowerCase();
-    let score = 0;
-    if (queryUrl && (url === queryUrl || url.includes(queryUrl) || queryUrl.includes(url))) score = 150;
-    else if (n === q) score = 120;
-    else if (n.includes(q) || q.includes(n)) score = 85;
-    else score = terms.reduce((sum, term) => sum + (n.includes(term) ? 20 : 0), 0);
-    return { ...item, score };
-  }).filter(item => item.score >= (queryUrl ? 100 : Math.max(20, terms.length * 15)));
-  const unique = new Map();
-  for (const item of scored.sort((x,y)=>y.score-x.score)) {
-    const key = normalize(item.name) + "|" + (item.id || "") + "|" + (item.page_url || item.url || item.json || item.source || "");
-    if (!unique.has(key)) unique.set(key,item);
+  try {
+    if (/^https?:\\/\\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase();
+  } catch {}
+
+  if (queryUrl) {
+    return records
+      .filter(item => {
+        const url = String(item.page_url || item.url || "").toLowerCase();
+        return url && (url === queryUrl || url.includes(queryUrl) || queryUrl.includes(url));
+      })
+      .slice(0, 4);
   }
-  return [...unique.values()].slice(0,8);
+
+  const queryTokens = q.split(" ").filter(Boolean);
+  const genericNames = new Set(["sony", "sony 3", "sony 1", "star", "sports", "sport", "live", "tv", "channel"]);
+  const candidates = [];
+
+  for (const item of records) {
+    const name = String(item.name || "").trim();
+    const normalizedName = normalize(name);
+    if (!normalizedName || genericNames.has(normalizedName)) continue;
+
+    const nameTokens = normalizedName.split(" ").filter(Boolean);
+    // A one-word brand search must not return generic IDs/aliases such as "SONY".
+    if (queryTokens.length === 1 && nameTokens.length < 2) continue;
+
+    const missing = queryTokens.filter(token => !nameTokens.some(part => part === token || part.startsWith(token)));
+    if (missing.length) continue;
+
+    let score = 100;
+    if (normalizedName === q) score += 1000;
+    else if (normalizedName.startsWith(q)) score += 250;
+    else score += queryTokens.length * 30;
+
+    // Prefer descriptive channel names over short aliases and generic directory entries.
+    score += Math.min(nameTokens.length, 7);
+    if (/\\b(hd|fhd|4k|hindi|english|ten|sports)\\b/i.test(name)) score += 15;
+
+    candidates.push({ ...item, _score: score, _normalizedName: normalizedName });
+  }
+
+  candidates.sort((a, b) => b._score - a._score);
+
+  // Collapse duplicate names across feeds; keep the best-ranked source record.
+  const unique = new Map();
+  for (const item of candidates) {
+    if (!unique.has(item._normalizedName)) unique.set(item._normalizedName, item);
+  }
+
+  return [...unique.values()].slice(0, 4).map(({ _score, _normalizedName, ...item }) => item);
 }
 
 function firstName(message) {
