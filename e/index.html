@@ -80,28 +80,7 @@ h1 span{color:#ffc247!important}
 <div class="tools"><input id="search" class="search" type="search" placeholder="Search channels — Fox, Sky, TNT, Willow…" aria-label="Search channels"></div>
 <div class="filters" id="filters" aria-label="Channel categories"></div>
 <div class="section-head"><h2>Available Channels</h2><span id="count">15 CHANNELS</span></div><div class="grid" id="grid"></div><div class="empty" id="empty">No channels found. Try another search.</div></section>
-<section class="player-view" id="playerView"><button class="back" id="back">← BACK TO CHANNELS</button><div class="player-card"><div class="player-head"><div><div class="player-kicker">● CRICZONE LIVE PLAYER</div><div class="player-name" id="playerName">Loading channel…</div><div class="player-category" id="playerCategory"></div></div><div class="player-actions"><button class="btn" id="reload">↻ RELOAD</button></div></div><style id="cz-rotate-fix">
-.cz-rotate-fallback{
- position:fixed!important;inset:0!important;z-index:99999!important;
- width:100vw!important;height:100dvh!important;min-height:0!important;max-height:none!important;
- aspect-ratio:auto!important;transform:none!important;transform-origin:center!important;
- margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
- background:#000!important;overflow:hidden!important;
-}
-.cz-rotate-fallback iframe{
- position:absolute!important;left:50%!important;top:50%!important;
- width:100dvh!important;height:100vw!important;inset:auto!important;
- max-width:none!important;max-height:none!important;
- transform:translate(-50%,-50%) rotate(90deg)!important;
- transform-origin:center center!important;
-}
-.cz-rotate-fallback .cz-iframe-controls{
- position:fixed!important;top:max(10px,env(safe-area-inset-top))!important;
- right:max(10px,env(safe-area-inset-right))!important;z-index:100000!important;
-}
-.cz-rotate-fallback .playerbar{display:none!important}
-</style>
-<div class="stage"><style>
+<section class="player-view" id="playerView"><button class="back" id="back">← BACK TO CHANNELS</button><div class="player-card"><div class="player-head"><div><div class="player-kicker">● CRICZONE LIVE PLAYER</div><div class="player-name" id="playerName">Loading channel…</div><div class="player-category" id="playerCategory"></div></div><div class="player-actions"><button class="btn" id="reload">↻ RELOAD</button></div></div><div class="stage"><style>
 .cz-rotate-fallback{position:fixed!important;z-index:99999!important;left:50%!important;top:50%!important;width:100dvh!important;height:100vw!important;max-height:none!important;min-height:0!important;aspect-ratio:auto!important;transform:translate(-50%,-50%) rotate(90deg)!important;transform-origin:center center!important;border-radius:0!important}
 .cz-rotate-fallback iframe{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;transform:none!important}
 .cz-rotate-fallback .cz-iframe-controls{position:absolute!important;top:8px!important;right:8px!important}
@@ -111,7 +90,7 @@ h1 span{color:#ffc247!important}
 .cz-iframe-controls button.cz-full{width:40px;height:38px;border:0;border-radius:5px;background:transparent;font-size:28px}
 .cz-iframe-controls button:focus-visible{outline:2px solid #ffd36c;outline-offset:3px}
 @media(max-width:600px){.cz-iframe-controls{top:8px;right:8px;gap:7px;padding:5px 7px}.cz-iframe-controls button{width:34px;height:34px;font-size:17px}.cz-iframe-controls button.cz-full{width:36px;height:34px;font-size:25px}}
-</style><div class="loading" id="loading">Loading channel stream…</div><iframe id="frame" title="CRICZONE live channel" sandbox="allow-scripts allow-same-origin allow-presentation" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe><div class="cz-iframe-controls" aria-label="Player controls"><button type="button" data-cz-rotate="frame" aria-label="Rotate player" title="Rotate video">⟳</button><button type="button" data-cz-back="frame" aria-label="Back to channels" title="Back">‹</button><button type="button" class="cz-full" data-cz-full="frame" aria-label="Fullscreen" title="Fullscreen">⛶</button></div></div><div class="player-foot"><span>● LIVE PLAYER</span><span>Select BACK to choose another channel</span></div></div></section>
+</style><div class="loading" id="loading">Loading channel stream…</div><iframe id="frame" title="CRICZONE live channel" sandbox="allow-scripts allow-same-origin allow-presentation" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe><div class="cz-iframe-controls" aria-label="Player controls"><button type="button" data-cz-back="frame" aria-label="Back to channels" title="Back">‹</button><button type="button" class="cz-full" data-cz-full="frame" aria-label="Fullscreen" title="Fullscreen">⛶</button></div></div><div class="player-foot"><span>● LIVE PLAYER</span><span>Select BACK to choose another channel</span></div></div></section>
 </main><script>
 const channels=[
   {
@@ -245,28 +224,6 @@ if(initial){
   if(reload){const f=document.getElementById(reload.dataset.czReload);if(f){const src=f.src;f.src='about:blank';setTimeout(()=>{f.src=src},120)}}
   if(back){if(typeof window.back==='function')window.back();else if(typeof window.closePlayer==='function')window.closePlayer(true);else location.href='./';}
   if(full){const f=document.getElementById(full.dataset.czFull);const target=f?.parentElement;if(target){if(document.fullscreenElement)document.exitFullscreen?.();else (target.requestFullscreen||target.webkitRequestFullscreen)?.call(target);}}
- });
-})();
-</script>
-<script id="cz-rotate-handler">
-(function(){
- document.addEventListener('click',async function(e){
-  const button=e.target.closest('[data-cz-rotate]');
-  if(!button)return;
-  e.preventDefault();
-  const frame=document.getElementById(button.dataset.czRotate);
-  const stage=frame&&frame.parentElement;
-  if(!stage)return;
-  const active=!stage.classList.contains('cz-rotate-fallback');
-  stage.classList.toggle('cz-rotate-fallback',active);
-  button.setAttribute('aria-pressed',String(active));
-  button.title=active?'Restore normal view':'Rotate video';
-  button.textContent=active?'⟲':'⟳';
-  if(active && document.fullscreenElement && screen.orientation?.lock){
-   try{await screen.orientation.lock('landscape')}catch(_){}
-  }else if(!active && screen.orientation?.unlock){
-   try{screen.orientation.unlock()}catch(_){}
-  }
  });
 })();
 </script>
