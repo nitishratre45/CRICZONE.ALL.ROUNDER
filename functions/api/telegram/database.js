@@ -138,7 +138,7 @@ export async function onRequestGet({ request }) {
         const key = norm(name) + "|" + id + "|" + folder;
         if (seenChannels.has(key)) continue;
         seenChannels.add(key);
-        channels.push({ type: "channel", name, id, category: "", folder, json: "manual_directory", page_url: pageUrl });
+        channels.push({ type: "channel", name, id, category: String(item.category || "").trim(), folder, json: "manual_directory", page_url: pageUrl });
       }
     }
   } catch (error) {
