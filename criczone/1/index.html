@@ -95,8 +95,18 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
   let logoByName={};
   let toastTimer=null;
   const LOGO_DATA_URL="https://sportlink-tv11.pages.dev/Star3.json";
-  function normalizeChannelName(value){return safeText(value).toLowerCase().replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");}
-  function getChannelLogo(channel){return logoByName[normalizeChannelName(channel&&channel.name)]||"";}
+  function normalizeChannelName(value){return safeText(value).toLowerCase().replace(/\bten\b/g," ").replace(/\bhd\b/g," ").replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");}
+  function getChannelLogo(channel){
+    const target=normalizeChannelName(channel&&channel.name);
+    if(logoByName[target])return logoByName[target];
+    const targetWords=target.split(" ").filter(Boolean);
+    for(const [sourceName,logo] of Object.entries(logoByName)){
+      const sourceWords=sourceName.split(" ").filter(Boolean);
+      const sameCore=targetWords.length===sourceWords.length && targetWords.every((word,index)=>word===sourceWords[index]);
+      if(sameCore)return logo;
+    }
+    return "";
+  }
 
   function notify(message){
     toast.textContent=message;
