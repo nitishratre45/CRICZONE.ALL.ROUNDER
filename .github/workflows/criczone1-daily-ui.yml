@@ -1,0 +1,173 @@
+name: CRICZONE1 Daily UI Polish
+
+on:
+  schedule:
+    # 08:00 IST (02:30 UTC) every day
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: criczone1-daily-ui
+  cancel-in-progress: false
+
+jobs:
+  polish:
+    name: Review and polish CRICZONE1 UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check required files and API secret
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          test -f criczone1/index.html
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Add OPENAI_API_KEY in GitHub → Settings → Secrets and variables → Actions. The workflow needs it to generate a safe CSS improvement."
+            exit 1
+          fi
+
+      - name: Generate one small CSS-only improvement
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os, re, urllib.request
+          from pathlib import Path
+
+          path = Path("criczone1/index.html")
+          html = path.read_text(encoding="utf-8")
+
+          prompt = """You are improving the CRICZONE1 cricket streaming website.
+          Return ONLY plain CSS, with no markdown fences and no <style> tags.
+          Make at most ONE small, high-quality visual-only improvement.
+          Scope strictly to CSS. Prefer mobile responsiveness, accessibility,
+          visual consistency, or performance. Use selectors grounded in the HTML.
+          Do not use @import, external URLs, JavaScript, HTML, !important-heavy
+          overrides, or broad destructive resets. Do not hide existing controls,
+          channels, banners, popups, stats, or player UI. Preserve all functionality.
+          If no worthwhile safe improvement exists, return exactly: NO_CHANGE
+          
+          Existing HTML (including its CSS):
+          """ + html[:90000]
+
+          payload = {
+              "model": "gpt-4.1-mini",
+              "messages": [
+                  {"role": "system", "content": "You are a cautious senior frontend engineer. Output CSS only."},
+                  {"role": "user", "content": prompt}
+              ],
+              "temperature": 0.2,
+              "max_tokens": 1800
+          }
+          req = urllib.request.Request(
+              "https://api.openai.com/v1/chat/completions",
+              data=json.dumps(payload).encode(),
+              headers={
+                  "Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
+                  "Content-Type": "application/json"
+              },
+              method="POST"
+          )
+          with urllib.request.urlopen(req, timeout=90) as response:
+              result = json.loads(response.read())
+          css = result["choices"][0]["message"]["content"].strip()
+          css = re.sub(r"^\x60{3}(?:css)?\s*|\s*\x60{3}$", "", css, flags=re.I).strip()
+
+          if css == "NO_CHANGE" or not css:
+              print("No worthwhile safe CSS improvement found; no commit created.")
+              raise SystemExit(0)
+          if len(css) > 12000 or "</style" in css.lower() or "<script" in css.lower():
+              raise SystemExit("Generated output failed safety checks.")
+          if "@import" in css.lower() or "url(" in css.lower():
+              raise SystemExit("External CSS imports/URLs are not allowed.")
+          if css.count("{") != css.count("}") or css.count("{") == 0:
+              raise SystemExit("Generated CSS has unbalanced braces.")
+
+          marker = "CRICZONE1 DAILY UI POLISH"
+          if marker in html:
+              html = re.sub(
+                  r"\n?<!-- " + marker + r" START -->.*?<!-- " + marker + r" END -->\n?",
+                  "",
+                  html,
+                  flags=re.S
+              )
+          addition = (
+              "\n<!-- " + marker + " START -->\n"
+              "<style id=\"criczone1-daily-ui-polish\">\n"
+              + css + "\n</style>\n"
+              "<!-- " + marker + " END -->\n"
+          )
+          if "</body>" in html.lower():
+              match = re.search(r"</body\s*>", html, flags=re.I)
+              html = html[:match.start()] + addition + html[match.start():]
+          else:
+              html += addition
+          path.write_text(html, encoding="utf-8")
+          print("Generated CSS improvement and appended it to criczone1/index.html.")
+          PY
+
+      - name: Validate HTML structure and diff
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from collections import Counter
+          import re
+
+          source = Path("criczone1/index.html").read_text(encoding="utf-8")
+          class Audit(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = []
+                  self.stack = []
+                  self.void = {"area","base","br","col","embed","hr","img","input","link","meta","param","source","track","wbr"}
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if "id" in attrs:
+                      self.ids.append(attrs["id"])
+                  if tag not in self.void:
+                      self.stack.append(tag)
+              def handle_endtag(self, tag):
+                  if tag in self.void:
+                      return
+                  if tag in self.stack:
+                      while self.stack:
+                          current = self.stack.pop()
+                          if current == tag:
+                              break
+
+          parser = Audit()
+          parser.feed(source)
+          duplicates = [key for key, count in Counter(parser.ids).items() if count > 1]
+          if duplicates:
+              raise SystemExit("Duplicate HTML IDs: " + ", ".join(duplicates))
+          if parser.stack:
+              raise SystemExit("Unclosed HTML tags detected: " + ", ".join(parser.stack[-10:]))
+          if len(re.findall(r"<style\b", source, re.I)) != len(re.findall(r"</style\s*>", source, re.I)):
+              raise SystemExit("Unbalanced style tags.")
+          if len(re.findall(r"<script\b", source, re.I)) != len(re.findall(r"</script\s*>", source, re.I)):
+              raise SystemExit("Unbalanced script tags.")
+          if not re.search(r"</html\s*>\s*$", source, re.I):
+              raise SystemExit("HTML document does not close correctly.")
+          print("HTML structure, IDs, style/script tags, and document ending passed.")
+          PY
+          git diff --check
+
+      - name: Commit verified CSS improvement
+        run: |
+          if git diff --quiet -- criczone1/index.html; then
+            echo "No UI change to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add criczone1/index.html
+          git commit -m "style(criczone1): daily UI polish"
+          git push
