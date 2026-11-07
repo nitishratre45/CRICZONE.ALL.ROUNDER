@@ -554,6 +554,87 @@
     .poster img.channel-feed-logo{position:relative;z-index:0;width:100%;height:100%;object-fit:contain;padding:18px;background:radial-gradient(circle at center,#fff 0%,#f2f4f7 72%,#dce1e8 100%)}
     .poster:after{z-index:2}
     @media(max-width:560px){.channel-brand-logo{gap:7px;padding:9px}.channel-brand-logo .brand-symbol{width:43px;height:43px;border-radius:12px;font-size:14px}.channel-brand-logo .brand-word{font-size:12px}}
+
+    /* CRICZONE1 — premium channel directory refresh */
+    :root{--bg:#080d16;--panel:#111b2a;--line:#29384d;--green:#ffc247;--mint:#ffe09a;--text:#f5f7fb;--muted:#9aa8ba}
+    html{background:#080d16;scroll-behavior:smooth}
+    body{background:radial-gradient(ellipse at 8% -8%,rgba(255,194,71,.13),transparent 38%),radial-gradient(ellipse at 95% 18%,rgba(42,153,255,.10),transparent 34%),#080d16;color:var(--text)}
+    .topbar{padding:13px clamp(14px,4vw,48px);background:rgba(8,13,22,.92);border-bottom:1px solid rgba(255,255,255,.09);box-shadow:0 8px 30px #0003}
+    .toprow{min-height:50px}
+    .brand{gap:10px;letter-spacing:1px}
+    .brand-mark{border-color:#ffc24788;background:linear-gradient(145deg,#182338,#101927);box-shadow:0 5px 20px #ffc24720}
+    .brand > span:last-child > span{color:#ffc247}
+    .brand small{color:#c7a45c}
+    .live{color:#77edbd;border-color:#28634d;background:#10251e}
+    main{padding-top:25px}
+    .intro{margin:8px 0 18px;align-items:center}
+    h1{font-size:clamp(25px,4vw,36px);letter-spacing:-1px}
+    .subtitle{font-size:13px;line-height:1.65;color:#a7b3c3}
+    #count{padding:8px 12px;border:1px solid #344258;border-radius:999px;background:#111b2a;color:#cbd5e1;font:800 10px Manrope,sans-serif}
+    .welcome-strip{min-height:142px;padding:clamp(20px,3.5vw,32px);border:1px solid #ffc24735;border-radius:21px;background:radial-gradient(circle at 88% 48%,#ffc24720,transparent 27%),linear-gradient(115deg,#172438,#101a29 70%,#111927);box-shadow:0 18px 45px #0004}
+    .welcome-strip h2{font-size:clamp(23px,3.8vw,34px);letter-spacing:-1px}
+    .welcome-strip p{font-size:12px;line-height:1.65;color:#aab7c8}
+    .eyebrow{color:#ffd16f;letter-spacing:2px}
+    .welcome-icon{width:66px;height:66px;flex-basis:66px;border-radius:19px;border-color:#ffc24750;background:linear-gradient(145deg,#ffc24725,#ffc24708);box-shadow:inset 0 1px #ffffff12}
+    .quick-tools{margin:0 0 15px;gap:9px 18px;color:#8e9db1}
+    .quick-tools span{display:inline-flex;align-items:center;gap:5px}
+    .quick-tools b{color:#ffd16f}
+    .searchbox{margin:18px 0 12px}
+    #search{min-height:52px;padding:14px 44px;border:1px solid #34445b;border-radius:15px;background:#101a29;color:#fff;font-size:13px;box-shadow:0 8px 24px #0002;transition:border-color .2s,box-shadow .2s}
+    #search::placeholder{color:#8190a4}
+    #search:focus{border-color:#ffc247;box-shadow:0 0 0 3px #ffc2471b,0 8px 24px #0002}
+    #filters{display:flex;flex-wrap:wrap;gap:9px;padding:8px 1px 18px;overflow:visible}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #2c3b50;border-radius:12px;background:linear-gradient(145deg,#121e2e,#0e1724);color:#b9c5d4;font-size:10px;font-weight:900;letter-spacing:.45px;transition:transform .18s,border-color .18s,background .18s,color .18s}
+    .pill:before{content:"";width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#8190a4;box-shadow:0 0 0 3px #8190a41c}
+    .pill.active{color:#17130a;border-color:transparent;background:linear-gradient(125deg,#ffd36c,#f0a928);box-shadow:0 7px 20px #ffc24725}
+    .pill.active:before{background:#292014;box-shadow:0 0 0 3px #29201420}
+    .pill:hover{transform:translateY(-2px);border-color:#ffc24788;color:#fff}
+    .pill.active:hover{color:#17130a}
+    #grid{grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:15px}
+    .card{border:1px solid #29394e;border-radius:17px;background:linear-gradient(155deg,#152235,#0e1724 78%);box-shadow:0 9px 25px #0003;transition:transform .2s,border-color .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-4px);border-color:#ffc24799;box-shadow:0 17px 35px #0006,0 0 0 1px #ffc24714}
+    .poster{aspect-ratio:16/9;background:radial-gradient(circle at 50% 10%,#263b57,#111b2b 72%)}
+    .poster:after{color:#ffd36b;background:linear-gradient(180deg,transparent 35%,#050a13a8);text-shadow:0 2px 12px #000}
+    .channel-brand-logo{background:radial-gradient(circle at 50% 15%,var(--brand-glow,rgba(255,194,71,.2)),transparent 60%),linear-gradient(145deg,var(--brand-bg,#1a2a40),#0b1320)!important}
+    .channel-brand-logo .brand-symbol{width:56px;height:56px;border-radius:16px;background:linear-gradient(145deg,#ffffff12,#0005);box-shadow:0 8px 20px #0004, inset 0 1px #ffffff18}
+    .channel-brand-logo .brand-word{font-size:clamp(12px,1.5vw,17px);letter-spacing:.5px}
+    .channel-brand-logo .brand-word small{color:var(--brand-accent,#ffd36b);letter-spacing:1.6px}
+    .poster img.channel-feed-logo{background:radial-gradient(circle,#fff,#e9edf3 80%)}
+    .cardbody{padding:13px 14px 15px;min-height:70px}
+    .channelname{font-size:13px;letter-spacing:.1px;line-height:1.45}
+    .category{display:inline-flex;margin-top:8px;padding:4px 7px;border:1px solid #ffc2472c;border-radius:6px;background:#ffc2470c;color:#ffd16f;font-size:8px;letter-spacing:1px}
+    #empty{margin-top:10px;border:1px dashed #3a4960;border-radius:16px;background:#111b2a;color:#aeb9c8}
+    footer{margin-top:24px;border-color:#263449;color:#78869a}
+    footer a{color:#ffd16f}
+    .playerbar{padding:5px;border:1px solid #ffffff12;border-radius:14px;background:#080d16a8;backdrop-filter:blur(16px)}
+    .playerbar button,.playertitle{border-color:#ffffff28;border-radius:11px;background:#101a29ed}
+    .playerbar button:hover{border-color:#ffc247;color:#ffd36b}
+    #retry{background:linear-gradient(135deg,#ffd36c,#f0a928);color:#17130a}
+    @media(min-width:1200px){main{padding-left:clamp(24px,4vw,64px);padding-right:clamp(24px,4vw,64px)}#grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.poster{aspect-ratio:16/9}.cardbody{padding:15px 16px 17px}.channelname{font-size:14px}}
+    @media(min-width:1750px){#grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+    @media(min-width:650px) and (max-width:1199px){#grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:560px){
+      .topbar{padding:12px 14px}.toprow{min-height:44px}
+      main{padding:18px 14px 38px}
+      .intro{margin:6px 0 15px}.welcome-strip{min-height:120px;margin:0 0 17px;padding:17px;border-radius:17px}
+      .welcome-strip h2{font-size:23px}.welcome-strip p{max-width:260px;font-size:11px}
+      .welcome-icon{width:49px;height:49px;flex-basis:49px;border-radius:14px;font-size:23px}
+      .quick-tools{gap:8px 12px;font-size:8px}
+      .searchbox{margin-top:15px}#search{min-height:50px;border-radius:13px}
+      #filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-bottom:15px}
+      .pill{justify-content:center;padding:11px 8px;font-size:9px;border-radius:11px}
+      .pill:first-child{grid-column:1/-1}
+      #grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .card{border-radius:14px}.poster{aspect-ratio:16/10}
+      .channel-brand-logo{gap:6px;padding:8px}
+      .channel-brand-logo .brand-symbol{width:39px;height:39px;border-radius:11px;font-size:13px}
+      .channel-brand-logo .brand-word{font-size:10px}
+      .channel-brand-logo .brand-word small{font-size:7px;letter-spacing:1px}
+      .cardbody{padding:9px 10px 11px;min-height:62px}
+      .channelname{font-size:10px;line-height:1.4}.category{font-size:7px;margin-top:6px;padding:3px 5px}
+    }
+    @media(max-width:360px){#grid{gap:8px}.cardbody{padding:8px}.channelname{font-size:9px}.brand{font-size:17px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.pill,#search{transition:none!important}}
     </style>
 
 </head>
@@ -612,7 +693,7 @@
             function toChannel(x) { if (!x || x.id == null || !x.name || !x.iframeSrc) return null; let u; try { u = new URL(String(x.iframeSrc), location.href); if (!['https:', 'http:'].includes(u.protocol)) return null } catch { return null } return { id: String(x.id), name: String(x.name), iframeSrc: u.href, category: String(x.category || 'General'), logo: String(x.logourl || x.logo || x.logoUrl || '') } }
             async function loadChannels() { const results = await Promise.allSettled(JSON_URLS.map(fetchJson)), seen = new Set(), out = [], errors = []; results.forEach((r, i) => { if (r.status === 'rejected') { const e = r.reason; errors.push(JSON_URLS[i] + ' — ' + (e?.name === 'AbortError' ? 'timed out' : e?.message || 'failed')); return } normalize(r.value).forEach(x => { const c = toChannel(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c) } }) }); if (!out.length) throw Error('No valid channels could be loaded. ' + errors.join(' | ')); return out }
             function esc(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
-            function renderFilters() { const cats = ['All', ...Array.from(new Set(channels.map(c => c.category).filter(c => c && c !== 'General'))).sort()]; $('filters').innerHTML = cats.map(c => '<button type="button" class="pill ' + (c === activeCategory ? 'active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>').join(''); $('filters').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeCategory = b.dataset.cat; renderFilters(); render() })) }
+            function renderFilters() { const cats = ['All', ...Array.from(new Set(channels.map(c => c.category).filter(c => c && c !== 'General'))).sort()]; $('filters').innerHTML = cats.map(c => { const n = c === 'All' ? channels.length : channels.filter(x => x.category === c).length; return '<button type="button" class="pill ' + (c === activeCategory ? 'active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + ' <span style="font-size:9px;opacity:.72">' + n + '</span></button>' }).join(''); $('filters').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeCategory = b.dataset.cat; renderFilters(); render() })) }
             function brandInfo(name) { const n=String(name||'').toLowerCase(); const brands=[
                 [/star\s*sports|star\s*cricket|starsports/,'STAR','STAR SPORTS','#f5a623','#171c32'],
                 [/sony|ten\s*sports|ten\s*cricket/,'SONY','SONY SPORTS','#65c7ff','#101c3c'],
