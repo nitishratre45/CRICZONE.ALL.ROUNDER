@@ -5,6 +5,38 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 
 const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 
+let botMemoryCache = null;
+let botMemoryCacheAt = 0;
+async function loadBotMemory(request) {
+  const now = Date.now();
+  if (botMemoryCache && now - botMemoryCacheAt < 5 * 60 * 1000) return botMemoryCache;
+  try {
+    const origin = new URL(request.url).origin;
+    const response = await fetch(origin + "/telegram-memory.json", {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!response.ok) throw new Error("Memory JSON HTTP " + response.status);
+    const memory = await response.json();
+    if (!memory || memory.version !== 1 || !Array.isArray(memory.providers)) throw new Error("Invalid Telegram memory JSON");
+    botMemoryCache = memory;
+    botMemoryCacheAt = now;
+    return memory;
+  } catch (error) {
+    console.error("Telegram memory load failed; using built-in defaults", error);
+    return { providers: [
+      { name: "Sony Sports", aliases: ["sony sports"], sources: ["sony_playlist"], name_pattern: "^(sony sports|sony ten)\\b" },
+      { name: "Star Sports", aliases: ["star sports"], sources: ["sony_star"], name_pattern: "^star sports\\b" },
+      { name: "FanCode", aliases: ["fancode"], sources: ["fancode"], name_pattern: "fancode" },
+      { name: "Willow", aliases: ["willow"], sources: ["willow_v4", "willow_v5"], name_pattern: "willow" },
+      { name: "Sky", aliases: ["sky"], sources: ["sky"], name_pattern: "\\bsky\\b" },
+      { name: "Fox", aliases: ["fox"], sources: ["fox"], name_pattern: "\\bfox\\b" },
+      { name: "TNT", aliases: ["tnt"], sources: ["tnt"], name_pattern: "\\btnt\\b" }
+    ] };
+  }
+}
+
+
 async function send(env, chatId, text, replyTo) {
   const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
     method: "POST",
@@ -265,6 +297,7 @@ async function handleText({ request, env, message }) {
 
   await ensureTable(env.TELEGRAM_DB);
   const value = normalize(userText);
+  const memory = await loadBotMemory(request);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
@@ -303,15 +336,11 @@ async function handleText({ request, env, message }) {
 
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
   const isTeamMatchQuery = /\b(?:vs|versus|v|against)\b/i.test(value);
-  const providerDefinitions = [
-    { name: "Sony Sports", keys: ["sony sports"], sources: ["sony_playlist", "sony_playlist_backup"], namePattern: /^(sony sports|sony ten)\b/i },
-    { name: "Star Sports", keys: ["star sports"], sources: ["sony_star"], namePattern: /^star sports\b/i },
-    { name: "FanCode", keys: ["fancode"], sources: ["fancode"], namePattern: /fancode/i },
-    { name: "Willow", keys: ["willow"], sources: ["willow_v4", "willow_v5"], namePattern: /willow/i },
-    { name: "Sky", keys: ["sky sports", "sky"], sources: ["sky"], namePattern: /\bsky\b/i },
-    { name: "Fox", keys: ["fox sports", "fox cricket", "fox"], sources: ["fox"], namePattern: /\bfox\b/i },
-    { name: "TNT", keys: ["tnt sports", "tnt"], sources: ["tnt"], namePattern: /\btnt\b/i }
-  ];
+  const providerDefinitions = memory.providers.map(provider => ({
+    ...provider,
+    keys: Array.isArray(provider.aliases) ? provider.aliases : [provider.name.toLowerCase()],
+    namePattern: new RegExp(provider.name_pattern || provider.name, "i")
+  }));
   // Provider matching is based on the actual channel name, never folder/source metadata.
   // This prevents "Sony Sports" from matching unrelated Sony TV channels or match-labelled aliases.
   const getProviderChannels = (provider) => {
