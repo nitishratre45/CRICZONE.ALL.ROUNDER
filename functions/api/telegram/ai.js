@@ -194,53 +194,73 @@ async function handleText({ request, env, message }) {
   const value = normalize(userText);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
-  // Ignore ordinary group conversation and thank-you messages.
+  // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
   const casual = /^(thanks?|thank you|thankyou|thanku|thx|ty|welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
-  if (casual.test(value) || /\b(thank you|thankyou|thanku|thanks|thx|ho gaya|ho gya)\b/i.test(value)) return;
+  if (casual.test(value)) return;
 
   if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("Cancelled.");
   }
   if (/^\/(start|ping)(@\w+)?$/i.test(userText)) {
-    return reply("CRICZONE bot is online. Send a channel name, team name, or channel URL.");
+    return reply("CRICZONE is online. Send a match, team-vs-team query, channel name, or part of a channel name.");
+  }
+  if (/^\/help(@\w+)?$/i.test(userText)) {
+    return reply("Send a match like India vs New Zealand, or a channel name like Sony Sports. I will ask which channel you want if needed.");
   }
 
-  const greeting = /^(hi|hello|hey|hii|good morning|good evening|gm)$/.test(value);
-  if (greeting) return reply("Hello! Send a channel name, team name, or URL to find matching channel links.");
-
-  const help = /\b(help|problem|issue|not working|error|buffer|black screen)\b/.test(value);
-  if (help) return reply("Please describe the issue: channel not opening, buffering, or black screen.");
-
+  const state = await getState(env.TELEGRAM_DB, chatId, userId);
   let data;
-  try { data = await loadAllData(request); }
-  catch (error) {
+  try {
+    data = await loadAllData(request);
+  } catch (error) {
     console.error("CRICZONE data load error", error);
     return reply("Channel data is temporarily unavailable. Please try again shortly.");
   }
 
-  const channelMatches = findMatches(data.records, userText);
-  const teamMatches = findMatches(data.matches, userText);
-  const matches = channelMatches.length ? channelMatches : teamMatches;
-  if (matches.length) {
-    const lines = matches.slice(0,5).map((item, i) => {
+  // A match query starts a short, user-specific follow-up flow.
+  const isMatchQuery = /\b(vs|versus)\b/i.test(userText) ||
+    (/\b(live|playing|match|cricket)\b/i.test(value) && /\b(india|ind|nz|new zealand|australia|aus|england|eng|pakistan|pak|south africa|sa|sri lanka|sl|bangladesh|ban|west indies|wi)\b/i.test(value));
+
+  if (state?.step === "awaiting_channel") {
+    const channelMatches = findMatches(data.records, userText);
+    if (!channelMatches.length) {
+      return reply("I couldn't find that channel in the source list. Try another part of its name.");
+    }
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    const lines = channelMatches.slice(0, 4).map((item, i) => {
       const details = [];
       if (item.id) details.push("ID: " + item.id);
       if (item.folder) details.push("Folder: " + item.folder);
       if (item.category) details.push("Category: " + item.category);
-      if (item.home_team || item.away_team) details.push("Teams: " + [item.home_team,item.away_team].filter(Boolean).join(" vs "));
-      if (item.tournament) details.push("Tournament: " + item.tournament);
-      if (item.json || item.source) details.push("JSON: " + (item.json || item.source));
+      if (item.json || item.source) details.push("Source: " + (item.json || item.source));
       if (item.page_url || item.url) details.push(item.page_url || item.url);
       return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
     });
-    return reply("Matches found:\n" + lines.join("\n\n"));
+    return reply("Channel matches for " + state.topic + ":\n" + lines.join("\n\n"));
   }
 
-  if (/\b(schedule|fixture|score|result|vs|versus|playing|playing xi)\b/.test(value)) {
-    return;
+  if (isMatchQuery) {
+    await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", userText, "");
+    return reply("Which channel is showing this match live? Send the channel name (even part of it).");
   }
-  // Stay silent when no channel matches; do not clutter the group.\n  return;
+
+  const channelMatches = findMatches(data.records, userText);
+  if (channelMatches.length) {
+    const lines = channelMatches.slice(0, 4).map((item, i) => {
+      const details = [];
+      if (item.id) details.push("ID: " + item.id);
+      if (item.folder) details.push("Folder: " + item.folder);
+      if (item.category) details.push("Category: " + item.category);
+      if (item.json || item.source) details.push("Source: " + (item.json || item.source));
+      if (item.page_url || item.url) details.push(item.page_url || item.url);
+      return (i + 1) + ". " + item.name + (details.length ? "\n" + details.join("\n") : "");
+    });
+    return reply("Channel matches:\n" + lines.join("\n\n"));
+  }
+
+  // Do not interrupt unrelated group conversation.
+  return;
 }
 
 export async function onRequestPost({ request, env }) {
