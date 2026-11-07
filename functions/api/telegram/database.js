@@ -38,7 +38,8 @@ function channelRows(payload, feed) {
     // Do not treat arbitrary nested objects, team names, or logo records as channels.
     if(!name || !(id || playable || explicitPage)) continue;
     const isMedia=/\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(playable);
-    const page=/^https?:\/\//i.test(explicitPage) && !/\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(explicitPage) ? explicitPage : PAGES[feed.folder];
+    const basePage=/^https?:\/\//i.test(explicitPage) && !/\.(m3u8|mpd|mp4|ts)(\?|$)/i.test(explicitPage) ? explicitPage : PAGES[feed.folder];
+    const page=basePage && id ? basePage + (basePage.includes("?") ? "&" : "?") + "id=" + encodeURIComponent(id) : basePage;
     rows.push({type:"channel",name,id,category,folder:feed.folder,json:feed.key,page_url:page});
   }
   return rows;
