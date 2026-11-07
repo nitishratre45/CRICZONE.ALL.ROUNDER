@@ -3,7 +3,7 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
   headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }
 });
 
-const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9\\s]/g, " ").replace(/\\s+/g, " ").trim();
+const normalize = (value) => String(value || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 
 async function send(env, chatId, text, replyTo) {
   const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
@@ -104,12 +104,12 @@ async function handleText({ request, env, message }) {
   const name = firstName(message);
   const reply = (text) => send(env, chatId, text, message.message_id);
 
-  if (/^\\/(cancel|stop)(@\\w+)?$/i.test(userText)) {
+  if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     return reply("Theek hai! Request cancel kar di. Jab help chahiye, bas message karna. 🏏");
   }
 
-  if (/^\\/(start|ping)(@\\w+)?$/i.test(userText)) {
+  if (/^\/(start|ping)(@\w+)?$/i.test(userText)) {
     return reply("🤖 CRICZONE BOT online hai!\n\nLive channel, match schedule ya technical help chahiye? Apni requirement likho. Hindi / English dono supported hain.");
   }
 
@@ -132,8 +132,8 @@ async function handleText({ request, env, message }) {
     return reply("Abhi directory mein \"" + userText + "\" ka exact match nahi mila. Channel ka poora naam ya spelling bhejo, main dobara check karne mein help karunga.\n\nChannel directory: " + new URL("/api/channels?feed=directory", request.url).toString());
   }
 
-  const asksChannel = /\\b(channel|live|stream|link|watch|dekhna|dekhu|dikha|sony|star sports|willow|fancode|jio|match)\\b/.test(value);
-  const asksHelp = /\\b(help|problem|issue|not working|nahi chal|error|buffer|black screen)\\b/.test(value);
+  const asksChannel = /\b(channel|live|stream|link|watch|dekhna|dekhu|dikha|sony|star sports|willow|fancode|jio|match)\b/.test(value);
+  const asksHelp = /\b(help|problem|issue|not working|nahi chal|error|buffer|black screen)\b/.test(value);
   const greeting = /^(hi|hello|hey|hii|namaste|good morning|good evening|gm|hlo)$/.test(value);
 
   if (greeting) return reply("Hello " + name + "! 👋 CRICZONE group mein welcome. Live channel, match info ya technical help chahiye?");
@@ -145,7 +145,7 @@ async function handleText({ request, env, message }) {
     await saveState(env.TELEGRAM_DB, chatId, userId, "need_topic", "live_channel", "");
     return reply("Zaroor! 🏏 Kaunsa match ya sport dekhna hai? Team ya tournament ka naam batao. Phir broadcaster/channel select karenge.");
   }
-  if (/\\b(schedule|fixture|kab hai|when|timing|time table)\\b/.test(value)) {
+  if (/\b(schedule|fixture|kab hai|when|timing|time table)\b/.test(value)) {
     return reply("Kis team ya tournament ka schedule chahiye? Naam batao, main available CRICZONE information ke hisaab se guide karunga.");
   }
 }
