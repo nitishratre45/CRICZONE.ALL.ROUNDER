@@ -548,9 +548,12 @@ async function handleText({ request, env, message }) {
           const url = item.page_url || item.url || "";
           return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
         }).join("\n\n");
-        const webLink = normalize(selectedProvider.name) === "fancode"
-          ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
-          : "";
+        const selectedProviderKey = normalize(selectedProvider.name);
+        const webLink = selectedProviderKey === "fancode"
+          ? "\n\n🎬 FANCODE WEB\n🌐 Open in Chrome: https://criczone.pages.dev/criczonefancode/"
+          : selectedProviderKey === "sony sports"
+            ? "\n\n📺 SONY WEB\n🌐 Open in Chrome: https://criczone.pages.dev/sony/"
+            : "";
         return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
           list + webLink);
       }
