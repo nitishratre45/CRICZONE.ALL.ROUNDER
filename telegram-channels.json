@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Channel IDs and names only. No stream URLs, cookies or DRM keys.",
+  "description": "Channel IDs, names, folder names and CRICZONE page URLs only. No upstream stream URLs, cookies or DRM keys.",
   "channels": [
     {
       "id": "162",
@@ -187,6 +187,1176 @@
       "name": "Sony Sports Ten 4 Kannada",
       "folder": "criczone",
       "url": "https://criczone.pages.dev/criczone/?id=3585"
+    },
+    {
+      "id": "Eng",
+      "name": "Ind vs Nz Match Sony Sports 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Eng"
+    },
+    {
+      "id": "Eng-b",
+      "name": "Ind vs Nz Match Sony Sports 1 b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Eng-b"
+    },
+    {
+      "id": "Hin",
+      "name": "Ind vs Nz Match Sony Sports 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Hin"
+    },
+    {
+      "id": "Hin-b",
+      "name": "Ind vs Nz Match Sony Sports 3 b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Hin-b"
+    },
+    {
+      "id": "Tam",
+      "name": "Ind vs Nz Match Sony Sports 4 Tamil",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tam"
+    },
+    {
+      "id": "Tam-b",
+      "name": "Ind vs Nz Match Sony Sports 4 Tamil-b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tam-b"
+    },
+    {
+      "id": "Tel",
+      "name": "Ind vs Nz Match Sony Sports 4 Telugu",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tel"
+    },
+    {
+      "id": "Tel-b",
+      "name": "Ind vs Nz Match Sony Sports 4 Telugu b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tel-b"
+    },
+    {
+      "id": "Kan",
+      "name": "Ind vs Nz Match Sony Sports 4 kanada",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Kan"
+    },
+    {
+      "id": "Kan-b",
+      "name": "Ind vs Nz Match Sony Sports 4 Kan b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Kan-b"
+    },
+    {
+      "id": "p-hin",
+      "name": "Prime Hindi Ind vs NZ",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=p-hin"
+    },
+    {
+      "id": "p-eng",
+      "name": "Prime English India vs Nz",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=p-eng"
+    },
+    {
+      "id": "w",
+      "name": "Willow Cricbuzz Ind vs Nz Match",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=w"
+    },
+    {
+      "id": "w2",
+      "name": "Willow Cricbuzz Ind vs Nz Match 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=w2"
+    },
+    {
+      "id": "m",
+      "name": "Ramayana: Rise of a Legend",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=m"
+    },
+    {
+      "id": "All",
+      "name": "Ind vs Nz Match Ios Hindi",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=All"
+    },
+    {
+      "id": "All2",
+      "name": "Ind vs Nz Match Ios English",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=All2"
+    },
+    {
+      "id": "s1",
+      "name": "Ind vs Nz Match S1 IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s1"
+    },
+    {
+      "id": "s3",
+      "name": "Ind vs Nz Match S3 IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s3"
+    },
+    {
+      "id": "s4hd",
+      "name": "Ind vs Nz Match S4 IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s4hd"
+    },
+    {
+      "id": "s4",
+      "name": "Ind vs Nz Match IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s4"
+    },
+    {
+      "id": "s4k",
+      "name": "Ind vs Nz Match IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s4k"
+    },
+    {
+      "id": "ios",
+      "name": "Ind vs Nz Match Ios",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios"
+    },
+    {
+      "id": "ios2",
+      "name": "Ind vs Nz Match Ios2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios2"
+    },
+    {
+      "id": "Tam2",
+      "name": "Ind vs Nz Match Sony Vizha",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tam2"
+    },
+    {
+      "id": "sony1",
+      "name": "Sony Sports 1 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony1"
+    },
+    {
+      "id": "sony3",
+      "name": "Sony Sports 3 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony3"
+    },
+    {
+      "id": "sony4T",
+      "name": "Sony Sports 4 Tamil -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony4T"
+    },
+    {
+      "id": "sony4",
+      "name": "Sony Sports 4 Telugu -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony4"
+    },
+    {
+      "id": "ios3",
+      "name": "Ind vs Nz Match Ios3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios3"
+    },
+    {
+      "id": "ios4",
+      "name": "Star Sports 2 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios4"
+    },
+    {
+      "id": "ios5",
+      "name": "IND vs PAK",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios5"
+    },
+    {
+      "id": "ios6",
+      "name": "Ind vs Pak",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ios6"
+    },
+    {
+      "id": "Eng2",
+      "name": "UCL",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Eng2"
+    },
+    {
+      "id": "Eng3",
+      "name": "UCL-2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Eng3"
+    },
+    {
+      "id": "s2",
+      "name": "Sony Sport 2 All Device",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s2"
+    },
+    {
+      "id": "All3",
+      "name": "Hong Kong Sixes All Device Willow",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=All3"
+    },
+    {
+      "id": "fc",
+      "name": "Fancode Server 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fc"
+    },
+    {
+      "id": "l",
+      "name": "ligue1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=l"
+    },
+    {
+      "id": "SLvsPAK",
+      "name": "SLvsPAK",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SLvsPAK"
+    },
+    {
+      "id": "IOS",
+      "name": "SLvsPAK2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=IOS"
+    },
+    {
+      "id": "AUSvsSA",
+      "name": "AUSvsSA",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=AUSvsSA"
+    },
+    {
+      "id": "fc2",
+      "name": "Fancode Server 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fc2"
+    },
+    {
+      "id": "fc3",
+      "name": "Fancode Server 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fc3"
+    },
+    {
+      "id": "s5",
+      "name": "Ind vs Nz Match IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=s5"
+    },
+    {
+      "id": "p-tam",
+      "name": "Prime Tamil",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=p-tam"
+    },
+    {
+      "id": "veto",
+      "name": "veto",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=veto"
+    },
+    {
+      "id": "veto2",
+      "name": "veto2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=veto2"
+    },
+    {
+      "id": "sel1",
+      "name": "sel1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sel1"
+    },
+    {
+      "id": "sel2",
+      "name": "sel2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sel2"
+    },
+    {
+      "id": "hin",
+      "name": "Ind vs Sl - Star Sport 1 hin",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=hin"
+    },
+    {
+      "id": "hin-b",
+      "name": "Ind vs Sl - Star Sport 1 hin -backup",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=hin-b"
+    },
+    {
+      "id": "eng",
+      "name": "Ind vs Sl - Star Sport 1 eng",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=eng"
+    },
+    {
+      "id": "tam",
+      "name": "Ind vs Sl - Star Sport 1 tamil",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tam"
+    },
+    {
+      "id": "tel",
+      "name": "Ind vs Sl - Star Sport 1 telugu",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tel"
+    },
+    {
+      "id": "kan",
+      "name": "Ind vs Sl - Star Sport 1 kanada",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=kan"
+    },
+    {
+      "id": "hin2",
+      "name": "hin2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=hin2"
+    },
+    {
+      "id": "eng2",
+      "name": "eng2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=eng2"
+    },
+    {
+      "id": "hindi",
+      "name": "hindi",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=hindi"
+    },
+    {
+      "id": "fox",
+      "name": "Fox501",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox"
+    },
+    {
+      "id": "fancode1",
+      "name": "FANCODE 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fancode1"
+    },
+    {
+      "id": "fancode2",
+      "name": "FANCODE 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fancode2"
+    },
+    {
+      "id": "Foxsports1.us",
+      "name": "FOX SPORTS 1 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Foxsports1.us"
+    },
+    {
+      "id": "Foxsports2.us",
+      "name": "FOX SPORTS 2 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Foxsports2.us"
+    },
+    {
+      "id": "BEIN-SPORTS",
+      "name": "BEIN SPORTS IOS",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=BEIN-SPORTS"
+    },
+    {
+      "id": "BEIN-SPORTS-1-AU",
+      "name": "BEIN SPORTS 1 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=BEIN-SPORTS-1-AU"
+    },
+    {
+      "id": "BEIN-SPORTS-2-AU",
+      "name": "BEIN SPORTS 2 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=BEIN-SPORTS-2-AU"
+    },
+    {
+      "id": "BEIN-SPORTS-3-AU",
+      "name": "BEIN SPORTS 3 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=BEIN-SPORTS-3-AU"
+    },
+    {
+      "id": "beIN SPORTS (HD).sg",
+      "name": "beIN Sports 1 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%20(HD).sg"
+    },
+    {
+      "id": "beIN SPORTS 2 (HD).sg",
+      "name": "beIN Sports 2 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%202%20(HD).sg"
+    },
+    {
+      "id": "beIN SPORTS 3 (HD).sg",
+      "name": "beIN Sports 3 AU",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%203%20(HD).sg"
+    },
+    {
+      "id": "beIN SPORTS.id",
+      "name": "beIN Sports 1 ID",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS.id"
+    },
+    {
+      "id": "beIN SPORTS 2.id",
+      "name": "beIN Sports 2 ID",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%202.id"
+    },
+    {
+      "id": "beIN SPORTS 3.id",
+      "name": "beIN Sports 3 ID",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%203.id"
+    },
+    {
+      "id": "beIN SPORTS 4.id",
+      "name": "beIN Sports 4 ID",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%204.id"
+    },
+    {
+      "id": "beIN SPORTS 5.id",
+      "name": "beIN Sports 5 ID",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=beIN%20SPORTS%205.id"
+    },
+    {
+      "id": "TSN1.ca",
+      "name": "TSN SPORTS 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN1.ca"
+    },
+    {
+      "id": "TSN2.ca",
+      "name": "TSN SPORTS 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN2.ca"
+    },
+    {
+      "id": "TSN3.ca",
+      "name": "TSN SPORTS 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN3.ca"
+    },
+    {
+      "id": "TSN4.ca",
+      "name": "TSN SPORTS 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN4.ca"
+    },
+    {
+      "id": "TSN5.ca",
+      "name": "TSN SPORTS 5",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN5.ca"
+    },
+    {
+      "id": "TSN1 HD.ca",
+      "name": "TSN 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN1%20HD.ca"
+    },
+    {
+      "id": "TSN2 HD.ca",
+      "name": "TSN 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN2%20HD.ca"
+    },
+    {
+      "id": "TSN3 HD.ca",
+      "name": "TSN 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN3%20HD.ca"
+    },
+    {
+      "id": "TSN4 HD.ca",
+      "name": "TSN 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN4%20HD.ca"
+    },
+    {
+      "id": "TSN5 HD.ca",
+      "name": "TSN 5",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TSN5%20HD.ca"
+    },
+    {
+      "id": "premiersports1",
+      "name": "PREMIER SPORTS 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=premiersports1"
+    },
+    {
+      "id": "premiersports2",
+      "name": "PREMIER SPORTS 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=premiersports2"
+    },
+    {
+      "id": "Premier-Sports-1-IE",
+      "name": "Premier Sports 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Premier-Sports-1-IE"
+    },
+    {
+      "id": "Premier-Sports-2-IE",
+      "name": "Premier Sports 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Premier-Sports-2-IE"
+    },
+    {
+      "id": "sky1",
+      "name": "Sky Sport 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky1"
+    },
+    {
+      "id": "sky2",
+      "name": "Sky Sport 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky2"
+    },
+    {
+      "id": "sky3",
+      "name": "Sky Sport 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky3"
+    },
+    {
+      "id": "sky4",
+      "name": "Sky Sport 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky4"
+    },
+    {
+      "id": "sky5",
+      "name": "Sky Sport 5",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky5"
+    },
+    {
+      "id": "sky6",
+      "name": "Sky Sport 6",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky6"
+    },
+    {
+      "id": "sky7",
+      "name": "Sky Sport 7",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky7"
+    },
+    {
+      "id": "sky8",
+      "name": "Sky Sport 8",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky8"
+    },
+    {
+      "id": "sky9",
+      "name": "Sky Sport 9",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sky9"
+    },
+    {
+      "id": "fox502",
+      "name": "Fox Sports 502",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox502"
+    },
+    {
+      "id": "fox503",
+      "name": "Fox Sports 503",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox503"
+    },
+    {
+      "id": "fox504",
+      "name": "Fox Sports 504",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox504"
+    },
+    {
+      "id": "fox505",
+      "name": "Fox Sports 505",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox505"
+    },
+    {
+      "id": "fox506",
+      "name": "Fox Sports 506",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox506"
+    },
+    {
+      "id": "fox507",
+      "name": "Fox Sports 507",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=fox507"
+    },
+    {
+      "id": "tnt1",
+      "name": "TNT 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tnt1"
+    },
+    {
+      "id": "tnt2",
+      "name": "TNT 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tnt2"
+    },
+    {
+      "id": "tnt3",
+      "name": "TNT 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tnt3"
+    },
+    {
+      "id": "tnt4",
+      "name": "TNT 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tnt4"
+    },
+    {
+      "id": "skysportscricket-uk",
+      "name": "Sky Sports Cricket",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportscricket-uk"
+    },
+    {
+      "id": "sony2",
+      "name": "Sony Sports 2 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony2"
+    },
+    {
+      "id": "sony5",
+      "name": "Sony Sports 5 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sony5"
+    },
+    {
+      "id": "skysportsf1-uk",
+      "name": "Sky Sports F1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1-uk"
+    },
+    {
+      "id": "skyf1",
+      "name": "Sky Sports F1 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skyf1"
+    },
+    {
+      "id": "skysportsf1uhd-uk",
+      "name": "Sky Sports F1 4K HEVC",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsf1uhd-uk"
+    },
+    {
+      "id": "skysportf1-de",
+      "name": "Sky Sports F1 German",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-de"
+    },
+    {
+      "id": "skysportf1-it",
+      "name": "Sky Sports F1 Italian",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportf1-it"
+    },
+    {
+      "id": "skysportsfootball-uk",
+      "name": "Sky Sports Football",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsfootball-uk"
+    },
+    {
+      "id": "skysportsgolf-uk",
+      "name": "Sky Sports Golf",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsgolf-uk"
+    },
+    {
+      "id": "skysportsmainevent-uk",
+      "name": "Sky Sports Main Event",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmainevent-uk"
+    },
+    {
+      "id": "skysportsmaineventuhd-uk",
+      "name": "Sky Sports Main Event 4K HEVC",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmaineventuhd-uk"
+    },
+    {
+      "id": "skysportsmix-uk",
+      "name": "Sky Sports Mix",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsmix-uk"
+    },
+    {
+      "id": "skysportsnews-uk",
+      "name": "Sky Sports News",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsnews-uk"
+    },
+    {
+      "id": "skysportspremierleague-uk",
+      "name": "Sky Sports Premier League",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportspremierleague-uk"
+    },
+    {
+      "id": "skysportsracing-uk",
+      "name": "Sky Sports Racing",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsracing-uk"
+    },
+    {
+      "id": "skysportstennis-uk",
+      "name": "Sky Sports Tennis",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportstennis-uk"
+    },
+    {
+      "id": "skysportsplus-uk",
+      "name": "Sky Sports+",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=skysportsplus-uk"
+    },
+    {
+      "id": "sonysportsnetwork-in",
+      "name": "Sony Sports Network",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sonysportsnetwork-in"
+    },
+    {
+      "id": "sonysportsnetwork2-in",
+      "name": "Sony Sports Network 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sonysportsnetwork2-in"
+    },
+    {
+      "id": "sonysportsnetwork3-in",
+      "name": "Sony Sports Network 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sonysportsnetwork3-in"
+    },
+    {
+      "id": "sonysportsnetwork4-in",
+      "name": "Sony Sports Network 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sonysportsnetwork4-in"
+    },
+    {
+      "id": "sonysportsnetwork5-in",
+      "name": "Sony Sports Network 5",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sonysportsnetwork5-in"
+    },
+    {
+      "id": "sporttv1",
+      "name": "Sport TV1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sporttv1"
+    },
+    {
+      "id": "sporttv2",
+      "name": "Sport TV2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sporttv2"
+    },
+    {
+      "id": "sporttv3",
+      "name": "Sport TV3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sporttv3"
+    },
+    {
+      "id": "sporttv4",
+      "name": "Sport TV4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sporttv4"
+    },
+    {
+      "id": "sporttv5",
+      "name": "Sport TV5",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sporttv5"
+    },
+    {
+      "id": "tudn-usa",
+      "name": "TUDN",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tudn-usa"
+    },
+    {
+      "id": "willow-usa",
+      "name": "Willow Cricket",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=willow-usa"
+    },
+    {
+      "id": "willow2-usa",
+      "name": "Willow Cricket 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=willow2-usa"
+    },
+    {
+      "id": "ss1",
+      "name": "Star Sports 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss1"
+    },
+    {
+      "id": "English1",
+      "name": "Star Sports 1 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=English1"
+    },
+    {
+      "id": "ss1-hindi",
+      "name": "Star Sports 1 Hindi",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss1-hindi"
+    },
+    {
+      "id": "Hindi1",
+      "name": "Star Sports 1 Hindi HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Hindi1"
+    },
+    {
+      "id": "Kannada1",
+      "name": "Star Sports 1 Kannada",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Kannada1"
+    },
+    {
+      "id": "tamil",
+      "name": "Star Sports 1 Tamil",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tamil"
+    },
+    {
+      "id": "Tamil1",
+      "name": "Tamil HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tamil1"
+    },
+    {
+      "id": "ss1-telugu",
+      "name": "Star Sports 1 Telugu",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss1-telugu"
+    },
+    {
+      "id": "Telugu1",
+      "name": "Star Sports 1 Telugu HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Telugu1"
+    },
+    {
+      "id": "ss2",
+      "name": "Star Sports 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss2"
+    },
+    {
+      "id": "English2",
+      "name": "Star Sports 2 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=English2"
+    },
+    {
+      "id": "ss2-hindi",
+      "name": "Star Sports 2 Hindi",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss2-hindi"
+    },
+    {
+      "id": "Hindi2",
+      "name": "Star Sports 2 Hindi HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Hindi2"
+    },
+    {
+      "id": "Kannada2",
+      "name": "Star Sports 2 Kannada",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Kannada2"
+    },
+    {
+      "id": "Tamilsd",
+      "name": "Star Sports 2 Tamil",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tamilsd"
+    },
+    {
+      "id": "Tamil2",
+      "name": "Star Sports 2 Tamil HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Tamil2"
+    },
+    {
+      "id": "Telugu",
+      "name": "Star Sports 2 Telugu",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Telugu"
+    },
+    {
+      "id": "Telugu2",
+      "name": "Star Sports 2 Telugu HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Telugu2"
+    },
+    {
+      "id": "ss3",
+      "name": "Star Sports 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss3"
+    },
+    {
+      "id": "ss-khel",
+      "name": "Star Sports Khel",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss-khel"
+    },
+    {
+      "id": "sss",
+      "name": "Star Sports Select 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=sss"
+    },
+    {
+      "id": "Select1",
+      "name": "Star Sports Select 1 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Select1"
+    },
+    {
+      "id": "ss-select-2",
+      "name": "Star Sports Select 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=ss-select-2"
+    },
+    {
+      "id": "Select2",
+      "name": "Star Sports Select 2 HD",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=Select2"
+    },
+    {
+      "id": "tntsports1",
+      "name": "TNT SPORTS 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports1"
+    },
+    {
+      "id": "tntsports2",
+      "name": "TNT SPORTS 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports2"
+    },
+    {
+      "id": "tntsports3",
+      "name": "TNT SPORTS 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports3"
+    },
+    {
+      "id": "tntsports4",
+      "name": "TNT SPORTS 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports4"
+    },
+    {
+      "id": "SETHD",
+      "name": "Sony SET HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SETHD"
+    },
+    {
+      "id": "E1SD",
+      "name": "Star Sports 1 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=E1SD"
+    },
+    {
+      "id": "E1HD",
+      "name": "Star Sports 1 HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=E1HD"
+    },
+    {
+      "id": "H1SD",
+      "name": "Star Sports 1 Hindi -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=H1SD"
+    },
+    {
+      "id": "H1HD",
+      "name": "Star Sports 1 Hindi HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=H1HD"
+    },
+    {
+      "id": "E2SD",
+      "name": "Star Sports 2 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=E2SD"
+    },
+    {
+      "id": "E2HD",
+      "name": "Star Sports 2 HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=E2HD"
+    },
+    {
+      "id": "H2SD",
+      "name": "Star Sports 2 Hindi -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=H2SD"
+    },
+    {
+      "id": "H2HD",
+      "name": "Star Sports 2 Hindi HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=H2HD"
+    },
+    {
+      "id": "SS3",
+      "name": "Star Sports 3 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SS3"
+    },
+    {
+      "id": "SE1",
+      "name": "Star Sports Select 1 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SE1"
+    },
+    {
+      "id": "SE1HD",
+      "name": "Star Sports Select 1 HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SE1HD"
+    },
+    {
+      "id": "SE2",
+      "name": "Star Sports Select 2 SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SE2"
+    },
+    {
+      "id": "SE2HD",
+      "name": "Star Sports Select 2 HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SE2HD"
+    },
+    {
+      "id": "T1SD",
+      "name": "Star Sports 1 Tamil SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=T1SD"
+    },
+    {
+      "id": "T1HD",
+      "name": "Star Sports 1 Tamil HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=T1HD"
+    },
+    {
+      "id": "TE1SD",
+      "name": "Star Sports 1 Telugu SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TE1SD"
+    },
+    {
+      "id": "TE1HD",
+      "name": "Star Sports 1 Telugu HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TE1HD"
+    },
+    {
+      "id": "KA1SD",
+      "name": "Star Sports 1 Kannada SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=KA1SD"
+    },
+    {
+      "id": "T2SD",
+      "name": "Star Sports 2 Tamil -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=T2SD"
+    },
+    {
+      "id": "S2HD",
+      "name": "Star Sports 2 Tamil HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=S2HD"
+    },
+    {
+      "id": "TE2SD",
+      "name": "Star Sports 2 Telugu -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TE2SD"
+    },
+    {
+      "id": "TE2HD",
+      "name": "Star Sports 2 Telugu HD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=TE2HD"
+    },
+    {
+      "id": "KA2SD",
+      "name": "Star Sports 2 Kannada SD -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=KA2SD"
+    },
+    {
+      "id": "SSK",
+      "name": "Star Sports Khel -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=SSK"
+    },
+    {
+      "id": "EURO",
+      "name": "Euro Sports -b",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=EURO"
+    },
+    {
+      "id": "cbs",
+      "name": "cbs",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=cbs"
     }
   ]
 }
