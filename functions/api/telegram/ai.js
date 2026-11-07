@@ -610,32 +610,6 @@ async function handleText({ request, env, message }) {
   return;
 }
 
-async function sendWelcome(env, chatId, member) {
-  const firstName = String(member?.first_name || "there").replace(/[<>]/g, "").slice(0, 64);
-  const text = `Hey ${firstName}! 👋❤️
-
-💙 Welcome to CRICZONE HUB! 💙
-
-🏏 Enjoy live cricket updates and stay connected with our community.
-
-👇 Quick links:`;
-  const replyMarkup = {
-    inline_keyboard: [
-      [{ text: "🌐 Official Website", url: "https://criczone.pages.dev/" }],
-      [{ text: "📢 Telegram Channel", url: "https://t.me/+pN15_8gc54s2NDU1" }],
-      [{ text: "🏏 Live Cricket", url: "https://criczone.pages.dev/criczone/" }]
-    ]
-  };
-  const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, reply_markup: replyMarkup, disable_web_page_preview: true })
-  });
-  const result = await response.json();
-  if (!response.ok || !result.ok) console.error("CRICZONE welcome send failed", result);
-  return result;
-}
-
 export async function onRequestPost({ request, env }) {
   const secret = env.TELEGRAM_WEBHOOK_SECRET;
   if (!secret || request.headers.get("X-Telegram-Bot-Api-Secret-Token") !== secret) {
@@ -649,10 +623,6 @@ export async function onRequestPost({ request, env }) {
   const message = update?.message || update?.edited_message;
   if (message?.chat?.type && message.chat.type !== "private") {
     try {
-      const newMembers = Array.isArray(message.new_chat_members) ? message.new_chat_members : [];
-      for (const member of newMembers) {
-        if (member && !member.is_bot) await sendWelcome(env, message.chat.id, member);
-      }
       await handleText({ request, env, message });
     }
     catch (error) {
