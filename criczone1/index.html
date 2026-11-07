@@ -3137,7 +3137,8 @@
         let channels = [],
           activeCategory = "All",
           query = "",
-          savedScrollY = 0;
+          savedScrollY = 0,
+          playerGuardActive = false;
         function normalize(raw) {
           if (Array.isArray(raw)) return raw;
           if (!raw || typeof raw !== "object") return [];
@@ -3488,21 +3489,40 @@
           $("player").style.display = "block";
           $("app").style.display = "none";
           document.title = "CRICZONE · " + c.name;
-          $("frame").focus();
+          // Do not programmatically focus the cross-origin iframe: on mobile
+          // browsers its internal history can consume the device Back action.
         }
+        $("frame").addEventListener("load", () => {
+          if (
+            $("player").style.display !== "none" &&
+            $("frame").src !== "about:blank" &&
+            !playerGuardActive
+          ) {
+            history.pushState(
+              { ...(history.state || {}), czPlayerGuard: true },
+              "",
+              location.href,
+            );
+            playerGuardActive = true;
+          }
+        });
         function closePlayer(push = true) {
           // Close directly instead of relying on history.back(), which can be
           // swallowed by mobile in-app browsers while the iframe has focus.
           // Remove only the channel id and preserve other query parameters.
-          if (push) {
-            const next = new URL(location.href);
-            next.searchParams.delete("id");
-            history.replaceState(
-              { ...(history.state || {}), id: null, scrollY: savedScrollY },
-              "",
-              next,
-            );
-          }
+          const next = new URL(location.href);
+          next.searchParams.delete("id");
+          history.replaceState(
+            {
+              ...(history.state || {}),
+              id: null,
+              czPlayerGuard: false,
+              scrollY: savedScrollY,
+            },
+            "",
+            next,
+          );
+          playerGuardActive = false;
           $("frame").src = "about:blank";
           $("player").style.display = "none";
           $("app").style.display = "block";
@@ -3555,7 +3575,16 @@
           $("search").focus();
         });
         $("back").addEventListener("click", () => closePlayer(true));
-        window.addEventListener("popstate", route);
+        window.addEventListener("popstate", (event) => {
+          // The first device-Back press after the player iframe loads lands on
+          // this parent-page guard entry instead of exposing the iframe's blank
+          // intermediate page. Close the player and restore the channel list.
+          if (playerGuardActive || $("player").style.display !== "none") {
+            closePlayer(false);
+            return;
+          }
+          route();
+        });
         (async () => {
           try {
             channels = await loadChannels();
