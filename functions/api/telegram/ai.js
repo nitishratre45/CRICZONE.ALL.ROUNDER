@@ -74,9 +74,9 @@ async function send(env, chatId, text, replyTo, replyMarkup) {
   // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
   const source = String(text || "");
   const keyboard = replyMarkup || buildInlineLinkKeyboard(source);
-  // Telegram requires message text, so use an invisible separator when buttons are present.
-  // This leaves only the inline channel buttons visible in the chat.
-  const displaySource = keyboard ? "\u2063" : source;
+  // Always show the explanatory message above the inline keyboard.
+  // Hiding it behind an invisible separator made buttons appear without context.
+  const displaySource = source;
   const chunks = [];
   let remaining = displaySource;
   while (remaining.length > 3900) {
