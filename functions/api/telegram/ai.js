@@ -275,7 +275,26 @@ async function handleText({ request, env, message }) {
 
   if (isMatchQuery) {
     await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", userText, "");
-    return reply("Which channel is showing this match live? Send the channel name (even part of it).");
+    const siteLabels = {
+      criczone: "CRICZONE",
+      criczone1: "CRICZONE 1",
+      criczone2: "CRICZONE 2",
+      criczone3: "CRICZONE 3",
+      criczonebuzz: "WILLOW / CRICBUZZ",
+      criczonefancode: "FANCODE",
+      sony: "SONY",
+      criczonesony: "SONY SPORTS"
+    };
+    const sites = new Map();
+    for (const item of data.records) {
+      const folder = String(item.folder || "").trim();
+      const url = String(item.page_url || item.url || "").trim();
+      if (folder && url && !sites.has(folder)) sites.set(folder, { label: siteLabels[folder] || folder.toUpperCase(), url });
+    }
+    const siteLines = [...sites.values()].map(site => site.label + "\\n" + site.url);
+    const channelNames = [...new Set(data.records.map(item => String(item.name || "").trim()).filter(Boolean))].slice(0, 20);
+    const channelLine = channelNames.length ? "\\n\\nAvailable channel names:\\n" + channelNames.map((name, i) => (i + 1) + ". " + name).join("\\n") : "";
+    return reply("Match: " + userText + "\\n\\nAvailable websites:\\n" + siteLines.join("\\n\\n") + channelLine + "\\n\\nSend the channel name to get its website link.");
   }
 
   const channelMatches = findMatches(data.records, userText);
