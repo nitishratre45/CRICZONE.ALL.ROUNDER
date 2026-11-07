@@ -586,14 +586,17 @@ async function handleText({ request, env, message }) {
     const unique = getProviderChannels(requestedProvider);
     if (unique.length) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "", requestedProvider.name);
-      const list = unique.map((item, index) => {
-        const url = item.page_url || item.url || "";
-        return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
-      }).join("\n\n");
-      const webLink = normalize(requestedProvider.name) === "fancode"
-        ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
-        : "";
-      return reply("🌐 OPEN IN CHROME — tap any channel link below\n\n" + requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list + webLink);
+      const channelButtons = unique
+        .filter(item => (item.page_url || item.url) && item.name)
+        .map(item => [{ text: String(item.name).slice(0, 64), url: item.page_url || item.url }]);
+      if (normalize(requestedProvider.name) === "fancode") {
+        channelButtons.push([{ text: "FanCode Web", url: "https://criczone.pages.dev/criczonefancode/" }]);
+      }
+      const channelKeyboard = channelButtons.length ? { inline_keyboard: channelButtons } : undefined;
+      const channelMessage =
+        "📺 <b>" + requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")</b>\n\n" +
+        "<i>Choose a channel below to open it in Chrome.</i>";
+      return reply(channelMessage, channelKeyboard, "HTML");
     }
     return reply("No " + requestedProvider.name + " channels were found in the current directory.");
   }
