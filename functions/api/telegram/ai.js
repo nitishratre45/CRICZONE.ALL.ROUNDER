@@ -357,9 +357,12 @@ async function handleText({ request, env, message }) {
       const unique = getProviderChannels(selectedProvider);
       if (unique.length) {
         await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, selectedProvider.name);
-        const list = unique.map((item, index) => (index + 1) + ". " + item.name).join("\n");
+        const list = unique.map((item, index) => {
+          const url = item.page_url || item.url || "";
+          return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
+        }).join("\n\n");
         return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
-          list + "\n\nSend an exact channel name to get its CRICZONE URL.");
+          list);
       }
       return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
     }
