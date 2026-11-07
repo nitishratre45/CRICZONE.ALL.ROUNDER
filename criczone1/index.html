@@ -867,6 +867,44 @@
     }
     @media(prefers-reduced-motion:reduce){.brand{transition:none}}
 
+
+    /* Mobile player viewport: fit a 16:9 stream into the available screen */
+    #player{position:fixed;inset:0;overflow:hidden;background:#000;isolation:isolate}
+    #frame{
+      position:absolute;left:50%;top:50%;
+      width:min(100vw,177.7778vh);height:min(56.25vw,100vh);
+      max-width:100%;max-height:100%;
+      transform:translate(-50%,-50%);
+      border:0;background:#000
+    }
+    .playerbar{position:absolute;z-index:5;top:max(9px,env(safe-area-inset-top));left:9px;right:9px;display:flex;gap:8px;align-items:center;pointer-events:none}
+    .playerbar button,.playertitle{pointer-events:auto;min-height:40px;padding:9px 12px;border:1px solid rgba(255,255,255,.2);border-radius:11px;background:rgba(8,15,26,.92);color:#f6f8fc;box-shadow:0 5px 18px #0006;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .playerbar button{flex:0 0 auto;font-weight:800}
+    .playertitle{margin-left:auto;max-width:min(58%,420px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    /* Keep every channel title and LIVE label inside its poster card */
+    .poster{overflow:hidden;isolation:isolate}
+    .poster:after{content:"▶";inset:auto 10px 10px auto;width:34px;height:34px;padding:0;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(5,11,20,.82);color:#ffd36b;font-size:15px;letter-spacing:0;text-shadow:none;box-shadow:0 4px 12px #0007;z-index:3}
+    .channel-brand-logo.channel-name-art{min-width:0;max-width:100%;overflow:hidden}
+    .channel-brand-logo.channel-name-art .brand-word{min-width:0;max-width:calc(100% - 62px);overflow:hidden;overflow-wrap:anywhere}
+    .channel-brand-logo.channel-name-art .brand-word strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;max-width:100%;font-size:inherit;line-height:1.18}
+    .channel-brand-logo.channel-name-art .brand-word small{white-space:normal;overflow-wrap:anywhere}
+    .channel-brand-logo.channel-name-art .art-orbit{right:-48px}
+    @media(max-width:599px){
+      #frame{width:100vw;height:56.25vw;max-height:calc(100dvh - 64px);height:min(56.25vw,calc(100dvh - 64px))}
+      .playerbar{top:max(8px,env(safe-area-inset-top));left:8px;right:8px}
+      .playerbar button,.playertitle{min-height:38px;padding:8px 10px;font-size:11px}
+      .playertitle{max-width:55%}
+      .channel-brand-logo.channel-name-art{gap:7px;padding:9px 7px}
+      .channel-brand-logo.channel-name-art .brand-symbol{width:39px;height:39px;flex-basis:39px}
+      .channel-brand-logo.channel-name-art .brand-word{max-width:calc(100% - 48px);font-size:9px}
+      .channel-brand-logo.channel-name-art .brand-word small{font-size:6px;letter-spacing:.55px}
+      .poster:after{right:7px;bottom:7px;width:29px;height:29px;font-size:12px}
+    }
+    @media(orientation:landscape) and (max-height:520px){
+      #frame{width:min(100vw,177.7778vh);height:min(56.25vw,100vh)}
+      .playerbar{top:5px}
+    }
+
     </style>
 
 </head>
