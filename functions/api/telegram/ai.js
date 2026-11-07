@@ -53,39 +53,15 @@ function buildInlineLinkKeyboard(text) {
       const candidate = lines[j].replace(/^\s*\d+[.)]\s*/, "").replace(/^🌐\s*Open in Chrome:\s*/i, "").trim();
       if (candidate && !/^🌐/u.test(candidate) && !/^OPEN IN CHROME/i.test(candidate)) { label = candidate; break; }
     }
-    // Telegram buttons have no font-size control. Keep labels short enough
-    // to fit narrow mobile screens, especially when two buttons share a row.
-    label = (label || "Open").replace(/^\s*\d+[.)]\s*/, "").replace(/\s+/g, " ").trim();
-    label = label
-      .replace(/^Fox Sports\b/i, "Fox")
-      .replace(/^Sony Sports Ten\b/i, "Sony")
-      .replace(/^Sony Sports\b/i, "Sony")
-      .replace(/^Star Sports\b/i, "Star")
-      .replace(/^Sky Sports\b/i, "Sky")
-      .replace(/^TNT Sports\b/i, "TNT")
-      .replace(/^FanCode\b/i, "FanCode")
-      .replace(/\b(?:channel|channels|live)\b/gi, "")
-      .replace(/\bHigh Definition\b/gi, "HD")
-      .replace(/\bUltra HD\b/gi, "UHD")
-      .replace(/\bHindi\b/gi, "Hin")
-      .replace(/\bTamil\b/gi, "Tam")
-      .replace(/\bTelugu\b/gi, "Tel")
-      .replace(/\bKannada\b/gi, "Kan")
-      .replace(/\bBengali\b/gi, "Ben")
-      .replace(/\bMalayalam\b/gi, "Mal")
-      .replace(/[|•:–—_-]+/g, " ")
+    // Preserve the complete channel name on the button.
+    // Only remove list numbering and normalize repeated whitespace.
+    label = (label || "Open channel")
+      .replace(/^\s*\d+[.)]\s*/, "")
       .replace(/\s+/g, " ")
       .trim();
-
-    // Prefer preserving channel number and quality over a long broadcaster suffix.
-    const words = label.split(" ").filter(Boolean);
-    if (words.length > 3) {
-      const quality = words.find(word => /^(?:HD|FHD|UHD|4K)$/i.test(word));
-      const number = words.find(word => /^(?:\d{1,2}|[IVX]{1,3})$/i.test(word));
-      const language = words.find(word => /^(?:Hin|Tam|Tel|Kan|Ben|Mal)$/i.test(word));
-      label = [words[0], number, language, quality].filter(Boolean).join(" ");
-    }
-    label = label.slice(0, 16).trim() || "Open";
+    // Telegram inline button labels support up to 64 characters.
+    // Keep full names whenever they fit the Bot API limit.
+    if (label.length > 64) label = label.slice(0, 64).trimEnd();
     const button = { text: label, url };
     // Telegram does not expose screen width to bots, so use one full-width
     // button per row. This is the safest layout across narrow phones and desktop.
