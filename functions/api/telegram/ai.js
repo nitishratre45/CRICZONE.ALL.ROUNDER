@@ -213,9 +213,38 @@ function findMatches(records, query) {
   return [...unique.values()].slice(0, 4).map(({ _score, _normalizedName, ...item }) => item);
 }
 
+function editDistance(a, b) {
+  const left = String(a || ""), right = String(b || "");
+  if (Math.abs(left.length - right.length) > 2) return 99;
+  let previous = Array.from({ length: right.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= left.length; i++) {
+    const current = [i];
+    for (let j = 1; j <= right.length; j++) {
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + (left[i - 1] === right[j - 1] ? 0 : 1)
+      );
+    }
+    previous = current;
+  }
+  return previous[right.length];
+}
+
+function closeWord(a, b) {
+  if (!a || !b) return false;
+  if (a === b || a.startsWith(b) || b.startsWith(a)) return true;
+  const limit = Math.min(a.length, b.length) >= 7 ? 2 : (Math.min(a.length, b.length) >= 4 ? 1 : 0);
+  return limit > 0 && editDistance(a, b) <= limit;
+}
+
 function findWillowMatches(matches, query) {
-  const normalized = normalize(query);
-  const parts = normalized.split(/\s+(?:vs|versus)\s+/).filter(Boolean);
+  const normalized = normalize(query)
+    .replace(/\\bnewzealand\\b/g, "new zealand")
+    .replace(/\\bsouthafrica\\b/g, "south africa")
+    .replace(/\\bsrilanka\\b/g, "sri lanka")
+    .replace(/\\bwestindies\\b/g, "west indies");
+  const parts = normalized.split(/\\s+(?:vs|versus|v)\\s+/).filter(Boolean);
   const aliases = {
     ind: ["india"], india: ["india"], nz: ["new zealand"], "new zealand": ["new zealand"],
     aus: ["australia"], australia: ["australia"], eng: ["england"], england: ["england"],
@@ -223,18 +252,25 @@ function findWillowMatches(matches, query) {
     sl: ["sri lanka"], "sri lanka": ["sri lanka"], ban: ["bangladesh"], bangladesh: ["bangladesh"],
     wi: ["west indies"], "west indies": ["west indies"]
   };
-  const hasSide = (event, side) => {
-    const terms = aliases[side] || [side];
-    return terms.some(term => normalize(event).includes(term));
+  const sideMatches = (eventName, side) => {
+    const expanded = aliases[side] || [side];
+    const eventTokens = normalize(eventName).split(" ").filter(Boolean);
+    return expanded.some(term => {
+      const wanted = normalize(term).split(" ").filter(Boolean);
+      return wanted.every(word => eventTokens.some(candidate => closeWord(word, candidate)));
+    });
   };
+
   let found = [];
   if (parts.length === 2) {
-    found = matches.filter(item => hasSide(item.name, parts[0]) && hasSide(item.name, parts[1]));
+    found = matches.filter(item => sideMatches(item.name, parts[0]) && sideMatches(item.name, parts[1]));
   } else {
-    const tokens = normalized.split(" ").filter(t => !["match","live","cricket","today"].includes(t));
+    const tokens = normalized.split(" ").filter(t => !["match","live","cricket","today","the","of","in","a","an"].includes(t));
     found = matches.filter(item => tokens.length && tokens.every(token => {
       const expanded = aliases[token] || [token];
-      return expanded.some(term => normalize(item.name).includes(term));
+      return expanded.some(term => normalize(term).split(" ").every(word =>
+        normalize(item.name).split(" ").some(candidate => closeWord(word, candidate))
+      ));
     }));
   }
   return found.slice(0, 5);
