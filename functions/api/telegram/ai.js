@@ -340,7 +340,7 @@ async function handleText({ request, env, message }) {
 
   // Match search is provider-agnostic: any two teams/separator can use the same flow.
   // This is a channel-directory lookup, not a claim that every listed provider carries the fixture.
-  const matchSeparators = /\\b(?:vs|versus|v|against)\\b/i;
+  const matchSeparators = /\b(?:vs|versus|v|against)\b/i;
   const isTeamMatchQuery = matchSeparators.test(value);
   const providerNames = ["Sony Sports", "Star Sports", "FanCode", "Willow", "Sky", "Fox", "TNT"];
   if (isTeamMatchQuery) {
@@ -354,9 +354,9 @@ async function handleText({ request, env, message }) {
     if (!availableProviders.length) {
       return reply("I couldn't find any broadcaster channels in the current feeds. Please try again later.");
     }
-    return reply("AVAILABLE PROVIDERS FOR " + userText + "\\n\\n" +
-      availableProviders.map((name, index) => (index + 1) + ". " + name).join("\\n") +
-      "\\n\\nSend a provider name to see its channel names.");
+    return reply("AVAILABLE PROVIDERS FOR " + userText + "\n\n" +
+      availableProviders.map((name, index) => (index + 1) + ". " + name).join("\n") +
+      "\n\nSend a provider name to see its channel names.");
   }
 
   if (state?.step === "awaiting_provider") {
@@ -370,9 +370,9 @@ async function handleText({ request, env, message }) {
       const unique = [...new Map(providerChannels.map(item => [normalize(item.name), item])).values()];
       if (unique.length) {
         await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, requestedProvider);
-        return reply(requestedProvider.toUpperCase() + " CHANNELS\\n\\n" +
-          unique.slice(0, 40).map((item, index) => (index + 1) + ". " + item.name).join("\\n") +
-          "\\n\\nSend the exact channel name to get its CRICZONE URL.");
+        return reply(requestedProvider.toUpperCase() + " CHANNELS\n\n" +
+          unique.slice(0, 40).map((item, index) => (index + 1) + ". " + item.name).join("\n") +
+          "\n\nSend the exact channel name to get its CRICZONE URL.");
       }
       return reply("No " + requestedProvider + " channels were found in the current feeds.");
     }
