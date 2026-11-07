@@ -636,6 +636,34 @@
     @media(max-width:360px){#grid{gap:8px}.cardbody{padding:8px}.channelname{font-size:9px}.brand{font-size:17px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.pill,#search{transition:none!important}}
 
+
+    /* Screenshot refinements: keep header compact, expose real channel groups */
+    .brand{flex:0 0 auto;min-width:0}
+    .brand>span:last-child{white-space:nowrap;flex:0 0 auto}
+    .brand-mark{flex-shrink:0}
+    .toprow{flex-wrap:nowrap}
+    #filters{align-items:center}
+    @media(max-width:599px){
+      .brand{font-size:clamp(17px,5vw,20px);gap:8px;letter-spacing:.35px}
+      .brand-mark{width:37px;height:37px;flex-basis:37px}
+      .brand small{font-size:6.5px;letter-spacing:.65px}
+      .live{margin-left:auto;flex:0 0 auto}
+      .welcome-strip{min-height:108px}
+      .welcome-icon{width:43px;height:43px;flex-basis:43px}
+      #filters{display:flex;flex-wrap:wrap;gap:7px;padding:5px 0 15px}
+      .pill{flex:0 0 auto;min-height:36px;padding:8px 11px}
+      .pill:first-child{grid-column:auto}
+      #grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .poster{aspect-ratio:16/9}
+      .cardbody{min-height:58px}
+    }
+    @media(max-width:360px){
+      .brand{font-size:16px;gap:6px}
+      .brand-mark{width:33px;height:33px;flex-basis:33px}
+      .brand small{font-size:6px;letter-spacing:.35px}
+      .live{font-size:7px;padding:5px 6px}
+    }
+
     /* FINAL RESPONSIVE POLISH — CRICZONE1 */
     html,body{width:100%;min-height:100%;overflow-x:hidden}
     body{background:
@@ -805,7 +833,8 @@
             let channels = [], activeCategory = 'All', query = '', savedScrollY = 0;
             function normalize(raw) { if (Array.isArray(raw)) return raw; if (!raw || typeof raw !== 'object') return []; if (Array.isArray(raw.iframes)) return raw.iframes; if (Array.isArray(raw.channels)) return raw.channels; if (Array.isArray(raw.data)) return raw.data; return [raw] }
             async function fetchJson(url) { const controller = new AbortController(), timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT); try { const r = await fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' }, signal: controller.signal }); if (!r.ok) throw Error('HTTP ' + r.status); return await r.json() } finally { clearTimeout(timer) } }
-            function toChannel(x) { if (!x || x.id == null || !x.name || !x.iframeSrc) return null; let u; try { u = new URL(String(x.iframeSrc), location.href); if (!['https:', 'http:'].includes(u.protocol)) return null } catch { return null } return { id: String(x.id), name: String(x.name), iframeSrc: u.href, category: String(x.category || 'General'), logo: String(x.logourl || x.logo || x.logoUrl || '') } }
+            function inferCategory(name) { const n=String(name||'').toLowerCase(); if (/sony|ten sports|ten cricket/.test(n)) return 'SONY SPORTS'; if (/star sports|star cricket|starsports/.test(n)) return 'STAR SPORTS'; if (/sports18|sports 18|colors sports/.test(n)) return 'SPORTS18'; if (/sky sports/.test(n)) return 'SKY SPORTS'; if (/tnt sports/.test(n)) return 'TNT SPORTS'; if (/willow/.test(n)) return 'WILLOW'; if (/fox sports/.test(n)) return 'FOX SPORTS'; if (/supersport|super sport/.test(n)) return 'SUPERSPORT'; if (/espn/.test(n)) return 'ESPN'; if (/astro/.test(n)) return 'ASTRO'; if (/zee|d sports/.test(n)) return 'OTHER SPORTS'; return 'OTHER' }
+            function toChannel(x) { if (!x || x.id == null || !x.name || !x.iframeSrc) return null; let u; try { u = new URL(String(x.iframeSrc), location.href); if (!['https:', 'http:'].includes(u.protocol)) return null } catch { return null } const rawCategory=String(x.category||'').trim(); const category=(!rawCategory||rawCategory.toLowerCase()==='general')?inferCategory(x.name):rawCategory.toUpperCase(); return { id: String(x.id), name: String(x.name), iframeSrc: u.href, category, logo: String(x.logourl || x.logo || x.logoUrl || '') } }
             async function loadChannels() { const results = await Promise.allSettled(JSON_URLS.map(fetchJson)), seen = new Set(), out = [], errors = []; results.forEach((r, i) => { if (r.status === 'rejected') { const e = r.reason; errors.push(JSON_URLS[i] + ' — ' + (e?.name === 'AbortError' ? 'timed out' : e?.message || 'failed')); return } normalize(r.value).forEach(x => { const c = toChannel(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c) } }) }); if (!out.length) throw Error('No valid channels could be loaded. ' + errors.join(' | ')); return out }
             function esc(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
             function renderFilters() { const cats = ['All', ...Array.from(new Set(channels.map(c => c.category).filter(c => c && c !== 'General'))).sort()]; $('filters').innerHTML = cats.map(c => { const n = c === 'All' ? channels.length : channels.filter(x => x.category === c).length; return '<button type="button" class="pill ' + (c === activeCategory ? 'active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + ' <span style="font-size:9px;opacity:.72">' + n + '</span></button>' }).join(''); $('filters').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeCategory = b.dataset.cat; renderFilters(); render() })) }
