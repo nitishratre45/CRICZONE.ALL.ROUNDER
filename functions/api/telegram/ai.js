@@ -371,15 +371,17 @@ async function handleText({ request, env, message }) {
       "\n\nSend a provider name to see its channel names.");
   }
 
-  // Only reveal Sony backup links after an explicit playback-failure report.
-  if (state?.provider && normalize(state.provider) === "sony sports" &&
-      /\\b(?:not working|does not work|doesnt work|not playing|not opening|not loading|nhi chal|nahi chal|nahin chal|kaam nahi|work nahi|backup|alternate)\\b/i.test(value)) {
+  // Show Sony alternate links only after the user reports primary playback trouble.
+  const sonyFailureReport = /\b(?:not\s+working|does\s+not\s+work|doesnt\s+work|not\s+playing|not\s+opening|not\s+loading|nhi\s+chal(?:\s+raha)?|nahi\s+chal(?:\s+raha|\s+rha)?|nahin\s+chal(?:\s+raha)?|kaam\s+nahi\s+kar|work\s+nahi|backup|alternate)\b/i.test(value);
+  if (sonyFailureReport && (normalize(state?.provider || "") === "sony sports" ||
+      /\bsony\s+sports\b/i.test(String(state?.topic || "")) ||
+      /\bsony\s+sports\b/i.test(userText))) {
     const backups = (memory.sony_channel_sets?.backup || [])
       .filter(item => item && item.id && item.name && item.url);
     if (backups.length) {
-      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic || "", "Sony Sports");
-      return reply("SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\\n\\n" +
-        backups.map((item, index) => (index + 1) + ". " + item.name + "\\n" + item.url).join("\\n\\n"));
+      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "Sony Sports", "Sony Sports");
+      return reply("📺 SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
+        backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.url).join("\n\n"));
     }
     return reply("Sony backup channels are not available right now. Please try again later.");
   }
