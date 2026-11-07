@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="#070b09">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#080d16">
     <title>CRICZONE — Live Channels</title>
     <meta name="description" content="Watch available live cricket and sports channels on CRICZONE.">
     <link rel="manifest" href="manifest.json">
@@ -1121,8 +1121,8 @@ function displayMany(elements, value) {
     }, error => console.warn("CRICZONE1 live watching listener:", error));
   } catch (error) {
     console.warn("CRICZONE1 Firebase audience counters unavailable:", error);
-    display(liveEl, BASE_COUNT);
-    display(totalEl, BASE_COUNT);
+    displayMany(liveEls, BASE_COUNT);
+    displayMany(totalEls, BASE_COUNT);
   }
 })();
 
@@ -1130,6 +1130,17 @@ window.addEventListener("pagehide", () => {
   if (liveUnsubscribe) liveUnsubscribe();
   if (presenceRef) remove(presenceRef).catch(() => {});
 });
+</script>
+
+<script>
+/* Register the folder-scoped service worker for installability and clean updates. */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js", { scope: "./", updateViaCache: "none" })
+      .then(registration => registration.update())
+      .catch(error => console.warn("CRICZONE1 service worker registration failed:", error));
+  }, { once: true });
+}
 </script>
 
 </body>
