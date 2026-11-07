@@ -15,7 +15,8 @@
     "sky_fox_tnt": "Sky provider must return only the 28 curated Sky Sports records from telegram-channels.json source manual_directory. Preserve each record's exact folder and ID URL. Deduplicate by folder+ID and normalized channel name; do not mix other feeds.",
     "tnt": "For TNT requests, return only the four curated TNT Sports channels from telegram-channels.json source manual_directory. Use exact /e/?id= URLs. Do not mix unrelated feeds.",
     "star_sports": "Return exactly the 24 primary Star Sports channels listed in provider.channel_keys. Exclude all criczone1 backup/event-specific records. Preserve exact CRICZONE URL and channel name.",
-    "sky_sports": "For sky or sky sports, return the exact 28 channel_entries from memory. Do not search feeds or apply generic name matching. Preserve exact URL per item."
+    "sky_sports": "For sky or sky sports, return the exact 28 channel_entries from memory. Do not search feeds or apply generic name matching. Preserve exact URL per item.",
+    "fox": "For Fox or Fox HD link requests, return the curated Fox Sports entries in provider.channel_entries only, using their exact /e/?id= URLs. Do not mix legacy criczone1 Fox entries."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -323,7 +324,45 @@
       "sources": [
         "manual_directory"
       ],
-      "name_pattern": "\\bfox\\b"
+      "name_pattern": "\\bfox\\b",
+      "channel_entries": [
+        {
+          "id": "fox1",
+          "name": "Fox Sports 501",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox1"
+        },
+        {
+          "id": "fox2",
+          "name": "Fox Sports 502",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox2"
+        },
+        {
+          "id": "fox3",
+          "name": "Fox Sports 503",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox3"
+        },
+        {
+          "id": "fox5",
+          "name": "Fox Sports 505",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox5"
+        },
+        {
+          "id": "fox6",
+          "name": "Fox Sports 506",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox6"
+        },
+        {
+          "id": "fox7",
+          "name": "Fox Sports 507",
+          "folder": "e",
+          "url": "https://criczone.pages.dev/e/?id=fox7"
+        }
+      ]
     },
     {
       "name": "TNT",
