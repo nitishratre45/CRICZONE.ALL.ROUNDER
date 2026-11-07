@@ -28,7 +28,6 @@ document.getElementById('reload').addEventListener('click',()=>{const c=channels
 function render(){const q=search.value.trim().toLowerCase();const list=channels.filter(c=>(c.name+' '+c.category).toLowerCase().includes(q));grid.innerHTML=list.map(c=>'<button class="channel '+(c.id===current?'active':'')+'" type="button" data-id="'+c.id+'"><span class="logo">'+(c.category==='FOX SPORTS'?'FOX':c.category==='SKY SPORTS'?'SKY':c.category==='TNT SPORTS'?'TNT':'W')+'</span><span class="meta"><strong>'+c.name+'</strong><small>'+c.category+'</small></span><span class="arrow">▶</span></button>').join('');empty.style.display=list.length?'none':'block';}
 grid.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)choose(b.dataset.id)});search.addEventListener('input',render);
 if(!channels.some(c=>c.id===current))current=channels[0].id;choose(current);render();
-<script>
 (function(){
  document.addEventListener('click',function(e){
   const reload=e.target.closest('[data-cz-reload]');
@@ -39,8 +38,7 @@ if(!channels.some(c=>c.id===current))current=channels[0].id;choose(current);rend
   if(full){const f=document.getElementById(full.dataset.czFull);const target=f?.parentElement;if(target){if(document.fullscreenElement)document.exitFullscreen?.();else (target.requestFullscreen||target.webkitRequestFullscreen)?.call(target);}}
  });
 })();
-</script>
-</script>
+</script>>
 
 <!-- CRICZONE Telegram join banner + local Telegram popup (self-contained per page) -->
 <style>
