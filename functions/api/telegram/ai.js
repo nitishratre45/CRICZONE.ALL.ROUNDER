@@ -378,9 +378,9 @@ async function handleText({ request, env, message }) {
     return reply("You're most welcome! ❤️😊 Always happy to help. Thanks for being part of the CRICZONE family. Enjoy the cricket! 🏏💙");
   }
 
-  const greeting = /^(?:hi|hello|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
+  const greeting = /^(?:hi|hello|hellow|helo|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
   if (greeting.test(userText.trim())) {
-    return reply("Hello! 👋 Welcome to CRICZONE. 🏏\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
+    return reply("👋 <b>Welcome to CRICZONE!</b> 🏏\n\n<i>Your cricket channel finder is ready.</i>\n\nSend a channel name or broadcaster, or type <code>match</code> to find a match.\n\n<blockquote>Example: <b>India vs New Zealand</b></blockquote>🌐 I’ll find the CRICZONE link for you.", undefined, "HTML");
   }
 
   // Ask for the teams when someone sends only the word "match".
@@ -633,7 +633,7 @@ async function handleText({ request, env, message }) {
     let channelMatches = findMatches(channelSearchRecords, channelQuery || userText, state.provider || "");
     if (!channelMatches.length) channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
     if (!channelMatches.length) {
-      return reply("I couldn't find that channel in the source list. Try another part of its name.");
+      return reply("❌ <b>Channel not found</b>\n\n<i>I couldn’t find that channel in the CRICZONE source list.</i>\n\nPlease try another part of the channel name, for example:\n<code>Sony Sports Ten 1</code>\n\n<blockquote>Tip: You can also send a broadcaster name like <b>Sony Sports</b> or <b>FanCode</b>.</blockquote>", undefined, "HTML");
     }
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (/fancode/i.test(userText)) {
