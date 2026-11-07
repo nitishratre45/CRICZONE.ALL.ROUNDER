@@ -122,8 +122,8 @@ export async function onRequestGet({ request }) {
         const folder = String(item.folder || "criczone").trim();
         const pageUrl = String(item.url || "").trim();
         const safeFolder = /^(?:criczone|criczone1)$/.test(folder);
-        const expectedUrl = new RegExp("^https://criczone\\\\.pages\\\\.dev/" + folder + "/\\\\?id=[A-Za-z0-9_-]+$");
-        if (!id || !name || !safeFolder || !expectedUrl.test(pageUrl) || !/^[A-Za-z0-9_-]+$/.test(id)) continue;
+        const expectedUrl = "https://criczone.pages.dev/" + folder + "/?id=" + encodeURIComponent(id);
+        if (!id || !name || !safeFolder || !/^[A-Za-z0-9_-]+$/.test(id) || pageUrl !== expectedUrl) continue;
         const key = norm(name) + "|" + id + "|" + folder;
         if (seenChannels.has(key)) continue;
         seenChannels.add(key);
