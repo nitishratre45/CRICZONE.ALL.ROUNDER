@@ -38,28 +38,27 @@ async function loadBotMemory(request) {
 
 
 function buildInlineLinkKeyboard(text) {
-  const lines = String(text || "").split(/\\r?\\n/);
+  const lines = String(text || "").split(/\r?\n/);
   const rows = [];
   const seen = new Set();
   for (let i = 0; i < lines.length; i++) {
-    const urlMatch = lines[i].match(/https:\\/\\/[^\\s<>]+/i);
+    const urlMatch = lines[i].match(/https:\/\/[^\s<>]+/i);
     if (!urlMatch) continue;
     const url = urlMatch[0].replace(/[),.]+$/, "");
     if (seen.has(url)) continue;
-    if (!/^https:\\/\\/(?:criczone\\.pages\\.dev|t\\.me)\\//i.test(url)) continue;
+    if (!/^https:\/\/(?:criczone\.pages\.dev|t\.me)\//i.test(url)) continue;
     seen.add(url);
     let label = "";
     for (let j = i - 1; j >= Math.max(0, i - 2); j--) {
-      const candidate = lines[j].replace(/^\\s*\\d+[.)]\\s*/, "").replace(/^🌐\\s*Open in Chrome:\\s*/i, "").trim();
+      const candidate = lines[j].replace(/^\s*\d+[.)]\s*/, "").replace(/^🌐\s*Open in Chrome:\s*/i, "").trim();
       if (candidate && !/^🌐/u.test(candidate) && !/^OPEN IN CHROME/i.test(candidate)) { label = candidate; break; }
     }
-    label = (label || "Open link").replace(/\\s+/g, " ").slice(0, 58);
+    label = (label || "Open link").replace(/\s+/g, " ").slice(0, 58);
     rows.push([{ text: "🔗 " + label, url }]);
     if (rows.length >= 100) break;
   }
   return rows.length ? { inline_keyboard: rows } : null;
 }
-
 async function send(env, chatId, text, replyTo, replyMarkup) {
   // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
   const source = String(text || "");
