@@ -109,18 +109,68 @@
   "state_storage": "D1 table telegram_ai_conversations",
   "sony_channel_sets": {
     "primary": [
-      "sony1",
-      "sony2",
-      "sony3",
-      "sony4T",
-      "sony5"
+      {
+        "id": "sony1",
+        "name": "Sony Sports 1 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony1"
+      },
+      {
+        "id": "sony2",
+        "name": "Sony Sports 2 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony2"
+      },
+      {
+        "id": "sony3",
+        "name": "Sony Sports 3 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony3"
+      },
+      {
+        "id": "sony4T",
+        "name": "Sony Sports 4 Tamil",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony4T"
+      },
+      {
+        "id": "sony5",
+        "name": "Sony Sports 5 SD",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=sony5"
+      }
     ],
     "backup": [
-      "Eng-b",
-      "Hin-b",
-      "Tam-b",
-      "Tel-b",
-      "Kan-b"
+      {
+        "id": "Eng-b",
+        "name": "Sony Sports 1 Backup",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=Eng-b"
+      },
+      {
+        "id": "Hin-b",
+        "name": "Sony Sports 3 Backup",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=Hin-b"
+      },
+      {
+        "id": "Tam-b",
+        "name": "Sony Sports 4 Tamil Backup",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=Tam-b"
+      },
+      {
+        "id": "Tel-b",
+        "name": "Sony Sports 4 Telugu Backup",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=Tel-b"
+      },
+      {
+        "id": "Kan-b",
+        "name": "Sony Sports 4 Kannada Backup",
+        "folder": "criczone1",
+        "url": "https://criczone.pages.dev/criczone1/?id=Kan-b"
+      }
     ]
   }
 }
