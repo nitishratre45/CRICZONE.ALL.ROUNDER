@@ -46,9 +46,9 @@ jobs:
           html = path.read_text(encoding="utf-8")
 
           # Send the page's existing styles and a compact markup sample to Gemini.
-          styles = "\\n\\n".join(re.findall(r"<style\\b[^>]*>(.*?)</style>", html, flags=re.I | re.S))
-          markup = re.sub(r"<(script|style)\\b[^>]*>.*?</\\1>", "", html, flags=re.I | re.S)
-          markup = re.sub(r"\\s+", " ", markup)[:18000]
+          styles = "\n\n".join(re.findall(r"<style\b[^>]*>(.*?)</style>", html, flags=re.I | re.S))
+          markup = re.sub(r"<(script|style)\b[^>]*>.*?</\1>", "", html, flags=re.I | re.S)
+          markup = re.sub(r"\s+", " ", markup)[:18000]
 
           prompt = """Improve the CRICZONE1 cricket streaming website with ONE small,
           high-quality visual-only CSS improvement. Return ONLY plain CSS, no fences,
@@ -97,7 +97,7 @@ jobs:
               part.get("text", "")
               for part in candidates[0].get("content", {}).get("parts", [])
           ).strip()
-          css = re.sub(r"^\\x60{3}(?:css)?\\s*|\\s*\\x60{3}$", "", css, flags=re.I).strip()
+          css = re.sub(r"^\x60{3}(?:css)?\s*|\s*\x60{3}$", "", css, flags=re.I).strip()
 
           if css == "NO_CHANGE" or not css:
               print("No worthwhile safe CSS improvement found; no commit created.")
