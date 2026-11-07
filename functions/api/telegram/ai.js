@@ -538,9 +538,14 @@ async function handleText({ request, env, message }) {
     if (!availableProviders.length) {
       return reply("No broadcaster channels are currently available in the connected feeds.");
     }
-    return reply("AVAILABLE PROVIDERS FOR " + userText + "\n\n" +
-      availableProviders.map((provider, index) => (index + 1) + ". " + provider.name).join("\n") +
-      "\n\nSend a provider name to see its channel names.");
+    const providerKeyboard = {
+      inline_keyboard: availableProviders.map(provider => [{
+        text: provider.name,
+        callback_data: "provider:" + provider.name
+      }])
+    };
+    return reply("🏏 CRICZONE MATCH FINDER\\n\\n" + userText +
+      "\\n\\n📺 Choose a broadcaster to view its available channels:", providerKeyboard);
   }
 
   // Show Sony alternate links only after the user reports primary playback trouble.
@@ -664,6 +669,31 @@ export async function onRequestPost({ request, env }) {
   }
   let update;
   try { update = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+  const callback = update?.callback_query;
+  if (callback) {
+    const callbackData = String(callback.data || "");
+    try {
+      await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: callback.id })
+      });
+      if (callbackData.startsWith("provider:") && callback.message?.chat?.type && callback.message.chat.type !== "private") {
+        const message = {
+          message_id: callback.message.message_id,
+          chat: callback.message.chat,
+          from: callback.from,
+          text: callbackData.slice("provider:".length)
+        };
+        await handleText({ request, env, message });
+      }
+    } catch (error) {
+      console.error("CRICZONE callback processing error", error);
+      return json({ ok: false, error: "Callback processing failed" }, 500);
+    }
+    return json({ ok: true, received: true });
+  }
+
   const message = update?.message || update?.edited_message;
   if (message?.chat?.type && message.chat.type !== "private") {
     try {
