@@ -37,9 +37,33 @@ async function loadBotMemory(request) {
 }
 
 
-async function send(env, chatId, text, replyTo) {
+function buildInlineLinkKeyboard(text) {
+  const lines = String(text || "").split(/\\r?\\n/);
+  const rows = [];
+  const seen = new Set();
+  for (let i = 0; i < lines.length; i++) {
+    const urlMatch = lines[i].match(/https:\\/\\/[^\\s<>]+/i);
+    if (!urlMatch) continue;
+    const url = urlMatch[0].replace(/[),.]+$/, "");
+    if (seen.has(url)) continue;
+    if (!/^https:\\/\\/(?:criczone\\.pages\\.dev|t\\.me)\\//i.test(url)) continue;
+    seen.add(url);
+    let label = "";
+    for (let j = i - 1; j >= Math.max(0, i - 2); j--) {
+      const candidate = lines[j].replace(/^\\s*\\d+[.)]\\s*/, "").replace(/^🌐\\s*Open in Chrome:\\s*/i, "").trim();
+      if (candidate && !/^🌐/u.test(candidate) && !/^OPEN IN CHROME/i.test(candidate)) { label = candidate; break; }
+    }
+    label = (label || "Open link").replace(/\\s+/g, " ").slice(0, 58);
+    rows.push([{ text: "🔗 " + label, url }]);
+    if (rows.length >= 100) break;
+  }
+  return rows.length ? { inline_keyboard: rows } : null;
+}
+
+async function send(env, chatId, text, replyTo, replyMarkup) {
   // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
   const source = String(text || "");
+  const keyboard = replyMarkup || buildInlineLinkKeyboard(source);
   const chunks = [];
   let remaining = source;
   while (remaining.length > 3900) {
@@ -59,6 +83,7 @@ async function send(env, chatId, text, replyTo) {
         chat_id: chatId,
         text: chunks[index],
         disable_web_page_preview: true,
+        ...(index === 0 && keyboard ? { reply_markup: keyboard } : {}),
         ...(index === 0 && replyTo ? { reply_to_message_id: replyTo, allow_sending_without_reply: true } : {})
       })
     });
@@ -331,7 +356,7 @@ async function handleText({ request, env, message }) {
   await ensureTable(env.TELEGRAM_DB);
   const value = normalize(userText);
   const memory = await loadBotMemory(request);
-  const reply = (text) => send(env, chatId, text, message.message_id);
+  const reply = (text, replyMarkup) => send(env, chatId, text, message.message_id, replyMarkup);
 
   // Respond warmly to gratitude without loading channel feeds or changing conversation state.
   const gratitude = /^(?:thanks?|thank\s*u|thank\s+you|thankyou|thanku|thnks|thx|ty|many\s+thanks|thanks\s+a\s+lot|thank\s+you\s+so\s+much|thankyou\s+so\s+much|shukriya|dhanyawad)(?:\s+(?:so\s+much|a\s+lot|bro|bhai|dear|❤️+|🙏+))*[.!\s❤️🙏😊]*$/i;
