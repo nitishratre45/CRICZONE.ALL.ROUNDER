@@ -372,15 +372,15 @@ async function handleText({ request, env, message }) {
 
   // Only reveal Sony backup links after an explicit playback-failure report.
   if (state?.provider && normalize(state.provider) === "sony sports" &&
-      /\\b(?:not working|does not work|doesnt work|not playing|not opening|not loading|nhi chal|nahi chal|nahin chal|kaam nahi|work nahi|backup|alternate)\\b/i.test(value)) {
+      /\b(?:not working|does not work|doesnt work|not playing|not opening|not loading|nhi chal|nahi chal|nahin chal|kaam nahi|work nahi|backup|alternate)\b/i.test(value)) {
     const backupIds = new Set((memory.sony_channel_sets?.backup || []).map(String));
     const backups = data.records.filter(item =>
       item.type !== "match" && backupIds.has(String(item.id)) && item.name && item.page_url
     );
     if (backups.length) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic || "", "Sony Sports");
-      return reply("SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\\n\\n" +
-        backups.map((item, index) => (index + 1) + ". " + item.name + "\\n" + item.page_url).join("\\n\\n"));
+      return reply("SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
+        backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.page_url).join("\n\n"));
     }
     return reply("Sony backup channels are not available right now. Please try again later.");
   }
