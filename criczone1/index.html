@@ -3092,6 +3092,13 @@
       <footer>CRICZONE · BUILT FOR CRICKET FANS ·</footer>
     </div>
     <section id="player">
+      <style>
+.cz-iframe-controls{position:absolute;z-index:8;top:12px;right:12px;display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;background:rgba(12,15,20,.72);backdrop-filter:blur(8px)}
+.cz-iframe-controls button{width:38px;height:38px;padding:0;border:2px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(0,0,0,.25);color:#fff;font-size:19px;font-weight:700;display:grid;place-items:center;cursor:pointer}
+.cz-iframe-controls button.cz-full{width:40px;height:38px;border:0;border-radius:5px;background:transparent;font-size:28px}
+.cz-iframe-controls button:focus-visible{outline:2px solid #ffd36c;outline-offset:3px}
+@media(max-width:600px){.cz-iframe-controls{top:8px;right:8px;gap:7px;padding:5px 7px}.cz-iframe-controls button{width:34px;height:34px;font-size:17px}.cz-iframe-controls button.cz-full{width:36px;height:34px;font-size:25px}}
+</style>
       <iframe
         id="frame"
         title="CRICZONE player"
@@ -3100,6 +3107,7 @@
         allowfullscreen
         referrerpolicy="no-referrer"
       ></iframe>
+      <div class="cz-iframe-controls" aria-label="Player controls"><button type="button" data-cz-reload="frame" aria-label="Reload player" title="Reload">↻</button><button type="button" data-cz-back="frame" aria-label="Back to channels" title="Back">‹</button><button type="button" class="cz-full" data-cz-full="frame" aria-label="Fullscreen" title="Fullscreen">⛶</button></div>
       <div class="playerbar">
         <button id="back" type="button">← All channels</button>
         <div class="playertitle" id="playerTitle"></div>
@@ -3468,6 +3476,18 @@
               ),
             );
         }
+        
+(function(){
+ document.addEventListener('click',function(e){
+  const reload=e.target.closest('[data-cz-reload]');
+  const back=e.target.closest('[data-cz-back]');
+  const full=e.target.closest('[data-cz-full]');
+  if(reload){const f=document.getElementById(reload.dataset.czReload);if(f){const src=f.src;f.src='about:blank';setTimeout(()=>{f.src=src},120)}}
+  if(back){if(typeof window.back==='function')window.back();else if(typeof window.closePlayer==='function')window.closePlayer(true);else location.href='./';}
+  if(full){const f=document.getElementById(full.dataset.czFull);const target=f?.parentElement;if(target){if(document.fullscreenElement)document.exitFullscreen?.();else (target.requestFullscreen||target.webkitRequestFullscreen)?.call(target);}}
+ });
+})();
+
         function openPlayer(c, push = true) {
           let url;
           try {
