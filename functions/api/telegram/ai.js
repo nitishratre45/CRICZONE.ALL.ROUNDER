@@ -256,6 +256,25 @@ async function handleText({ request, env, message }) {
     return reply("The channel list is currently empty or unavailable. Please contact the CRICZONE admin.");
   }
 
+  // A standalone "Sony" request returns the complete Sony channel directory.
+  // Use only the two Sony source folders and always share the Sony page base URL.
+  if (value === "sony") {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    const sonyNames = [...new Map(
+      data.records
+        .filter(item => ["sony", "criczonesony"].includes(String(item.folder || "").toLowerCase()))
+        .map(item => String(item.name || "").trim())
+        .filter(name => name && normalize(name) !== "sony")
+        .map(name => [normalize(name), name])
+    ).values()].sort((a, b) => a.localeCompare(b));
+    if (!sonyNames.length) {
+      return reply("Sony channel list is temporarily unavailable. Please try again shortly.");
+    }
+    return reply("SONY CHANNELS (" + sonyNames.length + ")\\n" +
+      sonyNames.map((name, index) => (index + 1) + ". " + name).join("\\n") +
+      "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
+  }
+
   // A match query starts a short, user-specific follow-up flow.
   const isMatchQuery = /\b(vs|versus)\b/i.test(userText) ||
     (/\b(live|playing|match|cricket)\b/i.test(value) && /\b(india|ind|nz|new zealand|australia|aus|england|eng|pakistan|pak|south africa|sa|sri lanka|sl|bangladesh|ban|west indies|wi)\b/i.test(value));
