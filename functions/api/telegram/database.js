@@ -78,7 +78,7 @@ export async function onRequestGet({ request }) {
   const manifestResponse = await fetch(origin + "/telegram-sources.json", { headers: { Accept: "application/json" } });
   if (!manifestResponse.ok) return Response.json({ error: "Source registry unavailable", status: manifestResponse.status }, { status: 503 });
   const manifest = await manifestResponse.json();
-  const feeds = Array.isArray(manifest.sources) ? manifest.sources.filter(feed => feed && feed.enabled !== false && typeof feed.url === "string" && /^https?:\\/\\//i.test(feed.url) && typeof feed.key === "string" && typeof feed.folder === "string") : [];
+  const feeds = Array.isArray(manifest.sources) ? manifest.sources.filter(feed => feed && feed.enabled !== false && typeof feed.url === "string" && /^https?:\/\//i.test(feed.url) && typeof feed.key === "string" && typeof feed.folder === "string") : [];
   const results=await Promise.all(feeds.map(async feed=>{
     try {
       const r=await fetch(feed.url,{headers:{Accept:feed.kind==="m3u"?"text/plain,application/json,*/*":"application/json"},signal:AbortSignal.timeout(12000)});
