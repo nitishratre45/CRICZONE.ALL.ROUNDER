@@ -156,61 +156,36 @@ async function loadAllData(request) {
   };
 }
 
-function findMatches(records, query) {
+function findMatches(records, query, provider = "") {
   const q = normalize(query);
   if (!q) return [];
-
-  let queryUrl = "";
-  try {
-    if (/^https?:\/\//i.test(String(query).trim())) queryUrl = new URL(String(query).trim()).href.toLowerCase();
-  } catch {}
-
-  if (queryUrl) {
-    return records
-      .filter(item => {
-        const url = String(item.page_url || item.url || "").toLowerCase();
-        return url && (url === queryUrl || url.includes(queryUrl) || queryUrl.includes(url));
-      })
-      .slice(0, 4);
-  }
-
+  const providerKey = normalize(provider);
   const queryTokens = q.split(" ").filter(Boolean);
-  const genericNames = new Set(["sony", "sony 3", "sony 1", "star", "sports", "sport", "live", "tv", "channel"]);
+  const genericNames = new Set(["sony", "star", "sports", "sport", "live", "tv", "channel"]);
   const candidates = [];
 
   for (const item of records) {
     const name = String(item.name || "").trim();
     const normalizedName = normalize(name);
     if (!normalizedName || genericNames.has(normalizedName)) continue;
-
+    const haystack = normalize([item.name, item.folder, item.category, item.json, item.source].join(" "));
+    if (providerKey && !haystack.includes(providerKey)) continue;
     const nameTokens = normalizedName.split(" ").filter(Boolean);
-    // A one-word brand search must not return generic IDs/aliases such as "SONY".
-    if (queryTokens.length === 1 && nameTokens.length < 2) continue;
-
-    const missing = queryTokens.filter(token => !nameTokens.some(part => part === token || part.startsWith(token)));
+    const missing = queryTokens.filter(token =>
+      !nameTokens.some(part => part === token || part.startsWith(token) || closeWord(token, part))
+    );
     if (missing.length) continue;
-
-    let score = 100;
-    if (normalizedName === q) score += 1000;
-    else if (normalizedName.startsWith(q)) score += 250;
-    else score += queryTokens.length * 30;
-
-    // Prefer descriptive channel names over short aliases and generic directory entries.
-    score += Math.min(nameTokens.length, 7);
-    if (/\b(hd|fhd|4k|hindi|english|ten|sports)\b/i.test(name)) score += 15;
-
+    let score = normalizedName === q ? 10000 : 0;
+    if (normalizedName.startsWith(q)) score += 500;
+    score += queryTokens.length * 30 + Math.min(nameTokens.length, 10);
     candidates.push({ ...item, _score: score, _normalizedName: normalizedName });
   }
-
   candidates.sort((a, b) => b._score - a._score);
-
-  // Collapse duplicate names across feeds; keep the best-ranked source record.
   const unique = new Map();
   for (const item of candidates) {
     if (!unique.has(item._normalizedName)) unique.set(item._normalizedName, item);
   }
-
-  return [...unique.values()].slice(0, 4).map(({ _score, _normalizedName, ...item }) => item);
+  return [...unique.values()].slice(0, 30).map(({ _score, _normalizedName, ...item }) => item);
 }
 
 function editDistance(a, b) {
@@ -338,48 +313,60 @@ async function handleText({ request, env, message }) {
       "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
   }
 
-  // Match search is provider-agnostic: any two teams/separator can use the same flow.
-  // This is a channel-directory lookup, not a claim that every listed provider carries the fixture.
-  const matchSeparators = /\b(?:vs|versus|v|against)\b/i;
-  const isTeamMatchQuery = matchSeparators.test(value);
-  const providerNames = ["Sony Sports", "Star Sports", "FanCode", "Willow", "Sky", "Fox", "TNT"];
+  // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
+  const isTeamMatchQuery = /\\b(?:vs|versus|v|against)\\b/i.test(value);
+  const providerDefinitions = [
+    { name: "Sony Sports", keys: ["sony sports"], sources: ["sony_playlist", "sony_playlist_backup"] },
+    { name: "Star Sports", keys: ["star sports"], sources: ["sony_star"] },
+    { name: "FanCode", keys: ["fancode"], sources: ["fancode"] },
+    { name: "Willow", keys: ["willow"], sources: ["willow_v4", "willow_v5"] },
+    { name: "Sky", keys: ["sky sports", "sky"], sources: ["sky"] },
+    { name: "Fox", keys: ["fox sports", "fox cricket", "fox"], sources: ["fox"] },
+    { name: "TNT", keys: ["tnt sports", "tnt"], sources: ["tnt"] }
+  ];
+  const providerHasChannels = (provider) => data.records.some(item => {
+    const haystack = normalize([item.name, item.folder, item.category, item.json, item.source].join(" "));
+    return provider.keys.some(key => haystack.includes(normalize(key))) ||
+      provider.sources.some(source => normalize(item.json || item.source).includes(normalize(source)));
+  });
+
   if (isTeamMatchQuery) {
-    const availableProviders = providerNames.filter(provider =>
-      data.records.some(item => {
-        const haystack = normalize([item.name, item.folder, item.category, item.json].join(" "));
-        return haystack.includes(normalize(provider));
-      })
-    );
+    const availableProviders = providerDefinitions.filter(provider => providerHasChannels(provider));
     await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_provider", userText, "");
     if (!availableProviders.length) {
-      return reply("I couldn't find any broadcaster channels in the current feeds. Please try again later.");
+      return reply("No broadcaster channels are currently available in the connected feeds.");
     }
-    return reply("AVAILABLE PROVIDERS FOR " + userText + "\n\n" +
-      availableProviders.map((name, index) => (index + 1) + ". " + name).join("\n") +
-      "\n\nSend a provider name to see its channel names.");
+    return reply("AVAILABLE PROVIDERS FOR " + userText + "\\n\\n" +
+      availableProviders.map((provider, index) => (index + 1) + ". " + provider.name).join("\\n") +
+      "\\n\\nSend a provider name to see its channel names.");
   }
 
   if (state?.step === "awaiting_provider") {
-    const requestedProvider = providerNames.find(name => normalize(name) === value) ||
-      providerNames.find(name => value.includes(normalize(name)));
-    if (requestedProvider) {
+    const selectedProvider = providerDefinitions.find(provider =>
+      normalize(provider.name) === value ||
+      provider.keys.some(key => normalize(key) === value)
+    );
+    if (selectedProvider) {
       const providerChannels = data.records.filter(item => {
-        const haystack = normalize([item.name, item.folder, item.category, item.json].join(" "));
-        return haystack.includes(normalize(requestedProvider)) && item.name && item.page_url;
+        const haystack = normalize([item.name, item.folder, item.category, item.json, item.source].join(" "));
+        return item.name && item.page_url && (
+          selectedProvider.keys.some(key => haystack.includes(normalize(key))) ||
+          selectedProvider.sources.some(source => normalize(item.json || item.source).includes(normalize(source)))
+        );
       });
       const unique = [...new Map(providerChannels.map(item => [normalize(item.name), item])).values()];
       if (unique.length) {
-        await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, requestedProvider);
-        return reply(requestedProvider.toUpperCase() + " CHANNELS\n\n" +
-          unique.slice(0, 40).map((item, index) => (index + 1) + ". " + item.name).join("\n") +
-          "\n\nSend the exact channel name to get its CRICZONE URL.");
+        await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, selectedProvider.name);
+        const list = unique.map((item, index) => (index + 1) + ". " + item.name).join("\\n");
+        return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\\n\\n" +
+          list + "\\n\\nSend an exact channel name to get its CRICZONE URL.");
       }
-      return reply("No " + requestedProvider + " channels were found in the current feeds.");
+      return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
     }
   }
 
   if (state?.step === "awaiting_channel") {
-    const channelMatches = findMatches(data.records, userText);
+    const channelMatches = findMatches(data.records, userText, state.provider || "");
     if (!channelMatches.length) {
       return reply("I couldn't find that channel in the source list. Try another part of its name.");
     }
