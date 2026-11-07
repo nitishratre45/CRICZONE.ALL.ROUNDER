@@ -388,6 +388,12 @@ async function handleText({ request, env, message }) {
   // Provider matching is based on the actual channel name, never folder/source metadata.
   // This prevents "Sony Sports" from matching unrelated Sony TV channels or match-labelled aliases.
   const getProviderChannels = (provider) => {
+    // Curated provider entries are authoritative and avoid incomplete feed merges.
+    if (Array.isArray(provider.channel_entries)) {
+      return provider.channel_entries
+        .filter(item => item && item.id && item.name && item.url)
+        .map(item => ({ type: "channel", id: String(item.id), name: item.name, folder: item.folder || "criczone", json: "manual_directory", page_url: item.url }));
+    }
     // Sony primary list comes directly from memory JSON: exactly five curated entries.
     if (normalize(provider.name) === "sony sports" && Array.isArray(memory.sony_channel_sets?.primary)) {
       return memory.sony_channel_sets.primary
