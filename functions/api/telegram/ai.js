@@ -338,6 +338,28 @@ async function handleText({ request, env, message }) {
       "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
   }
 
+  // Team-vs-team query: show matching channel names first; user chooses a name to receive its page URL.
+  const isTeamMatchQuery = /\\b(vs|versus|v)\\b/i.test(userText);
+  if (isTeamMatchQuery) {
+    const teamTokens = value.split(/\\s+(?:vs|versus|v)\\s+/).flatMap(side => {
+      const aliases = { ind: "india", nz: "new zealand", aus: "australia", eng: "england", pak: "pakistan", sa: "south africa", sl: "sri lanka", ban: "bangladesh", wi: "west indies" };
+      return side.split(" ").filter(Boolean).map(token => aliases[token] || token);
+    }).flatMap(token => token.split(" ")).filter(token => !["the","of","in","a","an"].includes(token));
+    const channelCandidates = data.records.filter(item => {
+      const nameTokens = normalize(item.name).split(" ").filter(Boolean);
+      return teamTokens.length > 0 && teamTokens.every(token =>
+        nameTokens.some(candidate => closeWord(token, candidate))
+      );
+    });
+    const uniqueChannels = [...new Map(channelCandidates.map(item => [normalize(item.name), item])).values()].slice(0, 20);
+    if (uniqueChannels.length) {
+      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", userText, "");
+      return reply("CHANNELS SHOWING " + userText + "\\n\\n" +
+        uniqueChannels.map((item, index) => (index + 1) + ". " + item.name).join("\\n") +
+        "\\n\\nSend a channel name to get its CRICZONE link.");
+    }
+  }
+
   // "Willow" alone lists the current fixtures from the Willow JSON, not channel aliases.
   if (value === "willow" || value === "willow matches" || value === "willow match") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
