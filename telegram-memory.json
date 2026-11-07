@@ -11,7 +11,8 @@
     "sony_primary": "Show the seven Sony Sports channel-ID entries in sony_channel_sets.primary first. Each item includes its exact name and URL.",
     "sony_backup": "Only if the user reports the primary Sony channel is not working, show the criczone1 alternate entries in sony_channel_sets.backup.",
     "willow_cricbuzz": "For direct Willow or Cricbuzz requests, reply only with https://criczone.pages.dev/criczonebuzz/. This is the shared folder URL; do not list channel names or individual IDs.",
-    "fancode_web": "For 'fancode' or provider selection FanCode, list available FanCode channels and append FANCODE WEB with https://criczone.pages.dev/criczonefancode/. For exact 'fancode web' or 'fan code web', reply only with the folder URL."
+    "fancode_web": "For 'fancode' or provider selection FanCode, list available FanCode channels and append FANCODE WEB with https://criczone.pages.dev/criczonefancode/. For exact 'fancode web' or 'fan code web', reply only with the folder URL.",
+    "sky_fox_tnt": "For Sky, Fox and TNT, search only configured source keys, return matching real channel names with CRICZONE page URLs, deduplicate, and never invent results. Recognize sky/sky sports, fox/fox sports/fox cricket, and tnt/tnt sports."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -75,7 +76,11 @@
         "sky sports"
       ],
       "sources": [
-        "sky"
+        "sports_v7",
+        "directory_v3",
+        "directory_v1",
+        "sports_v5",
+        "jtv2"
       ],
       "name_pattern": "\\bsky\\b"
     },
@@ -87,7 +92,11 @@
         "fox cricket"
       ],
       "sources": [
-        "fox"
+        "sports_v7",
+        "directory_v3",
+        "directory_v1",
+        "sports_v5",
+        "jtv2"
       ],
       "name_pattern": "\\bfox\\b"
     },
@@ -98,7 +107,11 @@
         "tnt sports"
       ],
       "sources": [
-        "tnt"
+        "sports_v7",
+        "directory_v3",
+        "directory_v1",
+        "sports_v5",
+        "jtv2"
       ],
       "name_pattern": "\\btnt\\b"
     }
