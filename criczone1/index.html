@@ -1003,8 +1003,25 @@
             function logoMarkup(c) { const b=brandInfo(c.name); const words=String(c.name||'SPORTS CHANNEL').replace(/\b(hd|sd|4k|fhd|uhd)\b/ig,'').trim().split(/\s+/).filter(Boolean); const initials=words.slice(0,2).map(x=>x[0]).join('').toUpperCase()||'TV'; const clean=String(c.name||'SPORTS CHANNEL').replace(/\s+/g,' ').trim(); return '<div class="channel-brand-logo channel-name-art" style="--brand-accent:'+b.accent+';--brand-bg:'+b.bg+';--brand-glow:'+b.accent+'33"><span class="brand-symbol">'+esc(initials)+'</span><span class="brand-word"><strong>'+esc(clean)+'</strong><small>CRICZONE • LIVE CHANNEL</small></span><span class="art-orbit" aria-hidden="true"></span></div>'; }
             function render() { const q=query.trim().toLowerCase(),list=channels.filter(c=>(activeCategory==='All'||c.category===activeCategory)&&(!q||c.name.toLowerCase().includes(q)||c.category.toLowerCase().includes(q))); $('count').textContent=list.length+(list.length===1?' channel':' channels'); $('totalCount').textContent=channels.length; $('empty').style.display=list.length?'none':'block'; $('grid').style.display=list.length?'grid':'none'; $('grid').innerHTML=list.map(c=>'<article class="card" tabindex="0" role="button" aria-label="Play '+esc(c.name)+'" data-id="'+esc(c.id)+'"><div class="poster">'+logoMarkup(c)+'</div><div class="cardbody"><div class="channelname">'+esc(c.name)+'</div>'+(c.category!=='General'?'<div class="category">'+esc(c.category)+'</div>':'')+'</div></article>').join(''); $('grid').querySelectorAll('.card').forEach(card=>{const play=()=>{const c=channels.find(x=>x.id===card.dataset.id);if(c)openPlayer(c)};card.addEventListener('click',play);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play()}})}); $('grid').querySelectorAll('img.channel-feed-logo').forEach(img=>img.addEventListener('error',()=>{img.outerHTML=logoMarkup({name:img.alt||'Live Channel',logo:''})},{once:true}))}
             function openPlayer(c, push = true) { let url; try { url = new URL(c.iframeSrc, location.href); if (!['https:', 'http:'].includes(url.protocol)) throw Error() } catch { alert('This channel has an invalid player URL.'); return } if (push) { savedScrollY = window.scrollY || document.documentElement.scrollTop || 0; const next = new URL(location.href); next.searchParams.set('id', c.id); history.pushState({ id: c.id, scrollY: savedScrollY }, '', next) } $('playerTitle').textContent = c.name; $('frame').src = url.href; $('player').style.display = 'block'; $('app').style.display = 'none'; document.title = 'CRICZONE · ' + c.name; $('frame').focus() }
-            function closePlayer(push = true) { $('frame').src = 'about:blank'; $('player').style.display = 'none'; $('app').style.display = 'block'; document.title = 'CRICZONE — Live Channels'; if (push) { const next = new URL(location.href); next.searchParams.delete('id'); history.replaceState({}, '', next) } requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, left: 0, behavior: 'instant' })); }
-            function route() { const id = new URLSearchParams(location.search).get('id'), c = channels.find(x => x.id === id); if (c) openPlayer(c, false); else closePlayer(false) }
+            function closePlayer(push = true) {
+                // The player is a history entry. Go back to the exact channel-list state
+                // so the previous category, search query and scroll position are retained.
+                if (push && new URLSearchParams(location.search).has('id')) {
+                    history.back();
+                    return;
+                }
+                $('frame').src = 'about:blank';
+                $('player').style.display = 'none';
+                $('app').style.display = 'block';
+                document.title = 'CRICZONE — Live Channels';
+                requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, left: 0, behavior: 'instant' }));
+            }
+            function route() {
+                const id = new URLSearchParams(location.search).get('id');
+                const c = channels.find(x => x.id === id);
+                if (c) openPlayer(c, false);
+                else closePlayer(false);
+            }
             function showError(msg) { $('loadingText').innerHTML = '<div id="error"><strong>Unable to load channels</strong>' + esc(msg) + '<br><button id="retry" type="button">Try again</button></div>'; $('retry').addEventListener('click', async () => { $('retry').disabled = true; $('retry').textContent = 'Retrying…'; $('loadingText').textContent = 'Reconnecting to channel feed…'; try { channels = await loadChannels(); renderFilters(); render(); $('loading').style.display = 'none'; $('app').style.display = 'block'; route() } catch (e) { showError(e?.message || 'Unexpected error') } }) }
             $('search').addEventListener('input', e => { query = e.target.value; $('clear').style.display = query ? 'block' : 'none'; render() }); $('clear').addEventListener('click', () => { $('search').value = ''; query = ''; $('clear').style.display = 'none'; render(); $('search').focus() }); $('back').addEventListener('click', () => closePlayer(true)); window.addEventListener('popstate', route);
             (async () => { try { channels = await loadChannels(); renderFilters(); render(); $('loading').style.display = 'none'; $('app').style.display = 'block'; route() } catch (e) { showError(e?.message || 'Unexpected error') } })();
