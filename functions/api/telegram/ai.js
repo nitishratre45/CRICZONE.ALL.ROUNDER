@@ -291,10 +291,8 @@ async function handleText({ request, env, message }) {
       const url = String(item.page_url || item.url || "").trim();
       if (folder && url && !sites.has(folder)) sites.set(folder, { label: siteLabels[folder] || folder.toUpperCase(), url });
     }
-    const siteLines = [...sites.values()].map(site => site.label + "\\n" + site.url);
-    const channelNames = [...new Set(data.records.map(item => String(item.name || "").trim()).filter(Boolean))].slice(0, 20);
-    const channelLine = channelNames.length ? "\\n\\nAvailable channel names:\\n" + channelNames.map((name, i) => (i + 1) + ". " + name).join("\\n") : "";
-    return reply("Match: " + userText + "\\n\\nAvailable websites:\\n" + siteLines.join("\\n\\n") + channelLine + "\\n\\nSend the channel name to get its website link.");
+    const siteLines = [...sites.values()].map(site => site.label + ": " + site.url);
+    return reply("Match: " + userText + "\\nWebsites:\\n" + siteLines.join("\\n") + "\\nReply with a channel name for its link.");
   }
 
   const channelMatches = findMatches(data.records, userText);
