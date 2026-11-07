@@ -1,20 +1,19 @@
 {
   "version": 1,
-  "description": "CRICZONE Telegram channel source registry. Add your own source entries inside the sources array.",
-  "sources": [],
-  "source_template": {
-    "key": "unique_source_name",
-    "folder": "website_folder_name",
-    "kind": "channels",
-    "url": "https://example.com/your-data.json",
-    "enabled": true
-  },
-  "allowed_kinds": ["channels", "matches", "sports", "logos", "m3u"],
-  "field_guide": {
-    "key": "Unique short identifier for this JSON/API source",
-    "folder": "Actual CRICZONE website folder that contains the channel/page",
-    "kind": "Data type: channels, matches, sports, logos, or m3u",
-    "url": "Direct public URL of the JSON or M3U data file",
-    "enabled": "true to include this source; false to temporarily disable it"
-  }
+  "description": "CRICZONE Telegram channel source registry.",
+  "sources": [
+    { "key": "sports_v7", "folder": "criczone", "kind": "channels", "url": "https://sonujson-v7.pages.dev/Data/sports.json", "enabled": true },
+    { "key": "directory_v3", "folder": "criczone2", "kind": "channels", "url": "https://allrounder3-0.pages.dev/id.json", "enabled": true },
+    { "key": "directory_v1", "folder": "criczone1", "kind": "channels", "url": "https://sportlink-json.pages.dev/id.json", "enabled": true },
+    { "key": "sports_v5", "folder": "criczone3", "kind": "channels", "url": "https://sonujson-v5.pages.dev/Data/sports.json", "enabled": true },
+    { "key": "willow_v4", "folder": "criczonebuzz", "kind": "channels", "url": "https://sonujson-v4.pages.dev/Data/willow.json", "enabled": true },
+    { "key": "prime_v4", "folder": "criczonebuzz", "kind": "channels", "url": "https://sonujson-v4.pages.dev/Data/prime.json", "enabled": true },
+    { "key": "willow_v5", "folder": "criczonebuzz", "kind": "channels", "url": "https://sonujson-v5.pages.dev/Data/willow.json", "enabled": true },
+    { "key": "fancode", "folder": "criczonefancode", "kind": "channels", "url": "https://sportlink-fancode10.pages.dev/fan.json", "enabled": true },
+    { "key": "sony_star", "folder": "criczonesony", "kind": "channels", "url": "https://sportlink-tv11.pages.dev/Star3.json", "enabled": true },
+    { "key": "sony_playlist", "folder": "sony", "kind": "m3u", "url": "https://sportlink-jtv.pages.dev/sony3.m3u", "enabled": true },
+    { "key": "sony_playlist_backup", "folder": "criczonesony", "kind": "m3u", "url": "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sony.m3u", "enabled": true },
+    { "key": "jtv2", "folder": "criczone2", "kind": "channels", "url": "https://cdn.jsdelivr.net/gh/sportlive18/jio-tv-auto-update-playlist@main/jtv2.json", "enabled": true },
+    { "key": "sports_logos", "folder": "criczonesony", "kind": "logos", "url": "https://aryanstreams2.pages.dev/data/sports.json", "enabled": true }
+  ]
 }
