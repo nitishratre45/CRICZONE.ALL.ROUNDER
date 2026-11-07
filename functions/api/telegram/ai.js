@@ -73,8 +73,8 @@ function collectRecords(node, out, source, depth = 0) {
   const pageUrl = node.page_url || node.web_url || node.website || node.page || node.href;
   const externalUrl = node.url || node.link || node.stream_url || node.streamUrl ||
     node.m3u8 || node.hls || node.dash || node.mp4 || pageUrl;
-  const safePage = typeof pageUrl === "string" && /^https?:\\/\\//i.test(pageUrl) ? pageUrl : "";
-  const safeExternal = typeof externalUrl === "string" && /^https?:\\/\\//i.test(externalUrl) ? externalUrl : "";
+  const safePage = typeof pageUrl === "string" && /^https?:\/\//i.test(pageUrl) ? pageUrl : "";
+  const safeExternal = typeof externalUrl === "string" && /^https?:\/\//i.test(externalUrl) ? externalUrl : "";
 
   if (name || id) {
     out.push({
