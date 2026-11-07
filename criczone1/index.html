@@ -807,6 +807,66 @@
       .channel-brand-logo .brand-word{font-size:9px}
     }
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.pill,#search,.brand-mark{transition:none!important}}
+
+    /* Premium CRICZONE navbar — midnight navy, champagne gold and subtle teal */
+    .topbar{
+      position:sticky;top:0;z-index:60;
+      padding:12px clamp(15px,3.2vw,54px);
+      background:
+        radial-gradient(ellipse at 12% -80%,rgba(255,205,112,.22),transparent 55%),
+        linear-gradient(105deg,rgba(13,25,42,.98),rgba(8,15,27,.97) 52%,rgba(10,26,34,.98));
+      border-bottom:1px solid rgba(255,202,105,.28);
+      box-shadow:0 9px 30px rgba(0,0,0,.38),0 1px 0 rgba(255,255,255,.035) inset;
+      -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px)
+    }
+    .topbar:after{
+      content:"";position:absolute;left:clamp(15px,3.2vw,54px);right:clamp(15px,3.2vw,54px);bottom:-1px;height:1px;
+      background:linear-gradient(90deg,transparent,#e6b85e 18%,#fff0c2 50%,#36d9b0 82%,transparent);
+      opacity:.8;pointer-events:none
+    }
+    .toprow{min-height:54px;max-width:1720px;margin:0 auto;display:flex;align-items:center;gap:14px}
+    .brand{display:inline-flex;align-items:center;gap:12px;min-width:0;color:#f7f8fc;text-decoration:none;font-size:clamp(21px,2vw,28px);font-weight:1000;letter-spacing:.65px;line-height:1;transition:opacity .2s,transform .2s}
+    .brand:hover{opacity:.94;transform:translateY(-1px)}
+    .brand>span:last-child{display:flex;flex-direction:column;gap:5px}
+    .brand>span:last-child>span{color:#ffd16f;text-shadow:0 0 20px rgba(255,199,93,.15)}
+    .brand small{font-size:8px;font-weight:800;letter-spacing:1.55px;color:#aebdce}
+    .brand-mark.brand-monogram{
+      position:relative;isolation:isolate;overflow:hidden;display:grid;place-items:center;
+      width:48px;height:48px;flex:0 0 48px;border:1px solid rgba(255,211,125,.78);border-radius:15px;
+      background:linear-gradient(145deg,#243952 0%,#14243a 48%,#0b1727 100%);
+      color:#ffdc91;font:1000 16px/1 Manrope,sans-serif;letter-spacing:-1px;
+      box-shadow:0 5px 20px rgba(255,190,80,.16),inset 0 1px 0 rgba(255,255,255,.2),inset 0 -8px 18px rgba(0,0,0,.22)
+    }
+    .brand-mark.brand-monogram:before{content:"";position:absolute;inset:4px;border:1px solid rgba(255,222,160,.22);border-radius:10px;z-index:-1}
+    .brand-mark.brand-monogram:after{content:"";position:absolute;left:-35%;top:-70%;width:70%;height:240%;transform:rotate(35deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);pointer-events:none}
+    .live{
+      display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:9px 13px;
+      border:1px solid rgba(69,220,171,.34);border-radius:999px;
+      background:linear-gradient(135deg,rgba(22,77,64,.55),rgba(10,39,38,.72));
+      color:#8cf3cb;font-size:9px;font-weight:900;letter-spacing:1.5px;
+      box-shadow:0 4px 18px rgba(27,201,145,.08),inset 0 1px rgba(255,255,255,.06)
+    }
+    .live:before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#5ff0b8;box-shadow:0 0 0 4px rgba(95,240,184,.12),0 0 13px rgba(95,240,184,.75)}
+    @media(max-width:599px){
+      .topbar{padding:10px 14px}
+      .topbar:after{left:14px;right:14px}
+      .toprow{min-height:46px;gap:9px}
+      .brand{gap:9px;font-size:20px;letter-spacing:.35px}
+      .brand-mark.brand-monogram{width:39px;height:39px;flex-basis:39px;border-radius:12px;font-size:13px}
+      .brand-mark.brand-monogram:before{inset:3px;border-radius:8px}
+      .brand small{font-size:6.5px;letter-spacing:.75px}
+      .live{padding:7px 9px;font-size:8px;letter-spacing:1px;gap:6px}
+      .live:before{width:7px;height:7px;flex-basis:7px}
+    }
+    @media(max-width:360px){
+      .topbar{padding:9px 10px}.toprow{gap:7px}
+      .brand{font-size:17px;gap:7px}
+      .brand-mark.brand-monogram{width:34px;height:34px;flex-basis:34px;font-size:11px}
+      .brand small{font-size:5.7px;letter-spacing:.45px}
+      .live{padding:6px 7px;font-size:7px}
+    }
+    @media(prefers-reduced-motion:reduce){.brand{transition:none}}
+
     </style>
 
 </head>
