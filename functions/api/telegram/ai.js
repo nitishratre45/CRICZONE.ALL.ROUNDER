@@ -406,9 +406,11 @@ async function handleText({ request, env, message }) {
 
   // Show Sony alternate links only after the user reports primary playback trouble.
   const sonyFailureReport = /\b(?:not\s+working|does\s+not\s+work|doesnt\s+work|not\s+playing|not\s+opening|not\s+loading|nhi\s+chal(?:\s+raha)?|nahi\s+chal(?:\s+raha|\s+rha)?|nahin\s+chal(?:\s+raha)?|kaam\s+nahi\s+kar|work\s+nahi|backup|alternate)\b/i.test(value);
-  const recentSonyState = state?.provider && normalize(state.provider) === "sony sports"
-    ? state
-    : await getRecentSonyState(env.TELEGRAM_DB, chatId);
+  const recentSonyState = sonyFailureReport
+    ? (state?.provider && normalize(state.provider) === "sony sports"
+      ? state
+      : await getRecentSonyState(env.TELEGRAM_DB, chatId))
+    : null;
   if (sonyFailureReport && (normalize(recentSonyState?.provider || "") === "sony sports" ||
       /\bsony\s+sports\b/i.test(String(recentSonyState?.topic || "")) ||
       /\bsony\s+sports\b/i.test(userText))) {
