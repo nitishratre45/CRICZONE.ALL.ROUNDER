@@ -367,6 +367,11 @@ async function handleText({ request, env, message }) {
     return reply("All Sony channels: https://criczone.pages.dev/sony/");
   }
 
+  if (/^(?:fancode|fan code)\\s+web$/i.test(value)) {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    return reply("https://criczone.pages.dev/criczonefancode/");
+  }
+
   // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
   if (/^(?:willow|willow channels|cricbuzz|cricbuzz channels)$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
@@ -445,7 +450,10 @@ async function handleText({ request, env, message }) {
         const url = item.page_url || item.url || "";
         return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
       }).join("\n\n");
-      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list);
+      const webLink = normalize(requestedProvider.name) === "fancode"
+        ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
+        : "";
+      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list + webLink);
     }
     return reply("No " + requestedProvider.name + " channels were found in the current directory.");
   }
@@ -463,8 +471,11 @@ async function handleText({ request, env, message }) {
           const url = item.page_url || item.url || "";
           return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
         }).join("\n\n");
+        const webLink = normalize(selectedProvider.name) === "fancode"
+          ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
+          : "";
         return reply(selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
-          list);
+          list + webLink);
       }
       return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
     }
