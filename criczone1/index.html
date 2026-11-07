@@ -3091,27 +3091,47 @@
       </main>
       <footer>CRICZONE · BUILT FOR CRICKET FANS ·</footer>
     </div>
-<style id="cz-rotate-fix">
-.cz-rotate-fallback{
- position:fixed!important;inset:0!important;z-index:99999!important;
- width:100vw!important;height:100dvh!important;min-height:0!important;max-height:none!important;
- aspect-ratio:auto!important;transform:none!important;transform-origin:center!important;
- margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
- background:#000!important;overflow:hidden!important;
-}
-.cz-rotate-fallback iframe{
- position:absolute!important;left:50%!important;top:50%!important;
- width:100dvh!important;height:100vw!important;inset:auto!important;
- max-width:none!important;max-height:none!important;
- transform:translate(-50%,-50%) rotate(90deg)!important;
- transform-origin:center center!important;
-}
-.cz-rotate-fallback .cz-iframe-controls{
- position:fixed!important;top:max(10px,env(safe-area-inset-top))!important;
- right:max(10px,env(safe-area-inset-right))!important;z-index:100000!important;
-}
-.cz-rotate-fallback .playerbar{display:none!important}
-</style>
+    <style id="cz-rotate-fix">
+      .cz-rotate-fallback {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 99999 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        transform: none !important;
+        transform-origin: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #000 !important;
+        overflow: hidden !important;
+      }
+      .cz-rotate-fallback iframe {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        width: 100dvh !important;
+        height: 100vw !important;
+        inset: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        transform: translate(-50%, -50%) rotate(90deg) !important;
+        transform-origin: center center !important;
+      }
+      .cz-rotate-fallback .cz-iframe-controls {
+        position: fixed !important;
+        top: max(10px, env(safe-area-inset-top)) !important;
+        right: max(10px, env(safe-area-inset-right)) !important;
+        z-index: 100000 !important;
+      }
+      .cz-rotate-fallback .playerbar {
+        display: none !important;
+      }
+    </style>
     <section id="player">
       <style>
         .cz-rotate-fallback {
@@ -4890,26 +4910,34 @@
       }
     </style>
     <script id="cz-rotate-handler">
-(function(){
- document.addEventListener('click',async function(e){
-  const button=e.target.closest('[data-cz-rotate]');
-  if(!button)return;
-  e.preventDefault();
-  const frame=document.getElementById(button.dataset.czRotate);
-  const stage=frame&&frame.parentElement;
-  if(!stage)return;
-  const active=!stage.classList.contains('cz-rotate-fallback');
-  stage.classList.toggle('cz-rotate-fallback',active);
-  button.setAttribute('aria-pressed',String(active));
-  button.title=active?'Restore normal view':'Rotate video';
-  button.textContent=active?'⟲':'⟳';
-  if(active && document.fullscreenElement && screen.orientation?.lock){
-   try{await screen.orientation.lock('landscape')}catch(_){}
-  }else if(!active && screen.orientation?.unlock){
-   try{screen.orientation.unlock()}catch(_){}
-  }
- });
-})();
-</script>
-</body>
+      (function () {
+        document.addEventListener("click", async function (e) {
+          const button = e.target.closest("[data-cz-rotate]");
+          if (!button) return;
+          e.preventDefault();
+          const frame = document.getElementById(button.dataset.czRotate);
+          const stage = frame && frame.parentElement;
+          if (!stage) return;
+          const active = !stage.classList.contains("cz-rotate-fallback");
+          stage.classList.toggle("cz-rotate-fallback", active);
+          button.setAttribute("aria-pressed", String(active));
+          button.title = active ? "Restore normal view" : "Rotate video";
+          button.textContent = active ? "⟲" : "⟳";
+          if (
+            active &&
+            document.fullscreenElement &&
+            screen.orientation?.lock
+          ) {
+            try {
+              await screen.orientation.lock("landscape");
+            } catch (_) {}
+          } else if (!active && screen.orientation?.unlock) {
+            try {
+              screen.orientation.unlock();
+            } catch (_) {}
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>
