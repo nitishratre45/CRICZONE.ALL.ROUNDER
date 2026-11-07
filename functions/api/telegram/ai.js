@@ -129,7 +129,7 @@ async function handleText({ request, env, message }) {
     if (matches.length) {
       return reply("Ye matching channel pages mile hain:\n" + matches.map((item, i) => (i + 1) + ". " + item.name + "\n" + item.link).join("\n\n") + "\n\nAgar exact channel nahi mila, uska naam bhejo.");
     }
-    return reply("Abhi directory mein \"" + userText + "\" ka exact match nahi mila. Channel ka poora naam ya spelling bhejo, main dobara check karne mein help karunga.\n\nChannel directory: " + new URL("/api/channels?feed=directory", request.url).toString());
+    return reply("Abhi directory mein \"" + userText + "\" ka exact match nahi mila. Channel ka poora naam ya spelling bhejo, main dobara check karne mein help karunga.\n\n🌐 CRICZONE Website: https://criczone.pages.dev/");
   }
 
   const asksChannel = /\b(channel|live|stream|link|watch|dekhna|dekhu|dikha|sony|star sports|willow|fancode|jio|match)\b/.test(value);
