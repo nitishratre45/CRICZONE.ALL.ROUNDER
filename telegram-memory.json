@@ -9,7 +9,7 @@
     "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
     "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID.",
     "sony_primary": "When user asks Sony or Sony Sports, show only the five preferred channels configured in sony_channel_sets.primary. Do not mix other feeds or Sony TV entertainment channels.",
-    "sony_backup": "Only when the user says a Sony channel is not working, send the configured backup channel list from sony_channel_sets.backup. Never show backups in the first reply."
+    "sony_backup": "Only when the user reports that the primary Sony Sports channel is not working, show the seven Sony channel-ID backup entries in sony_channel_sets.backup. Do not show backup links in the first reply."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -142,34 +142,46 @@
     ],
     "backup": [
       {
-        "id": "Eng-b",
-        "name": "Sony Sports 1 Backup",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=Eng-b"
+        "id": "162",
+        "name": "Sony Sports Ten 1 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=162"
       },
       {
-        "id": "Hin-b",
-        "name": "Sony Sports 3 Backup",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=Hin-b"
+        "id": "891",
+        "name": "Sony Sports Ten 2 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=891"
       },
       {
-        "id": "Tam-b",
-        "name": "Sony Sports 4 Tamil Backup",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=Tam-b"
+        "id": "892",
+        "name": "Sony Sports Ten 3 Hindi HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=892"
       },
       {
-        "id": "Tel-b",
-        "name": "Sony Sports 4 Telugu Backup",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=Tel-b"
+        "id": "3514",
+        "name": "Sony Sports Ten 4 Tamil",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=3514"
       },
       {
-        "id": "Kan-b",
-        "name": "Sony Sports 4 Kannada Backup",
-        "folder": "criczone1",
-        "url": "https://criczone.pages.dev/criczone1/?id=Kan-b"
+        "id": "3585",
+        "name": "Sony Sports Ten 4 Kannada",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=3585"
+      },
+      {
+        "id": "1773",
+        "name": "Sony Sports Ten 4 Telugu",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=1773"
+      },
+      {
+        "id": "155",
+        "name": "Sony Sports Ten 5 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=155"
       }
     ]
   }
