@@ -38,17 +38,36 @@ async function loadBotMemory(request) {
 
 
 async function send(env, chatId, text, replyTo) {
-  const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      ...(replyTo ? { reply_to_message_id: replyTo, allow_sending_without_reply: true } : {})
-    })
-  });
-  const result = await response.json();
-  if (!result.ok) console.error("Telegram sendMessage error", result);
+  // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
+  const source = String(text || "");
+  const chunks = [];
+  let remaining = source;
+  while (remaining.length > 3900) {
+    let cut = remaining.lastIndexOf("\n", 3900);
+    if (cut < 1000) cut = 3900;
+    chunks.push(remaining.slice(0, cut));
+    remaining = remaining.slice(cut).replace(/^\n+/, "");
+  }
+  if (remaining || !chunks.length) chunks.push(remaining);
+
+  let result = { ok: true };
+  for (let index = 0; index < chunks.length; index++) {
+    const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: chunks[index],
+        disable_web_page_preview: true,
+        ...(index === 0 && replyTo ? { reply_to_message_id: replyTo, allow_sending_without_reply: true } : {})
+      })
+    });
+    result = await response.json();
+    if (!response.ok || !result.ok) {
+      console.error("Telegram sendMessage error", result);
+      return result;
+    }
+  }
   return result;
 }
 
@@ -65,8 +84,22 @@ async function ensureTable(db) {
 }
 
 async function getState(db, chatId, userId) {
-  return await db.prepare("SELECT * FROM telegram_ai_conversations WHERE chat_id = ? AND user_id = ?")
+  const state = await db.prepare("SELECT * FROM telegram_ai_conversations WHERE chat_id = ? AND user_id = ?")
     .bind(String(chatId), String(userId)).first();
+  // Conversation choices expire after 30 minutes so old selections cannot hijack new requests.
+  if (state && Number(state.updated_at || 0) < Math.floor(Date.now() / 1000) - 1800) {
+    await clearState(db, chatId, userId);
+    return null;
+  }
+  return state;
+}
+
+async function getRecentSonyState(db, chatId) {
+  // Anonymous-admin mode can change Telegram's sender identity between messages.
+  return await db.prepare(`SELECT * FROM telegram_ai_conversations
+    WHERE chat_id = ? AND lower(provider) = 'sony sports' AND updated_at >= ?
+    ORDER BY updated_at DESC LIMIT 1`)
+    .bind(String(chatId), Math.floor(Date.now() / 1000) - 1800).first();
 }
 
 async function saveState(db, chatId, userId, step, topic = "", provider = "") {
@@ -373,13 +406,16 @@ async function handleText({ request, env, message }) {
 
   // Show Sony alternate links only after the user reports primary playback trouble.
   const sonyFailureReport = /\b(?:not\s+working|does\s+not\s+work|doesnt\s+work|not\s+playing|not\s+opening|not\s+loading|nhi\s+chal(?:\s+raha)?|nahi\s+chal(?:\s+raha|\s+rha)?|nahin\s+chal(?:\s+raha)?|kaam\s+nahi\s+kar|work\s+nahi|backup|alternate)\b/i.test(value);
-  if (sonyFailureReport && (normalize(state?.provider || "") === "sony sports" ||
-      /\bsony\s+sports\b/i.test(String(state?.topic || "")) ||
+  const recentSonyState = state?.provider && normalize(state.provider) === "sony sports"
+    ? state
+    : await getRecentSonyState(env.TELEGRAM_DB, chatId);
+  if (sonyFailureReport && (normalize(recentSonyState?.provider || "") === "sony sports" ||
+      /\bsony\s+sports\b/i.test(String(recentSonyState?.topic || "")) ||
       /\bsony\s+sports\b/i.test(userText))) {
     const backups = (memory.sony_channel_sets?.backup || [])
       .filter(item => item && item.id && item.name && item.url);
     if (backups.length) {
-      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "Sony Sports", "Sony Sports");
+      await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", recentSonyState?.topic || "Sony Sports", "Sony Sports");
       return reply("📺 SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
         backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.url).join("\n\n"));
     }
@@ -473,7 +509,11 @@ export async function onRequestPost({ request, env }) {
   const message = update?.message || update?.edited_message;
   if (message?.chat?.type && message.chat.type !== "private") {
     try { await handleText({ request, env, message }); }
-    catch (error) { console.error("CRICZONE rule-based assistant error", error); }
+    catch (error) {
+      console.error("CRICZONE rule-based assistant error", error);
+      // Return a retryable error instead of silently acknowledging a failed update.
+      return json({ ok: false, error: "Assistant processing failed" }, 500);
+    }
   }
   return json({ ok: true, received: true });
 }
