@@ -56,6 +56,9 @@ function buildInlineLinkKeyboard(text) {
     // Preserve the complete channel name on the button.
     // Only remove list numbering and normalize repeated whitespace.
     label = (label || "Open channel")
+      // Telegram inline keyboard button text is plain text, not HTML.
+      // Strip formatting tags inherited from the explanatory line above each URL.
+      .replace(/<[^>]*>/g, "")
       .replace(/^\s*\d+[.)]\s*/, "")
       .replace(/\s+/g, " ")
       .trim();
