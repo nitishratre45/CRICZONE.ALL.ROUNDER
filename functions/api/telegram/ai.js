@@ -544,8 +544,8 @@ async function handleText({ request, env, message }) {
         callback_data: "provider:" + provider.name
       }])
     };
-    return reply("🏏 CRICZONE MATCH FINDER\\n\\n" + userText +
-      "\\n\\n📺 Choose a broadcaster to view its available channels:", providerKeyboard);
+    return reply("🏏 CRICZONE MATCH FINDER\n\n" + userText +
+      "\n\n📺 Choose a broadcaster to view its available channels:", providerKeyboard);
   }
 
   // Show Sony alternate links only after the user reports primary playback trouble.
