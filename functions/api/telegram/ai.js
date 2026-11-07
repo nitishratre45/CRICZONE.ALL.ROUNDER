@@ -706,7 +706,7 @@ export async function onRequestPost({ request, env }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: user.id,
-            text: "👋 <b>WE’RE SORRY TO SEE YOU GO!</b>\n\nYou’ve left the CRICZONE channel. Thank you for being part of our cricket community. ❤️\n\nWhenever you want to return, you’re always welcome. 🏏\n\n👇 <i>Tap below to visit the channel again.</i>",
+            text: "👋 <b>WE’RE SORRY TO SEE YOU GO!</b> 💙\n\n<i>We noticed that you’ve left the CRICZONE family.</i>\n\nThank you for being part of our cricket community. Your support means a lot to us! ❤️\n\n<blockquote>🏏 <b>Once a CRICZONE member, always a part of our cricket family.</b>\n\nWhenever you wish to return, our doors are always open for you.</blockquote>\n\n<code>CRICZONE • LIVE THE GAME</code>\n\n👇 <i>Tap the button below whenever you want to rejoin.</i>",
             parse_mode: "HTML",
             disable_web_page_preview: true,
             reply_markup: {
