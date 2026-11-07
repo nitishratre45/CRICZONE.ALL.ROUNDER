@@ -82,7 +82,17 @@ function m3uRows(text, feed) {
   }
   return rows;
 }
+let databaseCache = null;
+let databaseCacheAt = 0;
+const DATABASE_CACHE_TTL = 45 * 1000;
+
 export async function onRequestGet({ request }) {
+  const now = Date.now();
+  if (databaseCache && now - databaseCacheAt < DATABASE_CACHE_TTL) {
+    return Response.json(databaseCache, {
+      headers: { "Cache-Control": "public, max-age=45", "Content-Type": "application/json; charset=utf-8" }
+    });
+  }
   const origin = new URL(request.url).origin;
   const manifestResponse = await fetch(origin + "/telegram-sources.json", { headers: { Accept: "application/json" } });
   if (!manifestResponse.ok) return Response.json({ error: "Source registry unavailable", status: manifestResponse.status }, { status: 503 });
@@ -134,5 +144,7 @@ export async function onRequestGet({ request }) {
     console.error("Curated channel directory unavailable", error);
   }
 
-  return Response.json({version:1,generated_at:new Date().toISOString(),summary:{channels:channels.length,matches:matches.length,feeds_ok:results.filter(x=>x.ok).length,feeds_failed:results.filter(x=>!x.ok).length},sources:results.map(x=>({feed:x.feed,ok:x.ok,count:(x.rows||[]).length})),channels,matches},{headers:{"Cache-Control":"public, max-age=60","Content-Type":"application/json; charset=utf-8"}});
+  databaseCache = {version:1,generated_at:new Date().toISOString(),summary:{channels:channels.length,matches:matches.length,feeds_ok:results.filter(x=>x.ok).length,feeds_failed:results.filter(x=>!x.ok).length},sources:results.map(x=>({feed:x.feed,ok:x.ok,count:(x.rows||[]).length})),channels,matches};
+  databaseCacheAt = Date.now();
+  return Response.json(databaseCache,{headers:{"Cache-Control":"public, max-age=45","Content-Type":"application/json; charset=utf-8"}});
 }
