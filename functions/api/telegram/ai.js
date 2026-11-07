@@ -397,9 +397,9 @@ async function handleText({ request, env, message }) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "", requestedProvider.name);
       const list = unique.map((item, index) => {
         const url = item.page_url || item.url || "";
-        return (index + 1) + ". " + item.name + (url ? "\\n" + url : "");
-      }).join("\\n\\n");
-      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\\n\\n" + list);
+        return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
+      }).join("\n\n");
+      return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" + list);
     }
     return reply("No " + requestedProvider.name + " channels were found in the current directory.");
   }
