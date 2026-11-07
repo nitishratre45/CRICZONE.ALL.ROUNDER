@@ -25,17 +25,17 @@ jobs:
 
       - name: Check required files and API secret
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           test -f criczone1/index.html
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error::Add OPENAI_API_KEY in GitHub → Settings → Secrets and variables → Actions. The workflow needs it to generate a safe CSS improvement."
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "::error::Add GEMINI_API_KEY in GitHub → Settings → Secrets and variables → Actions. The workflow needs it to generate a safe CSS improvement."
             exit 1
           fi
 
       - name: Generate one small CSS-only improvement
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python - <<'PY'
           import json, os, re, urllib.request
@@ -58,26 +58,33 @@ jobs:
           """ + html[:90000]
 
           payload = {
-              "model": "gpt-4.1-mini",
-              "messages": [
-                  {"role": "system", "content": "You are a cautious senior frontend engineer. Output CSS only."},
-                  {"role": "user", "content": prompt}
-              ],
-              "temperature": 0.2,
-              "max_tokens": 1800
+              "systemInstruction": {
+                  "parts": [{"text": "You are a cautious senior frontend engineer. Output CSS only."}]
+              },
+              "contents": [{
+                  "role": "user",
+                  "parts": [{"text": prompt}]
+              }],
+              "generationConfig": {
+                  "temperature": 0.2,
+                  "maxOutputTokens": 1800
+              }
           }
           req = urllib.request.Request(
-              "https://api.openai.com/v1/chat/completions",
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
               data=json.dumps(payload).encode(),
               headers={
-                  "Authorization": "Bearer " + os.environ["OPENAI_API_KEY"],
+                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
                   "Content-Type": "application/json"
               },
               method="POST"
           )
           with urllib.request.urlopen(req, timeout=90) as response:
               result = json.loads(response.read())
-          css = result["choices"][0]["message"]["content"].strip()
+          css = "".join(
+              part.get("text", "")
+              for part in result["candidates"][0]["content"]["parts"]
+          ).strip()
           css = re.sub(r"^\x60{3}(?:css)?\s*|\s*\x60{3}$", "", css, flags=re.I).strip()
 
           if css == "NO_CHANGE" or not css:
