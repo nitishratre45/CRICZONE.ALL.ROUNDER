@@ -339,7 +339,7 @@ async function handleText({ request, env, message }) {
   }
 
   // Team-vs-team query: show only the requested broadcaster/provider names.
-  const isTeamMatchQuery = /\b(vs|versus|v)\b/i.test(userText);
+  const isTeamMatchQuery = /\\b(?:vs|versus|v|against)\\b/i.test(normalize(userText).replace(/\\./g, " "));
   const providerNames = ["Sony Sports", "Star Sports", "FanCode", "Willow", "Sky", "Fox", "TNT"];
   if (isTeamMatchQuery) {
     const availableProviders = providerNames.filter(provider =>
