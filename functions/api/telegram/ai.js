@@ -70,7 +70,7 @@ function buildInlineLinkKeyboard(text) {
   }
   return rows.length ? { inline_keyboard: rows } : null;
 }
-async function send(env, chatId, text, replyTo, replyMarkup) {
+async function send(env, chatId, text, replyTo, replyMarkup, parseMode) {
   // Telegram sendMessage accepts at most 4096 characters. Split on line boundaries.
   const source = String(text || "");
   const keyboard = replyMarkup || buildInlineLinkKeyboard(source);
@@ -95,6 +95,7 @@ async function send(env, chatId, text, replyTo, replyMarkup) {
       body: JSON.stringify({
         chat_id: chatId,
         text: chunks[index],
+        ...(parseMode ? { parse_mode: parseMode } : {}),
         disable_web_page_preview: true,
         ...(index === 0 && keyboard ? { reply_markup: keyboard } : {}),
         ...(index === 0 && replyTo ? { reply_to_message_id: replyTo, allow_sending_without_reply: true } : {})
@@ -369,7 +370,7 @@ async function handleText({ request, env, message }) {
   await ensureTable(env.TELEGRAM_DB);
   const value = normalize(userText);
   const memory = await loadBotMemory(request);
-  const reply = (text, replyMarkup) => send(env, chatId, text, message.message_id, replyMarkup);
+  const reply = (text, replyMarkup, parseMode) => send(env, chatId, text, message.message_id, replyMarkup, parseMode);
 
   // Respond warmly to gratitude without loading channel feeds or changing conversation state.
   const gratitude = /^(?:thanks?|thank\s*u|thank\s+you|thankyou|thanku|thnks|thx|ty|many\s+thanks|thanks\s+a\s+lot|thank\s+you\s+so\s+much|thankyou\s+so\s+much|shukriya|dhanyawad)(?:\s+(?:so\s+much|a\s+lot|bro|bhai|dear|❤️+|🙏+))*[.!\s❤️🙏😊]*$/i;
@@ -544,9 +545,14 @@ async function handleText({ request, env, message }) {
         callback_data: "provider:" + provider.name
       }])
     };
-    return reply("🏏 CRICZONE MATCH FINDER\n\n" + userText +
-      "\n\n📺 Select your preferred broadcaster below to view its available channels.\n" +
-      "You can also type a broadcaster name (e.g. Sony Sports).", providerKeyboard);
+    const safeMatchName = userText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const matchMessage =
+      "🏏 <b>CRICZONE MATCH FINDER</b>\n\n" +
+      "🏆 <b>" + safeMatchName + "</b>\n\n" +
+      "📺 <b>Choose your broadcaster</b>\n" +
+      "<i>Select a button below to view available channels.</i>\n" +
+      "<i>Or type a broadcaster name, e.g. Sony Sports.</i>";
+    return reply(matchMessage, providerKeyboard, "HTML");
   }
 
   // Show Sony alternate links only after the user reports primary playback trouble.
