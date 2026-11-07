@@ -446,7 +446,7 @@ async function handleText({ request, env, message }) {
     if (backups.length) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", recentSonyState?.topic || "Sony Sports", "Sony Sports");
       return reply("📺 SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
-        backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.url).join("\n\n"));
+        backups.map((item, index) => (index + 1) + ". " + item.name + "\n🌐 Open in Chrome: " + item.url).join("\n\n"));
     }
     return reply("Sony backup channels are not available right now. Please try again later.");
   }
@@ -464,7 +464,7 @@ async function handleText({ request, env, message }) {
       await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state?.topic || "", requestedProvider.name);
       const list = unique.map((item, index) => {
         const url = item.page_url || item.url || "";
-        return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
+        return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
       }).join("\n\n");
       const webLink = normalize(requestedProvider.name) === "fancode"
         ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
@@ -485,7 +485,7 @@ async function handleText({ request, env, message }) {
         await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", state.topic, selectedProvider.name);
         const list = unique.map((item, index) => {
           const url = item.page_url || item.url || "";
-          return (index + 1) + ". " + item.name + (url ? "\n" + url : "");
+          return (index + 1) + ". " + item.name + (url ? "\n🌐 Open in Chrome: " + url : "");
         }).join("\n\n");
         const webLink = normalize(selectedProvider.name) === "fancode"
           ? "\n\nFANCODE WEB\nhttps://criczone.pages.dev/criczonefancode/"
@@ -515,7 +515,7 @@ async function handleText({ request, env, message }) {
     const selected = exact || channelMatches[0];
     const pageUrl = selected.page_url || selected.url || "";
     if (!pageUrl) return reply("I found " + selected.name + " but its CRICZONE page URL is not available.");
-    return reply(selected.name + "\n" + pageUrl);
+    return reply(selected.name + "\n🌐 Open in Chrome: " + pageUrl);
   }
 
   const channelMatches = findMatches(data.records, userText);
@@ -525,7 +525,7 @@ async function handleText({ request, env, message }) {
     }
     const lines = channelMatches.slice(0, 4).map((item, i) => {
       const pageUrl = item.page_url || item.url || "";
-      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
+      return (i + 1) + ". " + item.name + (pageUrl ? "\n🌐 Open in Chrome: " + pageUrl : "");
     });
     return reply("Channel matches:\n" + lines.join("\n\n"));
   }
