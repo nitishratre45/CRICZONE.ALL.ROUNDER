@@ -451,6 +451,36 @@ async function handleText({ request, env, message }) {
 
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
+  // Natural-language broadcaster link requests, e.g. "Sony HD link?" or "Fox hd link".
+  const linkIntent = /\\b(?:link|url|website|web|send|show|give)\\b/i.test(userText);
+  const channelQuery = userText.replace(/\\b(?:link|url|website|web|send|show|give|please|hd|4k)\\b/gi, " ").replace(/[?!.]/g, " ").replace(/\\s+/g, " ").trim();
+  if (linkIntent) {
+    const requestedProvider = providerDefinitions.find(provider =>
+      provider.keys.some(key => {
+        const alias = normalize(key);
+        return alias && (value === alias || value.startsWith(alias + " "));
+      })
+    );
+    if (requestedProvider) {
+      const remainder = value.replace(normalize(requestedProvider.name), " ").trim();
+      const hasSpecificChannelNumber = /\\b(?:[1-9]|ten\\s*[1-5]|select\\s*[12])\\b/i.test(remainder);
+      if (!hasSpecificChannelNumber) {
+        const list = getProviderChannels(requestedProvider);
+        if (list.length) {
+          await clearState(env.TELEGRAM_DB, chatId, userId);
+          const lines = list.map((item, index) => {
+            const url = item.page_url || item.url || "";
+            return (index + 1) + ". " + item.name + (url ? "\\n🌐 Open in Chrome: " + url : "");
+          }).join("\\n\\n");
+          const extra = normalize(requestedProvider.name) === "fancode"
+            ? "\\n\\nFANCODE WEB\\nhttps://criczone.pages.dev/criczonefancode/"
+            : "";
+          return reply(requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")\\n\\n" + lines + extra);
+        }
+      }
+    }
+  }
+
   if (isTeamMatchQuery) {
     const availableProviders = providerDefinitions.filter(provider => providerHasChannels(provider));
     await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_provider", userText, "");
@@ -531,8 +561,8 @@ async function handleText({ request, env, message }) {
   if (state?.step === "awaiting_channel") {
     // First respect the selected provider; if stale or incomplete group state filters it out,
     // retry globally so a fully-qualified channel name still works in every group.
-    let channelMatches = findMatches(channelSearchRecords, userText, state.provider || "");
-    if (!channelMatches.length) channelMatches = findMatches(channelSearchRecords, userText);
+    let channelMatches = findMatches(channelSearchRecords, channelQuery || userText, state.provider || "");
+    if (!channelMatches.length) channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
     if (!channelMatches.length) {
       return reply("I couldn't find that channel in the source list. Try another part of its name.");
     }
@@ -549,7 +579,7 @@ async function handleText({ request, env, message }) {
     return reply(selected.name + "\n🌐 Open in Chrome: " + pageUrl);
   }
 
-  const channelMatches = findMatches(data.records, userText);
+  const channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
   if (channelMatches.length) {
     if (/fancode/i.test(userText)) {
       return reply("FANCODE\nhttps://criczone.pages.dev/criczonefancode/");
