@@ -240,11 +240,11 @@ function closeWord(a, b) {
 
 function findWillowMatches(matches, query) {
   const normalized = normalize(query)
-    .replace(/\\bnewzealand\\b/g, "new zealand")
-    .replace(/\\bsouthafrica\\b/g, "south africa")
-    .replace(/\\bsrilanka\\b/g, "sri lanka")
-    .replace(/\\bwestindies\\b/g, "west indies");
-  const parts = normalized.split(/\\s+(?:vs|versus|v)\\s+/).filter(Boolean);
+    .replace(/\bnewzealand\b/g, "new zealand")
+    .replace(/\bsouthafrica\b/g, "south africa")
+    .replace(/\bsrilanka\b/g, "sri lanka")
+    .replace(/\bwestindies\b/g, "west indies");
+  const parts = normalized.split(/\s+(?:vs|versus|v)\s+/).filter(Boolean);
   const aliases = {
     ind: ["india"], india: ["india"], nz: ["new zealand"], "new zealand": ["new zealand"],
     aus: ["australia"], australia: ["australia"], eng: ["england"], england: ["england"],
@@ -338,6 +338,20 @@ async function handleText({ request, env, message }) {
       "\\n\\nAll Sony channels: https://criczone.pages.dev/sony/");
   }
 
+  // "Willow" alone lists the current fixtures from the Willow JSON, not channel aliases.
+  if (value === "willow" || value === "willow matches" || value === "willow match") {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    const fixtures = (data.matches || []).filter(item => item.id && item.name &&
+      String(item.folder || "").toLowerCase() === "criczonebuzz").slice(0, 12);
+    if (!fixtures.length) return reply("Willow match data is temporarily unavailable. Please try again shortly.");
+    const lines = fixtures.map((item, index) =>
+      (index + 1) + ". " + item.name +
+      "\nCRICZONE Match: https://criczone.pages.dev/criczonebuzz/?id=" + encodeURIComponent(item.id) +
+      "\nWillow Web: https://criczone.pages.dev/criczonebuzz/"
+    );
+    return reply("WILLOW MATCHES (" + fixtures.length + ")\n\n" + lines.join("\n\n"));
+  }
+
   // Resolve Willow fixtures by event name and expose the CRICZONE ID route plus Willow web.
   const willowMatches = findWillowMatches(data.matches || [], userText);
   if (willowMatches.length) {
@@ -373,7 +387,8 @@ async function handleText({ request, env, message }) {
   }
 
   if (isMatchQuery) {
-    await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_channel", userText, "");
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    return reply("I couldn't find that match in the Willow JSON. Try the team names, for example: India vs New Zealand.");
     const siteLabels = {
       criczone: "CRICZONE",
       criczone1: "CRICZONE 1",
