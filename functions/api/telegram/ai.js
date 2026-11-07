@@ -37,6 +37,20 @@ async function loadBotMemory(request) {
 }
 
 
+function buildChannelKeyboard(items, fallbackLabel = "Open channel") {
+  const rows = [];
+  const seen = new Set();
+  for (const item of items || []) {
+    const url = String(item?.page_url || item?.url || "").trim();
+    if (!/^https:\/\/(?:criczone\.pages\.dev|t\.me)\//i.test(url) || seen.has(url)) continue;
+    seen.add(url);
+    const label = String(item?.name || fallbackLabel).replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().slice(0, 64) || fallbackLabel;
+    rows.push([{ text: label, url }]);
+    if (rows.length >= 30) break;
+  }
+  return rows.length ? { inline_keyboard: rows } : null;
+}
+
 function buildInlineLinkKeyboard(text) {
   const lines = String(text || "").split(/\r?\n/);
   const rows = [];
@@ -427,12 +441,12 @@ async function handleText({ request, env, message }) {
   // Use only the two Sony source folders and always share the Sony page base URL.
   if (value === "sony") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("📺 <b>ALL SONY CHANNELS</b>\n\n<i>Open the complete Sony channel directory:</i>\nhttps://criczone.pages.dev/sony/", undefined, "HTML");
+    return reply("📺 <b>SONY SPORTS DIRECTORY</b>\n\n<i>Explore all available Sony Sports channels in one place.</i>\n\n<blockquote>Tap the button below to open the complete directory. 🏏</blockquote>", buildChannelKeyboard([{ name: "📺 OPEN SONY DIRECTORY", page_url: "https://criczone.pages.dev/sony/" }]), "HTML");
   }
 
   if (/^(?:fancode|fan code)\\s+web$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Open the FanCode page:</i>\nhttps://criczone.pages.dev/criczonefancode/", undefined, "HTML");
+      return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Explore the available FanCode channels on CRICZONE.</i>\n\n<blockquote>Tap the button below to open FanCode. 🔗</blockquote>", buildChannelKeyboard([{ name: "🎬 OPEN FANCODE", page_url: "https://criczone.pages.dev/criczonefancode/" }]), "HTML");
   }
 
   // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
@@ -643,7 +657,7 @@ async function handleText({ request, env, message }) {
     const selected = exact || channelMatches[0];
     const pageUrl = selected.page_url || selected.url || "";
     if (!pageUrl) return reply("⚠️ <b>Channel page unavailable</b>\n\n<i>I found </i><b>" + selected.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</b><i>, but its CRICZONE page URL is missing.</i>", undefined, "HTML");
-    return reply("📺 <b>" + selected.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</b>\n\n<i>Tap the link to open this channel:</i>\n" + pageUrl, undefined, "HTML");
+    return reply("📺 <b>CHANNEL READY</b>\n\n<code>" + selected.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</code>\n\n<blockquote><i>Tap the button below to open this channel.</i> 🔗</blockquote>", buildChannelKeyboard([selected]), "HTML");
   }
 
   const channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
@@ -651,10 +665,9 @@ async function handleText({ request, env, message }) {
     if (/fancode/i.test(userText)) {
       return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Open the FanCode page:</i>\nhttps://criczone.pages.dev/criczonefancode/", undefined, "HTML");
     }
-    const lines = channelMatches.slice(0, 4).map((item, i) => {
-      const pageUrl = item.page_url || item.url || "";
-      return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
-    });
+    const matches = channelMatches.slice(0, 4);
+    const lines = matches.map((item, i) => "<b>" + (i + 1) + ".</b> <code>" + String(item.name || "Channel").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</code>");
+    return reply("🔎 <b>CHANNEL MATCHES</b>\n\n<i>Here are the closest matches for your search:</i>\n\n" + lines.join("\n") + "\n\n<blockquote>Choose a channel button below to open it. 🔗</blockquote>", buildChannelKeyboard(matches), "HTML");
     return reply("🔎 <b>CHANNEL MATCHES</b>\n\n<i>Choose the channel link that matches your search:</i>\n\n" + lines.join("\n\n"));
   }
 
