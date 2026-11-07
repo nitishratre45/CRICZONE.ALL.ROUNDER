@@ -7,7 +7,9 @@
     "exact_sony": "Only exact 'sony' returns https://criczone.pages.dev/sony/. 'sony sports' must use the Sony Sports provider channel list.",
     "channel_selection": "When a user selects a channel, return only that channel name and its page URL.",
     "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
-    "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID."
+    "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID.",
+    "sony_primary": "When user asks Sony or Sony Sports, show only the five preferred channels configured in sony_channel_sets.primary. Do not mix other feeds or Sony TV entertainment channels.",
+    "sony_backup": "Only when the user says a Sony channel is not working, send the configured backup channel list from sony_channel_sets.backup. Never show backups in the first reply."
   },
   "folders": {
     "criczone": "https://criczone.pages.dev/criczone/",
@@ -104,5 +106,21 @@
     "rule": "Use channel id + name + folder + url from this file as trusted CRICZONE metadata; do not re-scrape or ask the user to resend it."
   },
   "data_sources_file": "telegram-sources.json",
-  "state_storage": "D1 table telegram_ai_conversations"
+  "state_storage": "D1 table telegram_ai_conversations",
+  "sony_channel_sets": {
+    "primary": [
+      "sony1",
+      "sony2",
+      "sony3",
+      "sony4T",
+      "sony5"
+    ],
+    "backup": [
+      "Eng-b",
+      "Hin-b",
+      "Tam-b",
+      "Tel-b",
+      "Kan-b"
+    ]
+  }
 }
