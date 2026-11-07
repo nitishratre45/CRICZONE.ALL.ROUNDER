@@ -268,7 +268,7 @@ async function handleText({ request, env, message }) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (/fancode/i.test(userText)) {
       const item = channelMatches.find(row => /fancode/i.test(String(row.folder || "") + " " + String(row.name || ""))) || channelMatches[0];
-      return reply("FANCODE\\nhttps://criczone.pages.dev/criczonefancode/");
+      return reply("FANCODE\nhttps://criczone.pages.dev/criczonefancode/");
     }
     const lines = channelMatches.slice(0, 4).map((item, i) => {
       const pageUrl = item.page_url || item.url || "";
@@ -302,7 +302,7 @@ async function handleText({ request, env, message }) {
   const channelMatches = findMatches(data.records, userText);
   if (channelMatches.length) {
     if (/fancode/i.test(userText)) {
-      return reply("FANCODE\\nhttps://criczone.pages.dev/criczonefancode/");
+      return reply("FANCODE\nhttps://criczone.pages.dev/criczonefancode/");
     }
     const lines = channelMatches.slice(0, 4).map((item, i) => {
       const pageUrl = item.page_url || item.url || "";
