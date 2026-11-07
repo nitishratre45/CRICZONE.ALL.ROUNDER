@@ -339,6 +339,11 @@ async function handleText({ request, env, message }) {
     return reply("You're most welcome! ❤️😊 Always happy to help. Thanks for being part of the CRICZONE family. Enjoy the cricket! 🏏💙");
   }
 
+  const greeting = /^(?:hi|hello|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
+  if (greeting.test(userText.trim())) {
+    return reply("Hello! 👋 Welcome to CRICZONE. 🏏\\nSend a channel name, broadcaster (e.g. Sony Sports or FanCode), or match (e.g. India vs New Zealand). I’ll find the CRICZONE link for you. 🌐");
+  }
+
   // Ignore ordinary chat; this assistant only answers identifiable cricket/channel requests.
   const casual = /^(?:welcome|ok|okay|k|hmm|acha|achha|ho gaya|ho gya|done|great|nice|good|❤️+|🙏+|👍+|😊+|😍+)$/i;
   if (casual.test(value)) return;
@@ -418,6 +423,32 @@ async function handleText({ request, env, message }) {
     return [...new Map(rows.map(item => [normalize(item.name), item])).values()]
       .sort((a, b) => String(a.name).localeCompare(String(b.name)));
   };
+  // Build one searchable index from live feeds plus trusted curated memory entries.
+  // This lets exact channel-name lookups work even when an upstream feed is temporarily incomplete.
+  const curatedSearchRecords = [];
+  for (const provider of providerDefinitions) {
+    for (const item of Array.isArray(provider.channel_entries) ? provider.channel_entries : []) {
+      if (item?.id && item?.name && item?.url) curatedSearchRecords.push({
+        type: "channel", id: String(item.id), name: item.name,
+        folder: item.folder || "criczone", json: "manual_directory", page_url: item.url
+      });
+    }
+  }
+  for (const item of [
+    ...(Array.isArray(memory.sony_channel_sets?.primary) ? memory.sony_channel_sets.primary : []),
+    ...(Array.isArray(memory.sony_channel_sets?.backup) ? memory.sony_channel_sets.backup : [])
+  ]) {
+    if (item?.id && item?.name && item?.url) curatedSearchRecords.push({
+      type: "channel", id: String(item.id), name: item.name,
+      folder: item.folder || "criczone", json: "manual_directory", page_url: item.url
+    });
+  }
+  const channelSearchRecords = [...new Map(
+    [...data.records, ...curatedSearchRecords]
+      .filter(item => item && item.type !== "match" && item.name && (item.page_url || item.url))
+      .map(item => [String(item.folder || "criczone") + "|" + String(item.id || "") + "|" + normalize(item.name), item])
+  ).values()];
+
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
   if (isTeamMatchQuery) {
@@ -500,8 +531,8 @@ async function handleText({ request, env, message }) {
   if (state?.step === "awaiting_channel") {
     // First respect the selected provider; if stale or incomplete group state filters it out,
     // retry globally so a fully-qualified channel name still works in every group.
-    let channelMatches = findMatches(data.records, userText, state.provider || "");
-    if (!channelMatches.length) channelMatches = findMatches(data.records, userText);
+    let channelMatches = findMatches(channelSearchRecords, userText, state.provider || "");
+    if (!channelMatches.length) channelMatches = findMatches(channelSearchRecords, userText);
     if (!channelMatches.length) {
       return reply("I couldn't find that channel in the source list. Try another part of its name.");
     }
@@ -528,6 +559,11 @@ async function handleText({ request, env, message }) {
       return (i + 1) + ". " + item.name + (pageUrl ? "\n🌐 Open in Chrome: " + pageUrl : "");
     });
     return reply("Channel matches:\n" + lines.join("\n\n"));
+  }
+
+  // Give useful guidance for likely channel searches instead of a confusing generic error.
+  if (userText.length >= 3 && /\\b(?:sports|sport|channel|hd|4k|cricket|sony|star|sky|fox|tnt|willow|fancode)\\b/i.test(userText)) {
+    return reply("I couldn't find an exact channel match. 🤔\\nTry a shorter name (e.g. \"Star Sports 2\") or send /help for examples.");
   }
 
   // Do not interrupt unrelated group conversation.
