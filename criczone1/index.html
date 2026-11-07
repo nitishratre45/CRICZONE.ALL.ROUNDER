@@ -1103,7 +1103,7 @@ function display(el, value) {
     await onDisconnect(presenceRef).remove();
     await set(presenceRef, { online: true, joinedAt: Date.now(), page: "criczone1" });
     liveUnsubscribe = onValue(ref(db, "liveViewers/criczone1"), snapshot => {
-      const active = snapshot.size ?? snapshot.numChildren();
+      const active = snapshot.numChildren();
       display(liveEl, BASE_COUNT + active);
     }, error => console.warn("CRICZONE1 live watching listener:", error));
   } catch (error) {
