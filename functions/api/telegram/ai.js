@@ -690,6 +690,44 @@ export async function onRequestPost({ request, env }) {
   }
   let update;
   try { update = await request.json(); } catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+  // Notify users when they leave the configured CRICZONE channel.
+  // Telegram sends chat_member updates only when the webhook subscribes to them.
+  const memberUpdate = update?.chat_member;
+  if (memberUpdate?.chat?.type === "channel" && memberUpdate?.old_chat_member && memberUpdate?.new_chat_member) {
+    const oldStatus = String(memberUpdate.old_chat_member.status || "");
+    const newStatus = String(memberUpdate.new_chat_member.status || "");
+    const wasMember = ["member", "administrator", "creator", "restricted"].includes(oldStatus);
+    const isNoLongerMember = ["left", "kicked"].includes(newStatus);
+    const user = memberUpdate.new_chat_member.user;
+    if (wasMember && isNoLongerMember && user?.id && !user.is_bot) {
+      try {
+        const notice = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: user.id,
+            text: "👋 <b>WE’RE SORRY TO SEE YOU GO!</b>\n\nYou’ve left the CRICZONE channel. Thank you for being part of our cricket community. ❤️\n\nWhenever you want to return, you’re always welcome. 🏏\n\n👇 <i>Tap below to visit the channel again.</i>",
+            parse_mode: "HTML",
+            disable_web_page_preview: true,
+            reply_markup: {
+              inline_keyboard: [[{
+                text: "📢 REJOIN CRICZONE",
+                url: "https://t.me/+zAubvy7Li2VmMWY9"
+              }]]
+            }
+          })
+        });
+        const result = await notice.json();
+        if (!notice.ok || !result.ok) {
+          console.warn("CRICZONE leave notification could not be delivered", result);
+        }
+      } catch (error) {
+        console.warn("CRICZONE leave notification failed", error);
+      }
+    }
+    return json({ ok: true, received: true, member_update: true });
+  }
+
   // Automatically approve Telegram channel join requests.
   // The bot must be an administrator in the channel with the invite-users right.
   const joinRequest = update?.chat_join_request;
