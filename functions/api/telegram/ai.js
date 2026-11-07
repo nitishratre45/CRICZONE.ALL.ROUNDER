@@ -375,7 +375,7 @@ async function handleText({ request, env, message }) {
   // Respond warmly to gratitude without loading channel feeds or changing conversation state.
   const gratitude = /^(?:thanks?|thank\s*u|thank\s+you|thankyou|thanku|thnks|thx|ty|many\s+thanks|thanks\s+a\s+lot|thank\s+you\s+so\s+much|thankyou\s+so\s+much|shukriya|dhanyawad)(?:\s+(?:so\s+much|a\s+lot|bro|bhai|dear|❤️+|🙏+))*[.!\s❤️🙏😊]*$/i;
   if (gratitude.test(userText.trim())) {
-    return reply("You're most welcome! ❤️😊 Always happy to help. Thanks for being part of the CRICZONE family. Enjoy the cricket! 🏏💙");
+    return reply("❤️ <b>You’re most welcome!</b> 😊\n\n<i>We’re happy to have you in the CRICZONE family.</i>\n\n<blockquote>Enjoy the cricket! 🏏💙</blockquote>", undefined, "HTML");
   }
 
   const greeting = /^(?:hi|hello|hellow|helo|hey|hii+|helo+|namaste|good morning|good afternoon|good evening)[.!\\s😊👋❤️]*$/i;
@@ -399,13 +399,13 @@ async function handleText({ request, env, message }) {
 
   if (/^\/(cancel|stop)(@\w+)?$/i.test(userText)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("Cancelled.");
+    return reply("✅ <b>Request cancelled</b>\n\n<i>Your current search has been cleared.</i>", undefined, "HTML");
   }
   if (/^\/(start|ping)(@\w+)?$/i.test(userText)) {
-    return reply("CRICZONE is online. Send a match, team-vs-team query, channel name, or part of a channel name.");
+    return reply("🟢 <b>CRICZONE BOT IS ONLINE</b>\n\n<i>What would you like to find?</i>\n\n• Send a team matchup\n• Send a broadcaster name\n• Send a channel name\n\n<blockquote>Example: <code>India vs New Zealand</code></blockquote>", undefined, "HTML");
   }
   if (/^\/help(@\w+)?$/i.test(userText)) {
-    return reply("Send a match like India vs New Zealand, or a channel name like Sony Sports. I will ask which channel you want if needed.");
+    return reply("📖 <b>CRICZONE HELP</b>\n\n<i>Search for cricket channels in a few simple ways:</i>\n\n🏏 <b>Match:</b> <code>India vs New Zealand</code>\n📺 <b>Broadcaster:</b> <code>Sony Sports</code>\n🔎 <b>Channel:</b> <code>Sony Sports Ten 1 HD</code>\n\n<blockquote>Choose a broadcaster button to see its available channels.</blockquote>", undefined, "HTML");
   }
 
   const state = await getState(env.TELEGRAM_DB, chatId, userId);
@@ -414,28 +414,28 @@ async function handleText({ request, env, message }) {
     data = await loadAllData(request);
   } catch (error) {
     console.error("CRICZONE data load error", error);
-    return reply("Channel data is temporarily unavailable. Please try again shortly.");
+    return reply("⚠️ <b>Channel data temporarily unavailable</b>\n\n<i>Please try again in a little while.</i>", undefined, "HTML");
   }
   if (!data.records.length && !data.matches.length) {
-    return reply("The channel list is currently empty or unavailable. Please contact the CRICZONE admin.");
+    return reply("⚠️ <b>Channel list unavailable</b>\n\n<i>The channel directory is empty or temporarily unavailable.</i>\n\n<blockquote>Please contact a CRICZONE admin for help.</blockquote>", undefined, "HTML");
   }
 
   // A standalone "Sony" request returns the complete Sony channel directory.
   // Use only the two Sony source folders and always share the Sony page base URL.
   if (value === "sony") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("All Sony channels: https://criczone.pages.dev/sony/");
+    return reply("📺 <b>ALL SONY CHANNELS</b>\n\n<i>Open the complete Sony channel directory:</i>\nhttps://criczone.pages.dev/sony/", undefined, "HTML");
   }
 
   if (/^(?:fancode|fan code)\\s+web$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("https://criczone.pages.dev/criczonefancode/");
+    return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Open the FanCode page:</i>\nhttps://criczone.pages.dev/criczonefancode/", undefined, "HTML");
   }
 
   // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
   if (/^(?:willow|willow channels|cricbuzz|cricbuzz channels)$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("https://criczone.pages.dev/criczonebuzz/");
+    return reply("🏏 <b>CRICZONE BUZZ</b>\n\n<i>Open Willow and Cricbuzz coverage:</i>\nhttps://criczone.pages.dev/criczonebuzz/", undefined, "HTML");
   }
 
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
@@ -541,7 +541,7 @@ async function handleText({ request, env, message }) {
     const availableProviders = providerDefinitions.filter(provider => providerHasChannels(provider));
     await saveState(env.TELEGRAM_DB, chatId, userId, "awaiting_provider", userText, "");
     if (!availableProviders.length) {
-      return reply("No broadcaster channels are currently available in the connected feeds.");
+      return reply("⚠️ <b>No broadcasters available right now</b>\n\n<i>The connected channel feeds did not return any broadcaster channels.</i>\n\nPlease try again shortly.", undefined, "HTML");
     }
     const providerKeyboard = {
       inline_keyboard: availableProviders.map(provider => [{
@@ -576,7 +576,7 @@ async function handleText({ request, env, message }) {
       return reply("📺 SONY SPORTS BACKUP CHANNELS (" + backups.length + ")\n\n" +
         backups.map((item, index) => (index + 1) + ". " + item.name + "\n" + item.url).join("\n\n"));
     }
-    return reply("Sony backup channels are not available right now. Please try again later.");
+    return reply("⚠️ <b>Sony backup channels unavailable</b>\n\n<i>Please try again later. The backup directory may be temporarily offline.</i>", undefined, "HTML");
   }
 
   const requestedProvider = providerDefinitions.find(provider =>
@@ -602,7 +602,7 @@ async function handleText({ request, env, message }) {
         "<i>Choose a channel below to open it in Chrome.</i>";
       return reply(channelMessage, channelKeyboard, "HTML");
     }
-    return reply("No " + requestedProvider.name + " channels were found in the current directory.");
+    return reply("⚠️ <b>No " + requestedProvider.name.toUpperCase() + " channels found</b>\n\n<i>There are no matching channels in the current directory right now.</i>", undefined, "HTML");
   }
 
   if (state?.step === "awaiting_provider") {
@@ -627,7 +627,7 @@ async function handleText({ request, env, message }) {
         return reply("🌐 OPEN IN CHROME — tap any channel link below\n\n" + selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")\n\n" +
           list + webLink);
       }
-      return reply("No " + selectedProvider.name + " channels were found in the current feeds.");
+      return reply("⚠️ <b>No " + selectedProvider.name.toUpperCase() + " channels found</b>\n\n<i>The current feeds did not return channels for this broadcaster.</i>", undefined, "HTML");
     }
   }
 
@@ -642,14 +642,14 @@ async function handleText({ request, env, message }) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (/fancode/i.test(userText)) {
       const item = channelMatches.find(row => /fancode/i.test(String(row.folder || "") + " " + String(row.name || ""))) || channelMatches[0];
-      return reply("FANCODE\nhttps://criczone.pages.dev/criczonefancode/");
+      return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Open the FanCode page:</i>\nhttps://criczone.pages.dev/criczonefancode/", undefined, "HTML");
     }
     // Once a user chooses a channel name, return only the single best matching channel URL.
     const exact = channelMatches.find(item => normalize(item.name) === normalize(userText));
     const selected = exact || channelMatches[0];
     const pageUrl = selected.page_url || selected.url || "";
-    if (!pageUrl) return reply("I found " + selected.name + " but its CRICZONE page URL is not available.");
-    return reply(selected.name + "\n" + pageUrl);
+    if (!pageUrl) return reply("⚠️ <b>Channel page unavailable</b>\n\n<i>I found </i><b>" + selected.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</b><i>, but its CRICZONE page URL is missing.</i>", undefined, "HTML");
+    return reply("📺 <b>" + selected.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</b>\n\n<i>Tap the link to open this channel:</i>\n" + pageUrl, undefined, "HTML");
   }
 
   const channelMatches = findMatches(channelSearchRecords, channelQuery || userText);
@@ -661,7 +661,7 @@ async function handleText({ request, env, message }) {
       const pageUrl = item.page_url || item.url || "";
       return (i + 1) + ". " + item.name + (pageUrl ? "\n" + pageUrl : "");
     });
-    return reply("🌐 OPEN IN CHROME — tap any channel link below\n\nChannel matches:\n" + lines.join("\n\n"));
+    return reply("🔎 <b>CHANNEL MATCHES</b>\n\n<i>Choose the channel link that matches your search:</i>\n\n" + lines.join("\n\n"));
   }
 
   // Give useful guidance for likely channel searches instead of a confusing generic error.
