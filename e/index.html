@@ -187,7 +187,18 @@ grid.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)re
 document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;active=b.dataset.filter;renderFilters();render()});search.addEventListener('input',render);
 window.addEventListener('popstate',()=>{if(player.classList.contains('active')){frame.src='about:blank';player.classList.remove('active');home.classList.remove('hidden')}});
 renderFilters();render();
-const initial=new URLSearchParams(location.search).get('channel');if(initial){const c=channels.find(x=>x.id===initial);if(c)choose(c)}
+// Support both the public CRICZONE ?id= links and the internal ?channel= links.
+const params=new URLSearchParams(location.search);
+const initial=params.get('id')||params.get('channel');
+if(initial){
+  const c=channels.find(x=>String(x.id).toLowerCase()===String(initial).toLowerCase());
+  if(c) choose(c);
+  else {
+    console.warn('CRICZONE: channel ID not found in e folder:', initial);
+    document.getElementById('empty').style.display='block';
+    document.getElementById('empty').textContent='Channel ID not found in this folder: '+initial;
+  }
+}
 </script>
 
 <!-- CRICZONE Telegram join banner + local Telegram popup (self-contained per page) -->
