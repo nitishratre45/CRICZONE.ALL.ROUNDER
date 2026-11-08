@@ -97,7 +97,7 @@
     const qualityList = document.getElementById("quality-list");
     const qualityTitle = document.getElementById("quality-title");
     const qualitySubtitle = document.getElementById("quality-subtitle");
-    const order = ["1080p","720p","540p","480p","360p","240p"];
+    const order = ["2160p","1440p","1080p","720p","540p","480p","360p","240p"];
     let allMatches = [];
     let activeFilter = "all";
     let activeMatch = null;
@@ -113,7 +113,7 @@
     function getStreams(match) {
       const candidates = [];
       const qualityKey = value => {
-        const key = String(value || "").toLowerCase().replace(/\\s+/g,"").replace(/_/g,"");
+        const key = String(value || "").toLowerCase().replace(/\s+/g,"").replace(/_/g,"");
         const known = key.match(/^(2160|1440|1080|720|540|480|360|240|144)p$/);
         return known ? known[1] + "p" : "";
       };
