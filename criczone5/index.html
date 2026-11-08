@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"> <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LZZ4WS8FYB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LZZ4WS8FYB');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cric Hype | Live Sports</title>
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+    <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "https://hype99.github.io/1/one.css?t=" + Date.now();
+        document.head.appendChild(css);
+    </script>
+</head>
+
+<body>
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <header>
+        <div class="header-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon"><i class="fas fa-play"></i></div>
+                <span class="brand-name">Cric Hype</span>
+            </a>
+            <div class="live-pill">
+                <div class="live-dot"></div>
+                Live Stream
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="player-card">
+            <div id="playerContainer" data-shaka-player-container class="hidden" style="width:100%; height:100%;">
+    <video data-shaka-player id="video" poster="https://liv18.pages.dev/P.jpg" autoplay playsinline style="width:100%; height:100%;"></video>
+</div>
+
+            <iframe id="iframePlayer" class="hidden" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+            
+            <div class="error-overlay" id="errorOverlay">
+                <p id="errorMsg">Stream is currently offline</p>
+                <button class="retry-btn" onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title"><i class="fas fa-bullhorn"></i> Join Community</div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">Join our official channels for backup links and schedules.</p>
+            <div class="promo-buttons">
+                <a href="https://telegram.me/CricHype" target="_blank" class="btn-social btn-tg"><i class="fab fa-telegram-plane"></i> Telegram</a>
+                <a href="https://instagram.com/realCricHype" target="_blank" class="btn-social btn-ig"><i class="fab fa-instagram"></i> Instagram</a>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title"><i class="fas fa-info-circle"></i> Support Us</div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
+                For best experience, use <b>Google Chrome</b>. If stream lags, try refreshing the page.
+            </p>
+            <button class="btn-social btn-share" onclick="shareLink()"><i class="fas fa-share-alt"></i> Share Link with Friends</button>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function loadScript(src) {
+            const script = document.createElement("script");
+            script.src = src + "?t=" + Date.now();
+            script.defer = true;
+            document.body.appendChild(script);
+        }
+
+        loadScript("https://hype99.github.io/1/one2.js");
+        loadScript("https://hype99.github.io/1/one.js");
+    </script>
+
+    <script>
+        if (confirm("Join For More Links!!")) {
+            window.location.href = "https://telegram.me/+89_DpZx6uUs2Mjk9";
+        }
+    </script>
+<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e070d77ada7d440986e401341fa4973d"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>
