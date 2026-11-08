@@ -164,7 +164,22 @@
         video.addEventListener("canplay",() => { loading.hidden = true; });
       } catch (error) {
         console.error("Player initialization failed:",error);
-        if (token === initToken) showError(error.message || "Unable to initialize the player.");
+        // Native HLS fallback is available on browsers such as Safari when Shaka cannot load an HLS source.
+        const isHls = /\\.m3u8(?:$|\\?)/i.test(streamUrl);
+        const nativeHls = isHls && video.canPlayType("application/vnd.apple.mpegurl");
+        if (token === initToken && nativeHls) {
+          try {
+            if (player) { await player.destroy(); player = null; }
+            video.src = streamUrl;
+            video.load();
+            await video.play();
+            loading.hidden = true;
+            return;
+          } catch (fallbackError) {
+            console.warn("Native HLS fallback failed:",fallbackError);
+          }
+        }
+        if (token === initToken) showError(error.message || "Unable to initialize the player. This browser may not support this stream format.");
       }
     }
     document.getElementById("retry-button").addEventListener("click",startPlayer);
