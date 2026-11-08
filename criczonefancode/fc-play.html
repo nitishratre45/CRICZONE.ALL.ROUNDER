@@ -141,7 +141,7 @@
     function configureOverlay(instance) {
       shakaUi = new shaka.ui.Overlay(instance,shell,video);
       shakaUi.configure({
-        controlPanelElements:["play_pause","spacer","fullscreen"],
+        controlPanelElements:["play_pause","mute","volume","spacer","fullscreen"],
         addSeekBar:true,
         seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
       });
