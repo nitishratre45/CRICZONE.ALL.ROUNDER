@@ -187,3 +187,12 @@ html,body{max-width:100%;overflow-x:hidden}
   .quality-option{min-height:60px;padding:10px}
   .quality-label{font-size:14px}
 }
+
+/* Final Android Chrome viewport-width fix: use the containing block, not vw units. */
+html{width:100%!important;min-width:100%!important;max-width:100%!important}
+body.cz-page{display:block!important;position:relative;width:100%!important;min-width:100%!important;max-width:100%!important;margin:0!important;box-sizing:border-box!important;overflow-x:hidden!important}
+.cz-page>.site-header,.cz-page>.main-content,.cz-page>.site-footer{display:block;width:100%!important;max-width:1440px;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
+@media(max-width:650px){
+ body.cz-page{padding-left:13px!important;padding-right:13px!important}
+ .cz-page>.site-header,.cz-page>.main-content,.cz-page>.site-footer{width:100%!important;max-width:none!important}
+}
