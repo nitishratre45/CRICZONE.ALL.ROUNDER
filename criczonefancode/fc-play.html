@@ -147,9 +147,8 @@
           addSeekBar:true,
           seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
         });
-        const controlsPanel = shell.querySelector(".shaka-controls-button-panel");
         const qualityMenu = document.getElementById("cz-quality-menu");
-        if (Array.isArray(availableStreams) && availableStreams.length > 1 && controlsPanel && qualityMenu) {
+        if (Array.isArray(availableStreams) && availableStreams.length > 1 && qualityMenu) {
           qualityMenu.replaceChildren();
           const qualityButton = document.createElement("button");
           qualityButton.type = "button";
@@ -160,7 +159,7 @@
             event.stopPropagation();
             qualityMenu.classList.toggle("cz-open");
           });
-          controlsPanel.append(qualityButton);
+          shell.append(qualityButton);
           availableStreams.forEach((item,index) => {
             if (!item || !item.url || !/^https?:/i.test(item.url)) return;
             const option = document.createElement("button");
