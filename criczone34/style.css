@@ -21,3 +21,5 @@ button,input{font:inherit}
  .player-top h2{font-size:16px}
  .player-note{line-height:1.45}
 }
+
+.quality-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:12px 2px 4px}.quality-row[hidden]{display:none}.quality-row label{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--muted)}.quality-row select{min-width:105px;background:#1b2635;border:1px solid var(--line);border-radius:9px;color:#fff;padding:9px 12px;font-size:12px;outline:none}.quality-row select:focus{border-color:var(--gold)}
