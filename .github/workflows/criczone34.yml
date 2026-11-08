@@ -37,4 +37,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add criczone34/channels.json
           git diff --cached --quiet || git commit -m "chore(criczone34): refresh channel catalogue"
+          git pull --rebase origin main
           git push
