@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="referrer" content="no-referrer">
   <title>CRICZONE — FanCode Player</title>
-  <link rel="stylesheet" href="./fancode.css?v=20261108-6">
+  <link rel="stylesheet" href="./fancode.css?v=20261108-7">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
   <style>
@@ -138,8 +138,9 @@
         shaka.polyfill.installAll();
         if (!shaka.Player.isBrowserSupported()) throw new Error("This browser does not support the required video formats.");
         player = new shaka.Player(video);
+        const playerInstance = player;
         const shell = document.querySelector(".shaka-video-container");
-        const ui = new shaka.ui.Overlay(player,shell,video);
+        const ui = new shaka.ui.Overlay(playerInstance,shell,video);
         ui.configure({
           controlPanelElements:["play_pause","spacer","fullscreen"],
           addSeekBar:true,
@@ -169,7 +170,7 @@
                 qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
                 qualityMenu.classList.remove("cz-open");
                 showLoading("Switching to " + item.quality + "…");
-                await player.load(item.url);
+                await playerInstance.load(item.url);
                 streamUrl = item.url;
                 loading.hidden = true;
                 await video.play().catch(() => { tapPanel.hidden = false; });
