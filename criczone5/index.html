@@ -156,6 +156,54 @@ video.mode-cover{object-fit:cover}
   .fit-pill{font-size:9px;padding:2px 5px}
   .sp-btn{padding:0 5px!important}
 }
+ 
+/* ===== CRICZONE HOME UI — criczone5 only ===== */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root{color-scheme:dark;--cz-bg:#08100d;--cz-panel:#101a15;--cz-panel2:#14221b;--cz-line:rgba(210,230,216,.13);--cz-text:#f1f6f2;--cz-muted:#9aa99f;--cz-mint:#72e0aa;--cz-lime:#d5ef7b;--cz-blue:#70c7e8}
+html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Segoe UI',sans-serif}
+#channel-list{background:radial-gradient(ellipse at 50% -12%,rgba(70,160,105,.17),transparent 42%),linear-gradient(180deg,#08100d 0%,#09130e 55%,#07100c 100%);padding:0 0 max(24px,env(safe-area-inset-bottom));overflow-x:hidden}
+#ch-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;margin:0;padding:13px max(18px,calc((100vw - 1220px)/2));border:0;border-bottom:1px solid var(--cz-line);border-radius:0;background:rgba(8,16,13,.88);box-shadow:0 12px 35px rgba(0,0,0,.22);backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25)}
+.cz-brand{display:inline-flex;align-items:center;gap:11px;min-width:0;color:var(--cz-text);text-decoration:none}
+.cz-brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(114,224,170,.32);border-radius:13px;background:linear-gradient(145deg,rgba(114,224,170,.18),rgba(112,199,232,.08));font-size:21px;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.cz-brand-copy{display:flex;flex-direction:column;gap:4px}.cz-brand-copy strong{font:700 18px/1 'Space Grotesk',sans-serif;letter-spacing:1px}.cz-brand-copy small{color:var(--cz-muted);font-size:9px;font-weight:800;letter-spacing:1.5px}
+.cz-live-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(114,224,170,.25);border-radius:30px;background:rgba(114,224,170,.07);color:var(--cz-mint);font-size:10px;font-weight:800;letter-spacing:1px;white-space:nowrap}
+.cz-live-pill i{width:7px;height:7px;border-radius:50%;background:var(--cz-mint);box-shadow:0 0 12px rgba(114,224,170,.75);animation:cz-pulse 1.8s ease-in-out infinite}
+@keyframes cz-pulse{50%{opacity:.45;transform:scale(.72)}}
+#home-main{width:min(100% - 32px,1220px);margin:0 auto;padding:clamp(26px,5vw,54px) 0 30px}
+.cz-hero{position:relative;overflow:hidden;margin-bottom:30px;padding:clamp(24px,5vw,42px);border:1px solid rgba(114,224,170,.16);border-radius:22px;background:radial-gradient(ellipse at 85% 15%,rgba(114,224,170,.13),transparent 38%),linear-gradient(120deg,rgba(18,35,25,.96),rgba(11,22,16,.96));box-shadow:0 20px 55px rgba(0,0,0,.2)}
+.cz-hero:after{content:'🏏';position:absolute;right:clamp(16px,6vw,72px);top:50%;transform:translateY(-50%) rotate(-12deg);font-size:clamp(70px,12vw,132px);opacity:.08;pointer-events:none}
+.cz-eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:13px;color:var(--cz-mint);font-size:10px;font-weight:800;letter-spacing:1.8px}
+.cz-eyebrow span{width:24px;height:1px;background:var(--cz-mint)}
+.cz-hero h2{position:relative;z-index:1;margin:0;font:700 clamp(30px,6vw,54px)/1.04 'Space Grotesk',sans-serif;letter-spacing:-1.6px}
+.cz-hero h2 em{color:var(--cz-lime);font-style:normal}
+.cz-hero p{position:relative;z-index:1;max-width:530px;margin:13px 0 0;color:var(--cz-muted);font-size:13px;line-height:1.7}
+.cz-library-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 15px}
+.cz-section-kicker{color:var(--cz-mint);font-size:9px;font-weight:800;letter-spacing:1.7px}
+.cz-library-head h3{margin:5px 0 0;font:700 clamp(19px,3vw,25px)/1.2 'Space Grotesk',sans-serif}
+#ch-count{color:var(--cz-muted);font-size:10px;font-weight:800;letter-spacing:.8px;white-space:nowrap}
+.cz-search{display:flex;align-items:center;gap:11px;width:100%;max-width:520px;height:48px;margin:0 0 18px;padding:0 14px;border:1px solid var(--cz-line);border-radius:13px;background:rgba(16,26,21,.88);transition:border-color .2s,box-shadow .2s}
+.cz-search:focus-within{border-color:rgba(114,224,170,.55);box-shadow:0 0 0 3px rgba(114,224,170,.08)}
+.cz-search svg{width:18px;height:18px;flex:none;fill:none;stroke:#91a79a;stroke-width:1.8;stroke-linecap:round}
+.cz-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--cz-text);font:500 13px Manrope,sans-serif}
+.cz-search input::placeholder{color:#77877d}
+.cz-search kbd{display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--cz-line);border-radius:7px;color:var(--cz-muted);font-size:15px}
+#ch-grid{width:100%;max-width:none;margin:0;grid-template-columns:repeat(auto-fill,minmax(min(100%,165px),1fr));gap:14px}
+.ch-card{position:relative;min-width:0;min-height:150px;padding:18px 13px;border:1px solid rgba(210,230,216,.12);border-radius:16px;background:linear-gradient(150deg,rgba(20,34,27,.96),rgba(10,19,14,.98));box-shadow:0 10px 28px rgba(0,0,0,.2);gap:12px;overflow:hidden}
+.ch-card:before{position:absolute;inset:0 18% auto;height:1px;background:linear-gradient(90deg,transparent,rgba(114,224,170,.7),transparent);content:''}
+.ch-card:hover{transform:translateY(-4px);border-color:rgba(114,224,170,.48);background:linear-gradient(150deg,#17291e,#0d1912);box-shadow:0 18px 38px rgba(0,0,0,.32),0 0 0 1px rgba(114,224,170,.06)}
+.ch-card:active{transform:scale(.975)}
+.ch-logo{width:100%;max-width:100px;height:58px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 4px 9px rgba(0,0,0,.4))}
+.ch-logo-fallback{width:82px;height:54px;border:1px solid rgba(114,224,170,.22);border-radius:12px;background:linear-gradient(145deg,rgba(114,224,170,.15),rgba(112,199,232,.07));color:var(--cz-mint);font:700 17px 'Space Grotesk',sans-serif}
+.ch-card span{width:100%;color:var(--cz-text);font-size:12px;font-weight:800;line-height:1.4;letter-spacing:.1px}
+#ch-empty{margin:12px 0;padding:28px;border:1px dashed rgba(210,230,216,.2);border-radius:14px;color:var(--cz-muted);text-align:center;font-size:13px}
+#cz-home-footer{display:flex;justify-content:space-between;gap:12px;width:min(100% - 32px,1220px);margin:18px auto 0;padding:17px 0 0;border-top:1px solid var(--cz-line);color:#728178;font-size:9px;font-weight:800;letter-spacing:1.2px}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#14251a 0%,#08100d 55%,#050a07 100%)}
+#overlay p{color:var(--cz-muted);font-family:Manrope,sans-serif}
+@media(max-width:620px){#ch-header{padding:11px 14px}.cz-brand-mark{width:38px;height:38px}.cz-brand-copy strong{font-size:16px}.cz-live-pill{padding:7px 9px;font-size:9px}#home-main{width:calc(100% - 24px);padding-top:24px}.cz-hero{margin-bottom:24px;padding:23px 19px;border-radius:17px}.cz-hero p{max-width:85%;font-size:12px}.cz-library-head{align-items:start;flex-direction:column;gap:7px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ch-card{min-height:126px;padding:14px 9px;border-radius:13px}.ch-logo{max-width:78px;height:46px}.ch-logo-fallback{width:70px;height:44px;font-size:15px}.ch-card span{font-size:11px}#cz-home-footer{width:calc(100% - 24px);font-size:8px}}
+@media(max-width:360px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ch-card{min-height:116px;padding:11px 7px}.cz-brand-copy small{font-size:8px}.cz-live-pill{gap:5px;padding:6px 7px}}
+@media(prefers-reduced-motion:reduce){#channel-list *{animation:none!important;transition:none!important}}
+/* ===== END CRICZONE HOME UI ===== */
+
 </style>
 </head>
 <body>
@@ -171,11 +219,32 @@ video.mode-cover{object-fit:cover}
 <div id="status"></div>
 
 <div id="channel-list">
-  <div id="ch-header">
-    <span class="brand-dot"></span>
-    <h1>CRICZONE</h1>
-  </div>
-  <div id="ch-grid"></div>
+  <header id="ch-header">
+    <a class="cz-brand" href="../" aria-label="CRICZONE home">
+      <span class="cz-brand-mark">🏏</span>
+      <span class="cz-brand-copy"><strong>CRICZONE</strong><small>LIVE SPORTS NETWORK</small></span>
+    </a>
+    <span class="cz-live-pill"><i></i> LIVE NOW</span>
+  </header>
+  <main id="home-main">
+    <section class="cz-hero">
+      <div class="cz-eyebrow"><span></span> YOUR SPORTS. YOUR ZONE.</div>
+      <h2>Watch Live <em>Sports</em></h2>
+      <p>All your favourite sports channels in one place. Pick a channel and enjoy the action.</p>
+    </section>
+    <div class="cz-library-head">
+      <div><span class="cz-section-kicker">EXPLORE CHANNELS</span><h3>Live Channel Lineup</h3></div>
+      <span id="ch-count">Loading channels…</span>
+    </div>
+    <label class="cz-search" for="ch-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+      <input id="ch-search" type="search" placeholder="Search channels…" autocomplete="off">
+      <kbd>⌕</kbd>
+    </label>
+    <div id="ch-grid"></div>
+    <p id="ch-empty" hidden>No channels match your search. Try another name.</p>
+  </main>
+  <footer id="cz-home-footer"><span>© CRICZONE</span><span>LIVE SPORTS • ONE DESTINATION</span></footer>
 </div>
 
 <div id="pc">
@@ -440,6 +509,24 @@ function renderList(channels){
 
   $grid.appendChild(f);
   $list.style.display = "flex";
+  var countEl = document.getElementById("ch-count");
+  if(countEl) countEl.textContent = list.length + (list.length === 1 ? " CHANNEL" : " CHANNELS");
+  var searchEl = document.getElementById("ch-search");
+  var emptyEl = document.getElementById("ch-empty");
+  if(searchEl && !searchEl.dataset.bound){
+    searchEl.dataset.bound = "1";
+    searchEl.addEventListener("input", function(){
+      var q = searchEl.value.trim().toLowerCase();
+      var visible = 0;
+      Array.prototype.forEach.call($grid.querySelectorAll(".ch-card"), function(card){
+        var match = card.textContent.toLowerCase().indexOf(q) !== -1;
+        card.style.display = match ? "" : "none";
+        if(match) visible++;
+      });
+      if(countEl) countEl.textContent = visible + " OF " + list.length + " CHANNELS";
+      if(emptyEl) emptyEl.hidden = visible !== 0;
+    });
+  }
 }
 
 function errMsg(msg){
