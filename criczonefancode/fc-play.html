@@ -29,7 +29,12 @@
     .player-action{border:0;border-radius:12px;background:linear-gradient(100deg,#ffd44d,#f59e0b);color:#111827;padding:12px 20px;font-weight:900;cursor:pointer}
     .player-bottom{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#07111f;border-top:1px solid #ffffff12;color:#9aa9bd;font-size:11px}
     .player-bottom a{color:#ffd44d;text-decoration:none;font-weight:800}
-    .player-stage .shaka-controls-container{z-index:3}\n    .cz-quality-menu{position:absolute;right:14px;bottom:76px;z-index:20;display:none;grid-template-columns:repeat(2,minmax(90px,1fr));gap:7px;width:min(310px,calc(100% - 28px));padding:12px;border:1px solid #ffffff25;border-radius:14px;background:#101d2df2;box-shadow:0 12px 35px #0009}\n    .cz-quality-menu.cz-open{display:grid}\n    .cz-quality-menu button{min-height:38px;border:1px solid #ffffff20;border-radius:8px;background:#ffffff0c;color:#fff;font-weight:900;font-size:12px}\n    .cz-quality-menu button.cz-selected{border-color:#ffd44d;background:#ffd44d20;color:#ffd44d}\n    .cz-quality-button{min-width:52px;height:36px;border:0;background:transparent;color:#fff;font-size:12px;font-weight:900;cursor:pointer}
+    .player-stage .shaka-controls-container{z-index:3}
+    .cz-quality-menu{position:absolute;right:14px;bottom:76px;z-index:20;display:none;grid-template-columns:repeat(2,minmax(90px,1fr));gap:7px;width:min(310px,calc(100% - 28px));padding:12px;border:1px solid #ffffff25;border-radius:14px;background:#101d2df2;box-shadow:0 12px 35px #0009}
+    .cz-quality-menu.cz-open{display:grid}
+    .cz-quality-menu button{min-height:38px;border:1px solid #ffffff20;border-radius:8px;background:#ffffff0c;color:#fff;font-weight:900;font-size:12px}
+    .cz-quality-menu button.cz-selected{border-color:#ffd44d;background:#ffd44d20;color:#ffd44d}
+    .cz-quality-button{min-width:52px;height:36px;border:0;background:transparent;color:#fff;font-size:12px;font-weight:900;cursor:pointer}
     @media(max-width:600px){.player-topbar{height:50px;flex-basis:50px;padding:0 12px}.video-shell{max-height:calc(100vh - 50px)}.player-bottom{padding:10px 12px;font-size:10px}.player-error h2,.tap-to-play h2{font-size:18px}}
     @media(orientation:landscape) and (max-height:500px){.player-topbar,.player-bottom{display:none}.video-shell{max-height:100vh}}
   </style>
@@ -42,7 +47,8 @@
     </header>
     <main class="player-stage">
       <div class="video-shell">
-        <div class="shaka-video-container" data-shaka-player>\n          <div class="cz-quality-menu" id="cz-quality-menu" aria-label="Stream quality"></div>
+        <div class="shaka-video-container" data-shaka-player>
+          <div class="cz-quality-menu" id="cz-quality-menu" aria-label="Stream quality"></div>
           <video id="video" playsinline autoplay muted></video>
           <div class="player-loading" id="loading"><span class="player-spinner"></span><strong id="loading-title">Connecting to stream…</strong><span style="color:#91a0b4;font-size:12px">Please wait while the player loads.</span></div>
           <div class="player-error" id="error-panel" hidden>
