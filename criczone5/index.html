@@ -438,39 +438,47 @@ function keyModeOf(ch){
 }
 
 function extractSonyChannels(data){
-  var found = [];
-  var seen = Object.create(null);
-  var visited = [];
-  var urlKeys = ["stream_url","streamUrl","m3u8","hls","src","link","url"];
-  var nameKeys = ["name","title","channel_name","channelName","tvg_name","tvg-name","label"];
-  var logoKeys = ["logo","image","icon","tvg_logo","tvg-logo","thumbnail"];
-
+  var found = [], seen = Object.create(null), visited = [];
+  var urlPattern = /^https?:\/\/.+\.m3u8(?:[?#].*)?$/i;
+  var nameKeys = ["name","title","channel_name","channelName","tvg_name","tvg-name","label","channel"];
+  var logoKeys = ["logo","image","icon","tvg_logo","tvg-logo","thumbnail","poster"];
   function pick(obj, keys){
     for(var i=0;i<keys.length;i++){
-      var v = obj && obj[keys[i]];
-      if(typeof v === "string" && v.trim()) return v.trim();
+      var v=obj && obj[keys[i]];
+      if(typeof v==="string" && v.trim()) return v.trim();
     }
     return "";
   }
-  function walk(node){
-    if(!node || typeof node !== "object" || visited.indexOf(node) !== -1) return;
+  function walk(node, inheritedName){
+    if(!node || typeof node!=="object" || visited.indexOf(node)!==-1) return;
     visited.push(node);
-    if(Array.isArray(node)){ node.forEach(walk); return; }
-    var stream = pick(node, urlKeys);
-    if(stream && /^https?:\/\//i.test(stream) && /\.m3u8(?:[?#]|$)/i.test(stream)){
-      var name = pick(node,nameKeys) || "Sony Sports";
-      var logo = pick(node,logoKeys);
-      var id = String(node.id || node.channel_id || node.channelId || ("sony-json-" + found.length));
-      var key = stream;
-      if(!seen[key]){
-        seen[key] = true;
-        found.push({id:id,name:name,logo:logo,stream_url:stream,source:"sony-json"});
+    if(Array.isArray(node)){ node.forEach(function(v){walk(v,inheritedName);}); return; }
+    var name=pick(node,nameKeys)||inheritedName||"Sony Sports";
+    var logo=pick(node,logoKeys);
+    Object.keys(node).forEach(function(k){
+      var v=node[k];
+      if(typeof v==="string" && urlPattern.test(v.trim())){
+        var stream=v.trim();
+        if(!seen[stream]){
+          seen[stream]=true;
+          found.push({id:String(node.id||node.channel_id||node.channelId||("sony-json-"+found.length)),
+            name:name,logo:logo,stream_url:stream,source:"sony-json"});
+        }
+      } else if(v && typeof v==="object"){
+        walk(v, (typeof v==="object" && !Array.isArray(v) ? (pick(v,nameKeys)||k) : k));
       }
-    }
-    Object.keys(node).forEach(function(k){ walk(node[k]); });
+    });
   }
-  walk(data);
+  walk(data,"Sony Sports");
   return found;
+}
+
+async function loadSonyJson(){
+  var response=await fetch("/criczone5/api/sony-channels",{
+    cache:"no-store",headers:{Accept:"application/json"}
+  });
+  if(!response.ok) throw new Error("Sony proxy HTTP "+response.status);
+  return response.json();
 }
 
 async function loadData(){
@@ -481,56 +489,41 @@ async function loadData(){
       var d = await r.json();
       if(Array.isArray(d)) channels = d;
       else if(d && Array.isArray(d.channels)) channels = d.channels;
+      else if(d && Array.isArray(d.data)) channels = d.data;
     }
   } catch(e) {
     console.warn("Data.json API failed:", e);
   }
 
-  /* Load Sony M3U8 channel entries from the additional JSON source. */
+  /* Fetch Sony JSON through same-origin Pages Function to avoid browser CORS blocking. */
   try {
-    var sonyResponse = await fetch("https://aryanstreams.pages.dev/data/sony_m3u8.json", {
-      cache:"no-store",
-      headers:{Accept:"application/json"}
-    });
-    if(!sonyResponse.ok) throw new Error("HTTP " + sonyResponse.status);
-    var sonyData = await sonyResponse.json();
+    var sonyData = await loadSonyJson();
     var sonyChannels = extractSonyChannels(sonyData);
     var sonyIds = Object.create(null);
     channels.forEach(function(ch){ if(ch && ch.id != null) sonyIds[String(ch.id)] = true; });
     sonyChannels.forEach(function(ch){
-      var id = String(ch.id || ("sony-json-" + Object.keys(sonyIds).length));
-      if(sonyIds[id]) id = "sony-json-" + id;
-      sonyIds[id] = true;
-      ch.id = id;
-      channels.push(ch);
+      var id=String(ch.id||("sony-json-"+Object.keys(sonyIds).length));
+      if(sonyIds[id]) id="sony-json-"+id;
+      sonyIds[id]=true; ch.id=id; channels.push(ch);
     });
-    console.info("Sony JSON channels loaded:", sonyChannels.length);
+    console.info("Sony JSON channels parsed:",sonyChannels.length);
   } catch(e) {
-    console.warn("Sony M3U8 JSON could not load. Check source CORS/JSON format:", e);
+    console.error("Sony JSON channel load failed:",e);
   }
 
-  /* Merge the original stream.js channel list without replacing other sources. */
   var streamChannels = window.CricXStreamData && Array.isArray(window.CricXStreamData.allChannels)
     ? window.CricXStreamData.allChannels : [];
   var usedIds = Object.create(null);
-  channels.forEach(function(ch){
-    if(ch && ch.id != null) usedIds[String(ch.id)] = true;
-  });
+  channels.forEach(function(ch){ if(ch && ch.id != null) usedIds[String(ch.id)] = true; });
   streamChannels.forEach(function(ch){
     if(!ch || !ch.url) return;
-    var originalId = String(ch.id == null ? "" : ch.id);
+    var originalId=String(ch.id==null?"":ch.id);
     if(!originalId) return;
-    var id = usedIds[originalId] ? "streamjs-" + originalId : originalId;
-    usedIds[id] = true;
-    channels.push({
-      id:id,
-      name:ch.name || ("Live Stream " + originalId),
-      logo:ch.logo || "",
-      url:ch.url,
-      source:"streamjs"
-    });
+    var id=usedIds[originalId]?"streamjs-"+originalId:originalId;
+    usedIds[id]=true;
+    channels.push({id:id,name:ch.name||("Live Stream "+originalId),logo:ch.logo||"",url:ch.url,source:"streamjs"});
   });
-  return { channels: channels };
+  return {channels:channels};
 }
 function renderList(channels){
   hideOverlay();
