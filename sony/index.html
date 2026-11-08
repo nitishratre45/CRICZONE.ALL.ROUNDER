@@ -832,7 +832,18 @@
     @media(prefers-reduced-motion:reduce){
       .ch-card,.ch-card::before,.ch-card .ch-logo,.filter-pill,#tgBadge{transition:none}
     }
-  </style>
+  
+/* Sony page live audience badge — matches CRICZONE badge design */
+#sonyViewerBadge{position:fixed;z-index:2147483000;right:16px;top:max(14px,env(safe-area-inset-top));display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font:800 9px/1 'Segoe UI',Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
+#sonyViewerBadge .sony-viewer-dot{width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:sonyPulse 1.8s infinite}
+#sonyWatchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
+#sonyViewerBadge .sony-total-label{display:inline-flex;align-items:center;gap:3px;margin-left:2px;padding-left:7px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:7px;font-weight:850}
+#sonyTotalVisits{color:#fff;font-size:10px;font-weight:950;font-variant-numeric:tabular-nums}
+#sonyViewerBadge .sony-live-label{display:inline-flex;align-items:center;gap:4px}
+#sonyViewerBadge .sony-live-label:before{content:"LIVE";font-size:7px;letter-spacing:.6px;color:#06140f;background:#45f0b5;padding:2px 4px;border-radius:4px;font-weight:950}
+@keyframes sonyPulse{50%{opacity:.45;transform:scale(.75)}}
+@media(max-width:699px){#sonyViewerBadge{right:9px;top:max(9px,env(safe-area-inset-top));padding:5px 8px;gap:4px;font-size:8px}#sonyWatchingCount,#sonyTotalVisits{font-size:9px}}
+</style>
 </head>
 <body>
 
@@ -885,6 +896,8 @@
 <div id="player-container">
   <video id="player" playsinline webkit-playsinline controls preload="metadata"></video>
   <iframe id="sonyExternalFrame" title="Sony Live" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer"></iframe>
+
+  <div id="sonyViewerBadge" aria-live="polite"><span class="sony-viewer-dot"></span><span class="sony-live-label"><strong id="sonyWatchingCount">220</strong> watching</span><span class="sony-total-label">TOTAL <strong id="sonyTotalVisits">10000</strong></span></div>
 </div>
 
 
@@ -1449,6 +1462,7 @@ async function main(){
     return;
   }
   setupHLSPlayer(ch.stream_url);
+  if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
 }
 
 // Handle browser back button
@@ -1502,5 +1516,60 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
+
+<script type="module">
+/* Sony folder audience counters. Uses the same CRICZONE Firebase project,
+   but separate paths so Sony totals never overwrite CRICZONE totals. */
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+const firebaseConfig={
+ apiKey:"AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
+ authDomain:"criczone-4daa2.firebaseapp.com",
+ databaseURL:"https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"criczone-4daa2",
+ storageBucket:"criczone-4daa2.firebasestorage.app",
+ messagingSenderId:"113293633217",
+ appId:"1:113293633217:web:a96d9b3af3045bcd99d640",
+ measurementId:"G-Q9RJ0VSSPP"
+};
+const appName="criczone-sony-audience";
+const app=getApps().find(x=>x.name===appName)||initializeApp(firebaseConfig,appName);
+const db=getDatabase(app);
+const watchingEl=document.getElementById("sonyWatchingCount");
+const totalEl=document.getElementById("sonyTotalVisits");
+const WATCH_BASE=220,TOTAL_BASE=10000;
+let activeRef=null,watchOff=null,totalOff=null,activeChannel=null;
+function show(el,n,min){if(el)el.textContent=Math.max(min,Number(n)||min).toLocaleString("en-IN")}
+async function initSonyTotal(){
+ const totalRef=ref(db,"siteStats/sonyTotalVisits");
+ try{await runTransaction(totalRef,current=>current===null?TOTAL_BASE+1:Math.max(TOTAL_BASE,Number(current)||TOTAL_BASE)+1)}
+ catch(e){console.warn("Sony total visits write failed",e)}
+ totalOff=onValue(totalRef,s=>show(totalEl,s.val(),TOTAL_BASE),e=>console.warn("Sony total visits read failed",e));
+}
+async function stopSonyWatching(){
+ if(watchOff){watchOff();watchOff=null}
+ if(activeRef){const old=activeRef;activeRef=null;await remove(old).catch(()=>{})}
+ activeChannel=null;show(watchingEl,WATCH_BASE,WATCH_BASE);
+}
+async function startSonyRealtimeWatching(channelId){
+ const safe=String(channelId||"all").replace(/[^a-zA-Z0-9_-]/g,"_");
+ if(activeChannel===safe&&activeRef)return;
+ await stopSonyWatching();activeChannel=safe;
+ const uid=globalThis.crypto?.randomUUID?.()||(Date.now()+"_"+Math.random().toString(36).slice(2));
+ const viewersRef=ref(db,"sonyLiveViewers/"+safe);
+ activeRef=ref(db,"sonyLiveViewers/"+safe+"/"+uid);
+ try{
+  await onDisconnect(activeRef).remove();
+  await set(activeRef,{online:true,joinedAt:Date.now(),section:"sony"});
+  watchOff=onValue(viewersRef,s=>show(watchingEl,WATCH_BASE+(s.size??s.numChildren()),WATCH_BASE),
+    e=>console.warn("Sony viewer count read failed",e));
+ }catch(e){console.error("Sony live watching Firebase error",e);show(watchingEl,WATCH_BASE,WATCH_BASE)}
+}
+window.startSonyRealtimeWatching=startSonyRealtimeWatching;
+window.stopSonyWatching=stopSonyWatching;
+show(watchingEl,WATCH_BASE,WATCH_BASE);show(totalEl,TOTAL_BASE,TOTAL_BASE);
+initSonyTotal();
+window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(watchOff)watchOff();if(totalOff)totalOff()});
+</script>
 </body>
 </html>
