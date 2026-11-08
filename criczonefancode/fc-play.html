@@ -176,7 +176,8 @@
       const title = sessionStorage.getItem("cz_fancode_title");
       if (title) document.getElementById("stream-title").textContent = title;
     } catch {}
-    startPlayer();
+    // Wait until deferred Shaka Player scripts have executed before initializing playback.
+    document.addEventListener("DOMContentLoaded",startPlayer,{once:true});
     window.addEventListener("pagehide",() => { if(player) player.destroy(); });
   })();
   </script>
