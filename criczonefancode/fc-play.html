@@ -196,6 +196,7 @@
         const option = document.createElement("button");
         option.type = "button";
         option.textContent = String(item.quality || "AUTO").toUpperCase();
+        option.dataset.url = item.url;
         option.className = item.url === streamUrl ? "cz-selected" : "";
         option.addEventListener("click", event => {
           event.preventDefault();
