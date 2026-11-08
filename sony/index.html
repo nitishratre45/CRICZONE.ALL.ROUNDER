@@ -1450,7 +1450,6 @@ async function main(){
 
   document.title = "CRICZONE · " + ch.name;
   renderList(data);
-  if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
   // Route every Sony channel through the external Sony player using its channel ID.
   var externalFrame = document.getElementById("sonyExternalFrame");
   if(externalFrame) {
@@ -1463,6 +1462,7 @@ async function main(){
     return;
   }
   setupHLSPlayer(ch.stream_url);
+  if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
 }
 
 // Handle browser back button
