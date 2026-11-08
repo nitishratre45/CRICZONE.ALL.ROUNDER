@@ -272,7 +272,7 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
     x5-video-player-type="h5"
     x5-video-player-fullscreen="true">
   </video>
-  <iframe id="stream-frame" title="Live stream" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <iframe id="stream-frame" title="Live stream" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
   <div id="viewerBadge" aria-live="polite"><span class="viewer-dot"></span><span class="watching-live-label"><strong id="watchingCount">330</strong> watching</span><span class="watching-total-label">TOTAL <strong id="totalVisits">330</strong></span></div>
 </div>
