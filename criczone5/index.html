@@ -66,7 +66,7 @@ main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
  var home=document.getElementById("home"),view=document.getElementById("playerView");
  var frame=document.getElementById("frame"),modal=document.getElementById("tgModal");
  var search=document.getElementById("channelSearch"),selected=null,allChannels=[];
- var JSON_URLS=["../criczone/links.json","/criczone/links.json"];
+ var JSON_URLS=["/api/channels?feed=directory","../criczone/links.json","/criczone/links.json"];
  window.open=function(){return null;};
 
  function safeUrl(value){
@@ -96,7 +96,7 @@ main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
   for(var i=0;i<JSON_URLS.length;i++){
    var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},10000);
    try{
-    var response=await fetch(JSON_URLS[i]+"?v="+Date.now(),{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
+    var sourceUrl=JSON_URLS[i]+(JSON_URLS[i].indexOf("?")>=0?"&":"?")+"v="+Date.now();\n    var response=await fetch(sourceUrl,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
     if(!response.ok)throw new Error("HTTP "+response.status);
     var raw=await response.text();
     if(/^\s*<!doctype\s+html|^\s*<html/i.test(raw))throw new Error("HTML received instead of JSON");
