@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="referrer" content="no-referrer">
   <title>CRICZONE — FanCode Player</title>
-  <link rel="stylesheet" href="./fancode.css?v=20261108-7">
+  <link rel="stylesheet" href="./fancode.css?v=20261108-8">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
   <style>
@@ -150,12 +150,16 @@
         const qualityMenu = document.getElementById("cz-quality-menu");
         if (Array.isArray(availableStreams) && availableStreams.length > 1 && controlsPanel && qualityMenu) {
           qualityMenu.replaceChildren();
+          let switchingQuality = false;
           const qualityButton = document.createElement("button");
           qualityButton.type = "button";
           qualityButton.className = "cz-quality-button";
           qualityButton.textContent = "AUTO";
           qualityButton.setAttribute("aria-label","Choose stream quality");
-          qualityButton.addEventListener("click", () => qualityMenu.classList.toggle("cz-open"));
+          qualityButton.addEventListener("click", event => {
+            event.stopPropagation();
+            qualityMenu.classList.toggle("cz-open");
+          });
           controlsPanel.append(qualityButton);
           availableStreams.forEach((item,index) => {
             if (!item || !item.url || !/^https?:/i.test(item.url)) return;
@@ -163,19 +167,42 @@
             option.type = "button";
             option.textContent = String(item.quality || "AUTO").toUpperCase();
             option.className = index === 0 ? "cz-selected" : "";
-            option.addEventListener("click", async () => {
-              try {
-                qualityMenu.querySelectorAll("button").forEach(button => button.classList.remove("cz-selected"));
-                option.classList.add("cz-selected");
-                qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
+            option.addEventListener("click", async event => {
+              event.stopPropagation();
+              if (switchingQuality || item.url === streamUrl) {
                 qualityMenu.classList.remove("cz-open");
+                return;
+              }
+              switchingQuality = true;
+              qualityMenu.querySelectorAll("button").forEach(button => button.disabled = true);
+              const previousUrl = streamUrl;
+              try {
                 showLoading("Switching to " + item.quality + "…");
+                // Complete the current asset teardown before starting the next quality URL.
+                await playerInstance.unload();
                 await playerInstance.load(item.url);
                 streamUrl = item.url;
+                qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
+                qualityMenu.querySelectorAll("button").forEach(button => button.classList.remove("cz-selected"));
+                option.classList.add("cz-selected");
                 loading.hidden = true;
+                qualityMenu.classList.remove("cz-open");
                 await video.play().catch(() => { tapPanel.hidden = false; });
               } catch (switchError) {
-                showError("Could not switch to " + item.quality + ". " + (switchError.message || "Try another quality."));
+                console.error("Quality switch failed:", switchError);
+                // Restore the previous stream if the selected rendition cannot be loaded.
+                try {
+                  await playerInstance.unload();
+                  await playerInstance.load(previousUrl);
+                  streamUrl = previousUrl;
+                  loading.hidden = true;
+                  await video.play().catch(() => { tapPanel.hidden = false; });
+                } catch (restoreError) {
+                  showError("Could not switch quality. Please choose another resolution or retry playback.");
+                }
+              } finally {
+                switchingQuality = false;
+                qualityMenu.querySelectorAll("button").forEach(button => button.disabled = false);
               }
             });
             qualityMenu.append(option);
