@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="referrer" content="no-referrer">
   <title>CRICZONE — FanCode Player</title>
-  <link rel="stylesheet" href="./fancode.css?v=20261108-9">
+  <link rel="stylesheet" href="./fancode.css?v=20261108-10">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
   <style>
@@ -34,7 +34,7 @@
     .cz-quality-menu.cz-open{display:grid}
     .cz-quality-menu button{min-height:38px;border:1px solid #ffffff20;border-radius:8px;background:#ffffff0c;color:#fff;font-weight:900;font-size:12px}
     .cz-quality-menu button.cz-selected{border-color:#ffd44d;background:#ffd44d20;color:#ffd44d}
-    .cz-quality-button{display:inline-flex!important;align-items:center;justify-content:center;min-width:64px!important;height:36px!important;padding:0 8px!important;border:0!important;border-radius:6px;background:transparent!important;background-image:none!important;color:#fff!important;font-size:12px!important;font-weight:900!important;line-height:1!important;cursor:pointer;box-shadow:none!important}.shaka-controls-button-panel .cz-quality-button::before,.shaka-controls-button-panel .cz-quality-button::after{content:none!important;display:none!important;background:none!important;background-image:none!important}.shaka-controls-button-panel .cz-quality-button svg{display:none!important}
+    .cz-quality-button{position:absolute!important;right:64px!important;bottom:42px!important;z-index:25!important;display:inline-flex!important;align-items:center;justify-content:center;min-width:64px!important;height:36px!important;padding:0 8px!important;border:0!important;border-radius:6px;background:#07111f99!important;background-image:none!important;color:#fff!important;font-size:12px!important;font-weight:900!important;line-height:1!important;cursor:pointer;box-shadow:none!important}.shaka-controls-button-panel .cz-quality-button::before,.shaka-controls-button-panel .cz-quality-button::after{content:none!important;display:none!important;background:none!important;background-image:none!important}.shaka-controls-button-panel .cz-quality-button svg{display:none!important}
     @media(max-width:600px){.player-topbar{height:50px;flex-basis:50px;padding:0 12px}.video-shell{max-height:calc(100vh - 50px)}.player-bottom{padding:10px 12px;font-size:10px}.player-error h2,.tap-to-play h2{font-size:18px}}
     @media(orientation:landscape) and (max-height:500px){.player-topbar,.player-bottom{display:none}.video-shell{max-height:100vh}}
   </style>
@@ -178,9 +178,25 @@
               const previousUrl = streamUrl;
               try {
                 showLoading("Switching to " + item.quality + "…");
-                // Complete the current asset teardown before starting the next quality URL.
-                await playerInstance.unload();
-                await playerInstance.load(item.url);
+                // Recreate Shaka for distinct rendition URLs to avoid LOAD_INTERRUPTED races.
+                if (shakaUi) { await shakaUi.destroy(); shakaUi = null; }
+                if (player) { await player.destroy(); player = null; }
+                video.pause();
+                video.removeAttribute("src");
+                video.load();
+                const nextPlayer = new shaka.Player(video);
+                player = nextPlayer;
+                shakaUi = new shaka.ui.Overlay(nextPlayer,shell,video);
+                shakaUi.configure({
+                  controlPanelElements:["play_pause","spacer","fullscreen"],
+                  addSeekBar:true,
+                  seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
+                });
+                nextPlayer.addEventListener("error", event => {
+                  const detail = event.detail;
+                  if (!(qualitySwitchInProgress && [7000,7001].includes(detail?.code))) console.error("Shaka rendition error:",detail);
+                });
+                await nextPlayer.load(item.url);
                 streamUrl = item.url;
                 qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
                 qualityMenu.querySelectorAll("button").forEach(button => button.classList.remove("cz-selected"));
@@ -192,8 +208,20 @@
                 console.error("Quality switch failed:", switchError);
                 // Restore the previous stream if the selected rendition cannot be loaded.
                 try {
-                  await playerInstance.unload();
-                  await playerInstance.load(previousUrl);
+                  if (shakaUi) { await shakaUi.destroy(); shakaUi = null; }
+                  if (player) { await player.destroy(); player = null; }
+                  video.pause();
+                  video.removeAttribute("src");
+                  video.load();
+                  const restorePlayer = new shaka.Player(video);
+                  player = restorePlayer;
+                  shakaUi = new shaka.ui.Overlay(restorePlayer,shell,video);
+                  shakaUi.configure({
+                    controlPanelElements:["play_pause","spacer","fullscreen"],
+                    addSeekBar:true,
+                    seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
+                  });
+                  await restorePlayer.load(previousUrl);
                   streamUrl = previousUrl;
                   loading.hidden = true;
                   await video.play().catch(() => { tapPanel.hidden = false; });
