@@ -70,7 +70,8 @@
     const errorMessage = document.getElementById("error-message");
     const tapPanel = document.getElementById("tap-panel");
     let player = null;
-    let streamUrl = "";\n    let availableStreams = [];
+    let streamUrl = "";
+    let availableStreams = [];
     let initToken = 0;
 
     function decodeLegacy(value) {
@@ -86,7 +87,8 @@
       try { stored = sessionStorage.getItem("cz_fancode_stream") || ""; } catch {}
       const params = new URLSearchParams(location.search);
       const legacy = params.get("data");
-      try { availableStreams = JSON.parse(sessionStorage.getItem("cz_fancode_streams") || "[]"); } catch { availableStreams = []; }\n      const candidate = stored || (legacy ? decodeLegacy(legacy) : "");
+      try { availableStreams = JSON.parse(sessionStorage.getItem("cz_fancode_streams") || "[]"); } catch { availableStreams = []; }
+      const candidate = stored || (legacy ? decodeLegacy(legacy) : "");
       try {
         const url = new URL(candidate);
         return /^https?:$/.test(url.protocol) ? url.href : "";
