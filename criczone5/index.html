@@ -437,6 +437,42 @@ function keyModeOf(ch){
   return "none";
 }
 
+function extractSonyChannels(data){
+  var found = [];
+  var seen = Object.create(null);
+  var visited = [];
+  var urlKeys = ["stream_url","streamUrl","m3u8","hls","src","link","url"];
+  var nameKeys = ["name","title","channel_name","channelName","tvg_name","tvg-name","label"];
+  var logoKeys = ["logo","image","icon","tvg_logo","tvg-logo","thumbnail"];
+
+  function pick(obj, keys){
+    for(var i=0;i<keys.length;i++){
+      var v = obj && obj[keys[i]];
+      if(typeof v === "string" && v.trim()) return v.trim();
+    }
+    return "";
+  }
+  function walk(node){
+    if(!node || typeof node !== "object" || visited.indexOf(node) !== -1) return;
+    visited.push(node);
+    if(Array.isArray(node)){ node.forEach(walk); return; }
+    var stream = pick(node, urlKeys);
+    if(stream && /^https?:\/\//i.test(stream) && /\.m3u8(?:[?#]|$)/i.test(stream)){
+      var name = pick(node,nameKeys) || "Sony Sports";
+      var logo = pick(node,logoKeys);
+      var id = String(node.id || node.channel_id || node.channelId || ("sony-json-" + found.length));
+      var key = stream;
+      if(!seen[key]){
+        seen[key] = true;
+        found.push({id:id,name:name,logo:logo,stream_url:stream,source:"sony-json"});
+      }
+    }
+    Object.keys(node).forEach(function(k){ walk(node[k]); });
+  }
+  walk(data);
+  return found;
+}
+
 async function loadData(){
   var channels = [];
   try {
@@ -450,7 +486,30 @@ async function loadData(){
     console.warn("Data.json API failed:", e);
   }
 
-  /* Merge the original stream.js channel list without replacing Data.json. */
+  /* Load Sony M3U8 channel entries from the additional JSON source. */
+  try {
+    var sonyResponse = await fetch("https://aryanstreams.pages.dev/data/sony_m3u8.json", {
+      cache:"no-store",
+      headers:{Accept:"application/json"}
+    });
+    if(!sonyResponse.ok) throw new Error("HTTP " + sonyResponse.status);
+    var sonyData = await sonyResponse.json();
+    var sonyChannels = extractSonyChannels(sonyData);
+    var sonyIds = Object.create(null);
+    channels.forEach(function(ch){ if(ch && ch.id != null) sonyIds[String(ch.id)] = true; });
+    sonyChannels.forEach(function(ch){
+      var id = String(ch.id || ("sony-json-" + Object.keys(sonyIds).length));
+      if(sonyIds[id]) id = "sony-json-" + id;
+      sonyIds[id] = true;
+      ch.id = id;
+      channels.push(ch);
+    });
+    console.info("Sony JSON channels loaded:", sonyChannels.length);
+  } catch(e) {
+    console.warn("Sony M3U8 JSON could not load. Check source CORS/JSON format:", e);
+  }
+
+  /* Merge the original stream.js channel list without replacing other sources. */
   var streamChannels = window.CricXStreamData && Array.isArray(window.CricXStreamData.allChannels)
     ? window.CricXStreamData.allChannels : [];
   var usedIds = Object.create(null);
@@ -473,7 +532,6 @@ async function loadData(){
   });
   return { channels: channels };
 }
-
 function renderList(channels){
   hideOverlay();
   $grid.innerHTML = "";
@@ -703,7 +761,7 @@ async function startPlayer(ch){
   var thermalApplied      = false;
   var sessionStart        = Date.now();
 
-  if(Object.keys(drmKeys).length === 0){
+  if(Object.keys(drmKeys).length === 0 && !/\.m3u8(?:[?#]|$)/i.test(url || "")){
     toast("No DRM Keys Available","err",0);
     return;
   }
