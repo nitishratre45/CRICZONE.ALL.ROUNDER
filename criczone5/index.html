@@ -18,7 +18,7 @@ button,a{font:inherit}button{cursor:pointer}
 main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
 .hero{padding:12px 2px 22px}.eyebrow{color:var(--green);font-size:10px;font-weight:900;letter-spacing:2px}.hero h1{font-size:clamp(25px,5vw,42px);line-height:1.08;margin:9px 0}.hero p{color:var(--muted);font-size:13px;margin:0}
 .tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 17px}.tools h2{font-size:14px;letter-spacing:1px;margin:0}.count{color:var(--muted);font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.search-row{display:flex;gap:9px;margin:0 0 16px}.search-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:11px;background:#101a14;color:#fff;padding:12px 13px;font:inherit;font-size:13px;outline:none}.search-row input:focus{border-color:#22c55e88}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
 .channel{min-height:130px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(155deg,#16231b,#0e1511);color:#fff;padding:15px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:.18s;box-shadow:0 5px 18px #0003}
 .channel:hover{border-color:#22c55e88;transform:translateY(-2px);background:#17271d}.channel:active{transform:scale(.98)}
 .logo{width:76px;height:53px;border-radius:12px;background:linear-gradient(145deg,#1f3b2a,#102218);border:1px solid #ffffff18;display:grid;place-items:center;font-size:21px;font-weight:950;color:#86efac;overflow:hidden}
@@ -65,31 +65,95 @@ main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
  var list=document.getElementById("channels"),count=document.getElementById("count");
  var home=document.getElementById("home"),view=document.getElementById("playerView");
  var frame=document.getElementById("frame"),modal=document.getElementById("tgModal");
- var selected=null;
- // Prevent unsolicited popup tabs from scripts running in this page.
+ var search=document.getElementById("channelSearch"),selected=null,allChannels=[];
+ var JSON_URLS=["../criczone/links.json","/criczone/links.json"];
  window.open=function(){return null;};
+
+ function safeUrl(value){
+  if(typeof value!=="string"||!value.trim())return "";
+  try{var u=new URL(value,location.href);return (u.protocol==="https:"||u.protocol==="http:")?u.href:"";}catch(e){return "";}
+ }
+ function firstValue(obj,keys){for(var i=0;i<keys.length;i++){var v=obj&&obj[keys[i]];if(typeof v==="string"&&v.trim())return v;}return "";}
+ function normalizeJson(payload){
+  var candidates=[],seen=[];
+  function collect(value,depth){
+   if(!value||depth>5||typeof value!=="object"||seen.indexOf(value)!==-1)return;
+   seen.push(value);
+   if(Array.isArray(value)){candidates.push(value);return;}
+   ["iframes","channels","streams","data","results","items","list","channel","tv"].forEach(function(k){if(value[k]!==undefined)collect(value[k],depth+1);});
+   var vals=Object.keys(value).map(function(k){var v=value[k];if(v&&typeof v==="object"&&!Array.isArray(v)){if(v.id==null)v.id=k;return v;}return null;}).filter(Boolean);
+   if(vals.length)candidates.push(vals);
+  }
+  collect(payload,0);
+  var raw=candidates.find(function(arr){return arr.some(function(x){return x&&typeof x==="object"&&(x.name||x.title||x.channelName||x.iframeSrc||x.iframe_src||x.url||x.link);});})||[];
+  return raw.map(function(item,i){
+   var url=safeUrl(firstValue(item,["iframeSrc","iframe_src","iframe_url","stream_url","streamUrl","embedUrl","embed_url","embed","iframe","src","url","link","source"]));
+   return {id:String(item.id||item.channelId||item.key||("json-"+i)),name:firstValue(item,["name","title","channelName","channel"])||("Channel "+(i+1)),url:url,logo:safeUrl(firstValue(item,["logo","logoUrl","image","imageUrl","icon"])),category:firstValue(item,["category","group","type"])||"Live Sports",source:"json"};
+  }).filter(function(x){return x.url;});
+ }
+ async function fetchJson(){
+  var errors=[];
+  for(var i=0;i<JSON_URLS.length;i++){
+   var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},10000);
+   try{
+    var response=await fetch(JSON_URLS[i]+"?v="+Date.now(),{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    var raw=await response.text();
+    if(/^\s*<!doctype\s+html|^\s*<html/i.test(raw))throw new Error("HTML received instead of JSON");
+    var parsed=JSON.parse(raw),channels=normalizeJson(parsed);
+    if(channels.length){clearTimeout(timer);return channels;}
+    throw new Error("JSON has no usable channel records");
+   }catch(e){errors.push(e.message||"Fetch failed");}
+   finally{clearTimeout(timer);}
+  }
+  throw new Error(errors.join(" • ")||"JSON directory unavailable");
+ }
+ function fromStreamJs(){
+  var source=window.CricXStreamData&&window.CricXStreamData.allChannels;
+  if(!Array.isArray(source))return [];
+  return source.map(function(ch,i){return {id:String(ch.id||("stream-"+i)),name:ch.name||"Live Channel",url:safeUrl(ch.url),logo:safeUrl(ch.logo||ch.logoUrl||ch.image),category:ch.category||"Live Sports",source:"stream.js"};}).filter(function(ch){return ch.url;});
+ }
+ function mergeChannels(json,backup){
+  var out=[],seen={};
+  json.concat(backup).forEach(function(ch){
+   var key=ch.url.toLowerCase();
+   if(!seen[key]){seen[key]=true;out.push(ch);}
+  });
+  return out;
+ }
  function initials(name){return (name||"TV").trim().split(/\s+/).slice(0,2).map(function(x){return x.charAt(0);}).join("").toUpperCase()||"TV";}
  function render(){
-  var data=window.CricXStreamData&&window.CricXStreamData.allChannels;
-  if(!Array.isArray(data)||!data.length){list.innerHTML='<div class="empty">Channels could not be loaded. Please refresh the page.</div>';count.textContent="0 channels";return;}
-  list.innerHTML="";count.textContent=data.length+" channels";
-  data.forEach(function(ch){
-   if(!ch||!ch.url)return;
+  var query=(search.value||"").trim().toLowerCase();
+  var filtered=allChannels.filter(function(ch){return (ch.name+" "+ch.category).toLowerCase().indexOf(query)!==-1;});
+  list.innerHTML="";
+  count.textContent=filtered.length+" / "+allChannels.length+" channels";
+  if(!filtered.length){list.innerHTML='<div class="empty">No channels match your search.</div>';return;}
+  filtered.forEach(function(ch){
    var btn=document.createElement("button");btn.type="button";btn.className="channel";
-   var logo=document.createElement("div");logo.className="logo";logo.textContent=initials(ch.name);
-   var label=document.createElement("span");label.textContent=ch.name||"Live Channel";
-   btn.appendChild(logo);btn.appendChild(label);
+   var logo=document.createElement("div");logo.className="logo";
+   if(ch.logo){var img=document.createElement("img");img.src=ch.logo;img.alt="";img.loading="lazy";img.onerror=function(){logo.textContent=initials(ch.name);};logo.appendChild(img);}
+   else logo.textContent=initials(ch.name);
+   var label=document.createElement("span");label.textContent=ch.name;
+   var category=document.createElement("small");category.textContent=ch.category||"Live Sports";category.style.cssText="color:#91a69a;font-size:9px;font-weight:700;letter-spacing:.5px";
+   btn.appendChild(logo);btn.appendChild(label);btn.appendChild(category);
    btn.addEventListener("click",function(){selected=ch;modal.classList.add("open");});
    list.appendChild(btn);
   });
+ }
+ async function loadChannels(){
+  list.innerHTML='<div class="empty">Loading channel JSON…</div>';count.textContent="Loading…";
+  var backup=fromStreamJs();
+  try{var json=await fetchJson();allChannels=mergeChannels(json,backup);}
+  catch(error){allChannels=backup;if(!backup.length){list.innerHTML='<div class="empty">Channel data load nahi hua: '+String(error.message||error).replace(/[<>]/g,"")+'. Refresh karke dobara try karein.</div>';count.textContent="0 channels";return;}}
+  render();
  }
  function openSelected(){
   if(!selected)return;
   modal.classList.remove("open");
   document.getElementById("playingTitle").textContent=selected.name||"CRICZONE Player";
   home.style.display="none";view.style.display="flex";
-  // The selected URL stays inside a sandboxed iframe; it cannot navigate the top-level CRICZONE page.
-  frame.src=selected.url;
+  frame.src="about:blank";
+  requestAnimationFrame(function(){frame.src=selected.url;});
   history.pushState({criczonePlayer:true},"","#watch");
  }
  function goHome(){
@@ -98,9 +162,11 @@ main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
  }
  document.getElementById("continueBtn").addEventListener("click",openSelected);
  document.getElementById("homeBtn").addEventListener("click",goHome);
+ document.getElementById("reloadBtn").addEventListener("click",loadChannels);
+ search.addEventListener("input",render);
  window.addEventListener("popstate",function(){if(view.style.display==="flex")goHome();});
  modal.addEventListener("click",function(e){if(e.target===modal)modal.classList.remove("open");});
- render();
+ loadChannels();
 })();
 </script>
 </body>
