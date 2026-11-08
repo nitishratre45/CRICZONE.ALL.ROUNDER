@@ -1,87 +1,45 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark"> <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LZZ4WS8FYB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-LZZ4WS8FYB');
-</script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cric Hype | Live Sports</title>
-    <meta name="referrer" content="no-referrer">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
-    <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-    <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        const css = document.createElement("link");
-        css.rel = "stylesheet";
-        css.href = "https://hype99.github.io/1/one.css?t=" + Date.now();
-        document.head.appendChild(css);
-    </script>
-</head>
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d18"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>CRICZONE5 — Live Channels</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#111d30;--line:#263b58;--muted:#9aabc2;--text:#f5f8ff;--blue:#2588ff;--gold:#ffc857}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#1b3a65 0,transparent 45%),var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:5;background:#080d18ed;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.head{max-width:1400px;margin:auto;padding:15px 22px;display:flex;align-items:center;gap:18px}.brand{font-size:22px;font-weight:900;letter-spacing:1px}.brand span{color:var(--gold)}.live{margin-left:auto;color:#ff6878;font-size:11px;font-weight:900;letter-spacing:1px}.live:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff425d;margin-right:7px}
+main{max-width:1400px;margin:auto;padding:26px 22px 60px}.hero{padding:25px 28px;border:1px solid #29486d;border-radius:20px;background:linear-gradient(110deg,#15345a,#101c30);margin-bottom:25px}.hero h1{font-size:clamp(25px,4vw,40px);margin:0 0 8px}.hero h1 span{color:var(--gold)}.hero p{margin:0;color:#b5c6dc;font-size:13px}
+.toolbar{display:flex;gap:12px;align-items:center;margin:20px 0 13px;flex-wrap:wrap}.toolbar h2{font-size:18px;margin:0}.count{color:var(--muted);font-size:12px;margin-left:auto}input{min-width:210px;flex:1;max-width:440px;background:#101b2d;color:white;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;outline:none}input:focus{border-color:var(--blue)}
+.filters{display:flex;gap:8px;overflow:auto;padding:5px 0 16px}.filter{border:1px solid var(--line);background:#111d30;color:#bdcbe0;border-radius:24px;padding:9px 14px;white-space:nowrap;cursor:pointer}.filter.active{background:#176bd0;border-color:#398fff;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px}.channel{border:1px solid var(--line);background:linear-gradient(145deg,#15243b,#0e1727);border-radius:16px;padding:15px;cursor:pointer;min-width:0;transition:.18s}.channel:hover{border-color:#398fff;transform:translateY(-3px)}.logo{height:82px;display:grid;place-items:center;background:#0b1423;border-radius:11px;margin-bottom:12px;padding:10px}.logo img{max-width:95%;max-height:65px;object-fit:contain}.fallback{font-size:26px;font-weight:900;color:#7fa9dc}.name{font-size:13px;font-weight:800;line-height:1.4;min-height:36px}.meta{font-size:10px;color:var(--muted);margin-top:5px}.watch{display:block;width:100%;margin-top:12px;border:0;border-radius:9px;padding:10px;background:#176bd0;color:white;font-weight:800;cursor:pointer}
+.empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);border:1px dashed var(--line);border-radius:14px}.loading{text-align:center;padding:40px;color:var(--muted)}
+.player{display:none;position:fixed;inset:0;z-index:20;background:#030711f5;align-items:center;justify-content:center;padding:14px}.player.open{display:flex}.playerbox{width:min(1100px,100%);background:#0d1727;border:1px solid #345071;border-radius:16px;overflow:hidden}.playerhead{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}.playerhead strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.close{margin-left:auto;border:1px solid #526985;background:#1b304a;color:white;border-radius:10px;padding:10px 14px;font-size:18px;cursor:pointer}.screen{position:relative;background:#000;aspect-ratio:16/9;max-height:72vh}.screen video{width:100%;height:100%;object-fit:contain}.status{padding:10px 14px;color:var(--muted);font-size:12px}.fitbutton{height:34px;padding:0 8px;background:transparent;color:white;border:1px solid #667;border-radius:5px;cursor:pointer}
+@media(max-width:600px){.head,main{padding-left:13px;padding-right:13px}.hero{padding:21px 18px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.channel{padding:10px}.logo{height:72px}.player{padding:6px}.playerbox{border-radius:10px}.screen{max-height:65vh}}
+</style></head>
 <body>
-    <div class="ambient-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-    </div>
-
-    <header>
-        <div class="header-inner">
-            <a href="#" class="brand">
-                <div class="brand-icon"><i class="fas fa-play"></i></div>
-                <span class="brand-name">Cric Hype</span>
-            </a>
-            <div class="live-pill">
-                <div class="live-dot"></div>
-                Live Stream
-            </div>
-        </div>
-    </header>
-
-    <main class="main-container">
-        <div class="player-card">
-            <div id="playerContainer" data-shaka-player-container class="hidden" style="width:100%; height:100%;">
-    <video data-shaka-player id="video" poster="https://liv18.pages.dev/P.jpg" autoplay playsinline style="width:100%; height:100%;"></video>
-</div>
-
-            <iframe id="iframePlayer" class="hidden" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-            
-            <div class="error-overlay" id="errorOverlay">
-                <p id="errorMsg">Stream is currently offline</p>
-                <button class="retry-btn" onclick="location.reload()">Try Again</button>
-            </div>
-        </div>
-
-        <div class="glass-card">
-            <div class="card-title"><i class="fas fa-bullhorn"></i> Join Community</div>
-            <p style="font-size: 0.9rem; color: var(--text-secondary);">Join our official channels for backup links and schedules.</p>
-            <div class="promo-buttons">
-                <a href="https://telegram.me/CricHype" target="_blank" class="btn-social btn-tg"><i class="fab fa-telegram-plane"></i> Telegram</a>
-                <a href="https://instagram.com/realCricHype" target="_blank" class="btn-social btn-ig"><i class="fab fa-instagram"></i> Instagram</a>
-            </div>
-        </div>
-
-        <div class="glass-card">
-            <div class="card-title"><i class="fas fa-info-circle"></i> Support Us</div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
-                For best experience, use <b>Google Chrome</b>. If stream lags, try refreshing the page.
-            </p>
-            <button class="btn-social btn-share" onclick="shareLink()"><i class="fas fa-share-alt"></i> Share Link with Friends</button>
-        </div>
-    </main>
-
-    <div id="toast" class="toast"></div>
-
-    <!-- Removed unverified third-party scripts that could trigger redirects/popups. -->
-
-    <!-- Removed automatic Telegram confirmation/redirect; keep navigation user-initiated only. -->
-<!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e070d77ada7d440986e401341fa4973d"}'></script><!-- Cloudflare Pages Analytics --></body>
-</html>
+<header><div class="head"><div class="brand">CRIC<span>ZONE</span>5</div><div class="live">LIVE CHANNELS</div></div></header>
+<main>
+<section class="hero"><h1>Choose your <span>channel.</span></h1><p>Browse the channel list first. Playback starts only after you select a channel.</p></section>
+<div class="toolbar"><h2>All Channels</h2><span class="count" id="count">Loading…</span><input id="search" type="search" placeholder="Search channels…" aria-label="Search channels"></div>
+<nav class="filters" id="filters"></nav><section class="grid" id="grid"><div class="loading">Loading channel list…</div></section>
+</main>
+<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Channel player"><div class="playerbox"><div class="playerhead"><strong id="playingTitle">Now Playing</strong><button class="close" id="close" aria-label="Close player">✕</button></div><div class="screen" id="videoContainer" data-shaka-player-container><video id="video" data-shaka-player playsinline controls></video></div><div class="status" id="status" role="status">Select a channel to start playback.</div></div></div>
+<script>
+(()=>{"use strict";
+const M3U_URL="https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sony.m3u";
+const $=id=>document.getElementById(id);let channels=[],genre="All",player=null,ui=null,activeUrl="";
+function parseM3U(text){const lines=text.split(/\\r?\\n/);const out=[];let item=null;for(const raw of lines){const line=raw.trim();if(!line)continue;if(line.startsWith("#EXTINF:")){item={title:"Live Channel",genre:"Other",logo:"",streamUrl:""};const g=line.match(/group-title="([^"]+)"/i),l=line.match(/tvg-logo="([^"]+)"/i),n=line.match(/tvg-name="([^"]+)"/i),comma=line.lastIndexOf(",");if(g)item.genre=g[1];if(l)item.logo=l[1];if(comma>=0&&line.slice(comma+1).trim())item.title=line.slice(comma+1).trim();else if(n)item.title=n[1];}else if(!line.startsWith("#")&&item){item.streamUrl=line;out.push(item);item=null;}}return out;}
+function renderFilters(){const groups=["All",...new Set(channels.map(c=>c.genre||"Other"))];$("filters").innerHTML=groups.map(g=>'<button class="filter '+(genre===g?'active':'')+'" data-genre="'+esc(g)+'">'+esc(g)+'</button>').join("");$("filters").querySelectorAll("button").forEach(b=>b.onclick=()=>{genre=b.dataset.genre;renderFilters();render();});}
+function esc(s){return String(s||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));}
+function render(){const q=$("search").value.trim().toLowerCase();const list=channels.filter(c=>(genre==="All"||c.genre===genre)&&(!q||(c.title+" "+c.genre).toLowerCase().includes(q)));$("count").textContent=list.length+" channels";$("grid").innerHTML=list.length?list.map((c,i)=>'<article class="channel" data-index="'+channels.indexOf(c)+'"><div class="logo">'+(c.logo?'<img loading="lazy" src="'+esc(c.logo)+'" alt="" onerror="this.remove()">':'<span class="fallback">TV</span>')+'</div><div class="name">'+esc(c.title)+'</div><div class="meta">'+esc(c.genre||"Live TV")+'</div><button class="watch" type="button">▶ Watch Live</button></article>').join(""):'<div class="empty">No matching channels found.</div>';$("grid").querySelectorAll(".channel").forEach(card=>card.onclick=()=>openChannel(channels[Number(card.dataset.index)]));}
+async function openChannel(c){if(!c||!c.streamUrl)return;$("player").classList.add("open");$("playingTitle").textContent=c.title;$("status").textContent="Loading selected channel…";activeUrl=c.streamUrl;try{if(!window.shaka||!shaka.Player.isBrowserSupported())throw Error("Shaka Player is not supported in this browser.");if(!player){shaka.polyfill.installAll();player=new shaka.Player();await player.attach($("video"));ui=new shaka.ui.Overlay(player,$("videoContainer"),$("video"));ui.configure({addBigPlayButton:true,controlPanelElements:["play_pause","mute","time_and_duration","spacer","quality","picture_in_picture","fullscreen"]});}else await player.unload();await player.load(c.streamUrl);$("status").textContent="Stream loaded. Press play if playback does not start automatically.";const p=$("video").play();if(p&&p.catch)p.catch(()=>{});}catch(e){$("status").textContent="Playback unavailable: "+(e.message||"This stream may require provider-authorized access or DRM configuration.");}}
+async function closePlayer(){if(player){try{await player.unload();}catch(e){}}$("video").pause();$("player").classList.remove("open");$("status").textContent="Select a channel to start playback.";activeUrl="";}
+$("close").onclick=closePlayer;$("player").addEventListener("click",e=>{if(e.target===$("player"))closePlayer();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closePlayer();});$("search").addEventListener("input",render);
+async function init(){try{const r=await fetch(M3U_URL,{cache:"no-store"});if(!r.ok)throw Error("Channel source returned HTTP "+r.status);channels=parseM3U(await r.text());if(!channels.length)throw Error("No channels found in the playlist.");renderFilters();render();}catch(e){$("count").textContent="Unavailable";$("grid").innerHTML='<div class="empty">Channel list load nahi hui: '+esc(e.message)+'<br>Refresh karke dobara try karein.</div>';}}
+init();
+})();
+</script>
+</body></html>
