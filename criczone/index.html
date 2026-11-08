@@ -228,25 +228,21 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 /* END CRICZONE5 TELEGRAM UI */
 
 
-/* LIVE WATCHING BADGE — original supplied reference styling */
-#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));bottom:auto;display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;letter-spacing:.25px;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
+/* CRICZONE original compact LIVE WATCHING badge */
+#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;box-shadow:0 8px 28px rgba(0,0,0,.48);backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
 #viewerBadge .viewer-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:czPulse 1.8s infinite}
 #watchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
-#viewerBadge .watching-total-label{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:9px;letter-spacing:.65px;font-weight:850}
+#viewerBadge .watching-total-label{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:9px;font-weight:850}
 #totalVisits{color:#fff;font-size:12px;font-weight:950;font-variant-numeric:tabular-nums}
 #viewerBadge .watching-live-label{display:inline-flex;align-items:center;gap:5px}
 #viewerBadge .watching-live-label:before{content:"LIVE";font-size:9px;letter-spacing:1px;color:#06140f;background:#45f0b5;padding:3px 5px;border-radius:4px;font-weight:950}
-#viewerBadge.is-fullscreen{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;bottom:auto;z-index:2147483647}
 @keyframes czPulse{50%{opacity:.45;transform:scale(.75)}}
-#viewerBadge,#viewerBadge.is-fullscreen{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-height:none!important;max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;white-space:nowrap!important;writing-mode:horizontal-tb!important;transform:none!important;gap:5px!important;padding:6px 9px!important;border-radius:999px!important;font-size:9px!important;line-height:1!important;letter-spacing:0!important}
-#viewerBadge .viewer-dot,#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{flex:0 0 auto!important;writing-mode:horizontal-tb!important}
+#viewerBadge,#viewerBadge.is-fullscreen{display:inline-flex!important;flex-direction:row!important;align-items:center!important;width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;white-space:nowrap!important;gap:5px!important;padding:6px 9px!important;border-radius:999px!important;font-size:9px!important;line-height:1!important}
 #viewerBadge .viewer-dot{width:6px!important;height:6px!important;flex-basis:6px!important}
-#viewerBadge .watching-live-label{gap:4px!important;font-size:9px!important}
-#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important;letter-spacing:.6px!important}
+#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important}
 #watchingCount,#totalVisits{font-size:10px!important}
-#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important;letter-spacing:.35px!important}
-#viewerBadge.is-fullscreen{top:max(14px,env(safe-area-inset-top))!important;right:14px!important;bottom:auto!important;left:auto!important}
-@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;bottom:auto!important;padding:5px 8px!important;gap:4px!important;font-size:8px!important}#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{font-size:8px!important}#viewerBadge .watching-live-label:before{font-size:6px!important}#watchingCount,#totalVisits{font-size:9px!important}}
+#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important}
+@media(max-width:699px){#viewerBadge{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;padding:5px 8px!important;gap:4px!important}#watchingCount,#totalVisits{font-size:9px!important}}
 </style>
 </head>
 <body>
@@ -254,11 +250,21 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 <div id="overlay">
   <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
     <circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/>
-    <path d="M20 4a1 <section class="cz-live-stats" aria-label="CRICZONE live audience statistics">
-    <div class="cz-stat-card"><span class="cz-stat-dot"></span><span class="cz-stat-label">LIVE WATCHING</span><strong id="czLiveWatching">—</strong><span class="cz-stat-note">Watching now</span></div>
-    <div class="cz-stat-card"><span class="cz-stat-icon">◉</span><span class="cz-stat-label">TOTAL VISITS</span><strong id="czTotalVisits">—</strong><span class="cz-stat-note">All-time visits</span></div>
-  </section>
+    <path d="M20 4a16 16 0 0 1 16 16" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <p id="loadMsg">Loading.....</p>
+</div>
 
+<div id="status"></div>
+
+<div id="channel-list">
+  <header id="ch-header">
+    <a class="cz-brand" href="../" aria-label="CRICZONE LIVE home">
+      <span class="cz-brand-mark">🏏</span>
+      <span class="cz-brand-copy"><strong>CRICZONE LIVE</strong><small>LIVE SPORTS NETWORK</small></span>
+    </a>
+    <span class="cz-live-pill"><i></i> LIVE NOW</span>
+  </header>
   <main id="home-main">
     <section class="cz-hero">
       <div class="cz-eyebrow"><span></span> YOUR SPORTS. YOUR ZONE.</div>
@@ -287,16 +293,8 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
     x5-video-player-fullscreen="true">
   </video>
   <iframe id="stream-frame" title="Live stream" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-  <div id="viewerBadge" aria-live="polite">
-    <span class="viewer-dot"></span>
-    <span class="watching-live-label"><strong id="watchingCount">0</strong> watching</span>
-    <span class="watching-total-label">TOTAL <strong id="totalVisits">0</strong></span>
-    <div id="viewerBadge" aria-live="polite">
-    <span class="viewer-dot"></span>
-    <span class="watching-live-label"><strong id="watchingCount">330</strong> watching</span>
-    <span class="watching-total-label">TOTAL <strong id="totalVisits">330</strong></span>
-  </div>
-</div>
+
+  <div id="viewerBadge" aria-live="polite"><span class="viewer-dot"></span><span class="watching-live-label"><strong id="watchingCount">330</strong> watching</span><span class="watching-total-label">TOTAL <strong id="totalVisits">330</strong></span></div>
 </div>
 
 <script src="stream.js"></script>
@@ -1018,127 +1016,95 @@ document.addEventListener("DOMContentLoaded", main);
    if(document.getElementById("cz5-tg-modal")) return;
    var modal=document.createElement("div");
    modal.id="cz5-tg-modal";
-   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news <script type="module">
-/* Firebase live watching: retains the supplied reference's 330 base count. */
+   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
+   document.body.appendChild(modal);
+   modal.querySelector(".cz5-tg-close").addEventListener("click",function(){
+     modal.classList.remove("cz5-open");
+     try{sessionStorage.setItem("cz5_tg_dismissed","1")}catch(e){}
+   });
+ }
+ function isFullscreen(){
+   return !!(document.fullscreenElement||document.webkitFullscreenElement||
+     (document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));
+ }
+ function schedulePopup(){
+   try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
+   window.setTimeout(function(){
+     if(isFullscreen()||!document.getElementById("pc")||
+        getComputedStyle(document.getElementById("pc")).display==="none"){
+       schedulePopup();return;
+     }
+     makeModal();
+     document.getElementById("cz5-tg-modal").classList.add("cz5-open");
+   },60000);
+ }
+ function init(){
+   makeBar();
+   var params=new URLSearchParams(location.search);
+   if(!params.get("id")) return;
+   var frame=document.getElementById("stream-frame");
+   var video=document.getElementById("v");
+   var armed=false;
+   function arm(){if(armed)return;armed=true;schedulePopup()}
+   if(frame) frame.addEventListener("load",function(){
+     if(frame.src&&frame.src!=="about:blank") arm();
+   });
+   if(video) video.addEventListener("playing",arm,{once:true});
+   /* Fallback: start the timer once the selected channel player is opened. */
+   window.setTimeout(function(){
+     var pc=document.getElementById("pc");
+     if(pc&&getComputedStyle(pc).display!=="none") arm();
+   },2500);
+ }
+ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+ else init();
+})();
+</script>
+<!-- END CRICZONE5 Telegram UI -->
+
+
+<script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
-  authDomain: "criczone-4daa2.firebaseapp.com",
-  databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "criczone-4daa2",
-  storageBucket: "criczone-4daa2.firebasestorage.app",
-  messagingSenderId: "113293633217",
-  appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
-  measurementId: "G-Q9RJ0VSSPP"
+const firebaseConfig={
+ apiKey:"AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
+ authDomain:"criczone-4daa2.firebaseapp.com",
+ databaseURL:"https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"criczone-4daa2",
+ storageBucket:"criczone-4daa2.firebasestorage.app",
+ messagingSenderId:"113293633217",
+ appId:"1:113293633217:web:a96d9b3af3045bcd99d640",
+ measurementId:"G-Q9RJ0VSSPP"
 };
-
-const appName = "criczone-audience";
-const app = getApps().find(x => x.name === appName) || initializeApp(firebaseConfig, appName);
-const db = getDatabase(app);
-const countEl = document.getElementById("watchingCount");
-const totalEl = document.getElementById("totalVisits");
-let activeRef = null, countOff = null, totalOff = null, activeChannel = null;
-const BASE_COUNT = 330;
-function display(el, value) {
-  if (el) el.textContent = Math.max(BASE_COUNT, Number(value) || BASE_COUNT).toLocaleString("en-IN");
+const appName="criczone-audience";
+const app=getApps().find(x=>x.name===appName)||initializeApp(firebaseConfig,appName);
+const db=getDatabase(app), countEl=document.getElementById("watchingCount"), totalEl=document.getElementById("totalVisits");
+const BASE=330; let activeRef=null,countOff=null,totalOff=null,activeChannel=null;
+function display(el,n){if(el)el.textContent=Math.max(BASE,Number(n)||BASE).toLocaleString("en-IN")}
+async function startTotal(){
+ const r=ref(db,"siteStats/totalVisits");
+ try{await runTransaction(r,v=>v===null?BASE+1:(Number(v)||BASE)+1)}catch(e){console.warn("Total visits write failed",e)}
+ totalOff=onValue(r,s=>display(totalEl,s.val()),e=>console.warn("Total visits read failed",e));
 }
-async function startTotalVisits() {
-  const totalRef = ref(db, "siteStats/totalVisits");
-  try {
-    const result = await runTransaction(totalRef, current => current === null ? BASE_COUNT + 1 : (Number(current) || BASE_COUNT) + 1);
-    if (!result.committed) console.warn("CRICZONE total visits transaction was not committed");
-  } catch (e) { console.warn("CRICZONE total visit increment failed:", e); }
-  totalOff = onValue(totalRef, snap => display(totalEl, snap.val()),
-    e => console.warn("CRICZONE total visits read failed:", e));
+async function stopRealtimeWatching(){
+ if(countOff){countOff();countOff=null}
+ if(activeRef){const old=activeRef;activeRef=null;await remove(old).catch(()=>{})}
+ activeChannel=null;display(countEl,BASE);
 }
-async function stopRealtimeWatching() {
-  if (countOff) { countOff(); countOff = null; }
-  if (activeRef) { const old = activeRef; activeRef = null; await remove(old).catch(() => {}); }
-  activeChannel = null;
-  display(countEl, BASE_COUNT);
+async function startRealtimeWatching(id){
+ const safe=String(id||"all").replace(/[^a-zA-Z0-9_-]/g,"_");
+ if(activeChannel===safe&&activeRef)return;
+ await stopRealtimeWatching();activeChannel=safe;
+ const uid=globalThis.crypto?.randomUUID?.()||(Date.now()+"_"+Math.random().toString(36).slice(2));
+ const channel=ref(db,"liveViewers/"+safe);activeRef=ref(db,"liveViewers/"+safe+"/"+uid);
+ try{
+  await onDisconnect(activeRef).remove();await set(activeRef,{joinedAt:Date.now(),online:true});
+  countOff=onValue(channel,s=>display(countEl,BASE+(s.size??s.numChildren())),e=>console.warn("Viewer count read failed",e));
+ }catch(e){console.error("Live watching Firebase error",e);display(countEl,BASE)}
 }
-async function startRealtimeWatching(streamId) {
-  const safeId = String(streamId || "all").replace(/[^a-zA-Z0-9_-]/g, "_");
-  if (activeChannel === safeId && activeRef) return;
-  await stopRealtimeWatching();
-  activeChannel = safeId;
-  const viewerId = globalThis.crypto?.randomUUID?.() || (Date.now() + "_" + Math.random().toString(36).slice(2));
-  const channelRef = ref(db, "liveViewers/" + safeId);
-  activeRef = ref(db, "liveViewers/" + safeId + "/" + viewerId);
-  try {
-    await onDisconnect(activeRef).remove();
-    await set(activeRef, { joinedAt: Date.now(), online: true });
-    countOff = onValue(channelRef, snap => display(countEl, BASE_COUNT + (snap.size ?? snap.numChildren())),
-      e => console.warn("CRICZONE live viewer listener failed:", e));
-  } catch (e) {
-    console.error("CRICZONE live watching failed:", e);
-    display(countEl, BASE_COUNT);
-  }
-}
-window.startRealtimeWatching = startRealtimeWatching;
-window.stopRealtimeWatching = stopRealtimeWatching;
-display(countEl, BASE_COUNT);
-display(totalEl, BASE_COUNT);
-startTotalVisits();
-window.addEventListener("pagehide", () => {
-  if (activeRef) remove(activeRef).catch(() => {});
-  if (countOff) countOff();
-  if (totalOff) totalOff();
-});
-</script>,
-  measurementId: "G-Q9RJ0VSSPP"
-};
-
-const liveEl = document.getElementById("czLiveWatching");
-const totalEl = document.getElementById("czTotalVisits");
-let presenceRef = null;
-let liveUnsubscribe = null;
-let totalUnsubscribe = null;
-
-function show(el, value) {
-  if (el) el.textContent = Math.max(0, Number(value) || 0).toLocaleString("en-IN");
-}
-
-(async function startCriczoneAudience() {
-  try {
-    const appName = "criczone-audience";
-    const app = getApps().find(item => item.name === appName) || initializeApp(firebaseConfig, appName);
-    const db = getDatabase(app);
-    /* Increment existing totalVisits value transactionally; previous data is retained. */
-    const totalRef = ref(db, "siteStats/totalVisits");
-    await runTransaction(totalRef, current => (Number(current) || 0) + 1);
-    totalUnsubscribe = onValue(totalRef, snap => show(totalEl, snap.val()),
-      error => console.warn("CRICZONE total visits listener:", error));
-
-    /* Each tab owns one presence node. Disconnect cleanup removes only this node. */
-    const viewerId = globalThis.crypto?.randomUUID?.() ||
-      (Date.now() + "_" + Math.random().toString(36).slice(2));
-    presenceRef = ref(db, "liveViewers/" + viewerId);
-    await onDisconnect(presenceRef).remove();
-    await set(presenceRef, {
-      online: true,
-      joinedAt: Date.now(),
-      page: "criczone"
-    });
-
-    liveUnsubscribe = onValue(ref(db, "liveViewers"), snapshot => {
-      show(liveEl, snapshot.numChildren());
-    }, error => console.warn("CRICZONE live watching listener:", error));
-  } catch (error) {
-    console.error("CRICZONE Firebase audience counters unavailable:", error);
-    if (liveEl) liveEl.textContent = "—";
-    if (totalEl) totalEl.textContent = "—";
-  }
-})();
-
-window.addEventListener("pagehide", () => {
-  if (liveUnsubscribe) liveUnsubscribe();
-  if (totalUnsubscribe) totalUnsubscribe();
-  if (presenceRef) remove(presenceRef).catch(() => {});
-});
+window.startRealtimeWatching=startRealtimeWatching;window.stopRealtimeWatching=stopRealtimeWatching;
+display(countEl,BASE);display(totalEl,BASE);startTotal();
+window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(countOff)countOff();if(totalOff)totalOff()});
 </script>
-
 </body>
 </html>
