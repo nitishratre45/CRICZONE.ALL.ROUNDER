@@ -1,4 +1,4 @@
-const ALLOWED_HOST_SUFFIX = "fallinoreborn2.online";
+const ALLOWED_HOST_SUFFIXES = new Set(["allinonereborn2.online", "fallinoreborn2.online"]);
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
@@ -17,7 +17,7 @@ function json(data, status = 400) {
 function isAllowed(url) {
   if (url.protocol !== "https:") return false;
   const host = url.hostname.toLowerCase();
-  return (host === ALLOWED_HOST_SUFFIX || host.endsWith("." + ALLOWED_HOST_SUFFIX))
+  return [...ALLOWED_HOST_SUFFIXES].some((suffix) => host === suffix || host.endsWith("." + suffix))
     && url.pathname.startsWith("/sony-new/");
 }
 
