@@ -2,6 +2,9 @@
 "use strict";
 const grid=document.getElementById("channels"),search=document.getElementById("search"),filters=document.getElementById("filters"),count=document.getElementById("count"),updated=document.getElementById("updated"),modal=document.getElementById("player-modal"),video=document.getElementById("video"),container=document.getElementById("video-container"),message=document.getElementById("player-message"),title=document.getElementById("player-title"),note=document.getElementById("player-note");
 let channels=[],selectedGroup="all",hls=null,shakaPlayer=null,shakaOverlay=null,playToken=0;
+const qualityRow=document.getElementById("quality-row"),qualitySelect=document.getElementById("quality-select");
+function resetQuality(){qualityRow.hidden=true;qualitySelect.innerHTML="";qualitySelect.onchange=null}
+function setQualityOptions(items,onPick){qualitySelect.innerHTML=items.map(x=>`<option value="${esc(x.value)}">${esc(x.label)}</option>`).join("");qualitySelect.onchange=()=>onPick(qualitySelect.value);qualityRow.hidden=items.length<2}
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const provider=g=>String(g||"Other").split("|")[0].trim()||"Other";
 function renderFilters(){const groups=[...new Set(channels.map(c=>provider(c.group)))].sort();filters.innerHTML=["all",...groups].map(g=>'<button class="filter '+(selectedGroup===g?"active":"")+'" data-group="'+esc(g)+'">'+(g==="all"?"All channels":esc(g))+"</button>").join("")}
@@ -12,6 +15,7 @@ function render(){
  grid.innerHTML=visible.length?visible.map(c=>'<button class="channel-card" type="button" data-index="'+channels.indexOf(c)+'"><div class="thumb">'+(c.logo?'<img loading="lazy" src="'+esc(c.logo)+'" alt="" onerror="this.style.display=\'none\';this.parentElement.insertAdjacentHTML(\'beforeend\',\'<span class=&quot;thumb-fallback&quot;>▶</span>\')">':'<span class="thumb-fallback">▶</span>')+'<span class="provider">'+esc(provider(c.group))+'</span></div><div class="channel-name">'+esc(c.name||c.tvg_name||"Channel")+'</div><div class="card-bottom"><span>'+esc(String(c.stream_type||"stream").toUpperCase())+'</span><span class="open-label">OPEN ↗</span></div></button>').join(""):'<div class="state">No channels match your search.</div>';
 }
 async function stopPlayback(){
+ resetQuality();
  if(hls){hls.destroy();hls=null}
  if(shakaOverlay){try{shakaOverlay.destroy()}catch(e){}shakaOverlay=null}
  if(shakaPlayer){try{await shakaPlayer.destroy()}catch(e){}shakaPlayer=null}
@@ -55,6 +59,7 @@ async function openChannel(c){
    if(clearKeys)config.drm={clearKeys};
    if(c.drm_license_url){config.drm=config.drm||{};config.drm.servers={"com.widevine.alpha":String(c.drm_license_url)}}
    shakaPlayer.configure(config);
+   shakaPlayer.addEventListener("variantchanged",()=>{if(active!==playToken)return;const chosen=shakaPlayer.getVariantTracks().find(t=>t.active);if(chosen)qualitySelect.value=String(chosen.height||"auto")});
    shakaPlayer.addEventListener("error",event=>{
     if(active!==playToken)return;
     const err=event.detail||{};
@@ -63,6 +68,12 @@ async function openChannel(c){
    showError("Loading DASH stream…");
    await shakaPlayer.load(url);
    if(active!==playToken)return;
+   const dashTracks=shakaPlayer.getVariantTracks();
+   const dashHeights=[...new Set(dashTracks.map(t=>t.height).filter(Boolean))].sort((a,b)=>b-a);
+   if(dashHeights.length>1){
+    const opts=[{value:"auto",label:"Auto"},...dashHeights.map(h=>({value:String(h),label:h+"p"}))];
+    setQualityOptions(opts,value=>{if(value==="auto"){shakaPlayer.configure({abr:{enabled:true}});return}shakaPlayer.configure({abr:{enabled:false}});const track=shakaPlayer.getVariantTracks().filter(t=>t.height===Number(value)).sort((a,b)=>(b.bandwidth||0)-(a.bandwidth||0))[0];if(track)shakaPlayer.selectVariantTrack(track,true)});
+   }
    hideMessage();video.play().catch(()=>{});
   }catch(err){
    if(active!==playToken)return;
@@ -78,16 +89,25 @@ async function openChannel(c){
  if(!/\.m3u8(?:$|[?#])/i.test(url)){showError("This stream format is not supported by the player.");return}
  if(requestHeaders){showError("This channel needs provider-specific request headers that a normal browser player cannot set. Use its official/authorized player.");return}
  showError("Connecting to HLS stream…");
- if(video.canPlayType("application/vnd.apple.mpegurl")){
+ if(window.Hls&&Hls.isSupported()){
+  hls=new Hls({enableWorker:true,manifestLoadingTimeOut:20000,fragLoadingTimeOut:20000,capLevelToPlayerSize:true});
+  hls.loadSource(url);hls.attachMedia(video);
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+   if(active!==playToken)return;
+   const levels=hls.levels||[];
+   const heights=[...new Set(levels.map(l=>l.height).filter(Boolean))].sort((a,b)=>b-a);
+   if(heights.length>1){
+    const opts=[{value:"-1",label:"Auto"},...heights.map(height=>({value:String(height),label:height+"p"}))];
+    setQualityOptions(opts,value=>{hls.currentLevel=value==="-1"?-1:levels.findIndex(l=>l.height===Number(value))});
+   }
+   hideMessage();video.play().catch(()=>{});
+  });
+  hls.on(Hls.Events.ERROR,(_,d)=>{if(active===playToken&&d.fatal)showError("HLS playback failed ("+d.type+"). Stream may be offline, blocked by CORS, or require provider authorization.")});
+ }else if(video.canPlayType("application/vnd.apple.mpegurl")){
   video.src=url;
   video.addEventListener("loadedmetadata",()=>{if(active===playToken)hideMessage()},{once:true});
   video.addEventListener("error",()=>{if(active===playToken)showError("HLS stream unavailable. It may require provider authorization, CORS access, or may be offline.")},{once:true});
   video.play().catch(()=>{});
- }else if(window.Hls&&Hls.isSupported()){
-  hls=new Hls({enableWorker:true,manifestLoadingTimeOut:20000,fragLoadingTimeOut:20000});
-  hls.loadSource(url);hls.attachMedia(video);
-  hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(active===playToken){hideMessage();video.play().catch(()=>{})}});
-  hls.on(Hls.Events.ERROR,(_,d)=>{if(active===playToken&&d.fatal)showError("HLS playback failed. Check stream authorization, CORS and source availability.")});
  }else showError("HLS playback is not supported by this browser.");
 }
 grid.addEventListener("click",e=>{const card=e.target.closest("[data-index]");if(card)openChannel(channels[Number(card.dataset.index)])});
