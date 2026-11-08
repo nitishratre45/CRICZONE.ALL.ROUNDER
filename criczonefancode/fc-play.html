@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#000000">
   <meta name="referrer" content="no-referrer">
   <title>CRICZONE — FanCode Player</title>
-  <link rel="stylesheet" href="./fancode.css?v=20261108-10">
+  <link rel="stylesheet" href="./fancode.css?v=20261108-11">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
   <style>
@@ -34,6 +34,7 @@
     .cz-quality-menu.cz-open{display:grid}
     .cz-quality-menu button{min-height:38px;border:1px solid #ffffff20;border-radius:8px;background:#ffffff0c;color:#fff;font-weight:900;font-size:12px}
     .cz-quality-menu button.cz-selected{border-color:#ffd44d;background:#ffd44d20;color:#ffd44d}
+    .cz-quality-menu button:disabled{opacity:.55;cursor:wait}
     .cz-quality-button{position:absolute!important;right:64px!important;bottom:42px!important;z-index:25!important;display:inline-flex!important;align-items:center;justify-content:center;min-width:64px!important;height:36px!important;padding:0 8px!important;border:0!important;border-radius:6px;background:#07111f99!important;background-image:none!important;color:#fff!important;font-size:12px!important;font-weight:900!important;line-height:1!important;cursor:pointer;box-shadow:none!important}.shaka-controls-button-panel .cz-quality-button::before,.shaka-controls-button-panel .cz-quality-button::after{content:none!important;display:none!important;background:none!important;background-image:none!important}.shaka-controls-button-panel .cz-quality-button svg{display:none!important}
     @media(max-width:600px){.player-topbar{height:50px;flex-basis:50px;padding:0 12px}.video-shell{max-height:calc(100vh - 50px)}.player-bottom{padding:10px 12px;font-size:10px}.player-error h2,.tap-to-play h2{font-size:18px}}
     @media(orientation:landscape) and (max-height:500px){.player-topbar,.player-bottom{display:none}.video-shell{max-height:100vh}}
@@ -70,14 +71,18 @@
   (() => {
     "use strict";
     const video = document.getElementById("video");
+    const shell = document.querySelector(".shaka-video-container");
     const loading = document.getElementById("loading");
     const loadingTitle = document.getElementById("loading-title");
     const errorPanel = document.getElementById("error-panel");
     const errorMessage = document.getElementById("error-message");
     const tapPanel = document.getElementById("tap-panel");
+    const qualityMenu = document.getElementById("cz-quality-menu");
     let player = null;
+    let shakaUi = null;
     let streamUrl = "";
     let availableStreams = [];
+    let qualityButton = null;
     let qualitySwitchInProgress = false;
     let initToken = 0;
 
@@ -91,15 +96,20 @@
     }
     function getStreamUrl() {
       let stored = "";
-      try { stored = sessionStorage.getItem("cz_fancode_stream") || ""; } catch {}
-      const params = new URLSearchParams(location.search);
-      const legacy = params.get("data");
-      try { availableStreams = JSON.parse(sessionStorage.getItem("cz_fancode_streams") || "[]"); } catch { availableStreams = []; }
+      try {
+        stored = sessionStorage.getItem("cz_fancode_stream") || "";
+        availableStreams = JSON.parse(sessionStorage.getItem("cz_fancode_streams") || "[]");
+      } catch {
+        availableStreams = [];
+      }
+      const legacy = new URLSearchParams(location.search).get("data");
       const candidate = stored || (legacy ? decodeLegacy(legacy) : "");
       try {
         const url = new URL(candidate);
         return /^https?:$/.test(url.protocol) ? url.href : "";
-      } catch { return ""; }
+      } catch {
+        return "";
+      }
     }
     function showError(message) {
       loading.hidden = true;
@@ -113,188 +123,180 @@
       errorPanel.hidden = true;
       tapPanel.hidden = true;
     }
-    async function cleanup() {
+    async function destroyPlayer() {
+      if (shakaUi) {
+        const oldUi = shakaUi;
+        shakaUi = null;
+        try { await oldUi.destroy(); } catch (error) { console.warn("Shaka UI cleanup:",error); }
+      }
       if (player) {
-        try { await player.destroy(); } catch (e) { console.warn("Player cleanup:",e); }
+        const oldPlayer = player;
         player = null;
+        try { await oldPlayer.destroy(); } catch (error) { console.warn("Shaka player cleanup:",error); }
       }
       video.pause();
       video.removeAttribute("src");
       video.load();
     }
+    function configureOverlay(instance) {
+      shakaUi = new shaka.ui.Overlay(instance,shell,video);
+      shakaUi.configure({
+        controlPanelElements:["play_pause","spacer","fullscreen"],
+        addSeekBar:true,
+        seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
+      });
+    }
+    async function createAndLoad(url, token) {
+      const instance = new shaka.Player(video);
+      player = instance;
+      instance.configure({
+        streaming:{
+          bufferingGoal:15,
+          rebufferingGoal:3,
+          bufferBehind:30,
+          retryParameters:{timeout:30000,maxAttempts:4,baseDelay:500,backoffFactor:1.6,fuzzFactor:0.5}
+        },
+        manifest:{dash:{ignoreMinBufferTime:true}}
+      });
+      configureOverlay(instance);
+      instance.addEventListener("error", event => {
+        const detail = event.detail || {};
+        console.error("Shaka playback error:",detail);
+        if (token === initToken && !qualitySwitchInProgress) {
+          showError("Playback error " + (detail.code || "") + ". The stream may be offline, expired, or blocked by its source.");
+        }
+      });
+      await instance.load(url);
+      if (token !== initToken) throw new Error("Playback request was superseded.");
+      return instance;
+    }
+    function renderQualityMenu() {
+      qualityMenu.replaceChildren();
+      if (!Array.isArray(availableStreams) || availableStreams.length < 2) {
+        if (qualityButton) qualityButton.remove();
+        qualityButton = null;
+        return;
+      }
+      if (qualityButton) qualityButton.remove();
+      qualityButton = document.createElement("button");
+      qualityButton.type = "button";
+      qualityButton.className = "cz-quality-button";
+      const current = availableStreams.find(item => item && item.url === streamUrl);
+      qualityButton.textContent = String(current?.quality || "QUALITY").toUpperCase();
+      qualityButton.setAttribute("aria-label","Choose stream quality");
+      qualityButton.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        qualityMenu.classList.toggle("cz-open");
+      });
+      shell.append(qualityButton);
+
+      availableStreams.forEach(item => {
+        if (!item || !item.url || !/^https?:/i.test(item.url)) return;
+        const option = document.createElement("button");
+        option.type = "button";
+        option.textContent = String(item.quality || "AUTO").toUpperCase();
+        option.className = item.url === streamUrl ? "cz-selected" : "";
+        option.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
+          switchQuality(item,option);
+        });
+        qualityMenu.append(option);
+      });
+    }
+    async function switchQuality(item, option) {
+      if (qualitySwitchInProgress || !item?.url || item.url === streamUrl) {
+        qualityMenu.classList.remove("cz-open");
+        return;
+      }
+      qualitySwitchInProgress = true;
+      const previousUrl = streamUrl;
+      const previousQuality = availableStreams.find(row => row && row.url === previousUrl)?.quality || "AUTO";
+      qualityMenu.querySelectorAll("button").forEach(button => button.disabled = true);
+      qualityMenu.classList.remove("cz-open");
+      const token = ++initToken;
+      showLoading("Switching to " + item.quality + "…");
+      try {
+        await destroyPlayer();
+        await createAndLoad(item.url,token);
+        streamUrl = item.url;
+        qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
+        qualityMenu.querySelectorAll("button").forEach(button => button.classList.remove("cz-selected"));
+        option.classList.add("cz-selected");
+        loading.hidden = true;
+        try { await video.play(); } catch { tapPanel.hidden = false; }
+      } catch (switchError) {
+        console.error("Quality switch failed:",switchError);
+        try {
+          await destroyPlayer();
+          await createAndLoad(previousUrl,token);
+          streamUrl = previousUrl;
+          qualityButton.textContent = String(previousQuality).toUpperCase();
+          qualityMenu.querySelectorAll("button").forEach(button => button.classList.toggle("cz-selected",button.dataset.url === previousUrl));
+          loading.hidden = true;
+          try { await video.play(); } catch { tapPanel.hidden = false; }
+          errorMessage.textContent = "That quality could not be loaded. Previous quality restored.";
+        } catch (restoreError) {
+          showError("This quality and the previous stream could not be loaded. Check the source URL or try again.");
+        }
+      } finally {
+        qualitySwitchInProgress = false;
+        qualityMenu.querySelectorAll("button").forEach(button => button.disabled = false);
+      }
+    }
     async function startPlayer() {
       const token = ++initToken;
-      await cleanup();
+      await destroyPlayer();
       streamUrl = getStreamUrl();
       if (!streamUrl) {
-        showError("No valid stream URL was received. Go back to the match list and select a quality again.");
+        showError("No valid stream URL was received. Return to the match list and choose a stream again.");
         return;
       }
       showLoading("Connecting to stream…");
-      if (!window.shaka || !window.shaka.Player) {
-        showError("The video player library could not load. Check your connection and retry.");
+      if (!window.shaka?.Player || !window.shaka?.ui?.Overlay) {
+        showError("The Shaka Player library could not load. Check your connection and retry.");
         return;
       }
       try {
         shaka.polyfill.installAll();
         if (!shaka.Player.isBrowserSupported()) throw new Error("This browser does not support the required video formats.");
-        player = new shaka.Player(video);
-        const playerInstance = player;
-        const shell = document.querySelector(".shaka-video-container");
-        const ui = new shaka.ui.Overlay(playerInstance,shell,video);
-        ui.configure({
-          controlPanelElements:["play_pause","spacer","fullscreen"],
-          addSeekBar:true,
-          seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
-        });
-        const qualityMenu = document.getElementById("cz-quality-menu");
-        if (Array.isArray(availableStreams) && availableStreams.length > 1 && qualityMenu) {
-          qualityMenu.replaceChildren();
-          const qualityButton = document.createElement("button");
-          qualityButton.type = "button";
-          qualityButton.className = "cz-quality-button";
-          qualityButton.textContent = "AUTO";
-          qualityButton.setAttribute("aria-label","Choose stream quality");
-          qualityButton.addEventListener("click", event => {
-            event.stopPropagation();
-            qualityMenu.classList.toggle("cz-open");
-          });
-          shell.append(qualityButton);
-          availableStreams.forEach((item,index) => {
-            if (!item || !item.url || !/^https?:/i.test(item.url)) return;
-            const option = document.createElement("button");
-            option.type = "button";
-            option.textContent = String(item.quality || "AUTO").toUpperCase();
-            option.className = index === 0 ? "cz-selected" : "";
-            option.addEventListener("click", async event => {
-              event.stopPropagation();
-              if (qualitySwitchInProgress || item.url === streamUrl) {
-                qualityMenu.classList.remove("cz-open");
-                return;
-              }
-              qualitySwitchInProgress = true;
-              qualityMenu.querySelectorAll("button").forEach(button => button.disabled = true);
-              const previousUrl = streamUrl;
-              try {
-                showLoading("Switching to " + item.quality + "…");
-                // Recreate Shaka for distinct rendition URLs to avoid LOAD_INTERRUPTED races.
-                if (shakaUi) { await shakaUi.destroy(); shakaUi = null; }
-                if (player) { await player.destroy(); player = null; }
-                video.pause();
-                video.removeAttribute("src");
-                video.load();
-                const nextPlayer = new shaka.Player(video);
-                player = nextPlayer;
-                shakaUi = new shaka.ui.Overlay(nextPlayer,shell,video);
-                shakaUi.configure({
-                  controlPanelElements:["play_pause","spacer","fullscreen"],
-                  addSeekBar:true,
-                  seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
-                });
-                nextPlayer.addEventListener("error", event => {
-                  const detail = event.detail;
-                  if (!(qualitySwitchInProgress && [7000,7001].includes(detail?.code))) console.error("Shaka rendition error:",detail);
-                });
-                await nextPlayer.load(item.url);
-                streamUrl = item.url;
-                qualityButton.textContent = String(item.quality || "AUTO").toUpperCase();
-                qualityMenu.querySelectorAll("button").forEach(button => button.classList.remove("cz-selected"));
-                option.classList.add("cz-selected");
-                loading.hidden = true;
-                qualityMenu.classList.remove("cz-open");
-                await video.play().catch(() => { tapPanel.hidden = false; });
-              } catch (switchError) {
-                console.error("Quality switch failed:", switchError);
-                // Restore the previous stream if the selected rendition cannot be loaded.
-                try {
-                  if (shakaUi) { await shakaUi.destroy(); shakaUi = null; }
-                  if (player) { await player.destroy(); player = null; }
-                  video.pause();
-                  video.removeAttribute("src");
-                  video.load();
-                  const restorePlayer = new shaka.Player(video);
-                  player = restorePlayer;
-                  shakaUi = new shaka.ui.Overlay(restorePlayer,shell,video);
-                  shakaUi.configure({
-                    controlPanelElements:["play_pause","spacer","fullscreen"],
-                    addSeekBar:true,
-                    seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
-                  });
-                  await restorePlayer.load(previousUrl);
-                  streamUrl = previousUrl;
-                  loading.hidden = true;
-                  await video.play().catch(() => { tapPanel.hidden = false; });
-                } catch (restoreError) {
-                  showError("Could not switch quality. Please choose another resolution or retry playback.");
-                }
-              } finally {
-                qualitySwitchInProgress = false;
-                qualityMenu.querySelectorAll("button").forEach(button => button.disabled = false);
-              }
-            });
-            qualityMenu.append(option);
-          });
-          document.addEventListener("click", event => {
-            if (!qualityMenu.contains(event.target) && event.target !== qualityButton) qualityMenu.classList.remove("cz-open");
-          });
-        }
-        player.configure({
-          streaming:{
-            bufferingGoal:15,
-            rebufferingGoal:3,
-            bufferBehind:30,
-            retryParameters:{timeout:30000,maxAttempts:4,baseDelay:500,backoffFactor:1.6,fuzzFactor:0.5}
-          },
-          manifest:{dash:{ignoreMinBufferTime:true}}
-        });
-        player.addEventListener("error",event => {
-          const detail = event.detail;
-          console.error("Shaka playback error:",detail);
-          if (token === initToken && !(qualitySwitchInProgress && [7000,7001].includes(detail?.code))) showError("Playback error " + (detail?.code || "") + ". The stream may have expired, be offline, or require a compatible source.");
-        });
-        await player.load(streamUrl);
+        await createAndLoad(streamUrl,token);
         if (token !== initToken) return;
+        renderQualityMenu();
         loading.hidden = true;
-        try {
-          await video.play();
-        } catch {
-          tapPanel.hidden = false;
-        }
-        video.addEventListener("playing",() => { loading.hidden = true; tapPanel.hidden = true; errorPanel.hidden = true; },{once:false});
-        video.addEventListener("waiting",() => { if (!errorPanel.hidden) return; loadingTitle.textContent = "Buffering stream…"; loading.hidden = false; });
-        video.addEventListener("canplay",() => { loading.hidden = true; });
+        try { await video.play(); } catch { tapPanel.hidden = false; }
       } catch (error) {
         console.error("Player initialization failed:",error);
-        // Native HLS fallback is available on browsers such as Safari when Shaka cannot load an HLS source.
-        const isHls = /\.m3u8(?:$|\?)/i.test(streamUrl);
-        const nativeHls = isHls && video.canPlayType("application/vnd.apple.mpegurl");
-        if (token === initToken && nativeHls) {
-          try {
-            if (player) { await player.destroy(); player = null; }
-            video.src = streamUrl;
-            video.load();
-            await video.play();
-            loading.hidden = true;
-            return;
-          } catch (fallbackError) {
-            console.warn("Native HLS fallback failed:",fallbackError);
-          }
-        }
-        if (token === initToken) showError(error.message || "Unable to initialize the player. This browser may not support this stream format.");
+        if (token === initToken) showError(error.message || "Unable to load this stream. The source may be offline or incompatible.");
       }
     }
+
+    document.addEventListener("click",event => {
+      if (qualityMenu && !qualityMenu.contains(event.target) && event.target !== qualityButton) qualityMenu.classList.remove("cz-open");
+    });
+    video.addEventListener("playing",() => {
+      loading.hidden = true;
+      tapPanel.hidden = true;
+      errorPanel.hidden = true;
+    });
+    video.addEventListener("waiting",() => {
+      if (!errorPanel.hidden) return;
+      loadingTitle.textContent = "Buffering stream…";
+      loading.hidden = false;
+    });
+    video.addEventListener("canplay",() => { loading.hidden = true; });
     document.getElementById("retry-button").addEventListener("click",startPlayer);
     document.getElementById("play-button").addEventListener("click",async() => {
       try { await video.play(); tapPanel.hidden = true; }
-      catch (error) { showError("Playback is still blocked by the browser. Try opening the page in another browser."); }
+      catch { showError("Playback is blocked by the browser. Tap play again or open the page in Chrome."); }
     });
     try {
       const title = sessionStorage.getItem("cz_fancode_title");
       if (title) document.getElementById("stream-title").textContent = title;
     } catch {}
-    // Wait until deferred Shaka Player scripts have executed before initializing playback.
     document.addEventListener("DOMContentLoaded",startPlayer,{once:true});
-    window.addEventListener("pagehide",() => { if(player) player.destroy(); });
+    window.addEventListener("pagehide",() => { destroyPlayer(); });
   })();
   </script>
 </body>
