@@ -96,7 +96,8 @@ main{max-width:1280px;margin:auto;padding:24px clamp(13px,3vw,30px) 55px}
   for(var i=0;i<JSON_URLS.length;i++){
    var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},10000);
    try{
-    var sourceUrl=JSON_URLS[i]+(JSON_URLS[i].indexOf("?")>=0?"&":"?")+"v="+Date.now();\n    var response=await fetch(sourceUrl,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
+    var sourceUrl=JSON_URLS[i]+(JSON_URLS[i].indexOf("?")>=0?"&":"?")+"v="+Date.now();
+    var response=await fetch(sourceUrl,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
     if(!response.ok)throw new Error("HTTP "+response.status);
     var raw=await response.text();
     if(/^\s*<!doctype\s+html|^\s*<html/i.test(raw))throw new Error("HTML received instead of JSON");
