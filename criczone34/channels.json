@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-08T08:19:23.897654+00:00",
+  "updated_at": "2026-11-08T08:25:07.206141+00:00",
   "source": "https://sportlink-playlist.pages.dev/Combined.m3u",
-  "total": 1378,
+  "total": 1377,
   "channels": [
     {
       "name": "ENG | West Indies Vs Bangladesh",
@@ -37,15 +37,6 @@
       "logo": "https://images.fancode.com/aig/match/v1793949412986/4250746_CASACARDS_SPORTY_APP.png",
       "group": "Fancode | Sportlink",
       "url": "https://dai-fancode.pages.dev/mumbai/4250746_english_hls_58958726b464286_1ta-di_h264/index.m3u8",
-      "stream_type": "hls"
-    },
-    {
-      "name": "ENG | Final",
-      "tvg_id": "4250606",
-      "tvg_name": "Final @virat10",
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/BWF-Korean-Open-web-2.png",
-      "group": "Fancode | Sportlink",
-      "url": "https://dai-fancode.pages.dev/mumbai/4250606_english_hls_9e7397d9ef72237_1ta-di_h264/index.m3u8",
       "stream_type": "hls"
     },
     {
