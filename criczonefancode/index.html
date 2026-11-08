@@ -7,7 +7,7 @@
   <meta name="description" content="Watch live FanCode cricket matches on CRICZONE.">
   <title>CRICZONE — FanCode Live</title>
   <link rel="icon" href="../photos/photo_2026-10-28_14-52-23.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="./fancode.css?v=20261108-4">
+  <link rel="stylesheet" href="./fancode.css?v=20261108-5">
 </head>
 <body class="cz-page">
   <div class="page-glow page-glow-one"></div>
@@ -314,32 +314,15 @@
     function openQuality(match) {
       const streams = getStreams(match);
       if (!streams.length) return;
-      activeMatch = match;
-      qualityTitle.textContent = match.title || match.name || "Choose your quality";
-      qualitySubtitle.textContent = "Select an available stream" + (streams.some(s=>s.language) ? " · " + [...new Set(streams.map(s=>s.language))].join(", ") : "");
-      qualityList.replaceChildren();
-      streams.forEach((stream) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "quality-option";
-        const label = textNode("span","quality-label",stream.quality.toUpperCase());
-        const language = textNode("small","quality-language",stream.language);
-        const arrow = textNode("span","quality-arrow","→");
-        button.append(label,language,arrow);
-        button.addEventListener("click", () => {
-          try {
-            sessionStorage.setItem("cz_fancode_stream", stream.url);
-            sessionStorage.setItem("cz_fancode_title", String(match.title || match.name || "CRICZONE FanCode"));
-            location.href = PLAYER_URL;
-          } catch (error) {
-            const encoded = btoa(unescape(encodeURIComponent(stream.url)));
-            location.href = PLAYER_URL + "?data=" + encodeURIComponent(encoded);
-          }
-        });
-        qualityList.append(button);
-      });
-      modal.hidden = false;
-      document.getElementById("close-quality").focus();
+      try {
+        sessionStorage.setItem("cz_fancode_streams", JSON.stringify(streams));
+        sessionStorage.setItem("cz_fancode_stream", streams[0].url);
+        sessionStorage.setItem("cz_fancode_title", String(match.title || match.name || "CRICZONE FanCode"));
+        location.href = PLAYER_URL;
+      } catch (error) {
+        const encoded = btoa(unescape(encodeURIComponent(streams[0].url)));
+        location.href = PLAYER_URL + "?data=" + encodeURIComponent(encoded);
+      }
     }
 
     function closeQuality() {
