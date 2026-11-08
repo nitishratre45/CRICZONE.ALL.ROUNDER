@@ -997,74 +997,47 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
-<!-- CRICZONE Telegram: owned popup only; external iframe popups/new windows remain sandbox-blocked -->
+<!-- CRICZONE Telegram popup: show 5 seconds after player panel opens -->
 <script>
 (function(){
  "use strict";
  if(window.CZ_TG_CRICZONE5) return;
  window.CZ_TG_CRICZONE5=true;
- var link="https://t.me/criczonelive";
- var timer=null,shown=false;
+ var link="https://t.me/criczonelive",timer=null,shown=false,wasActive=false;
  function makeBar(){
-   if(document.getElementById("cz5-telegram-bar")) return;
-   var hero=document.querySelector("#home-main .cz-hero");
-   if(!hero) return;
-   var bar=document.createElement("aside");
-   bar.id="cz5-telegram-bar";
-   bar.innerHTML='<div class="cz5-tg-copy"><span class="cz5-tg-icon">➤</span><span><strong>JOIN OFFICIAL CRICZONE TELEGRAM</strong><small>🏏 Live match updates • Cricket news • Community</small></span></div><a class="cz5-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">JOIN NOW →</a>';
-   hero.insertAdjacentElement("afterend",bar);
+  if(document.getElementById("cz5-telegram-bar"))return;
+  var hero=document.querySelector("#home-main .cz-hero");if(!hero)return;
+  var bar=document.createElement("aside");bar.id="cz5-telegram-bar";
+  bar.innerHTML='<div class="cz5-tg-copy"><span class="cz5-tg-icon">➤</span><span><strong>JOIN OFFICIAL CRICZONE TELEGRAM</strong><small>🏏 Live match updates • Cricket news • Community</small></span></div><a class="cz5-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">JOIN NOW →</a>';
+  hero.insertAdjacentElement("afterend",bar);
  }
  function makeModal(){
-   var modal=document.getElementById("cz5-tg-modal");
-   if(modal) return modal;
-   modal=document.createElement("div");
-   modal.id="cz5-tg-modal";
-   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
-   document.body.appendChild(modal);
-   modal.addEventListener("click",function(e){if(e.target===modal)e.preventDefault();});
-   modal.querySelector(".cz5-tg-close").addEventListener("click",function(){
-     modal.classList.remove("cz5-open");
-     try{sessionStorage.setItem("cz5_tg_dismissed","1")}catch(e){}
-   });
-   return modal;
+  var modal=document.getElementById("cz5-tg-modal");if(modal)return modal;
+  modal=document.createElement("div");modal.id="cz5-tg-modal";
+  modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
+  document.body.appendChild(modal);
+  modal.addEventListener("click",function(e){if(e.target===modal)e.preventDefault();});
+  modal.querySelector(".cz5-tg-close").addEventListener("click",function(){modal.classList.remove("cz5-open");});
+  return modal;
  }
- function fullscreen(){
-   return !!(document.fullscreenElement||document.webkitFullscreenElement||
-     (document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));
+ function isFull(){return !!(document.fullscreenElement||document.webkitFullscreenElement||(document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));}
+ function playerOpen(){var pc=document.getElementById("pc");return !!(pc&&getComputedStyle(pc).display!=="none"&&pc.getBoundingClientRect().width>0);}
+ function displayPopup(){
+  if(shown)return;
+  if(!playerOpen()){timer=null;wasActive=false;return;}
+  if(isFull()){timer=window.setTimeout(displayPopup,1000);return;}
+  shown=true;makeModal().classList.add("cz5-open");
  }
- function activePlayer(){
-   var pc=document.getElementById("pc");
-   return !!(pc&&getComputedStyle(pc).display!=="none");
+ function watch(){
+  makeBar();
+  if(!new URLSearchParams(location.search).get("id"))return;
+  window.setInterval(function(){
+   var active=playerOpen();
+   if(active&&!wasActive&&!shown&&!timer){wasActive=true;timer=window.setTimeout(displayPopup,5000);}
+   if(!active){wasActive=false;if(timer){clearTimeout(timer);timer=null;}}
+  },200);
  }
- function showWhenReady(){
-   if(shown) return;
-   if(!activePlayer()) return;
-   if(fullscreen()){timer=window.setTimeout(showWhenReady,15000);return;}
-   try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
-   shown=true;
-   makeModal().classList.add("cz5-open");
- }
- function arm(){
-   if(timer||shown) return;
-   try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
-   timer=window.setTimeout(showWhenReady,5000);
- }
- function init(){
-   makeBar();
-   if(!new URLSearchParams(location.search).get("id")) return;
-   var frame=document.getElementById("stream-frame");
-   var video=document.getElementById("v");
-   if(frame) frame.addEventListener("load",function(){if(frame.src&&frame.src!=="about:blank")arm();});
-   if(video) video.addEventListener("playing",arm,{once:true});
-   var tries=0;
-   var poll=window.setInterval(function(){
-     tries++;
-     if(activePlayer()) arm();
-     if(timer||tries>=40)window.clearInterval(poll);
-   },500);
- }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
- else init();
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
 })();
 </script>
 <!-- END CRICZONE5 Telegram UI -->
