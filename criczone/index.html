@@ -227,6 +227,18 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 @media(prefers-reduced-motion:reduce){#cz5-tg-modal,#cz5-tg-modal .cz5-tg-card{transition:none}}
 /* END CRICZONE5 TELEGRAM UI */
 
+
+/* CRICZONE live audience counters */
+.cz-live-stats{width:min(100% - 32px,1220px);margin:14px auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cz-stat-card{min-width:0;display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:9px;row-gap:4px;padding:12px 14px;border:1px solid rgba(114,224,170,.22);border-radius:14px;background:linear-gradient(135deg,rgba(20,38,28,.97),rgba(9,19,14,.98));box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.cz-stat-dot{width:8px;height:8px;border-radius:50%;background:#27e5a1;box-shadow:0 0 11px #27e5a1;animation:czStatPulse 1.5s infinite}
+.cz-stat-icon{width:18px;text-align:center;color:#d5ef7b;font-size:17px}
+.cz-stat-label{color:#aab8ae;font-size:9px;font-weight:900;letter-spacing:1.1px}
+.cz-stat-card strong{grid-column:2;color:#f1f6f2;font:900 22px/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+.cz-stat-note{grid-column:2;color:#82958a;font-size:9px;font-weight:700}
+@keyframes czStatPulse{50%{opacity:.45;transform:scale(.78)}}
+@media(max-width:560px){.cz-live-stats{width:calc(100% - 24px);margin-top:10px;gap:8px}.cz-stat-card{padding:10px 11px;column-gap:7px;border-radius:12px}.cz-stat-card strong{font-size:20px}.cz-stat-label{font-size:8px;letter-spacing:.8px}.cz-stat-note{font-size:8px}}
+
 </style>
 </head>
 <body>
@@ -249,6 +261,12 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
     </a>
     <span class="cz-live-pill"><i></i> LIVE NOW</span>
   </header>
+
+  <section class="cz-live-stats" aria-label="CRICZONE live audience statistics">
+    <div class="cz-stat-card"><span class="cz-stat-dot"></span><span class="cz-stat-label">LIVE WATCHING</span><strong id="czLiveWatching">—</strong><span class="cz-stat-note">Watching now</span></div>
+    <div class="cz-stat-card"><span class="cz-stat-icon">◉</span><span class="cz-stat-label">TOTAL VISITS</span><strong id="czTotalVisits">—</strong><span class="cz-stat-note">All-time visits</span></div>
+  </section>
+
   <main id="home-main">
     <section class="cz-hero">
       <div class="cz-eyebrow"><span></span> YOUR SPORTS. YOUR ZONE.</div>
@@ -1042,6 +1060,77 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 <!-- END CRICZONE5 Telegram UI -->
+
+
+<script type="module">
+/* CRICZONE Firebase live watching + persistent total visits */
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
+  authDomain: "criczone-4daa2.firebaseapp.com",
+  databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "criczone-4daa2",
+  storageBucket: "criczone-4daa2.firebasestorage.app",
+  messagingSenderId: "113293633217",
+  appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
+  measurementId: "G-Q9RJ0VSSPP"
+};
+
+const liveEl = document.getElementById("czLiveWatching");
+const totalEl = document.getElementById("czTotalVisits");
+let presenceRef = null;
+let liveUnsubscribe = null;
+let totalUnsubscribe = null;
+
+function show(el, value) {
+  if (el) el.textContent = Math.max(0, Number(value) || 0).toLocaleString("en-IN");
+}
+
+(async function startCriczoneAudience() {
+  try {
+    const appName = "criczone-audience";
+    const app = getApps().find(item => item.name === appName) || initializeApp(firebaseConfig, appName);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    await signInAnonymously(auth);
+
+    /* Increment existing totalVisits value transactionally; previous data is retained. */
+    const totalRef = ref(db, "siteStats/totalVisits");
+    await runTransaction(totalRef, current => (Number(current) || 0) + 1);
+    totalUnsubscribe = onValue(totalRef, snap => show(totalEl, snap.val()),
+      error => console.warn("CRICZONE total visits listener:", error));
+
+    /* Each tab owns one presence node. Disconnect cleanup removes only this node. */
+    const viewerId = globalThis.crypto?.randomUUID?.() ||
+      (Date.now() + "_" + Math.random().toString(36).slice(2));
+    presenceRef = ref(db, "liveViewers/" + viewerId);
+    await onDisconnect(presenceRef).remove();
+    await set(presenceRef, {
+      online: true,
+      joinedAt: Date.now(),
+      page: "criczone"
+    });
+
+    liveUnsubscribe = onValue(ref(db, "liveViewers"), snapshot => {
+      show(liveEl, snapshot.numChildren());
+    }, error => console.warn("CRICZONE live watching listener:", error));
+  } catch (error) {
+    console.error("CRICZONE Firebase audience counters unavailable:", error);
+    if (liveEl) liveEl.textContent = "—";
+    if (totalEl) totalEl.textContent = "—";
+  }
+})();
+
+window.addEventListener("pagehide", () => {
+  if (liveUnsubscribe) liveUnsubscribe();
+  if (totalUnsubscribe) totalUnsubscribe();
+  if (presenceRef) remove(presenceRef).catch(() => {});
+});
+</script>
 
 </body>
 </html>
