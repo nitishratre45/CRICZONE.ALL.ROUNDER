@@ -5,7 +5,9 @@ on:
     paths:
       - ".github/workflows/criczone34.yml"
       - "scripts/criczone34.py"
-      - "criczone34/**"
+      - "criczone34/index.html"
+      - "criczone34/style.css"
+      - "criczone34/app.js"
   schedule:
     - cron: "30 0 * * *" # Daily at 06:00 IST
   workflow_dispatch:
