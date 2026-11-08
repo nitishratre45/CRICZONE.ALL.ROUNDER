@@ -1063,10 +1063,9 @@ document.addEventListener("DOMContentLoaded", main);
 
 
 <script type="module">
-/* CRICZONE Firebase live watching + persistent total visits */
+/* CRICZONE Firebase live watching + persistent total visits (public RTDB rules) */
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
@@ -1094,10 +1093,6 @@ function show(el, value) {
     const appName = "criczone-audience";
     const app = getApps().find(item => item.name === appName) || initializeApp(firebaseConfig, appName);
     const db = getDatabase(app);
-    const auth = getAuth(app);
-
-    await signInAnonymously(auth);
-
     /* Increment existing totalVisits value transactionally; previous data is retained. */
     const totalRef = ref(db, "siteStats/totalVisits");
     await runTransaction(totalRef, current => (Number(current) || 0) + 1);
