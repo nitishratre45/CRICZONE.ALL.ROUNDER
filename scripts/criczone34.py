@@ -6,7 +6,7 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit, urlunsplit
 
 from urllib.request import Request, urlopen
 
@@ -84,6 +84,48 @@ def parse_url_options(raw_options):
     return options
 
 
+
+def extract_drm_metadata(directives):
+    """Extract non-secret DRM signalling metadata; never store content keys."""
+    drm = {
+        "required": False, "system": [], "license_url": "",
+        "key_id": "", "pssh": "", "license_type": "",
+        "metadata_available": False, "content_key_stored": False,
+    }
+    for directive in directives:
+        low = directive.lower()
+        if "inputstream.adaptive" not in low and "drm" not in low and "pssh" not in low:
+            continue
+        drm["required"] = True
+        license_type = re.search(r"(?:license_type|drm_system)\s*[=:]\s*['\"]?([^'\"]+)", directive, re.I)
+        if license_type:
+            value = license_type.group(1).strip()
+            drm["license_type"] = value
+            if value.lower() not in drm["system"]:
+                drm["system"].append(value.lower())
+        key_id = re.search(r"(?:default_kid|key_id|kid)\s*[=:]\s*['\"]?([0-9a-fA-F-]{16,})", directive, re.I)
+        if key_id:
+            drm["key_id"] = key_id.group(1)
+        pssh = re.search(r"(?:pssh)\s*[=:]\s*['\"]?([A-Za-z0-9+/=]{20,})", directive, re.I)
+        if pssh:
+            drm["pssh"] = pssh.group(1)
+        # license_key may contain keys or credentials. Store only a sanitized
+        # HTTP(S) endpoint, without query, fragment, headers, or key material.
+        license_value = re.search(r"(?:license_key|license_url)\s*[=:]\s*['\"]?([^'\"]+)", directive, re.I)
+        if license_value and not drm["license_url"]:
+            candidate = license_value.group(1).strip().split("|", 1)[0]
+            try:
+                parsed = urlsplit(candidate)
+                if parsed.scheme in ("http", "https") and parsed.netloc:
+                    drm["license_url"] = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+            except ValueError:
+                pass
+    drm["metadata_available"] = bool(
+        drm["license_type"] or drm["license_url"] or drm["key_id"] or drm["pssh"]
+    )
+    return drm
+
+
 def finalize_channel(item, raw_url_line):
     item["raw_url_line"] = raw_url_line
     parts = raw_url_line.split("|", 1)
@@ -94,6 +136,7 @@ def finalize_channel(item, raw_url_line):
         for key, value in item["url_options"].items():
             if key.lower() in HEADER_KEYS:
                 item["request_headers"][key] = value
+    item["drm"] = extract_drm_metadata(item["directives"])
     low = url.lower()
     item["stream_type"] = (
         "hls" if ".m3u8" in low else
