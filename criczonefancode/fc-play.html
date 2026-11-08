@@ -165,7 +165,7 @@
       } catch (error) {
         console.error("Player initialization failed:",error);
         // Native HLS fallback is available on browsers such as Safari when Shaka cannot load an HLS source.
-        const isHls = /\\.m3u8(?:$|\\?)/i.test(streamUrl);
+        const isHls = /\.m3u8(?:$|\?)/i.test(streamUrl);
         const nativeHls = isHls && video.canPlayType("application/vnd.apple.mpegurl");
         if (token === initToken && nativeHls) {
           try {
