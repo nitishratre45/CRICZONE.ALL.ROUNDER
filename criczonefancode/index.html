@@ -112,40 +112,55 @@
 
     function getStreams(match) {
       const candidates = [];
-      const addStream = (quality, value, language) => {
-        const safe = safeHttpUrl(value);
-        if (!safe) return;
-        const label = String(quality || "AUTO").replace(/[_-]+/g," ").trim();
-        if (candidates.some(item => item.url === safe)) return;
-        candidates.push({ quality: label, url: safe, language: String(language || match.language || "Default") });
+      const qualityKey = value => {
+        const key = String(value || "").toLowerCase().replace(/\\s+/g,"").replace(/_/g,"");
+        const known = key.match(/^(2160|1440|1080|720|540|480|360|240|144)p$/);
+        return known ? known[1] + "p" : "";
       };
-      const walk = (node, language, qualityHint) => {
+      const addStream = (quality, value, language) => {
+        const normalizedQuality = qualityKey(quality);
+        if (!normalizedQuality) return;
+        const safe = safeHttpUrl(value);
+        if (!safe || candidates.some(item => item.url === safe)) return;
+        candidates.push({
+          quality: normalizedQuality,
+          url: safe,
+          language: String(language || match.language || "Default")
+        });
+      };
+      const walk = (node, language) => {
         if (!node || typeof node !== "object") return;
         if (Array.isArray(node)) {
-          node.forEach((value,index) => walk(value,language,qualityHint || String(index+1)));
+          node.forEach(item => walk(item, language));
           return;
         }
-        for (const [key,value] of Object.entries(node)) {
-          if (typeof value === "string") {
-            addStream(key === "url" || key === "src" ? qualityHint : key, value, language);
-          } else if (value && typeof value === "object") {
-            const nextLanguage = node === match.auto_streams ? key : language;
-            const nextQuality = value.url || value.src ? key : qualityHint;
-            walk(value,nextLanguage,nextQuality);
+        for (const [key, value] of Object.entries(node)) {
+          const quality = qualityKey(key);
+          if (quality && typeof value === "string") {
+            addStream(quality, value, language);
+            continue;
+          }
+          if (quality && value && typeof value === "object") {
+            const url = value.url || value.src || value.file || value.stream_url;
+            if (typeof url === "string") addStream(quality, url, language);
+            continue;
+          }
+          // FanCode feed shape: LANGUAGE -> streams -> RESOLUTION -> URL.
+          if (/^(english|hindi|tamil|telugu|kannada|malayalam|bengali|marathi)$/i.test(key) && value && typeof value === "object") {
+            walk(value, key);
+          } else if (/^(auto_streams|streams|qualities|sources)$/i.test(key) && value && typeof value === "object") {
+            walk(value, language);
           }
         }
       };
-      // Preferred generated quality map, then standard FanCode stream/source map.
-      walk(match && match.auto_streams, match && match.language, "");
-      walk(match && match.streams, match && match.language, "");
+      walk(match && match.auto_streams, match && match.language);
+      walk(match && match.streams, match && match.language);
       const rank = q => {
-        const normalized = String(q).toLowerCase().replace(/\\s/g,"");
-        const i = order.indexOf(normalized);
-        return i < 0 ? 999 : i;
+        const index = order.indexOf(String(q).toLowerCase());
+        return index < 0 ? 999 : index;
       };
       return candidates.sort((a,b) => rank(a.quality)-rank(b.quality));
     }
-
     function statusOf(match) {
       const raw = String(match?.status || match?.match_status || "").trim().toUpperCase().replace(/[_-]+/g," ");
       if (/LIVE|IN PROGRESS|INPLAY|IN PLAY|STARTED/.test(raw)) return "live";
