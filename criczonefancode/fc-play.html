@@ -78,6 +78,7 @@
     let player = null;
     let streamUrl = "";
     let availableStreams = [];
+    let qualitySwitchInProgress = false;
     let initToken = 0;
 
     function decodeLegacy(value) {
@@ -150,7 +151,6 @@
         const qualityMenu = document.getElementById("cz-quality-menu");
         if (Array.isArray(availableStreams) && availableStreams.length > 1 && controlsPanel && qualityMenu) {
           qualityMenu.replaceChildren();
-          let switchingQuality = false;
           const qualityButton = document.createElement("button");
           qualityButton.type = "button";
           qualityButton.className = "cz-quality-button";
@@ -169,11 +169,11 @@
             option.className = index === 0 ? "cz-selected" : "";
             option.addEventListener("click", async event => {
               event.stopPropagation();
-              if (switchingQuality || item.url === streamUrl) {
+              if (qualitySwitchInProgress || item.url === streamUrl) {
                 qualityMenu.classList.remove("cz-open");
                 return;
               }
-              switchingQuality = true;
+              qualitySwitchInProgress = true;
               qualityMenu.querySelectorAll("button").forEach(button => button.disabled = true);
               const previousUrl = streamUrl;
               try {
@@ -201,7 +201,7 @@
                   showError("Could not switch quality. Please choose another resolution or retry playback.");
                 }
               } finally {
-                switchingQuality = false;
+                qualitySwitchInProgress = false;
                 qualityMenu.querySelectorAll("button").forEach(button => button.disabled = false);
               }
             });
@@ -223,7 +223,7 @@
         player.addEventListener("error",event => {
           const detail = event.detail;
           console.error("Shaka playback error:",detail);
-          if (token === initToken) showError("Playback error " + (detail?.code || "") + ". The stream may have expired, be offline, or require a compatible source.");
+          if (token === initToken && !(qualitySwitchInProgress && [7000,7001].includes(detail?.code))) showError("Playback error " + (detail?.code || "") + ". The stream may have expired, be offline, or require a compatible source.");
         });
         await player.load(streamUrl);
         if (token !== initToken) return;
