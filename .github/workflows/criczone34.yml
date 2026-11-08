@@ -1,5 +1,11 @@
 name: CRICZONE34 - Refresh Channel Catalogue
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/criczone34.yml"
+      - "scripts/criczone34.py"
+      - "criczone34/**"
   schedule:
     - cron: "30 0 * * *" # Daily at 06:00 IST
   workflow_dispatch:
