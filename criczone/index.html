@@ -1047,7 +1047,7 @@ document.addEventListener("DOMContentLoaded", main);
  function arm(){
    if(timer||shown) return;
    try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
-   timer=window.setTimeout(showWhenReady,60000);
+   timer=window.setTimeout(showWhenReady,5000);
  }
  function init(){
    makeBar();
