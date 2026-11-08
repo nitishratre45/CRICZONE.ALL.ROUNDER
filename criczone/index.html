@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CRICZONE LIVE — Live Sports</title>
 <link rel="preconnect" href="https://sportlink-jtv.pages.dev">
 <link rel="dns-prefetch" href="https://sportlink-jtv.pages.dev">
 <link rel="preconnect" href="https://www.jiotv.com/">
@@ -95,6 +96,7 @@ html,body{
   align-items:center;justify-content:center;touch-action:manipulation
 }
 video{width:100%;height:100%;object-fit:contain;background:#000}
+#stream-frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;display:none}
 video.mode-fill{object-fit:fill}
 video.mode-cover{object-fit:cover}
 #status{
@@ -154,227 +156,77 @@ video.mode-cover{object-fit:cover}
   .fit-pill{font-size:9px;padding:2px 5px}
   .sp-btn{padding:0 5px!important}
 }
-
-/* CRICZONE PREMIUM UI REFRESH */
-:root{color-scheme:dark;--cz-accent:#00e5c0;--cz-blue:#28b8ff;--cz-panel:rgba(10,20,29,.94)}
-html,body{background:#050b11;color:#edf7fb;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif}
-#overlay{background:radial-gradient(ellipse at 50% 42%,#102433 0%,#071018 48%,#03070b 100%);gap:18px}
-#overlay p{color:#b6c9d4;font-size:13px;letter-spacing:.35px}
-#channel-list{background:radial-gradient(ellipse at 50% -10%,rgba(0,229,192,.12),transparent 42%),linear-gradient(160deg,#08131d,#050a10 62%,#07121a);color:#edf7fb;padding:clamp(20px,4vw,42px) clamp(14px,3vw,34px) max(28px,env(safe-area-inset-bottom))}
-#ch-header{position:relative;justify-content:flex-start;max-width:1120px;width:100%;margin:0 auto 26px;padding:17px 18px;border:1px solid rgba(112,205,222,.15);border-radius:18px;background:rgba(9,22,31,.78);box-shadow:0 16px 42px rgba(0,0,0,.24);backdrop-filter:blur(18px)}
-#ch-header:after{content:"LIVE SPORTS • CRICZONE";margin-left:auto;color:#6e9eaa;font-size:10px;font-weight:800;letter-spacing:1.5px}
-#ch-header h1{font-size:clamp(17px,2vw,22px);font-weight:850;letter-spacing:.2px;color:#f3fbff}
-.brand-dot{background:var(--cz-accent);box-shadow:0 0 16px rgba(0,229,192,.75)}
-#ch-grid{width:100%;max-width:1120px;margin:0 auto;grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr));gap:14px}
-.ch-card{position:relative;min-height:154px;padding:20px 14px;border:1px solid rgba(108,178,200,.17);border-radius:17px;background:linear-gradient(150deg,rgba(15,31,43,.96),rgba(7,15,23,.98));box-shadow:0 10px 28px rgba(0,0,0,.24);gap:13px;overflow:hidden}
-.ch-card:before{content:"";position:absolute;inset:0 20% auto;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,192,.8),transparent)}
-.ch-card:hover{background:linear-gradient(150deg,#132c3b,#091720);border-color:rgba(0,229,192,.42);box-shadow:0 18px 40px rgba(0,0,0,.36),0 0 0 1px rgba(0,229,192,.08);transform:translateY(-4px)}
+ 
+/* ===== CRICZONE HOME UI — criczone5 only ===== */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root{color-scheme:dark;--cz-bg:#08100d;--cz-panel:#101a15;--cz-panel2:#14221b;--cz-line:rgba(210,230,216,.13);--cz-text:#f1f6f2;--cz-muted:#9aa99f;--cz-mint:#72e0aa;--cz-lime:#d5ef7b;--cz-blue:#70c7e8}
+html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Segoe UI',sans-serif}
+#channel-list{background:radial-gradient(ellipse at 50% -12%,rgba(70,160,105,.17),transparent 42%),linear-gradient(180deg,#08100d 0%,#09130e 55%,#07100c 100%);padding:0 0 max(24px,env(safe-area-inset-bottom));overflow-x:hidden}
+#ch-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;margin:0;padding:13px max(18px,calc((100vw - 1220px)/2));border:0;border-bottom:1px solid var(--cz-line);border-radius:0;background:rgba(8,16,13,.88);box-shadow:0 12px 35px rgba(0,0,0,.22);backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25)}
+.cz-brand{display:inline-flex;align-items:center;gap:11px;min-width:0;color:var(--cz-text);text-decoration:none}
+.cz-brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(114,224,170,.32);border-radius:13px;background:linear-gradient(145deg,rgba(114,224,170,.18),rgba(112,199,232,.08));font-size:21px;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.cz-brand-copy{display:flex;flex-direction:column;gap:4px}.cz-brand-copy strong{font:700 18px/1 'Space Grotesk',sans-serif;letter-spacing:1px}.cz-brand-copy small{color:var(--cz-muted);font-size:9px;font-weight:800;letter-spacing:1.5px}
+.cz-live-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(114,224,170,.25);border-radius:30px;background:rgba(114,224,170,.07);color:var(--cz-mint);font-size:10px;font-weight:800;letter-spacing:1px;white-space:nowrap}
+.cz-live-pill i{width:7px;height:7px;border-radius:50%;background:var(--cz-mint);box-shadow:0 0 12px rgba(114,224,170,.75);animation:cz-pulse 1.8s ease-in-out infinite}
+@keyframes cz-pulse{50%{opacity:.45;transform:scale(.72)}}
+#home-main{width:min(100% - 32px,1220px);margin:0 auto;padding:clamp(26px,5vw,54px) 0 30px}
+.cz-hero{position:relative;overflow:hidden;margin-bottom:30px;padding:clamp(24px,5vw,42px);border:1px solid rgba(114,224,170,.16);border-radius:22px;background:radial-gradient(ellipse at 85% 15%,rgba(114,224,170,.13),transparent 38%),linear-gradient(120deg,rgba(18,35,25,.96),rgba(11,22,16,.96));box-shadow:0 20px 55px rgba(0,0,0,.2)}
+.cz-hero:after{content:'🏏';position:absolute;right:clamp(16px,6vw,72px);top:50%;transform:translateY(-50%) rotate(-12deg);font-size:clamp(70px,12vw,132px);opacity:.08;pointer-events:none}
+.cz-eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:13px;color:var(--cz-mint);font-size:10px;font-weight:800;letter-spacing:1.8px}
+.cz-eyebrow span{width:24px;height:1px;background:var(--cz-mint)}
+.cz-hero h2{position:relative;z-index:1;margin:0;font:700 clamp(30px,6vw,54px)/1.04 'Space Grotesk',sans-serif;letter-spacing:-1.6px}
+.cz-hero h2 em{color:var(--cz-lime);font-style:normal}
+.cz-hero p{position:relative;z-index:1;max-width:530px;margin:13px 0 0;color:var(--cz-muted);font-size:13px;line-height:1.7}
+.cz-library-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 15px}
+.cz-section-kicker{color:var(--cz-mint);font-size:9px;font-weight:800;letter-spacing:1.7px}
+.cz-library-head h3{margin:5px 0 0;font:700 clamp(19px,3vw,25px)/1.2 'Space Grotesk',sans-serif}
+#ch-count{color:var(--cz-muted);font-size:10px;font-weight:800;letter-spacing:.8px;white-space:nowrap}
+.cz-search{display:flex;align-items:center;gap:11px;width:100%;max-width:520px;height:48px;margin:0 0 18px;padding:0 14px;border:1px solid var(--cz-line);border-radius:13px;background:rgba(16,26,21,.88);transition:border-color .2s,box-shadow .2s}
+.cz-search:focus-within{border-color:rgba(114,224,170,.55);box-shadow:0 0 0 3px rgba(114,224,170,.08)}
+.cz-search svg{width:18px;height:18px;flex:none;fill:none;stroke:#91a79a;stroke-width:1.8;stroke-linecap:round}
+.cz-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--cz-text);font:500 13px Manrope,sans-serif}
+.cz-search input::placeholder{color:#77877d}
+.cz-search kbd{display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--cz-line);border-radius:7px;color:var(--cz-muted);font-size:15px}
+#ch-grid{width:100%;max-width:none;margin:0;grid-template-columns:repeat(auto-fill,minmax(min(100%,165px),1fr));gap:14px}
+.ch-card{position:relative;min-width:0;min-height:150px;padding:18px 13px;border:1px solid rgba(210,230,216,.12);border-radius:16px;background:linear-gradient(150deg,rgba(20,34,27,.96),rgba(10,19,14,.98));box-shadow:0 10px 28px rgba(0,0,0,.2);gap:12px;overflow:hidden}
+.ch-card:before{position:absolute;inset:0 18% auto;height:1px;background:linear-gradient(90deg,transparent,rgba(114,224,170,.7),transparent);content:''}
+.ch-card:hover{transform:translateY(-4px);border-color:rgba(114,224,170,.48);background:linear-gradient(150deg,#17291e,#0d1912);box-shadow:0 18px 38px rgba(0,0,0,.32),0 0 0 1px rgba(114,224,170,.06)}
 .ch-card:active{transform:scale(.975)}
-.ch-card span{font-size:12px;font-weight:750;color:#e8f4fa;line-height:1.45}
-.ch-logo{max-width:104px;height:58px;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.45))}
-.ch-logo-fallback{width:64px;height:58px;border-radius:15px;background:linear-gradient(145deg,rgba(0,229,192,.18),rgba(40,184,255,.12));border:1px solid rgba(0,229,192,.28);color:#8ffff0;font-size:19px}
-#pc{background:radial-gradient(ellipse at 50% 0%,#10212d,#000 66%)}
-#status{right:16px;top:max(14px,env(safe-area-inset-top));border-color:rgba(0,229,192,.2);background:rgba(5,16,23,.9);color:#e5fbff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-#status.live .st-dot{background:var(--cz-accent)}
-#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));bottom:auto;display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;letter-spacing:.25px;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
-#viewerBadge .viewer-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:czPulse 1.8s infinite}
-#watchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
-#viewerBadge .watching-total-label{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:9px;letter-spacing:.65px;font-weight:850}
-#totalVisits{color:#fff;font-size:12px;font-weight:950;font-variant-numeric:tabular-nums}
-#viewerBadge .watching-live-label{display:inline-flex;align-items:center;gap:5px}
-#viewerBadge .watching-live-label:before{content:"LIVE";font-size:9px;letter-spacing:1px;color:#06140f;background:#45f0b5;padding:3px 5px;border-radius:4px;font-weight:950}
-#viewerBadge.is-fullscreen{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;bottom:auto;z-index:2147483647}
-@media(max-width:480px){#viewerBadge{right:10px;bottom:max(82px,calc(env(safe-area-inset-bottom) + 66px));padding:8px 11px;font-size:11px}#viewerBadge.is-fullscreen{top:max(12px,env(safe-area-inset-top));right:10px;padding:8px 10px}}
-@keyframes czPulse{50%{opacity:.45;transform:scale(.75)}}
-@media(max-width:480px){#ch-header{margin-bottom:18px;padding:14px;border-radius:15px}#ch-header:after{font-size:8px;letter-spacing:.8px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{min-height:128px;padding:15px 9px;border-radius:14px}.ch-logo{max-width:82px;height:46px}}
-@media(min-width:900px){#ch-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}}
+.ch-logo{width:100%;max-width:100px;height:58px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 4px 9px rgba(0,0,0,.4))}
+.ch-logo-fallback{width:82px;height:54px;border:1px solid rgba(114,224,170,.22);border-radius:12px;background:linear-gradient(145deg,rgba(114,224,170,.15),rgba(112,199,232,.07));color:var(--cz-mint);font:700 17px 'Space Grotesk',sans-serif}
+.ch-card span{width:100%;color:var(--cz-text);font-size:12px;font-weight:800;line-height:1.4;letter-spacing:.1px}
+#ch-empty{margin:12px 0;padding:28px;border:1px dashed rgba(210,230,216,.2);border-radius:14px;color:var(--cz-muted);text-align:center;font-size:13px}
+#cz-home-footer{display:flex;justify-content:space-between;gap:12px;width:min(100% - 32px,1220px);margin:18px auto 0;padding:17px 0 0;border-top:1px solid var(--cz-line);color:#728178;font-size:9px;font-weight:800;letter-spacing:1.2px}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#14251a 0%,#08100d 55%,#050a07 100%)}
+#overlay p{color:var(--cz-muted);font-family:Manrope,sans-serif}
+@media(max-width:620px){#ch-header{padding:11px 14px}.cz-brand-mark{width:38px;height:38px}.cz-brand-copy strong{font-size:16px}.cz-live-pill{padding:7px 9px;font-size:9px}#home-main{width:calc(100% - 24px);padding-top:24px}.cz-hero{margin-bottom:24px;padding:23px 19px;border-radius:17px}.cz-hero p{max-width:85%;font-size:12px}.cz-library-head{align-items:start;flex-direction:column;gap:7px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ch-card{min-height:126px;padding:14px 9px;border-radius:13px}.ch-logo{max-width:78px;height:46px}.ch-logo-fallback{width:70px;height:44px;font-size:15px}.ch-card span{font-size:11px}#cz-home-footer{width:calc(100% - 24px);font-size:8px}}
+@media(max-width:360px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ch-card{min-height:116px;padding:11px 7px}.cz-brand-copy small{font-size:8px}.cz-live-pill{gap:5px;padding:6px 7px}}
+@media(prefers-reduced-motion:reduce){#channel-list *{animation:none!important;transition:none!important}}
+/* ===== END CRICZONE HOME UI ===== */
 
 
-/* FIX: keep the viewer counter as a compact horizontal chip on desktop and mobile */
-#viewerBadge,#viewerBadge.is-fullscreen{
-  display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
-  width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-height:none!important;
-  max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;white-space:nowrap!important;
-  writing-mode:horizontal-tb!important;transform:none!important;align-self:flex-start!important;
-}
-#viewerBadge .viewer-dot,#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{
-  flex:0 0 auto!important;writing-mode:horizontal-tb!important;
-}
-#viewerBadge.is-fullscreen{top:max(14px,env(safe-area-inset-top))!important;right:14px!important;bottom:auto!important;left:auto!important;}
-@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;bottom:auto!important;padding:8px 10px!important;font-size:10px!important;}}
-/* COMPACT viewer statistics chip */
-#viewerBadge,#viewerBadge.is-fullscreen{
-  display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:5px!important;
-  width:max-content!important;height:auto!important;min-height:0!important;max-height:none!important;
-  padding:6px 9px!important;border-radius:999px!important;font-size:9px!important;line-height:1!important;
-  letter-spacing:0!important;max-width:calc(100vw - 20px)!important;
-}
-#viewerBadge .viewer-dot{width:6px!important;height:6px!important;flex-basis:6px!important;box-shadow:0 0 0 2px rgba(0,240,168,.1),0 0 8px rgba(0,240,168,.75)!important;}
-#viewerBadge .watching-live-label{gap:4px!important;font-size:9px!important;}
-#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important;letter-spacing:.6px!important;}
-#watchingCount{font-size:10px!important;}
-#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important;letter-spacing:.35px!important;}
-#totalVisits{font-size:10px!important;}
-@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{padding:5px 8px!important;gap:4px!important;font-size:8px!important}#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{font-size:8px!important}#viewerBadge .watching-live-label:before{font-size:6px!important}#watchingCount,#totalVisits{font-size:9px!important}}
-/* FIX: Shaka/player sizing rules must not override the selected fit mode */
-#pc video.mode-fill,.shaka-video-container video.mode-fill{object-fit:fill!important}
-#pc video.mode-cover,.shaka-video-container video.mode-cover{object-fit:cover!important}
-#pc video:not(.mode-fill):not(.mode-cover),.shaka-video-container video:not(.mode-fill):not(.mode-cover){object-fit:contain!important}
-#pc video,.shaka-video-container video{object-position:center center!important}
-.sp-fit-btn{position:relative;z-index:5;touch-action:manipulation}
-.sp-fit-btn .fit-pill{display:inline-block;min-width:34px;text-align:center}
-.sp-fit-btn.mode-fill .fit-pill{background:rgba(56,189,248,.12)}
-.sp-fit-btn.mode-cover .fit-pill{background:rgba(167,139,250,.12)}
-/* RESPONSIVE PASS: phones, tablets, laptops and wide desktops */
-html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
-#channel-list{min-height:100dvh;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-#ch-header{flex-shrink:0}
-#ch-grid{grid-template-columns:repeat(auto-fill,minmax(clamp(132px,16vw,190px),1fr));align-content:start}
-.ch-card{min-width:0}
-.ch-card span{overflow-wrap:anywhere}
-#pc{width:100%;height:100dvh;height:100%;overflow:hidden}
-#pc video{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center}
-#status{left:50%;right:auto;transform:translate(-50%,-10px);max-width:min(88vw,520px)}
-#status.show{transform:translate(-50%,0)}
-.shaka-controls-container{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
-.shaka-controls-container button{min-width:36px;min-height:36px}
-#viewerBadge{bottom:max(92px,calc(env(safe-area-inset-bottom) + 76px))}
-@media(min-width:1200px){
-  #ch-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
-  .ch-card{min-height:164px}
-}
-@media(min-width:700px) and (max-width:1100px){
-  #channel-list{padding:clamp(22px,4vw,36px) clamp(18px,3vw,28px) max(26px,env(safe-area-inset-bottom))}
-  #ch-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
-  .ch-card{min-height:142px;padding:17px 10px}
-}
-@media(max-width:699px){
-  #channel-list{padding:max(16px,env(safe-area-inset-top)) 12px max(24px,env(safe-area-inset-bottom))}
-  #ch-header{width:100%;margin-bottom:16px;padding:13px 12px}
-  #ch-header:after{font-size:8px;letter-spacing:.65px}
-  #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .ch-card{min-height:120px;padding:13px 8px;gap:9px}
-  .ch-logo{max-width:min(82px,70%);height:46px}
-  .ch-card span{font-size:11px;line-height:1.35}
-  #status{top:max(10px,env(safe-area-inset-top));font-size:10px;padding:6px 10px}
-  #viewerBadge{right:10px;top:max(12px,calc(env(safe-area-inset-top) + 8px));bottom:auto;padding:8px 10px;font-size:10px}
-  #viewerBadge.is-fullscreen{top:max(12px,env(safe-area-inset-top));right:10px;bottom:auto}
-  .shaka-controls-container button{min-width:32px;min-height:32px}
-}
-@media(max-width:360px){
-  #ch-grid{gap:8px}
-  .ch-card{min-height:108px;padding:10px 6px}
-  .ch-logo{height:40px}
-  .ch-card span{font-size:10px}
-  #viewerBadge{gap:6px;padding:7px 8px;font-size:9px}
-}
-@media(orientation:landscape) and (max-height:520px) and (max-width:900px){
-  #channel-list{padding:10px 14px}
-  #ch-header{margin-bottom:10px;padding:9px 12px}
-  #ch-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-  .ch-card{min-height:88px;padding:8px;gap:5px}
-  .ch-logo{height:34px}
-  #viewerBadge{top:10px;bottom:auto}
-}
+/* CRICZONE5 TELEGRAM JOIN UI */
+#cz5-telegram-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px;padding:13px 16px;border:1px solid rgba(34,158,217,.48);border-radius:16px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 10px 28px rgba(0,75,210,.2);font-family:Manrope,system-ui,sans-serif}
+#cz5-telegram-bar .cz5-tg-copy{display:flex;align-items:center;gap:11px;min-width:0;color:#fff;text-decoration:none}
+#cz5-telegram-bar .cz5-tg-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#ffffff25;font-size:22px}
+#cz5-telegram-bar strong{display:block;font-size:13px;font-weight:900;line-height:1.3}
+#cz5-telegram-bar small{display:block;margin-top:3px;color:#ffffffdf;font-size:10px}
+#cz5-telegram-bar .cz5-tg-join{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border-radius:10px;background:#fff;color:#0754dc;text-decoration:none;font-size:11px;font-weight:900;white-space:nowrap}
+#cz5-tg-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(2,8,18,.86);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Manrope,system-ui,sans-serif}
+#cz5-tg-modal.cz5-open{opacity:1;visibility:visible}
+#cz5-tg-modal .cz5-tg-card{position:relative;width:min(100%,380px);padding:30px 23px 24px;border:1px solid rgba(34,158,217,.45);border-radius:23px;background:radial-gradient(circle at 50% 0,rgba(34,158,217,.2),transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #000a;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}
+#cz5-tg-modal.cz5-open .cz5-tg-card{transform:none}
+#cz5-tg-modal .cz5-tg-close{position:absolute;right:11px;top:11px;width:33px;height:33px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}
+#cz5-tg-modal .cz5-tg-logo{display:grid;place-items:center;width:68px;height:68px;margin:2px auto 15px;border-radius:20px;background:#229ed9;font-size:34px}
+#cz5-tg-modal .cz5-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}
+#cz5-tg-modal h2{margin:0;font-size:23px;line-height:1.2;font-weight:900}
+#cz5-tg-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:12px;line-height:1.6}
+#cz5-tg-modal .cz5-tg-action{display:flex;align-items:center;justify-content:center;min-height:49px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:13px;font-weight:900;box-shadow:0 9px 25px #229ed94d}
+#cz5-tg-modal .cz5-tg-foot{margin:12px 0 0;color:#9eb4c8;font-size:10px}
+@media(max-width:520px){#cz5-telegram-bar{padding:10px;gap:8px}#cz5-telegram-bar .cz5-tg-icon{flex-basis:36px;width:36px;height:36px;font-size:19px}#cz5-telegram-bar strong{font-size:11px}#cz5-telegram-bar small{font-size:9px}#cz5-telegram-bar .cz5-tg-join{min-height:34px;padding:0 10px;font-size:10px}#cz5-tg-modal .cz5-tg-card{padding:28px 18px 21px}#cz5-tg-modal h2{font-size:21px}}
+@media(prefers-reduced-motion:reduce){#cz5-tg-modal,#cz5-tg-modal .cz5-tg-card{transition:none}}
+/* END CRICZONE5 TELEGRAM UI */
 
-
-/* CRICZONE channel playback screen — premium player UI */
-
-/* FINAL STREAM BRIGHTNESS FIX */
-#pc:before,
-#pc:after{display:none!important;content:none!important;opacity:0!important}
-#pc video,
-#pc .shaka-video-container video,
-#pc .shaka-video-container video[media]{
-  opacity:1!important;
-  filter:brightness(1.28) contrast(1.06) saturate(1.08)!important;
-}
-#pc .shaka-video-container,
-#pc .shaka-video-container video{background:#000!important}
-
-
-#pc{position:fixed;inset:0;isolation:isolate;background:#000;overflow:hidden}
-#pc .shaka-controls-container{z-index:10!important;padding:0 clamp(12px,3vw,30px) max(14px,env(safe-area-inset-bottom))!important;background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.58) 55%,transparent)!important}
-/* Remove the controls shade completely when Shaka auto-hides its UI */
-#pc .shaka-controls-container.shaka-controls-hidden,
-#pc .shaka-controls-container[aria-hidden="true"]{background:transparent!important;opacity:0!important;pointer-events:none!important;}
-#pc .shaka-controls-button-panel{gap:5px!important}
-#pc .shaka-controls-container button{border-radius:10px!important;transition:background .18s!important}
-#pc .shaka-controls-container button:hover{background:rgba(0,229,192,.15)!important}
-#pc .shaka-seek-bar-container{height:5px!important;border-radius:99px!important}
-#pc .shaka-range-container input{accent-color:#00e5c0}
-#pc .shaka-current-time,#pc .shaka-duration{color:#d8edf2!important;font-size:11px!important;font-weight:700!important}
-#status{z-index:25!important;top:max(78px,calc(env(safe-area-inset-top) + 72px))!important;left:50%!important;right:auto!important;transform:translate(-50%,-8px)!important;border:1px solid rgba(0,229,192,.18)!important;border-radius:999px!important;background:rgba(5,16,23,.88)!important;box-shadow:0 10px 28px rgba(0,0,0,.3)!important}
-#status.show{transform:translate(-50%,0)!important}
-
-/* Mobile + tablet stream visibility: same correction on touch devices */
-@media (max-width: 900px), (pointer: coarse) {
-  #pc:before, #pc:after { display:none !important; content:none !important; }
-  #pc video,
-  #pc .shaka-video-container video {
-    opacity:1 !important;
-    filter:brightness(1.28) contrast(1.06) saturate(1.08) !important;
-  }
-  #pc .shaka-controls-container {
-    background:linear-gradient(0deg,rgba(0,0,0,.76),rgba(0,0,0,.22) 45%,transparent) !important;
-  }
-}
-
-/* DESKTOP FULL-WIDTH CHANNEL LAYOUT */
-@media (min-width: 1101px) {
-  #channel-list {
-    padding-left: clamp(22px, 3vw, 56px) !important;
-    padding-right: clamp(22px, 3vw, 56px) !important;
-  }
-  #ch-header,
-  #ch-grid {
-    width: 100% !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-  #ch-header {
-    margin-bottom: 26px !important;
-  }
-  #ch-grid {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
-    gap: clamp(14px, 1.15vw, 22px) !important;
-  }
-  .ch-card {
-    min-height: clamp(158px, 12vw, 190px) !important;
-    padding: clamp(18px, 1.5vw, 26px) 14px !important;
-  }
-  .ch-logo {
-    max-width: clamp(104px, 8vw, 138px) !important;
-    height: clamp(58px, 4.5vw, 76px) !important;
-  }
-  #cz-tg-local-bar {
-    width: 100% !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-}
-
-/* HARD FIX: no dark overlay/gradient anywhere on the video, including Shaka UI */
-#pc .shaka-scrim-container,
-#pc .shaka-controls-container,
-#pc .shaka-controls-container[shown="true"],
-#pc .shaka-controls-container[casting="true"] {
-  background: transparent !important;
-  background-image: none !important;
-}
-#pc .shaka-scrim-container { display: none !important; }
-@media (max-width: 900px), (pointer: coarse) {
-  #pc .shaka-scrim-container,
-  #pc .shaka-controls-container,
-  #pc .shaka-controls-container[shown="true"],
-  #pc .shaka-controls-container[casting="true"] {
-    background: transparent !important;
-    background-image: none !important;
-  }
-  #pc .shaka-scrim-container { display: none !important; }
-}
 </style>
 </head>
 <body>
@@ -390,11 +242,32 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
 <div id="status"></div>
 
 <div id="channel-list">
-  <div id="ch-header">
-    <span class="brand-dot"></span>
-    <h1>Channels</h1>
-  </div>
-  <div id="ch-grid"></div>
+  <header id="ch-header">
+    <a class="cz-brand" href="../" aria-label="CRICZONE LIVE home">
+      <span class="cz-brand-mark">🏏</span>
+      <span class="cz-brand-copy"><strong>CRICZONE LIVE</strong><small>LIVE SPORTS NETWORK</small></span>
+    </a>
+    <span class="cz-live-pill"><i></i> LIVE NOW</span>
+  </header>
+  <main id="home-main">
+    <section class="cz-hero">
+      <div class="cz-eyebrow"><span></span> YOUR SPORTS. YOUR ZONE.</div>
+      <h2>Watch Live <em>Sports</em></h2>
+      <p>All your favourite sports channels in one place. Pick a channel and enjoy the action.</p>
+    </section>
+    <div class="cz-library-head">
+      <div><span class="cz-section-kicker">EXPLORE CHANNELS</span><h3>Live Channel Lineup</h3></div>
+      <span id="ch-count">Loading channels…</span>
+    </div>
+    <label class="cz-search" for="ch-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+      <input id="ch-search" type="search" placeholder="Search channels…" autocomplete="off">
+      <kbd>⌕</kbd>
+    </label>
+    <div id="ch-grid"></div>
+    <p id="ch-empty" hidden>No channels match your search. Try another name.</p>
+  </main>
+  <footer id="cz-home-footer"><span>© CRICZONE LIVE</span><span>LIVE SPORTS • ONE DESTINATION</span></footer>
 </div>
 
 <div id="pc">
@@ -403,36 +276,17 @@ html,body{min-width:320px;min-height:100%;overscroll-behavior:none}
     x5-video-player-type="h5"
     x5-video-player-fullscreen="true">
   </video>
-  <div id="viewerBadge" aria-live="polite"><span class="viewer-dot"></span><span class="watching-live-label"><strong id="watchingCount">330</strong> watching</span><span class="watching-total-label">TOTAL <strong id="totalVisits">330</strong></span></div>
+  <iframe id="stream-frame" title="Live stream" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
 </div>
 
+<script src="stream.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
 <script>
 (function(){
 "use strict";
 
-// Keep the live viewer badge inside the active fullscreen subtree.
-(function keepViewerBadgeInFullscreen(){
-  var badge=document.getElementById("viewerBadge");
-  var player=document.getElementById("pc");
-  if(!badge||!player)return;
-  function syncBadge(){
-    var fs=document.fullscreenElement||document.webkitFullscreenElement;
-    var isPlayerFullscreen=!!(fs&&(fs===player||player.contains(fs)||fs.contains(player)));
-    if(isPlayerFullscreen){
-      if(fs!==badge.parentElement)fs.appendChild(badge);
-      badge.classList.add("is-fullscreen");
-    }else{
-      if(badge.parentElement!==player)player.appendChild(badge);
-      badge.classList.remove("is-fullscreen");
-    }
-  }
-  ["fullscreenchange","webkitfullscreenchange"].forEach(function(ev){document.addEventListener(ev,syncBadge);});
-  syncBadge();
-})();
-
 /* ═══════════ API CONFIG ═══════════ */
-var API = "https://sportlink-tv11.pages.dev/Star3.json";
+var API = "https://sportlink-tv11.pages.dev/Data.json";
 
 /* ═══════════ LOGO MAP ═══════════ */
 var LOGO_MAP = {
@@ -496,11 +350,9 @@ function getTier(){
 
 var TIER = getTier();
 var PROF = {
-  // Slightly larger forward buffers reduce repeated stalls on live HLS/DASH feeds.
-  // Keep an explicit bandwidth ceiling so ABR does not jump to an unstable rendition.
-  low:  {buf:8,  reBuf:3, behind:20, maxH:480,  maxBw:1400000, bwEst:700000 },
-  mid:  {buf:12, reBuf:3, behind:25, maxH:720,  maxBw:2800000, bwEst:1400000},
-  high: {buf:15, reBuf:3, behind:30, maxH:1080, maxBw:4500000, bwEst:2200000}
+  low:  {buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000 },
+  mid:  {buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000},
+  high: {buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000}
 }[TIER];
 
 var FITS       = ["contain","fill","cover"];
@@ -585,25 +437,94 @@ function keyModeOf(ch){
   return "none";
 }
 
+function extractSonyChannels(data){
+  var found = [], seen = Object.create(null), visited = [];
+  var urlPattern = /^https?:\/\/.+\.m3u8(?:[?#].*)?$/i;
+  var nameKeys = ["name","title","channel_name","channelName","tvg_name","tvg-name","label","channel"];
+  var logoKeys = ["logo","image","icon","tvg_logo","tvg-logo","thumbnail","poster"];
+  function pick(obj, keys){
+    for(var i=0;i<keys.length;i++){
+      var v=obj && obj[keys[i]];
+      if(typeof v==="string" && v.trim()) return v.trim();
+    }
+    return "";
+  }
+  function walk(node, inheritedName){
+    if(!node || typeof node!=="object" || visited.indexOf(node)!==-1) return;
+    visited.push(node);
+    if(Array.isArray(node)){ node.forEach(function(v){walk(v,inheritedName);}); return; }
+    var name=pick(node,nameKeys)||inheritedName||"Sony Sports";
+    var logo=pick(node,logoKeys);
+    Object.keys(node).forEach(function(k){
+      var v=node[k];
+      if(typeof v==="string" && urlPattern.test(v.trim())){
+        var stream=v.trim();
+        if(!seen[stream]){
+          seen[stream]=true;
+          found.push({id:String(node.id||node.channel_id||node.channelId||("sony-json-"+found.length)),
+            name:name,logo:logo,stream_url:stream,source:"sony-json"});
+        }
+      } else if(v && typeof v==="object"){
+        walk(v, (typeof v==="object" && !Array.isArray(v) ? (pick(v,nameKeys)||k) : k));
+      }
+    });
+  }
+  walk(data,"Sony Sports");
+  return found;
+}
+
+async function loadSonyJson(){
+  var response=await fetch("/criczone5/api/sony-channels",{
+    cache:"no-store",headers:{Accept:"application/json"}
+  });
+  if(!response.ok) throw new Error("Sony proxy HTTP "+response.status);
+  return response.json();
+}
+
 async function loadData(){
+  var channels = [];
   try {
     var r = await fetch(API, {cache:"no-store", headers:{Accept:"application/json"}});
     if(r.ok) {
       var d = await r.json();
-      if(Array.isArray(d) && d.length > 0){
-        return { channels: d };
-      }
-      if(d && Array.isArray(d.channels) && d.channels.length > 0){
-        return d;
-      }
+      if(Array.isArray(d)) channels = d;
+      else if(d && Array.isArray(d.channels)) channels = d.channels;
+      else if(d && Array.isArray(d.data)) channels = d.data;
     }
   } catch(e) {
-    console.warn("API failed:", e);
+    console.warn("Data.json API failed:", e);
   }
 
-  return { channels: [] };
-}
+  /* Fetch Sony JSON through same-origin Pages Function to avoid browser CORS blocking. */
+  try {
+    var sonyData = await loadSonyJson();
+    var sonyChannels = extractSonyChannels(sonyData);
+    var sonyIds = Object.create(null);
+    channels.forEach(function(ch){ if(ch && ch.id != null) sonyIds[String(ch.id)] = true; });
+    sonyChannels.forEach(function(ch){
+      var id=String(ch.id||("sony-json-"+Object.keys(sonyIds).length));
+      if(sonyIds[id]) id="sony-json-"+id;
+      sonyIds[id]=true; ch.id=id; channels.push(ch);
+    });
+    console.info("Sony JSON channels parsed:",sonyChannels.length);
+  } catch(e) {
+    console.error("Sony JSON channel load failed:",e);
+  }
 
+  var streamChannels = window.CricXStreamData && Array.isArray(window.CricXStreamData.allChannels)
+    ? window.CricXStreamData.allChannels : [];
+  var usedIds = Object.create(null);
+  channels.forEach(function(ch){ if(ch && ch.id != null) usedIds[String(ch.id)] = true; });
+  streamChannels.forEach(function(ch){
+    if(!ch || !ch.url) return;
+    var originalId=String(ch.id==null?"":ch.id);
+    if(!originalId) return;
+    var id=usedIds[originalId]?"streamjs-"+originalId:originalId;
+    usedIds[id]=true;
+    channels.push({id:id,name:ch.name||("Live Stream "+originalId),logo:ch.logo||"",url:ch.url,source:"streamjs"});
+  });
+  return {channels:channels};
+}
 function renderList(channels){
   hideOverlay();
   $grid.innerHTML = "";
@@ -611,27 +532,10 @@ function renderList(channels){
   var list = channels || [];
 
   if(list.length === 0){
-    var emptyWrap = document.createElement("div");
-    emptyWrap.style.cssText = "grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:12px;padding:34px 12px;text-align:center";
     var empty = document.createElement("p");
-    empty.style.cssText = "color:#a8bac5;font-size:13px;line-height:1.5";
-    empty.textContent = "Channels could not be loaded. Check your connection and try again.";
-    var retry = document.createElement("button");
-    retry.type = "button";
-    retry.textContent = "Retry Loading Channels";
-    retry.style.cssText = "border:1px solid rgba(0,229,192,.35);border-radius:10px;padding:10px 16px;background:rgba(0,229,192,.10);color:#bffff4;font-weight:800;cursor:pointer";
-    retry.addEventListener("click", function(){
-      retry.disabled = true;
-      retry.textContent = "Loading…";
-      main().catch(function(error){
-        console.error("CRICZONE channel retry failed:", error);
-        retry.disabled = false;
-        retry.textContent = "Try Again";
-      });
-    });
-    emptyWrap.appendChild(empty);
-    emptyWrap.appendChild(retry);
-    $grid.appendChild(emptyWrap);
+    empty.style.cssText = "color:#777;font-size:13px;text-align:center;grid-column:1/-1;padding:30px 0";
+    empty.textContent = "No channels available.";
+    $grid.appendChild(empty);
     $list.style.display = "flex";
     return;
   }
@@ -679,6 +583,24 @@ function renderList(channels){
 
   $grid.appendChild(f);
   $list.style.display = "flex";
+  var countEl = document.getElementById("ch-count");
+  if(countEl) countEl.textContent = list.length + (list.length === 1 ? " CHANNEL" : " CHANNELS");
+  var searchEl = document.getElementById("ch-search");
+  var emptyEl = document.getElementById("ch-empty");
+  if(searchEl && !searchEl.dataset.bound){
+    searchEl.dataset.bound = "1";
+    searchEl.addEventListener("input", function(){
+      var q = searchEl.value.trim().toLowerCase();
+      var visible = 0;
+      Array.prototype.forEach.call($grid.querySelectorAll(".ch-card"), function(card){
+        var match = card.textContent.toLowerCase().indexOf(q) !== -1;
+        card.style.display = match ? "" : "none";
+        if(match) visible++;
+      });
+      if(countEl) countEl.textContent = visible + " OF " + list.length + " CHANNELS";
+      if(emptyEl) emptyEl.hidden = visible !== 0;
+    });
+  }
 }
 
 function errMsg(msg){
@@ -748,10 +670,9 @@ function injectControls(container, vid){
     applyFit((fitIdx + 1) % FITS.length);
   });
 
-  // Preserve selected Fit / Fill / Zoom mode across fullscreen changes.
   ["fullscreenchange","webkitfullscreenchange"].forEach(function(ev){
     document.addEventListener(ev, function(){
-      requestAnimationFrame(function(){ applyFit(fitIdx); });
+      if(!(document.fullscreenElement || document.webkitFullscreenElement)) applyFit(0);
     });
   });
 
@@ -781,18 +702,23 @@ function injectControls(container, vid){
 }
 
 async function startPlayer(ch){
-  var url = isNonEmpty(ch.stream_url) ? ch.stream_url.trim() : "";
-  var drmKeys = buildClearKeys(ch);
-  if(!url){
-    errMsg("Stream URL Missing For This Channel.");
-    return;
-  }
-  if(Object.keys(drmKeys).length === 0){
-    errMsg("DRM Keys Missing For This Channel.");
-    return;
-  }
-
   $pc.style.display = "flex";
+  var streamFrame = document.getElementById("stream-frame");
+  if(ch && ch.url){
+    $vid.style.display = "none";
+    if(streamFrame){
+      streamFrame.style.display = "block";
+      streamFrame.src = ch.url;
+    }
+    hideOverlay();
+    toast("Opening Stream…","ok",3000);
+    return;
+  }
+  if(streamFrame){
+    streamFrame.src = "about:blank";
+    streamFrame.style.display = "none";
+  }
+  $vid.style.display = "block";
   shaka.polyfill.installAll();
   if(!shaka.Player.isBrowserSupported()){ errMsg("Browser Not Supported."); return; }
 
@@ -818,13 +744,20 @@ async function startPlayer(ch){
     if(++_injectCount < 5) setTimeout(tryInject, 150);
   })();
 
-  var cookie = ch.cookie || "";
+  var cookie = ch.cookie;
   var raw    = rawCookie(cookie);
+  var url    = ch.stream_url;
+  var drmKeys = buildClearKeys(ch);
   var keyMode = keyModeOf(ch);
 
   var restrictionsRelaxed = false;
   var thermalApplied      = false;
   var sessionStart        = Date.now();
+
+  if(Object.keys(drmKeys).length === 0 && !/\.m3u8(?:[?#]|$)/i.test(url || "")){
+    toast("No DRM Keys Available","err",0);
+    return;
+  }
 
   var thermalTimer = setInterval(function(){
     if(Date.now() - sessionStart < 60*60*1000) return;
@@ -859,17 +792,17 @@ async function startPlayer(ch){
         bufferingGoal:PROF.buf,
         rebufferingGoal:PROF.reBuf,
         bufferBehind:PROF.behind,
-        safeSeekOffset:3,
+        safeSeekOffset:4,
         stallEnabled:true,
-        stallThreshold:2,
-        stallSkip:.2,
+        stallThreshold:1,
+        stallSkip:.3,
         inaccurateManifestTolerance:0,
         retryParameters:{maxAttempts:5,baseDelay:500,backoffFactor:2,fuzzFactor:.5,timeout:30000}
       },
       abr:{
         enabled:true,
         defaultBandwidthEstimate:PROF.bwEst,
-        switchInterval:6,
+        switchInterval:4,
         restrictions:restr
       }
     };
@@ -915,7 +848,7 @@ async function startPlayer(ch){
     toast("Reconnecting… (" + retries + " / 5)","warn",0);
     try{
       var d     = await loadData();
-      var fresh = (d.channels || []).find(function(c){ return String(c.id) === String(ch.id); });
+      var fresh = (d.channels || []).find(function(c){ return c.id === ch.id; });
       if(!fresh) throw new Error("missing");
       var freshKeys = buildClearKeys(fresh);
       if(Object.keys(freshKeys).length === 0) throw new Error("no_keys");
@@ -983,7 +916,6 @@ async function startPlayer(ch){
 
   function onPlaying(){
     started = true;
-    window.dispatchEvent(new Event("cz:stream-started"));
     if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
     edgeTried = false;
     if(!refreshing) toast("Live","live",3000);
@@ -1033,310 +965,83 @@ async function main(){
 
   if(!id){ renderList(channels); return; }
 
-  var ch = channels.find(function(c){ return String(c.id) === String(id); });
+  var ch = channels.find(function(c){ return c.id === id; });
   if(!ch){
     errMsg("Channel Not Found.");
     return;
   }
   document.title = ch.name;
-  try{
-    await startPlayer(ch);
-    if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
-  }catch(error){
-    console.error("CRICZONE player startup failed:", error);
-    errMsg("Player Could Not Start. Please Refresh And Try Again.");
-  }
+  await startPlayer(ch);
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-  main().catch(function(error){
-    console.error("CRICZONE page startup failed:", error);
-    errMsg("Unable To Load CRICZONE. Please Refresh.");
-  });
-});
+document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-  import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
-    authDomain: "criczone-4daa2.firebaseapp.com",
-    databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "criczone-4daa2",
-    storageBucket: "criczone-4daa2.firebasestorage.app",
-    messagingSenderId: "113293633217",
-    appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
-    measurementId: "G-Q9RJ0VSSPP"
-  };
-
-  let viewerRef = null;
-  let countUnsubscribe = null;
-  let firebaseApp = null;
-  let analyticsInstance = null;
-  let totalVisitsStarted = false;
-  let totalVisitsUnsubscribe = null;
-
-  // Count every website visit once per page load; counter starts at 330.
-  async function startTotalVisitCounter() {
-    if (totalVisitsStarted) return;
-    totalVisitsStarted = true;
-    const totalEl = document.getElementById("totalVisits");
-    if (totalEl) totalEl.textContent = "330";
-    try {
-      firebaseApp = firebaseApp || initializeApp(firebaseConfig);
-      const db = getDatabase(firebaseApp);
-      await signInAnonymously(getAuth(firebaseApp));
-      const totalRef = ref(db, "siteStats/totalVisits");
-      const result = await runTransaction(totalRef, current => current === null ? 331 : current + 1);
-      if (!result.committed) throw new Error("Total visits transaction was not committed");
-      totalVisitsUnsubscribe = onValue(totalRef, snapshot => {
-        if (totalEl) totalEl.textContent = Math.max(330, Number(snapshot.val()) || 330).toLocaleString("en-IN");
-      }, error => console.warn("Total visits listener:", error));
-    } catch (error) {
-      console.warn("Total visit counter unavailable:", error);
-      if (totalEl) totalEl.textContent = "330";
-    }
-  }
-  startTotalVisitCounter();
-
-  window.startRealtimeWatching = async function(streamId) {
-    const count = document.getElementById("watchingCount");
-    if (count) count.textContent = "330";
-    try {
-      if (countUnsubscribe) { countUnsubscribe(); countUnsubscribe = null; }
-      if (viewerRef) { await remove(viewerRef).catch(() => {}); viewerRef = null; }
-
-      firebaseApp = firebaseApp || initializeApp(firebaseConfig);
-      if (!analyticsInstance && await isSupported().catch(() => false)) {
-        try { analyticsInstance = getAnalytics(firebaseApp); } catch (analyticsError) { console.warn("Firebase Analytics unavailable:", analyticsError); }
-      }
-      const db = getDatabase(firebaseApp);
-      const auth = getAuth(firebaseApp);
-      await signInAnonymously(auth);
-
-      const safeId = String(streamId || "all").replace(/[^a-zA-Z0-9_-]/g, "_");
-      const viewerId = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "_" + Math.random().toString(36).slice(2));
-      const path = "liveViewers/" + safeId;
-      viewerRef = ref(db, path + "/" + viewerId);
-      await onDisconnect(viewerRef).remove();
-      await set(viewerRef, { joinedAt: Date.now() });
-
-      countUnsubscribe = onValue(ref(db, path), snapshot => {
-        const actual = snapshot.size ?? snapshot.numChildren();
-        if (count) count.textContent = (330 + actual).toLocaleString("en-IN");
-      }, error => console.warn("Firebase viewer count:", error));
-      console.log("CRICZONE Firebase watching active:", safeId);
-    } catch (error) {
-      console.warn("Firebase watching unavailable; keeping base display:", error);
-      if (count) count.textContent = "330";
-    }
-  };
-
-  window.stopRealtimeWatching = async function() {
-    if (countUnsubscribe) { countUnsubscribe(); countUnsubscribe = null; }
-    if (viewerRef) { await remove(viewerRef).catch(() => {}); viewerRef = null; }
-    const count = document.getElementById("watchingCount");
-    if (count) count.textContent = "330";
-  };
-
-  window.addEventListener("pagehide", () => {
-    if (viewerRef) remove(viewerRef).catch(() => {});
-  });
-</script>
-
-
-<!-- CRICZONE Telegram banner + original 5-second popup + second 60-second fullscreen popup -->
-<style>
-#cz-tg-local-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:calc(100% - 28px);max-width:1200px;min-height:76px;margin:12px auto;padding:11px 17px;border:1px solid #28a7ff;border-radius:17px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 0 22px #008bff55,0 10px 28px #0004;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;position:relative;z-index:30}
-#cz-tg-local-bar *{box-sizing:border-box}#cz-tg-local-bar .cz-tg-left{display:flex;align-items:center;gap:13px;min-width:0;color:#fff;text-decoration:none}#cz-tg-local-bar .cz-tg-logo{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:13px;background:#ffffff30}#cz-tg-local-bar svg{width:27px;height:27px}#cz-tg-local-bar .cz-tg-label{display:flex;flex-direction:column;gap:3px;min-width:0}#cz-tg-local-bar strong{font-size:clamp(13px,2vw,18px);font-weight:900;line-height:1.15}#cz-tg-local-bar small{font-size:11px;font-weight:650;color:#ffffffdf}#cz-tg-local-bar .cz-tg-tap{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 16px;border-radius:11px;background:#fff;color:#0754dc;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px #0003}
-#cz-tg-local-modal,#cz-tg-fullscreen-modal{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:14px;background:rgba(2,8,18,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility .22s;font-family:Inter,system-ui,sans-serif;box-sizing:border-box}
-#cz-tg-local-modal.cz-open,#cz-tg-fullscreen-modal.cz-open{opacity:1;visibility:visible;pointer-events:auto}
-#cz-tg-local-modal * ,#cz-tg-fullscreen-modal *{box-sizing:border-box}
-#cz-tg-local-modal .cz-tg-card{position:relative;width:min(100%,380px);padding:29px 23px 24px;border:1px solid #229ed966;border-radius:24px;background:radial-gradient(circle at 50% 0,#229ed933,transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #0009,0 0 32px #229ed922;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}
-#cz-tg-local-modal.cz-open .cz-tg-card{transform:none}
-#cz-tg-local-modal .cz-tg-x{position:absolute;right:11px;top:11px;width:32px;height:32px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}
-#cz-tg-local-modal .cz-tg-modal-logo{width:70px;height:70px;margin:3px auto 15px}#cz-tg-local-modal .cz-tg-modal-logo svg{width:100%;height:100%}
-#cz-tg-local-modal .cz-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}
-#cz-tg-local-modal h2{margin:0;font-size:24px;line-height:1.2;font-weight:900}
-#cz-tg-local-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:13px;line-height:1.55}
-#cz-tg-local-modal .cz-tg-join{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 9px 25px #229ed94d}
-#cz-tg-local-modal .cz-tg-foot{margin:12px 0 0;font-size:10px;color:#9eb4c8}
-#cz-tg-fullscreen-modal .cz-tg-card{position:relative;width:min(100%,340px);padding:20px 19px 17px;border:1px solid rgba(45,174,235,.55);border-radius:19px;background:radial-gradient(circle at 50% 0,rgba(34,158,217,.2),transparent 48%),linear-gradient(150deg,#142a3e,#081522 78%);box-shadow:0 22px 70px rgba(0,0,0,.65),0 0 26px rgba(34,158,217,.18);color:#f8fbff;text-align:center;transform:translateY(9px) scale(.985);transition:transform .2s}
-#cz-tg-fullscreen-modal.cz-open .cz-tg-card{transform:none}
-#cz-tg-fullscreen-modal .cz-tg-modal-logo{width:43px;height:43px;margin:0 auto 9px}#cz-tg-fullscreen-modal .cz-tg-modal-logo svg{width:100%;height:100%}
-#cz-tg-fullscreen-modal .cz-tg-kicker{margin:0 0 5px;color:#75d2ff;font-size:9px;font-weight:900;letter-spacing:1.2px}
-#cz-tg-fullscreen-modal h2{margin:0;font-size:18px;line-height:1.25;font-weight:850}
-#cz-tg-fullscreen-modal p{margin:8px auto 13px;color:#c4d5e3;font-size:12px;line-height:1.45}
-#cz-tg-fullscreen-modal .cz-tg-actions{display:grid;grid-template-columns:1fr;gap:9px}
-#cz-tg-fullscreen-modal .cz-tg-yes,#cz-tg-fullscreen-modal .cz-tg-no{display:flex;align-items:center;justify-content:center;min-height:42px;border:0;border-radius:11px;text-decoration:none;font:800 12px/1 Inter,system-ui,sans-serif;cursor:pointer}
-#cz-tg-fullscreen-modal .cz-tg-yes{background:linear-gradient(100deg,#229ed9,#087fc4);color:#fff;box-shadow:0 7px 18px rgba(34,158,217,.25)}
-#cz-tg-fullscreen-modal .cz-tg-no{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#d8e5ef}
-#cz-tg-fullscreen-modal .cz-tg-foot{margin:9px 0 0;color:#91aabe;font-size:9px}
-@media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}#cz-tg-fullscreen-modal .cz-tg-card{width:min(100%,300px);padding:17px 15px 14px}}
-@media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-fullscreen-modal,#cz-tg-local-modal .cz-tg-card,#cz-tg-fullscreen-modal .cz-tg-card{transition:none}}
-/* CRICZONE UI polish: accessible focus, consistent controls and responsive spacing */
-#channel-list{scrollbar-width:thin;scrollbar-color:rgba(0,229,192,.38) transparent}
-#channel-list::-webkit-scrollbar{width:8px}
-#channel-list::-webkit-scrollbar-thumb{background:rgba(0,229,192,.28);border:2px solid transparent;background-clip:padding-box;border-radius:99px}
-.ch-card{isolation:isolate;outline:none}
-.ch-card:focus-visible{outline:2px solid var(--cz-accent);outline-offset:3px;border-color:var(--cz-accent)}
-.ch-card:after{content:"";position:absolute;inset:auto 14px 0;height:2px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--cz-accent),transparent);opacity:0;transition:opacity .18s}
-.ch-card:hover:after,.ch-card:focus-visible:after{opacity:.9}
-.ch-logo{max-width:112px;max-height:64px}
-#ch-header h1{line-height:1.25}
-#status{pointer-events:none}
-#pc .shaka-controls-container{padding-bottom:max(16px,env(safe-area-inset-bottom))!important}
-#pc .shaka-controls-container button:focus-visible{outline:2px solid var(--cz-accent)!important;outline-offset:2px}
-#pc .shaka-seek-bar-container{touch-action:pan-y}
-#viewerBadge{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-@media(max-width:699px){
-  #ch-header{gap:9px}
-  #ch-header:after{max-width:42%;text-align:right;line-height:1.35}
-  #ch-grid{align-items:stretch}
-  .ch-card{min-width:0;overflow:hidden}
-  #cz-tg-local-bar{margin-top:10px}
-}
-@media(hover:none){
-  .ch-card:hover{transform:none}
-  .ch-card:active{transform:scale(.975);border-color:rgba(0,229,192,.55)}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-}
-
-
-/* CRICZONE SHAKA MOBILE TOUCH + BOTTOM CONTROLS FIX */
-/* Keep Shaka's control bar anchored to the bottom edge of the full player,
-   not to the centered 16:9 video picture on portrait screens. */
-#pc.shaka-video-container{
-  position:fixed!important;
-  inset:0!important;
-  width:100vw!important;
-  height:100vh!important;
-  height:100dvh!important;
-  min-height:0!important;
-  max-height:none!important;
-  overflow:hidden!important;
-}
-#pc video{
-  position:absolute!important;
-  inset:0!important;
-  display:block!important;
-  width:100%!important;
-  height:100%!important;
-  max-width:100%!important;
-  max-height:100%!important;
-  object-position:center center!important;
-}
-#pc .shaka-controls-container{
-  /* Shaka's video surface can be letterboxed in portrait mode.
-     Fixed positioning anchors controls to the actual device viewport. */
-  position:fixed!important;
-  left:0!important;
-  right:0!important;
-  top:auto!important;
-  bottom:0!important;
-  z-index:2147483000!important;
-  width:100vw!important;
-  max-width:none!important;
-  margin:0!important;
-  min-height:54px!important;
-  padding:8px max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-#pc .shaka-controls-container button,
-#pc .shaka-controls-container [role="button"],
-#pc .shaka-controls-container input{
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-#pc .shaka-controls-container button{
-  min-width:42px!important;
-  min-height:42px!important;
-}
-#pc .shaka-seek-bar-container,
-#pc .shaka-range-container{
-  touch-action:pan-y!important;
-  pointer-events:auto!important;
-}
-/* Shaka's scrim receives taps on the video to reveal controls.
-   Earlier display:none rules disabled that mobile interaction. */
-#pc .shaka-scrim-container{
-  display:block!important;
-  position:absolute!important;
-  inset:0!important;
-  z-index:5!important;
-  background:transparent!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-#pc .shaka-controls-container.shaka-controls-hidden,
-#pc .shaka-controls-container[aria-hidden="true"]{
-  pointer-events:none!important;
-}
-@media(max-width:699px){
-  #pc .shaka-controls-container{
-    padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
-  }
-  #pc .shaka-controls-container button{
-    min-width:40px!important;
-    min-height:40px!important;
-  }
-}
-
-</style>
+<!-- CRICZONE5 Telegram banner and delayed player popup -->
 <script>
 (function(){
-  if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;
-  var link="https://t.me/+pN15_8gc54s2NDU1",first=null,second=null,firstShown=false,secondShown=false;
-  var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#fff"/></svg>';
-  function fullHost(){return document.fullscreenElement||document.webkitFullscreenElement||document.body}
-  function moveSecond(){if(second&&second.parentElement!==fullHost())fullHost().appendChild(second)}
-  function init(){
-    if(document.getElementById("cz-tg-local-bar"))return;
-    var bar=document.createElement("aside");bar.id="cz-tg-local-bar";
-    bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';
-    var target=document.querySelector(".hero,.hero-box,.intro,#ch-header");if(target)target.insertAdjacentElement("afterend",bar);else document.body.appendChild(bar);
-    first=document.createElement("div");first.id="cz-tg-local-modal";
-    first.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-first-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-first-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 CRICZONE Official Telegram Channel</div></section>';
-    document.body.appendChild(first);
-    function closeFirst(){first.classList.remove("cz-open")}
-    first.querySelector(".cz-tg-x").addEventListener("click",closeFirst);
-    
-    
-    
-    second=document.createElement("div");second.id="cz-tg-fullscreen-modal";
-    second.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-second-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE COMMUNITY</div><h2 id="cz-tg-second-title">Get CRICZONE Updates on Telegram?</h2><p>Join our Telegram channel for live cricket updates, match news and important announcements.</p><div class="cz-tg-actions"><a class="cz-tg-yes" href="'+link+'" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM</a></div><div class="cz-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
-    document.body.appendChild(second);
-    function closeSecond(){second.classList.remove("cz-open")}
-    second.querySelector(".cz-tg-no").addEventListener("click",closeSecond);
-    second.querySelector(".cz-tg-x").addEventListener("click",closeSecond);
-    
-    document.addEventListener("fullscreenchange",moveSecond);document.addEventListener("webkitfullscreenchange",moveSecond);
-    // Start Telegram prompts only after the stream is genuinely playing.
-    var promptTimersStarted=false;
-    function startTelegramPromptTimers(){
-      if(promptTimersStarted) return;
-      promptTimersStarted=true;
-      window.setTimeout(function(){
-        if(first&&!firstShown){firstShown=true;first.classList.add("cz-open")}
-      },5000);
-      window.setTimeout(function(){
-        if(second&&!secondShown){
-          secondShown=true;
-          moveSecond();
-          second.classList.add("cz-open");
-        }
-      },60000);
-    }
-    window.addEventListener("cz:stream-started",startTelegramPromptTimers,{once:true});
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+ "use strict";
+ if(window.CZ_TG_CRICZONE5) return;
+ window.CZ_TG_CRICZONE5=true;
+ var link="https://t.me/criczonelive";
+ function makeBar(){
+   if(document.getElementById("cz5-telegram-bar")) return;
+   var bar=document.createElement("aside");
+   bar.id="cz5-telegram-bar";
+   bar.innerHTML='<a class="cz5-tg-copy" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz5-tg-icon">➤</span><span><strong>JOIN OFFICIAL CRICZONE TELEGRAM</strong><small>🏏 Live match updates • Cricket news • Community</small></span></a><a class="cz5-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">JOIN NOW →</a>';
+   var hero=document.querySelector("#home-main .cz-hero");
+   if(hero) hero.insertAdjacentElement("afterend",bar);
+ }
+ function makeModal(){
+   if(document.getElementById("cz5-tg-modal")) return;
+   var modal=document.createElement("div");
+   modal.id="cz5-tg-modal";
+   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
+   document.body.appendChild(modal);
+   modal.querySelector(".cz5-tg-close").addEventListener("click",function(){
+     modal.classList.remove("cz5-open");
+     try{sessionStorage.setItem("cz5_tg_dismissed","1")}catch(e){}
+   });
+ }
+ function isFullscreen(){
+   return !!(document.fullscreenElement||document.webkitFullscreenElement||
+     (document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));
+ }
+ function schedulePopup(){
+   try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
+   window.setTimeout(function(){
+     if(isFullscreen()||!document.getElementById("pc")||
+        getComputedStyle(document.getElementById("pc")).display==="none"){
+       schedulePopup();return;
+     }
+     makeModal();
+     document.getElementById("cz5-tg-modal").classList.add("cz5-open");
+   },60000);
+ }
+ function init(){
+   makeBar();
+   var params=new URLSearchParams(location.search);
+   if(!params.get("id")) return;
+   var frame=document.getElementById("stream-frame");
+   var video=document.getElementById("v");
+   var armed=false;
+   function arm(){if(armed)return;armed=true;schedulePopup()}
+   if(frame) frame.addEventListener("load",function(){
+     if(frame.src&&frame.src!=="about:blank") arm();
+   });
+   if(video) video.addEventListener("playing",arm,{once:true});
+   /* Fallback: start the timer once the selected channel player is opened. */
+   window.setTimeout(function(){
+     var pc=document.getElementById("pc");
+     if(pc&&getComputedStyle(pc).display!=="none") arm();
+   },2500);
+ }
+ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+ else init();
 })();
 </script>
+<!-- END CRICZONE5 Telegram UI -->
+
 </body>
+</html>
