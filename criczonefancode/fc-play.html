@@ -43,7 +43,7 @@
     <main class="player-stage">
       <div class="video-shell">
         <div class="shaka-video-container" data-shaka-player>
-          <video id="video" playsinline autoplay muted controls></video>
+          <video id="video" playsinline autoplay muted></video>
           <div class="player-loading" id="loading"><span class="player-spinner"></span><strong id="loading-title">Connecting to stream…</strong><span style="color:#91a0b4;font-size:12px">Please wait while the player loads.</span></div>
           <div class="player-error" id="error-panel" hidden>
             <h2>Stream could not be played</h2><p id="error-message">The source may be offline or temporarily unavailable.</p>
@@ -133,7 +133,7 @@
         const shell = document.querySelector(".shaka-video-container");
         const ui = new shaka.ui.Overlay(player,shell,video);
         ui.configure({
-          controlPanelElements:["play_pause","mute","volume","time_and_duration","spacer","quality","language","picture_in_picture","fullscreen","overflow_menu"],
+          controlPanelElements:["play_pause","spacer","quality","fullscreen"],
           addSeekBar:true,
           seekBarColors:{base:"#ffffff40",buffered:"#ffffff80",played:"#ffd44d",adBreaks:"#ffcc00"}
         });
