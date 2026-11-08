@@ -158,3 +158,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 }
 @media(max-width:360px){.match-grid{grid-template-columns:1fr}.match-card-body{padding:13px}.match-title{font-size:14px}.match-card-footer{flex-direction:row;align-items:center}.watch-button{width:auto}.hero-stats{gap:14px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Mobile viewport-width correction: prevent the page canvas from stopping before the right edge. */
+html,body{width:100%!important;max-width:none!important;min-width:320px}
+body.cz-page{display:block;width:100vw!important;max-width:none!important;margin:0!important;overflow-x:hidden}
+.cz-page>.site-header,.cz-page>.main-content,.cz-page>.site-footer{width:100%;max-width:1440px;margin-left:auto;margin-right:auto}
+.cz-page>.page-glow{pointer-events:none}
+@media(max-width:650px){
+  body.cz-page{padding-left:13px;padding-right:13px}
+  .site-header,.main-content,.site-footer{width:100%;min-width:0}
+  .hero-panel,.telegram-strip,.matches-section,.match-grid{width:100%;min-width:0}
+  .match-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .match-card{min-width:0}
+}
