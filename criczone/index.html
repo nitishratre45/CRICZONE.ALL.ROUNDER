@@ -228,17 +228,22 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 /* END CRICZONE5 TELEGRAM UI */
 
 
-/* CRICZONE live audience counters */
-.cz-live-stats{width:min(100% - 32px,1220px);margin:14px auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.cz-stat-card{min-width:0;display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:9px;row-gap:4px;padding:12px 14px;border:1px solid rgba(114,224,170,.22);border-radius:14px;background:linear-gradient(135deg,rgba(20,38,28,.97),rgba(9,19,14,.98));box-shadow:0 8px 24px rgba(0,0,0,.18)}
-.cz-stat-dot{width:8px;height:8px;border-radius:50%;background:#27e5a1;box-shadow:0 0 11px #27e5a1;animation:czStatPulse 1.5s infinite}
-.cz-stat-icon{width:18px;text-align:center;color:#d5ef7b;font-size:17px}
-.cz-stat-label{color:#aab8ae;font-size:9px;font-weight:900;letter-spacing:1.1px}
-.cz-stat-card strong{grid-column:2;color:#f1f6f2;font:900 22px/1 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums}
-.cz-stat-note{grid-column:2;color:#82958a;font-size:9px;font-weight:700}
-@keyframes czStatPulse{50%{opacity:.45;transform:scale(.78)}}
-@media(max-width:560px){.cz-live-stats{width:calc(100% - 24px);margin-top:10px;gap:8px}.cz-stat-card{padding:10px 11px;column-gap:7px;border-radius:12px}.cz-stat-card strong{font-size:20px}.cz-stat-label{font-size:8px;letter-spacing:.8px}.cz-stat-note{font-size:8px}}
-
+/* Live watching badge — adapted from supplied reference code */
+#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));bottom:auto;display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;letter-spacing:.25px;box-shadow:0 8px 28px rgba(0,0,0,.48),0 0 18px rgba(0,229,192,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
+#viewerBadge .viewer-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:czPulse 1.8s infinite}
+#watchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
+#viewerBadge .watching-total-label{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:9px;letter-spacing:.65px;font-weight:850}
+#totalVisits{color:#fff;font-size:12px;font-weight:950;font-variant-numeric:tabular-nums}
+#viewerBadge .watching-live-label{display:inline-flex;align-items:center;gap:5px}
+#viewerBadge .watching-live-label:before{content:"LIVE";font-size:9px;letter-spacing:1px;color:#06140f;background:#45f0b5;padding:3px 5px;border-radius:4px;font-weight:950}
+#viewerBadge.is-fullscreen{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;bottom:auto;z-index:2147483647}
+@keyframes czPulse{50%{opacity:.45;transform:scale(.75)}}
+#viewerBadge,#viewerBadge.is-fullscreen{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-height:none!important;max-width:calc(100vw - 20px)!important;box-sizing:border-box!important;w .watching-live-label{gap:4px!important;font-size:9px!important}
+#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important;letter-spacing:.6px!important}
+#watchingCount,#totalVisits{font-size:10px!important}
+#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important;letter-spacing:.35px!important}
+#viewerBadge.is-fullscreen{top:max(14px,env(safe-area-inset-top))!important;right:14px!important;bottom:auto!important;left:auto!important}
+@media(max-width:699px){#viewerBadge,#viewerBadge.is-fullscreen{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;bottom:auto!important;padding:5px 8px!important;gap:4px!important;font-size:8px!important}#viewerBadge .watching-live-label,#viewerBadge .watching-total-label{font-size:8px!important}#viewerBadge .watching-live-label:before{font-size:6px!important}#watchingCount,#totalVisits{font-size:9px!important}}
 </style>
 </head>
 <body>
@@ -295,6 +300,11 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
     x5-video-player-fullscreen="true">
   </video>
   <iframe id="stream-frame" title="Live stream" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div id="viewerBadge" aria-live="polite">
+    <span class="viewer-dot"></span>
+    <span class="watching-live-label"><strong id="watchingCount">0</strong> watching</span>
+    <span class="watching-total-label">TOTAL <strong id="totalVisits">0</strong></span>
+  </div>
 </div>
 
 <script src="stream.js"></script>
@@ -990,6 +1000,7 @@ async function main(){
   }
   document.title = ch.name;
   await startPlayer(ch);
+  if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
 }
 
 document.addEventListener("DOMContentLoaded", main);
@@ -1015,66 +1026,89 @@ document.addEventListener("DOMContentLoaded", main);
    if(document.getElementById("cz5-tg-modal")) return;
    var modal=document.createElement("div");
    modal.id="cz5-tg-modal";
-   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
-   document.body.appendChild(modal);
-   modal.querySelector(".cz5-tg-close").addEventListener("click",function(){
-     modal.classList.remove("cz5-open");
-     try{sessionStorage.setItem("cz5_tg_dismissed","1")}catch(e){}
-   });
- }
- function isFullscreen(){
-   return !!(document.fullscreenElement||document.webkitFullscreenElement||
-     (document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));
- }
- function schedulePopup(){
-   try{if(sessionStorage.getItem("cz5_tg_dismissed")==="1")return}catch(e){}
-   window.setTimeout(function(){
-     if(isFullscreen()||!document.getElementById("pc")||
-        getComputedStyle(document.getElementById("pc")).display==="none"){
-       schedulePopup();return;
-     }
-     makeModal();
-     document.getElementById("cz5-tg-modal").classList.add("cz5-open");
-   },60000);
- }
- function init(){
-   makeBar();
-   var params=new URLSearchParams(location.search);
-   if(!params.get("id")) return;
-   var frame=document.getElementById("stream-frame");
-   var video=document.getElementById("v");
-   var armed=false;
-   function arm(){if(armed)return;armed=true;schedulePopup()}
-   if(frame) frame.addEventListener("load",function(){
-     if(frame.src&&frame.src!=="about:blank") arm();
-   });
-   if(video) video.addEventListener("playing",arm,{once:true});
-   /* Fallback: start the timer once the selected channel player is opened. */
-   window.setTimeout(function(){
-     var pc=document.getElementById("pc");
-     if(pc&&getComputedStyle(pc).display!=="none") arm();
-   },2500);
- }
- if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
- else init();
-})();
-</script>
-<!-- END CRICZONE5 Telegram UI -->
-
-
-<script type="module">
-/* CRICZONE Firebase live watching + persistent total visits (public RTDB rules) */
+   modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news <script type="module">
+/* Firebase audience counters — uses the supplied CRICZONE project config.
+   No anonymous auth required when RTDB rules permit the site's writes. */
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
+  apiKey: "AIzaSySyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
   authDomain: "criczone-4daa2.firebaseapp.com",
   databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "criczone-4daa2",
   storageBucket: "criczone-4daa2.firebasestorage.app",
   messagingSenderId: "113293633217",
   appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
+  measurementId: "G-Q9RJ0VSSPP"
+};
+
+const appName = "criczone-audience";
+const app = getApps().find(x => x.name === appName) || initializeApp(firebaseConfig, appName);
+const db = getDatabase(app);
+const countEl = document.getElementById("watchingCount");
+const totalEl = document.getElementById("totalVisits");
+let activeRef = null;
+let countOff = null;
+let totalOff = null;
+let activeChannel = null;
+
+function display(el, value) {
+  if (el) el.textContent = Math.max(0, Number(value) || 0).toLocaleString("en-IN");
+}
+
+async function startTotalVisits() {
+  const totalRef = ref(db, "siteStats/totalVisits");
+  try {
+    await runTransaction(totalRef, current => (Number(current) || 0) + 1);
+  } catch (e) {
+    console.warn("CRICZONE total visit increment failed:", e);
+  }
+  totalOff = onValue(totalRef, snap => display(totalEl, snap.val()),
+    e => console.warn("CRICZONE total visits read failed:", e));
+}
+
+async function stopRealtimeWatching() {
+  if (countOff) { countOff(); countOff = null; }
+  if (activeRef) {
+    const oldRef = activeRef;
+    activeRef = null;
+    await remove(oldRef).catch(() => {});
+  }
+  activeChannel = null;
+  display(countEl, 0);
+}
+
+async function startRealtimeWatching(streamId) {
+  const safeId = String(streamId || "all").replace(/[^a-zA-Z0-9_-]/g, "_");
+  if (activeChannel === safeId && activeRef) return;
+  await stopRealtimeWatching();
+  activeChannel = safeId;
+  const viewerId = globalThis.crypto?.randomUUID?.() ||
+    (Date.now() + "_" + Math.random().toString(36).slice(2));
+  const channelRef = ref(db, "liveViewers/" + safeId);
+  activeRef = ref(db, "liveViewers/" + safeId + "/" + viewerId);
+  try {
+    await onDisconnect(activeRef).remove();
+    await set(activeRef, { joinedAt: Date.now(), online: true });
+    countOff = onValue(channelRef, snap => display(countEl, snap.size ?? snap.numChildren()),
+      e => console.warn("CRICZONE live viewer listener failed:", e));
+  } catch (e) {
+    console.error("CRICZONE live watching failed:", e);
+    display(countEl, 0);
+  }
+}
+
+window.startRealtimeWatching = startRealtimeWatching;
+window.stopRealtimeWatching = stopRealtimeWatching;
+startTotalVisits();
+
+window.addEventListener("pagehide", () => {
+  if (activeRef) remove(activeRef).catch(() => {});
+  if (countOff) countOff();
+  if (totalOff) totalOff();
+});
+</script>,
   measurementId: "G-Q9RJ0VSSPP"
 };
 
