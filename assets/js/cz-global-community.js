@@ -62,7 +62,7 @@
     window.setTimeout(function(){loadImg.src=photos[photoIndex].src;loadImg.alt=photos[photoIndex].name;loadImg.style.opacity="1";},180);
   }
   setPhoto(0);
-  var rotateTimer=window.setInterval(function(){setPhoto(photoIndex+1);},2300);
+  var rotateTimer=window.setInterval(function(){setPhoto(photoIndex+1);},1000);
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
