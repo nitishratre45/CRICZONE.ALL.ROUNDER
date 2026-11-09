@@ -1,26 +1,43 @@
 name: CRICZONE12 Playlist Refresh
+
 on:
   workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
+
 permissions:
   contents: write
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Extract authorized playlist metadata
+
+      - name: Check playlist configuration
         env:
-          PLAYLIST_URL: ${{ vars.CRICZONE12_PLAYLIST_URL }}
+          PLAYLIST_URL: ${{ secrets.CRICZONE12_PLAYLIST_URL }}
+        run: |
+          if [ -z "$PLAYLIST_URL" ]; then
+            echo "::error::Add CRICZONE12_PLAYLIST_URL under Settings > Secrets and variables > Actions > Secrets."
+            exit 1
+          fi
+
+      - name: Extract playlist metadata
+        env:
+          PLAYLIST_URL: ${{ secrets.CRICZONE12_PLAYLIST_URL }}
         run: python criczone12/tools/extract_playlist.py
-      - name: Commit updated catalogue
+
+      - name: Commit refreshed channel catalogue
         run: |
           if git diff --quiet -- criczone12/data/channels.json; then
-            echo "No channel catalogue changes."
+            echo "Channel catalogue is already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
