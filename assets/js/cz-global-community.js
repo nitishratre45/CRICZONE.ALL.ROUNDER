@@ -67,9 +67,15 @@
     #cz-global-community .cz-community-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
     #cz-global-community .cz-community-cat{padding:15px 5px 12px;border:1px solid #ffffff12;border-radius:18px;background:#ffffff08;color:#c8c4d3;font-size:12px}
     #cz-global-community .cz-community-cat b{display:block;font-size:25px;margin-bottom:5px}
-    #cz-global-community .cz-community-join{min-height:58px;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:17px;background:linear-gradient(105deg,#7838e8,#285fe9);color:#fff;text-decoration:none;font-size:14px;font-weight:900;letter-spacing:.8px;box-shadow:0 12px 30px #4934d94a}
+    #cz-global-community .cz-community-join{min-height:60px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #a9baff55;border-radius:17px;background:linear-gradient(105deg,#7838e8,#285fe9 58%,#168bd4);color:#fff;text-decoration:none;font-size:14px;font-weight:900;letter-spacing:.8px;box-shadow:0 12px 30px #4934d94a;transition:transform .2s ease,filter .2s ease,box-shadow .2s ease}
+    #cz-global-community .cz-community-join:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 16px 36px #4934d977}
+    #cz-global-community .cz-community-join:focus-visible,#cz-global-community .cz-community-close:focus-visible{outline:2px solid #d5ef7b;outline-offset:4px}
     #cz-global-community .cz-community-join span:first-child{font-size:22px}
-    #cz-global-community .cz-community-foot{margin:20px 0 0;color:#666173;font-size:10px;letter-spacing:3px;font-weight:800}
+    #cz-global-community .cz-community-foot{margin:16px 0 0;color:#89839d;font-size:10px;letter-spacing:1.5px;font-weight:800}
+    #cz-global-community .cz-community-trust{margin:9px 0 0;color:#aaa6b8;font-size:11px;line-height:1.4}
+    #cz-global-community .cz-community-cat{transition:transform .2s ease,border-color .2s ease,background .2s ease}
+    #cz-global-community .cz-community-cat:hover{transform:translateY(-2px);border-color:#8b5cf64a;background:#8b5cf615}
+    @media(max-height:650px){#cz-global-community{align-items:start;overflow-y:auto}#cz-global-community .cz-community-card{margin:auto;padding:22px 18px}#cz-global-community .cz-community-photo{width:68px;height:68px;margin-bottom:10px}#cz-global-community .cz-community-copy{margin:8px auto 14px}#cz-global-community .cz-community-cats{margin-bottom:14px}#cz-global-community .cz-community-foot{margin-top:12px}}
     @media(max-width:380px){#cz-global-community .cz-community-card{padding:26px 16px 21px}#cz-global-community .cz-community-cats{gap:7px}#cz-global-community .cz-community-cat{padding:12px 3px;font-size:11px}}
     @media(prefers-reduced-motion:reduce){#cz-global-loader,#cz-global-community,#cz-global-community .cz-community-card{transition:none}#cz-global-loader .cz-load-track:after{animation:none}}
   `;
@@ -100,7 +106,7 @@
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
-  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community" /></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_blank" rel="noopener noreferrer"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div></section>';
+  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community" /></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_blank" rel="noopener noreferrer"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div><p class="cz-community-trust">Free to join · Get updates in our Telegram community</p></section>';
   document.documentElement.appendChild(popup);
   var popupImg=popup.querySelector(".cz-community-photo img");
   var popupPhotoIndex=0;
@@ -119,6 +125,7 @@
   },2000);
   window.setTimeout(function(){
     popup.classList.add("cz-show");
+    popup.querySelector(".cz-community-close").focus({preventScroll:true});
   },5000);
   window.addEventListener("pagehide",function(){window.clearInterval(rotateTimer);window.clearInterval(popupRotate);legacyObserver.disconnect();});
 })();
