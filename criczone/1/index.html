@@ -24,25 +24,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
 .hero{padding:20px 18px;margin:2px 0 16px;border:1px solid #3986ff55;border-radius:20px;background:linear-gradient(115deg,#0c3e9f,#0753db 60%,#0837a0);box-shadow:0 14px 35px #004bba33}
 .hero h1{margin:0;font-size:clamp(20px,4vw,27px);font-weight:900;letter-spacing:-.7px}.hero p{margin:7px 0 0;color:#d7e7ff;font-size:12px;line-height:1.55}
-.telegram{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 20px;padding:13px 15px;border:1px solid #258cff;border-radius:16px;background:linear-gradient(110deg,#0c62eb,#0644c7);box-shadow:0 8px 24px #006eff28;color:#fff;text-decoration:none}
-.tg-left{display:flex;align-items:center;gap:11px;min-width:0}.tg-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:13px;background:#ffffff25;font-size:22px}.tg-title{font-size:13px;font-weight:900}.tg-sub{margin-top:4px;color:#d9e9ff;font-size:10px}.tg-join{padding:10px 13px;border-radius:10px;background:#fff;color:#0751ce;font-size:11px;font-weight:900;white-space:nowrap}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:20px 2px 12px}.section-head h2{margin:0;font-size:17px;font-weight:900}.section-head p{margin:4px 0 0;color:var(--muted);font-size:11px}.count{padding:6px 9px;border:1px solid var(--line);border-radius:99px;color:#d7e6f8;font-size:10px;font-weight:800;white-space:nowrap}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;border:1px solid var(--line);border-radius:99px;padding:9px 14px;background:#0c1727;color:#b8c6d8;font:800 11px Inter, sans-serif;cursor:pointer}.tab.active{border-color:#4b9dff;background:linear-gradient(120deg,#155fe0,#093fae);color:white;box-shadow:0 5px 16px #0754d744}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.channel{display:flex;align-items:center;gap:13px;min-width:0;min-height:94px;padding:13px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,rgba(18,34,55,.96),rgba(8,17,30,.96));color:#f5f8ff;text-align:left;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
-.channel:active{transform:scale(.98)}.channel:hover,.channel:focus-visible{border-color:#318bff;outline:none;background:#102747}
-.channel-icon{display:grid;place-items:center;flex:0 0 68px;width:68px;height:68px;overflow:hidden;border-radius:14px;background:linear-gradient(145deg,#176be9,#083eaa);font-size:24px;font-weight:900}.channel-icon img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:12px;background:#fff}
-.channel-info{min-width:0;flex:1}.channel-name{display:block;font-size:14px;font-weight:850;line-height:1.35;overflow-wrap:anywhere}.channel-category{display:block;margin-top:6px;color:#8fa8c4;font-size:10px;font-weight:700;letter-spacing:.4px}.channel-arrow{color:#7fbaff;font-size:18px}
-.status{padding:26px 12px;text-align:center;color:var(--muted);font-size:12px}
-.player-view{display:none}.player-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}.back,.player-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#0d1a2b;color:#edf5ff;font:800 11px Inter,sans-serif;cursor:pointer}.back{border-color:#d6ae5144;color:#ffdc8b}.player-title{min-width:0;flex:1;text-align:right;font-size:12px;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.frame-wrap{position:relative;width:100%;aspect-ratio:16/9;min-height:210px;overflow:hidden;border:1px solid #2e83e8;border-radius:17px;background:#000;box-shadow:0 15px 38px #0008}
-.frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
-.player-note{margin:10px 2px 0;color:var(--muted);font-size:10px;line-height:1.5}
-.empty{grid-column:1/-1;padding:24px 14px;border:1px dashed #ffffff24;border-radius:14px;color:var(--muted);text-align:center;font-size:12px}
-.footer{margin-top:28px;padding:16px 10px;border-top:1px solid var(--line);color:#74879e;text-align:center;font-size:10px}
-.toast{position:fixed;left:50%;bottom:max(22px,env(safe-area-inset-bottom));z-index:60;transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:11px 15px;border:1px solid #ffffff20;border-radius:12px;background:#13243a;color:white;font-size:11px;font-weight:800;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(min-width:720px){main{padding-top:26px}.hero{padding:26px}.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.channel{min-height:100px;padding:15px}.channel-icon{flex-basis:72px;width:72px;height:72px}.channel-name{font-size:14px}}
-@media(max-width:380px){.grid{grid-template-columns:1fr}.hero{padding:17px}.telegram{padding:11px}.tg-title{font-size:11px}.tg-sub{font-size:9px}.tg-join{padding:9px;font-size:10px}}
+.hero{padding:17px}.telegram{padding:11px}.tg-title{font-size:11px}.tg-sub{font-size:9px}.tg-join{padding:9px;font-size:10px}}
 </style>
 </head>
 <body>
@@ -55,10 +37,7 @@ main{width:min(1100px,100%);margin:0 auto;padding:18px 14px 42px}
     <h1>Watch Live Cricket</h1>
     <p>Select your preferred sports channel below. The player will load only after you tap a channel.</p>
   </section>
-  <a class="telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">
-    <span class="tg-left"><span class="tg-icon">➤</span><span><span class="tg-title">JOIN OFFICIAL CRICZONE TELEGRAM</span><br><span class="tg-sub">Live match updates • Cricket news • Community</span></span></span>
-    <span class="tg-join">JOIN NOW →</span>
-  </a>
+  
   <section id="channel-view">
     <div class="section-head"><div><h2>Choose a Channel</h2><p>Tap any channel to start watching</p></div><span class="count" id="channel-count">Loading…</span></div>
     <nav class="tabs" id="tabs" aria-label="Channel categories"></nav>
