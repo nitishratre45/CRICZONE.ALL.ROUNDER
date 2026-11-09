@@ -17,7 +17,7 @@ const CNPTV_SOURCE =
 const WORLD_SOURCE =
   'https://raw.githubusercontent.com/kajju027/Fancode-Events-Json/main/fancode.json';
 
-const PLAYER_PAGE = 'play.html';
+const PLAYER_PAGE = 'fc-play.html';
 
 const TELEGRAM_LINK =
   'https://t.me/+MueCDjlpoS8yNmJl';
