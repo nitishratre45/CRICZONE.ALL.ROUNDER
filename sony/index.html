@@ -1076,8 +1076,17 @@ function getJsonEntries(json){
 }
 
 async function loadData(){
+  var m3uCandidates = [proxyUrl(M3U_URL), M3U_URL];
+  var m3uRequest = m3uCandidates.reduce(function(chain,url){
+    return chain.catch(function(){
+      return fetch(url,{cache:"no-store"}).then(function(r){
+        if(!r.ok) throw new Error("M3U HTTP "+r.status);
+        return r.text();
+      });
+    });
+  },Promise.reject(new Error("No M3U source attempted")));
   var results = await Promise.allSettled([
-    fetch(M3U_URL,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("M3U HTTP "+r.status);return r.text();}),
+    m3uRequest,
     fetchSourceText(JSON_SOURCES[0]).then(function(t){return JSON.parse(t);}),
     fetchSourceText(JSON_SOURCES[1]).then(function(t){return JSON.parse(t);}),
     fetchSourceText(JSON_SOURCES[2]).then(function(t){return JSON.parse(t);})
@@ -1096,11 +1105,14 @@ async function loadData(){
     var idKey=normalizeKey(ch.id), nameKey=normalizeKey(ch.name);
     var match=jsonEntries.find(function(entry){
       var entryId=normalizeKey(entry.id || entry.key), entryName=normalizeKey(entry.name);
-      return (entryId && (entryId===idKey || entryId===nameKey)) ||
-             (entryName && (entryName===nameKey || entryName===idKey)) ||
-             (normalizeKey(entry.key) && (normalizeKey(entry.key)===idKey || normalizeKey(entry.key)===nameKey));
+      // Prefer explicit channel IDs. Fall back to an exact normalized
+      // channel-name match only when the feed has no usable ID.
+      if(entry.id && idKey && entryId===idKey) return true;
+      return !entry.id && entryName && entryName===nameKey;
     });
-    if(match){ch.stream_url=match.url;ch.json_source=true;}
+    // Keep the existing M3U stream as the fallback. JSON only replaces it
+    // when its channel ID is an exact match, avoiding unrelated stream swaps.
+    if(match && match.url){ch.json_stream_url=match.url;ch.json_source=true;}
   });
 
   // Include valid channels that exist only in the JSON feeds.
