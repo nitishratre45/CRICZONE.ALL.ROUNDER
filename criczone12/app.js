@@ -85,7 +85,7 @@
   async function loadChannelData(){
     // Import public channel metadata only. DRM keys/key IDs are deliberately ignored.
     try{
-      const remote=await fetch('https://giotv-6op.pages.dev/jstr4web.json',{cache:'no-store'});
+      const remote=await fetch('/api/channel-catalog',{cache:'no-store'});
       if(!remote.ok) throw new Error('Remote JSON HTTP '+remote.status);
       const rows=await remote.json();
       if(!Array.isArray(rows)) throw new Error('Remote JSON format is not an array');
