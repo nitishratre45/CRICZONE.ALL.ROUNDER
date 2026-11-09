@@ -1573,13 +1573,41 @@ function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
 
 async function loadData(){
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 15000);
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 20000);
   try {
-    var res = await fetch(API_URL, {cache:"no-store",signal:controller.signal});
-    if(!res.ok) throw new Error("HTTP " + res.status);
+    var res = await fetch(API_URL, {cache:"no-store", signal:controller.signal, headers:{"Accept":"application/json"}});
+    if(!res.ok) throw new Error("Movie catalogue returned HTTP " + res.status);
     var json = await res.json();
-    if (!json || !Array.isArray(json.matches)) throw new Error("Invalid catalog response");
-    return json.matches.filter(function(item){ return item && typeof item === "object" && typeof item.title === "string" && item.title.trim(); });
+    var rows = Array.isArray(json) ? json :
+      (json && (Array.isArray(json.matches) ? json.matches :
+       Array.isArray(json.movies) ? json.movies :
+       Array.isArray(json.data) ? json.data :
+       Array.isArray(json.results) ? json.results : null));
+    if(!rows) throw new Error("Catalogue format not recognized (expected matches/movies/data/results array)");
+    return rows.filter(function(item){
+      return item && typeof item === "object" && typeof (item.title || item.name) === "string" && String(item.title || item.name).trim();
+    }).map(function(item){
+      var movie = Object.assign({}, item);
+      movie.title = String(item.title || item.name).trim();
+      movie.poster = item.poster || item.posterUrl || item.image || item.thumbnail || "";
+      movie.backdrop = item.backdrop || item.backdropUrl || item.banner || movie.poster;
+      var sourceRows = Array.isArray(item.channels) ? item.channels :
+        Array.isArray(item.sources) ? item.sources :
+        Array.isArray(item.episodes) ? item.episodes :
+        Array.isArray(item.qualities) ? item.qualities : [];
+      movie.channels = sourceRows.map(function(source, index){
+        if(typeof source === "string") return {name:"Source " + (index + 1), streamUrl:source};
+        source = source || {};
+        return Object.assign({}, source, {
+          name: source.name || source.quality || source.label || source.title || ("Source " + (index + 1)),
+          streamUrl: source.streamUrl || source.url || source.src || source.file || source.link || ""
+        });
+      });
+      return movie;
+    });
+  } catch(error) {
+    if(error && error.name === "AbortError") throw new Error("Movie catalogue request timed out. Please retry.");
+    throw error;
   } finally {
     clearTimeout(timeoutId);
   }
@@ -1911,12 +1939,24 @@ function openDetailModal(movie){
   if(!$detailDesc.childNodes.length)$detailDesc.textContent=movie.heading||"No description available.";
   $episodesGrid.textContent="";
   var channels=Array.isArray(movie.channels)?movie.channels:[];
-  if(!channels.length){var empty=document.createElement("div");empty.style.color="var(--text-secondary)";empty.textContent="No stream sources available."; $episodesGrid.appendChild(empty);}
-  else channels.forEach(function(channel,index){
-    var btn=document.createElement("button");btn.className="episode-btn";btn.type="button";btn.textContent=channel&&channel.name?String(channel.name):"Play";btn.title=btn.textContent;
-    btn.disabled=!channel||!safeHttpUrl(channel.streamUrl);
-    if(btn.disabled)btn.title+=" (unavailable)";
-    btn.addEventListener("click",function(){$detailModal.style.display="none";openPlayer(channel.streamUrl,movie.title+" - "+btn.textContent,movie.title,index);});
+  if(!channels.length){
+    var empty=document.createElement("div");
+    empty.className="source-empty";
+    empty.textContent="No playable sources are listed for this title yet.";
+    $episodesGrid.appendChild(empty);
+  } else channels.forEach(function(channel,index){
+    var btn=document.createElement("button");
+    btn.className="episode-btn"; btn.type="button";
+    var label=channel&&channel.name?String(channel.name):("Source "+(index+1));
+    btn.textContent=label; btn.title=label;
+    var stream=channel&&safeHttpUrl(channel.streamUrl);
+    btn.disabled=!stream;
+    if(!stream){btn.title=label+" — unavailable";btn.setAttribute("aria-disabled","true");}
+    btn.addEventListener("click",function(){
+      if(!stream){toast("This source is unavailable. Try another listed option.","err",3500);return;}
+      $detailModal.style.display="none";
+      openPlayer(stream,movie.title+" - "+label,movie.title,index);
+    });
     $episodesGrid.appendChild(btn);
   });
   var trailerUrl=safeHttpUrl(meta.trailerUrl||movie.trailerUrl);$detailTrailer.hidden=!trailerUrl;
@@ -2099,6 +2139,14 @@ document.addEventListener("DOMContentLoaded", function(){
 <style>
 #cz-tg-local-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:calc(100% - 28px);max-width:1200px;min-height:76px;margin:12px auto;padding:11px 17px;border:1px solid #28a7ff;border-radius:17px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 0 22px #008bff55,0 10px 28px #0004;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;position:relative;z-index:30}#cz-tg-local-bar *{box-sizing:border-box}#cz-tg-local-bar .cz-tg-left{display:flex;align-items:center;gap:13px;min-width:0;color:#fff;text-decoration:none}#cz-tg-local-bar .cz-tg-logo{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:13px;background:#ffffff30}#cz-tg-local-bar svg{width:27px;height:27px}#cz-tg-local-bar .cz-tg-label{display:flex;flex-direction:column;gap:3px;min-width:0}#cz-tg-local-bar strong{font-size:clamp(13px,2vw,18px);font-weight:900;line-height:1.15}#cz-tg-local-bar small{font-size:11px;font-weight:650;color:#ffffffdf}#cz-tg-local-bar .cz-tg-tap{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 16px;border-radius:11px;background:#fff;color:#0754dc;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px #0003}
 #cz-tg-local-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:#020812d9;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Inter,system-ui,sans-serif}#cz-tg-local-modal.cz-open{opacity:1;visibility:visible}#cz-tg-local-modal .cz-tg-card{position:relative;width:min(100%,380px);padding:29px 23px 24px;border:1px solid #229ed966;border-radius:24px;background:radial-gradient(circle at 50% 0,#229ed933,transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #0009,0 0 32px #229ed922;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}#cz-tg-local-modal.cz-open .cz-tg-card{transform:none}#cz-tg-local-modal .cz-tg-x{position:absolute;right:11px;top:11px;width:32px;height:32px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}#cz-tg-local-modal .cz-tg-modal-logo{width:70px;height:70px;margin:3px auto 15px}#cz-tg-local-modal .cz-tg-modal-logo svg{width:100%;height:100%}#cz-tg-local-modal .cz-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}#cz-tg-local-modal h2{margin:0;font-size:24px;line-height:1.2;font-weight:900}#cz-tg-local-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:13px;line-height:1.55}#cz-tg-local-modal .cz-tg-join{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 9px 25px #229ed94d}#cz-tg-local-modal .cz-tg-foot{margin:12px 0 0;font-size:10px;color:#9eb4c8}@media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}}@media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-local-modal .cz-tg-card{transition:none}}
+
+/* Hub reliability + mobile detail modal fixes */
+.source-empty{grid-column:1/-1;padding:16px;border:1px dashed rgba(245,185,40,.28);border-radius:12px;color:var(--text-secondary);background:rgba(255,255,255,.025);font-size:.84rem;line-height:1.5;text-align:center}
+.episodes-grid{min-width:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));align-content:start;overscroll-behavior:contain}
+.episode-btn{min-width:0;white-space:normal;overflow-wrap:anywhere;min-height:46px}
+.detail-content{overscroll-behavior:contain;scrollbar-gutter:stable;}
+#detailModal{overflow-y:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:768px){#detailModal{align-items:flex-start}.detail-content{margin:auto;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto}.episodes-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,minmax(0,1fr))}.detail-close{position:sticky;top:0}}
 </style>
 <script>(function(){if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;var link="https://t.me/+pN15_8gc54s2NDU1";var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#fff"/></svg>';function init(){if(document.getElementById("cz-tg-local-bar"))return;var bar=document.createElement("aside");bar.id="cz-tg-local-bar";bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';var target=document.querySelector("main .hero,main .intro,.hero-section,.hero-box,.player-header,header,main");if(target){target.insertAdjacentElement("afterend",bar);}else{document.body.appendChild(bar);}var modal=document.createElement("div");modal.id="cz-tg-local-modal";modal.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-local-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-local-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 Free to join · Stay connected with CRICZONE</div></section>';document.body.appendChild(modal);function close(){modal.classList.remove("cz-open")}modal.querySelector(".cz-tg-x").addEventListener("click",close);window.setTimeout(function(){modal.classList.add("cz-open")},5000)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()})();</script>
 
