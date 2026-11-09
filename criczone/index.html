@@ -204,6 +204,64 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 @media(prefers-reduced-motion:reduce){#channel-list *{animation:none!important;transition:none!important}}
 /* ===== END CRICZONE HOME UI ===== */
 
+/* ===== CRICZONE RESPONSIVE NAVBAR + FULL-WIDTH DESKTOP LAYOUT ===== */
+#ch-header{
+  position:sticky!important;top:0!important;z-index:100!important;
+  justify-content:space-between!important;
+  min-height:66px!important;
+  padding:11px clamp(18px,4.2vw,76px)!important;
+  border-bottom:1px solid rgba(114,224,170,.28)!important;
+  background:linear-gradient(110deg,#071b13 0%,#0b2118 48%,#081710 100%)!important;
+  box-shadow:0 8px 26px rgba(0,0,0,.38),0 1px 0 rgba(114,224,170,.07)!important;
+}
+.cz-brand{gap:12px!important}
+.cz-brand-mark{
+  flex:0 0 42px!important;
+  border:1px solid rgba(114,224,170,.65)!important;
+  background:linear-gradient(145deg,#174a32,#102b20)!important;
+  box-shadow:0 0 0 3px rgba(114,224,170,.08),0 5px 18px rgba(0,0,0,.35)!important;
+}
+.cz-brand-copy strong{color:#f4fff7!important;text-shadow:0 1px 10px rgba(114,224,170,.12)}
+.cz-brand-copy small{color:#a8c7b4!important}
+.cz-live-pill{
+  border-color:rgba(114,224,170,.48)!important;
+  background:linear-gradient(120deg,rgba(114,224,170,.16),rgba(25,73,49,.34))!important;
+  color:#a8ffd0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 14px rgba(0,0,0,.2)!important;
+}
+#home-main{width:calc(100% - clamp(36px,5vw,104px))!important;max-width:none!important;margin:0 auto!important}
+#cz-home-footer{width:calc(100% - clamp(36px,5vw,104px))!important;max-width:none!important}
+#ch-grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr))!important;gap:16px!important}
+.ch-card{min-height:158px!important}
+@media(min-width:1500px){
+  #home-main{padding-top:clamp(34px,3.5vw,62px)!important}
+  #ch-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important;gap:18px!important}
+  .ch-card{min-height:170px!important}
+}
+@media(max-width:620px){
+  #ch-header{
+    min-height:60px!important;padding:9px 14px!important;
+    background:linear-gradient(110deg,#071a12,#0d251a 55%,#081710)!important;
+    border-bottom:1px solid rgba(114,224,170,.32)!important;
+    box-shadow:0 6px 20px rgba(0,0,0,.42)!important;
+  }
+  .cz-brand{gap:9px!important}
+  .cz-brand-mark{flex-basis:38px!important;width:38px!important;height:38px!important;border-radius:11px!important}
+  .cz-brand-copy strong{font-size:15px!important;letter-spacing:.7px!important}
+  .cz-brand-copy small{font-size:8px!important;letter-spacing:1.15px!important}
+  .cz-live-pill{padding:7px 9px!important;font-size:8px!important;letter-spacing:.7px!important}
+  #home-main{width:calc(100% - 24px)!important;padding-top:22px!important}
+  #cz-home-footer{width:calc(100% - 24px)!important}
+  #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+}
+@media(max-width:360px){
+  #ch-header{padding:8px 10px!important}
+  .cz-brand-copy strong{font-size:13px!important}
+  .cz-brand-copy small{font-size:7px!important}
+  .cz-live-pill{padding:6px 7px!important;font-size:7px!important}
+}
+/* ===== END RESPONSIVE NAVBAR + FULL-WIDTH DESKTOP LAYOUT ===== */
+
+
 
 /* CRICZONE5 TELEGRAM JOIN UI */
 #cz5-telegram-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px;padding:13px 16px;border:1px solid rgba(34,158,217,.48);border-radius:16px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 10px 28px rgba(0,75,210,.2);font-family:Manrope,system-ui,sans-serif}
