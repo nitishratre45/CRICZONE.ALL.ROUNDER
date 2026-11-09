@@ -3759,3 +3759,550 @@ a {
     height: 95px;
   }
 }
+
+
+
+/* =========================================================
+   CRICZONE HOME — PREMIUM HOMEPAGE REFRESH
+========================================================= */
+
+.topbar {
+  border-bottom-color: rgba(255, 255, 255, .085);
+  background: rgba(4, 8, 15, .82);
+  box-shadow: 0 8px 35px rgba(0, 0, 0, .16);
+}
+
+.topbar-inner {
+  min-height: 76px;
+}
+
+.brand {
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, .15);
+  box-shadow: 0 8px 28px rgba(20, 145, 255, .28), inset 0 1px 0 rgba(255, 255, 255, .2);
+}
+
+.brand-name {
+  letter-spacing: -.9px;
+}
+
+.main-nav {
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.nav-link {
+  border-radius: 10px;
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, rgba(31, 165, 255, .18), rgba(31, 165, 255, .06));
+  box-shadow: inset 0 0 0 1px rgba(43, 178, 255, .12);
+}
+
+.hero {
+  position: relative;
+  min-height: 625px;
+  padding-top: 80px;
+  padding-bottom: 78px;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 9%;
+  left: -7%;
+  width: 62%;
+  height: 78%;
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(20, 113, 205, .12), transparent 68%);
+}
+
+.hero-content {
+  max-width: 720px;
+}
+
+.hero-badge {
+  padding: 9px 14px;
+  margin-bottom: 24px;
+  border-color: rgba(45, 190, 255, .25);
+  background: linear-gradient(110deg, rgba(28, 161, 255, .13), rgba(28, 161, 255, .035));
+  box-shadow: 0 8px 28px rgba(15, 140, 255, .08), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.hero h1 {
+  font-size: clamp(56px, 6.5vw, 96px);
+  line-height: .96;
+  letter-spacing: -5.2px;
+  text-wrap: balance;
+}
+
+.hero h1 span {
+  background: linear-gradient(100deg, #f5fbff 0%, #4bcaff 48%, #1687ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+.hero-content > p {
+  max-width: 510px;
+  margin-top: 23px;
+  color: rgba(230, 241, 255, .62);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.hero-actions {
+  gap: 13px;
+  margin-top: 31px;
+}
+
+.hero-primary {
+  min-height: 52px;
+  padding: 0 22px;
+  color: #03101c;
+  background: linear-gradient(105deg, #f8fcff, #bceaff);
+  box-shadow: 0 12px 35px rgba(34, 169, 255, .17), inset 0 1px 0 #fff;
+}
+
+.hero-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 17px 42px rgba(34, 169, 255, .25);
+}
+
+.hero-secondary {
+  min-height: 52px;
+  padding: 0 21px;
+  border-color: rgba(255, 255, 255, .13);
+  background: rgba(255, 255, 255, .045);
+  backdrop-filter: blur(12px);
+}
+
+.hero-stats {
+  width: max-content;
+  max-width: 100%;
+  margin-top: 44px;
+  padding: 15px 19px;
+  gap: 22px;
+  border: 1px solid rgba(255, 255, 255, .085);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .018));
+  box-shadow: 0 12px 35px rgba(0, 0, 0, .12), inset 0 1px 0 rgba(255, 255, 255, .05);
+  backdrop-filter: blur(14px);
+}
+
+.hero-stat strong {
+  font-size: 25px;
+  letter-spacing: -.7px;
+}
+
+.hero-stat span {
+  color: rgba(226, 240, 255, .48);
+  font-size: 8px;
+  letter-spacing: 1.1px;
+}
+
+.hero-visual {
+  min-height: 510px;
+  overflow: visible;
+}
+
+.hero-glow {
+  width: 410px;
+  height: 410px;
+  background: rgba(19, 150, 255, .17);
+  filter: blur(82px);
+}
+
+.hero-orbit {
+  border-color: rgba(48, 180, 255, .2);
+  box-shadow: 0 0 24px rgba(24, 147, 255, .035);
+}
+
+.orbit-one {
+  width: 430px;
+  height: 255px;
+}
+
+.orbit-two {
+  width: 330px;
+  height: 450px;
+}
+
+.hero-ball {
+  width: 220px;
+  height: 220px;
+  background:
+    radial-gradient(circle at 30% 25%, #5d6877, #172332 44%, #050a12 76%);
+  box-shadow:
+    inset -22px -27px 48px rgba(0, 0, 0, .72),
+    inset 12px 10px 30px rgba(255, 255, 255, .1),
+    0 38px 100px rgba(0, 0, 0, .62),
+    0 0 85px rgba(17, 172, 255, .2);
+}
+
+.floating-card {
+  border-color: rgba(255, 255, 255, .14);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgba(19, 30, 45, .88), rgba(7, 12, 20, .82));
+  box-shadow: 0 24px 65px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .07);
+  backdrop-filter: blur(18px);
+}
+
+.card-live {
+  right: 0;
+}
+
+.card-score {
+  left: 0;
+}
+
+.content-section {
+  padding-top: 35px;
+}
+
+.section-heading {
+  margin-bottom: 25px;
+}
+
+.section-heading h2,
+.matches-title h2 {
+  letter-spacing: -1.8px;
+}
+
+.last-update-wrap {
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.featured-live-card {
+  border-color: rgba(255, 255, 255, .11);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(28, 153, 255, .11), transparent 38%),
+    linear-gradient(135deg, #101b2a, #080d15 70%);
+  box-shadow: 0 28px 75px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .055);
+}
+
+.featured-image img {
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.featured-image-overlay {
+  background: linear-gradient(90deg, transparent 28%, rgba(8, 13, 21, .34) 66%, #0b1017 100%);
+}
+
+.featured-live-content h3 {
+  letter-spacing: -1.5px;
+}
+
+.featured-watch-btn {
+  min-height: 42px;
+  padding: 0 17px;
+  color: #03111d;
+  background: linear-gradient(105deg, #f7fcff, #b7eaff);
+  box-shadow: 0 9px 25px rgba(28, 158, 255, .13);
+}
+
+.matches-section {
+  padding-top: 75px;
+}
+
+.search-wrap {
+  height: 47px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.filter-btn {
+  height: 37px;
+  padding: 0 16px;
+  font-size: 11px;
+}
+
+.filter-btn.active {
+  color: #eaf8ff;
+  background: linear-gradient(110deg, rgba(25, 157, 255, .2), rgba(25, 157, 255, .08));
+  box-shadow: inset 0 0 0 1px rgba(43, 178, 255, .09);
+}
+
+.match-card {
+  border-color: rgba(255, 255, 255, .09);
+  border-radius: 17px;
+  background: linear-gradient(160deg, rgba(17, 25, 37, .96), rgba(8, 12, 19, .94));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .12);
+}
+
+.match-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(48, 177, 255, .28);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .28), 0 0 28px rgba(21, 143, 255, .06);
+}
+
+.match-thumbnail {
+  background: linear-gradient(135deg, #14253a, #080d15);
+}
+
+.match-content {
+  padding: 16px;
+}
+
+.match-title {
+  font-size: 14px;
+}
+
+.telegram-card {
+  border-color: rgba(47, 164, 255, .2);
+  border-radius: 23px;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(30, 150, 255, .17), transparent 38%),
+    linear-gradient(120deg, rgba(15, 31, 49, .95), rgba(7, 13, 22, .94));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.telegram-cta {
+  min-height: 44px;
+  padding: 0 20px;
+  border-color: rgba(88, 190, 255, .24);
+  background: linear-gradient(110deg, rgba(28, 155, 255, .2), rgba(28, 155, 255, .08));
+}
+
+.footer {
+  border-top-color: rgba(255, 255, 255, .085);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 560px;
+    gap: 12px;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 7vw, 70px);
+    letter-spacing: -3.5px;
+  }
+
+  .hero-visual {
+    min-height: 400px;
+  }
+
+  .hero-ball {
+    width: 175px;
+    height: 175px;
+  }
+
+  .orbit-one {
+    width: 310px;
+    height: 190px;
+  }
+
+  .orbit-two {
+    width: 250px;
+    height: 340px;
+  }
+}
+
+@media (max-width: 620px) {
+  .topbar {
+    background: rgba(4, 8, 15, .9);
+  }
+
+  .topbar-inner {
+    min-height: 66px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero {
+    position: relative;
+    width: calc(100% - 30px);
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 48px 0 24px;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-badge {
+    margin-bottom: 19px;
+    padding: 8px 11px;
+    font-size: 9px;
+  }
+
+  .hero h1 {
+    max-width: 540px;
+    font-size: clamp(46px, 12.5vw, 66px);
+    line-height: .98;
+    letter-spacing: -3.2px;
+  }
+
+  .hero-content > p {
+    max-width: 390px;
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 22px;
+  }
+
+  .hero-primary,
+  .hero-secondary {
+    width: 100%;
+    min-height: 47px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 11px;
+  }
+
+  .hero-stats {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 13px 12px;
+    border-radius: 14px;
+  }
+
+  .hero-stat {
+    min-width: 0;
+  }
+
+  .hero-stat strong {
+    font-size: 20px;
+  }
+
+  .hero-stat span {
+    font-size: 7px;
+    letter-spacing: .75px;
+  }
+
+  .hero-stat-divider {
+    height: 25px;
+  }
+
+  .hero-visual {
+    min-height: 275px;
+    margin-top: 7px;
+  }
+
+  .hero-glow {
+    width: 250px;
+    height: 250px;
+  }
+
+  .hero-ball {
+    width: 142px;
+    height: 142px;
+  }
+
+  .orbit-one {
+    width: 270px;
+    height: 160px;
+  }
+
+  .orbit-two {
+    width: 205px;
+    height: 285px;
+  }
+
+  .ball-seam {
+    width: 175px;
+    top: 52px;
+    left: -16px;
+  }
+
+  .floating-card {
+    min-width: 116px;
+    padding: 10px;
+    border-radius: 13px;
+  }
+
+  .card-live {
+    top: 18px;
+    right: 0;
+  }
+
+  .card-score {
+    bottom: 15px;
+    left: 0;
+  }
+
+  .content-section {
+    padding-top: 20px;
+  }
+
+  .section-heading {
+    margin-bottom: 18px;
+  }
+
+  .section-heading h2,
+  .matches-title h2 {
+    font-size: 29px;
+  }
+
+  .last-update-wrap {
+    padding: 7px 9px;
+    font-size: 8px;
+  }
+
+  .featured-live-card {
+    border-radius: 17px;
+  }
+
+  .featured-live-content {
+    padding: 20px;
+  }
+
+  .matches-section {
+    padding-top: 48px;
+  }
+
+  .matches-toolbar {
+    gap: 14px;
+  }
+
+  .filter-row {
+    margin-top: 17px;
+    margin-bottom: 17px;
+  }
+
+  .match-card {
+    border-radius: 15px;
+  }
+
+  .telegram-card {
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ball,
+  .hero-orbit,
+  .hero-live-dot {
+    animation: none !important;
+  }
+}
