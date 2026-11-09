@@ -1556,8 +1556,8 @@ async function main(){
   }
   if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
 
-  var isDirectHls = /\\.m3u8(?:\\?|$)/i.test(streamUrl);
-  var isDash = /\\.mpd(?:\\?|$)/i.test(streamUrl);
+  var isDirectHls = /\.m3u8(?:\?|$)/i.test(streamUrl);
+  var isDash = /\.mpd(?:\?|$)/i.test(streamUrl);
   if(externalFrame && !isDirectHls && !isDash) {
     // Web/player URLs are embedded directly, so the iframe contains only
     // the selected channel rather than the provider's channel directory.
