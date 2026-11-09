@@ -1,0 +1,30 @@
+name: CRICZONE12 Playlist Refresh
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract authorized playlist metadata
+        env:
+          PLAYLIST_URL: ${{ vars.CRICZONE12_PLAYLIST_URL }}
+        run: python criczone12/tools/extract_playlist.py
+      - name: Commit updated catalogue
+        run: |
+          if git diff --quiet -- criczone12/data/channels.json; then
+            echo "No channel catalogue changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add criczone12/data/channels.json
+          git commit -m "Refresh CRICZONE12 channel catalogue"
+          git push
