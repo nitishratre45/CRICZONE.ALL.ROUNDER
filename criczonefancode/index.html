@@ -1,354 +1,426 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07111f">
-  <meta name="description" content="Watch live FanCode cricket matches on CRICZONE.">
-  <title>CRICZONE — FanCode Live</title>
-  <link rel="icon" href="../photos/photo_2026-10-28_14-52-23.jpg" type="image/jpeg">
-  <link rel="stylesheet" href="./fancode.css?v=20261108-11">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>CRICZONE - FANCODE</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<link rel="icon" href="/photos/photo_2026-10-28_14-52-23.jpg" type="image/png">
+<link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
+<link rel="canonical" href="https://criczone.pages.dev/">
+
+<style>
+body{
+background:#0a0f1c;
+font-family:'Poppins',sans-serif;
+color:#edf2f7;
+}
+
+button{
+font-family:'Poppins',sans-serif;
+}
+
+.match-tile{
+background:#131d2f;
+border-radius:32px;
+border:1px solid #253247;
+overflow:hidden;
+display:flex;
+flex-direction:column;
+box-shadow:0 15px 30px -10px rgba(0,0,0,0.8);
+transition:.25s;
+}
+
+.match-tile:hover{
+background:#17253b;
+border-color:#3b82f6;
+transform:scale(1.02) translateY(-4px);
+box-shadow:0 25px 40px -8px #1e3a8a40;
+}
+
+.img-wrapper{
+overflow:hidden;
+height:210px;
+position:relative;
+}
+
+.match-img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.live-badge{
+background:#b91c1c;
+color:white;
+font-size:12px;
+padding:4px 10px;
+border-radius:20px;
+position:absolute;
+top:12px;
+left:12px;
+animation:liveBlink 1s infinite;
+}
+
+@keyframes liveBlink{
+0%{opacity:1;}
+50%{opacity:0.3;}
+100%{opacity:1;}
+}
+
+.scheduled-badge{
+background:rgba(0,0,0,.6);
+color:white;
+font-size:12px;
+padding:4px 10px;
+border-radius:20px;
+position:absolute;
+top:12px;
+left:12px;
+}
+
+.watch-btn{
+background:#2563eb;
+border-radius:50px;
+padding:12px;
+font-weight:600;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+margin-top:12px;
+cursor:pointer;
+}
+
+.watch-btn:hover{
+background:#1d4ed8;
+}
+
+.not-live{
+background:#334155;
+cursor:not-allowed;
+pointer-events:none;
+}
+
+#qualityModal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.75);
+backdrop-filter:blur(6px);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+#qualityModal.hidden{
+display:none;
+}
+
+#qualityModal .modal-content{
+width:90%;
+max-width:360px;
+background:#111827;
+border-radius:18px;
+padding:22px;
+text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,.7);
+}
+
+#qualityModal h2{
+font-size:20px;
+font-weight:600;
+margin-bottom:18px;
+color:#f9fafb;
+}
+
+#qualityList{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.quality-item{
+background:#1f2937;
+border-radius:12px;
+padding:14px 16px;
+font-size:16px;
+font-weight:500;
+color:#e5e7eb;
+display:flex;
+align-items:center;
+justify-content:space-between;
+cursor:pointer;
+transition:.2s;
+}
+
+.quality-item::after{
+content:">";
+font-size:12px;
+opacity:.7;
+}
+
+.quality-item:hover{
+background:#2563eb;
+color:white;
+transform:translateY(-1px);
+}
+
+#qualityModal .btn{
+margin-top:16px;
+background:#ef4444;
+color:white;
+border:none;
+border-radius:10px;
+padding:10px;
+font-size:14px;
+font-weight:600;
+cursor:pointer;
+}
+
+#qualityModal .btn:hover{
+background:#dc2626;
+}
+
+*{
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+user-select:none;
+}
+
+*{
+-webkit-tap-highlight-color: transparent;
+}
+
+.match-time{
+font-size:13px;
+color:#9ca3af;
+margin-top:6px;
+}
+
+
+/* CRICZONE FANCODE PREMIUM RESPONSIVE REFRESH */
+html{min-width:320px;background:#070d17}
+body{
+  width:100%;min-width:320px;max-width:none!important;margin:0!important;
+  padding:clamp(14px,2.2vw,34px) clamp(14px,3vw,54px) 48px!important;
+  background:radial-gradient(ellipse at 50% -10%,rgba(37,99,235,.16),transparent 42%),linear-gradient(160deg,#08111e,#070b13 62%,#0a1422);
+}
+body>.text-center{width:100%;max-width:none;margin:0 auto 24px!important;padding:18px 20px 20px;border:1px solid rgba(96,165,250,.16);border-radius:22px;background:linear-gradient(120deg,rgba(18,29,47,.94),rgba(10,18,31,.9));box-shadow:0 18px 48px #0005}
+body>.text-center>div:first-child{border-radius:15px!important;background:transparent!important;border:0!important;padding:0!important}
+body>.text-center .text-3xl{font-size:clamp(25px,3vw,38px);letter-spacing:-1.2px}
+body>.text-center p{color:#91a8c5!important;font-size:12px;font-weight:800;letter-spacing:2px}
+.social-links{display:flex;justify-content:center;gap:10px;margin-top:14px}
+.social-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:8px 14px;border:1px solid rgba(96,165,250,.22);border-radius:999px;background:rgba(15,35,61,.8);color:#dbeafe;text-decoration:none;font-size:12px;font-weight:800}
+.social-link svg{width:17px;height:17px}
+#matches-container{
+  width:100%;max-width:none;margin:22px auto 0!important;
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.5vw,24px)!important;
+  align-items:stretch
+}
+.match-tile{
+  min-width:0;border:1px solid rgba(111,164,220,.17);border-radius:19px;
+  background:linear-gradient(155deg,#13233a,#0b1422 72%);box-shadow:0 14px 34px #0005;
+}
+.match-tile:hover{transform:translateY(-4px);border-color:rgba(59,130,246,.65);box-shadow:0 22px 44px #0007,0 0 0 1px #3b82f622}
+.img-wrapper{height:auto;aspect-ratio:16/9;flex:0 0 auto;background:#0b1626}
+.match-img{display:block;transition:transform .45s ease}
+.match-tile:hover .match-img{transform:scale(1.035)}
+.match-tile>.p-5{padding:clamp(14px,1.3vw,21px)!important;gap:0}
+.match-tile h3{font-size:clamp(14px,1.15vw,18px);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;color:#f5f8ff}
+.match-tile .text-sm{line-height:1.5}
+.match-time{color:#9fb2ca;font-size:12px}
+.watch-btn{min-height:44px;border:1px solid #4c8eff;background:linear-gradient(100deg,#2563eb,#1d4ed8);box-shadow:0 8px 20px #1d4ed833;font-size:13px;letter-spacing:.25px}
+.watch-btn:hover{background:linear-gradient(100deg,#3478ff,#245ce0);transform:translateY(-1px)}
+.watch-btn.not-live{border-color:#334155;background:#202e43;color:#aebbd0;opacity:.9}
+.live-badge,.scheduled-badge{z-index:2;font-weight:900;letter-spacing:.45px;box-shadow:0 4px 14px #0006}
+#qualityModal{padding:18px}
+#qualityModal .modal-content{width:min(100%,410px);border:1px solid rgba(96,165,250,.28);background:linear-gradient(155deg,#17263c,#0b1422);box-shadow:0 24px 70px #000b}
+.quality-item{border:1px solid rgba(148,163,184,.12);background:#17263b}
+.quality-item:hover{background:#245fca}
+#qualityModal .btn{width:100%;min-height:42px;background:#26364c}
+#cz-tg-local-bar{width:100%!important;max-width:none!important;margin:18px 0 22px!important}
+@media(min-width:1450px){#matches-container{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1900px){#matches-container{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:900px){#matches-container{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px!important}}
+@media(max-width:560px){
+  body{padding:12px 12px 30px!important}
+  body>.text-center{padding:15px 12px 16px;margin-bottom:16px!important;border-radius:17px}
+  #matches-container{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important;margin-top:14px!important}
+  .match-tile{border-radius:14px}
+  .match-tile>.p-5{padding:11px!important}
+  .match-tile h3{font-size:12px;min-height:2.8em}
+  .match-tile .text-sm,.match-time{font-size:10px}
+  .watch-btn{min-height:39px;padding:8px 6px;font-size:10px}
+  .live-badge,.scheduled-badge{top:8px;left:8px;padding:3px 7px;font-size:9px}
+}
+@media(max-width:360px){#matches-container{grid-template-columns:1fr}.match-tile h3{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.match-img{transition:none}.match-tile:hover{transform:none}}
+
+</style>
+  <link rel="stylesheet" href="../site-polish.css?v=20261019-premium-ui">
 </head>
-<body class="cz-page">
-  <div class="page-glow page-glow-one"></div>
-  <div class="page-glow page-glow-two"></div>
 
-  <header class="site-header">
-    <a class="brand" href="../" aria-label="CRICZONE home">
-      <span class="brand-mark">CZ</span>
-      <span class="brand-copy"><strong>CRICZONE</strong><small>FANCODE LIVE</small></span>
-    </a>
-    <div class="header-actions">
-      <span class="live-indicator"><i></i> LIVE SPORTS</span>
-      <a class="telegram-button" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">
-        <span aria-hidden="true">➤</span> JOIN TELEGRAM
-      </a>
-    </div>
-  </header>
+<body class="p-5 max-w-7xl mx-auto">
 
-  <main class="main-content">
-    <section class="hero-panel">
-      <div class="hero-copy">
-        <span class="eyebrow"><span class="eyebrow-line"></span> THE HOME OF LIVE CRICKET</span>
-        <h1>Every match.<br><span>One destination.</span></h1>
-        <p>Find your match, choose your quality and enjoy the action.</p>
-        <div class="hero-stats">
-          <div><strong id="live-count">—</strong><span>LIVE NOW</span></div>
-          <div><strong id="total-count">—</strong><span>AVAILABLE MATCHES</span></div>
-          <div><strong id="updated-time">—</strong><span>LAST UPDATED</span></div>
-        </div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-ring art-ring-one"></div><div class="art-ring art-ring-two"></div>
-        <div class="art-ball">🏏</div><span class="art-tag">MATCH DAY</span>
-      </div>
-    </section>
-
-    <section class="telegram-strip">
-      <div class="telegram-icon" aria-hidden="true">➤</div>
-      <div class="telegram-copy"><strong>Stay connected with CRICZONE</strong><span>Live match alerts, cricket updates and community news.</span></div>
-      <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">JOIN CHANNEL <span>↗</span></a>
-    </section>
-
-    <section class="matches-section" aria-labelledby="matches-heading">
-      <div class="section-heading">
-        <div><span class="section-kicker">FANCODE MATCH CENTRE</span><h2 id="matches-heading">Live &amp; Upcoming</h2></div>
-        <button class="refresh-button" id="refresh-button" type="button"><span class="refresh-icon">↻</span> REFRESH</button>
-      </div>
-      <div class="toolbar">
-        <label class="search-box"><span aria-hidden="true">⌕</span><input id="match-search" type="search" placeholder="Search teams, matches or tournaments…" autocomplete="off"></label>
-        <div class="filter-tabs" role="group" aria-label="Filter matches">
-          <button class="filter-tab active" data-filter="all" type="button">ALL</button>
-          <button class="filter-tab" data-filter="live" type="button">● LIVE</button>
-          <button class="filter-tab" data-filter="upcoming" type="button">UPCOMING</button>
-        </div>
-      </div>
-      <div id="matches-container" class="match-grid" aria-live="polite">
-        <div class="loading-card"><span class="loader"></span><strong>Loading matches</strong><span>Fetching the latest FanCode fixtures…</span></div>
-        <div class="loading-card"><span class="loader"></span><strong>Loading matches</strong><span>Fetching the latest FanCode fixtures…</span></div>
-        <div class="loading-card"><span class="loader"></span><strong>Loading matches</strong><span>Fetching the latest FanCode fixtures…</span></div>
-      </div>
-      <p class="data-note" id="data-note">Match information is refreshed from the configured FanCode feed.</p>
-    </section>
-  </main>
-
-  <footer class="site-footer"><span>© <span id="year"></span> CRICZONE</span><span>BUILT FOR CRICKET FANS <b>✦</b></span></footer>
-
-  <div class="modal-backdrop" id="quality-modal" hidden>
-    <section class="quality-dialog" role="dialog" aria-modal="true" aria-labelledby="quality-title">
-      <button class="modal-close" id="close-quality" type="button" aria-label="Close quality selector">×</button>
-      <span class="dialog-kicker">READY TO WATCH</span>
-      <h2 id="quality-title">Choose your quality</h2>
-      <p id="quality-subtitle">Select an available stream quality.</p>
-      <div id="quality-list" class="quality-list"></div>
-      <p class="dialog-foot">Playback quality depends on the available source.</p>
-    </section>
+<!-- HEADER -->
+<div class="text-center mt-4 mb-8">
+  <div class="inline-flex items-center justify-center gap-3 bg-[#131d2f] py-3 px-7 rounded-full border border-blue-900/50">
+    <span class="text-3xl font-black tracking-tight text-white">CRICZONE</span>
   </div>
+  <p class="text-gray-500 text-sm mt-3 tracking-wide">FANCODE LIVE WEB</p>
 
-  <script>
-  (() => {
-    "use strict";
-    const DATA_URL = "https://sportlink-fancode10.pages.dev/fan.json";
-    const PLAYER_URL = "./fc-play.html";
-    const FALLBACK_IMAGE = "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg";
-    const container = document.getElementById("matches-container");
-    const searchInput = document.getElementById("match-search");
-    const modal = document.getElementById("quality-modal");
-    const qualityList = document.getElementById("quality-list");
-    const qualityTitle = document.getElementById("quality-title");
-    const qualitySubtitle = document.getElementById("quality-subtitle");
-    const order = ["2160p","1440p","1080p","720p","540p","480p","360p","240p"];
-    let allMatches = [];
-    let activeFilter = "all";
-    let activeMatch = null;
-    let loading = false;
+  <!-- ══ SOCIAL PILLS ══ -->
+  <div class="social-links">
+    
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    <a href="#" target="_blank" rel="noopener" class="social-link wa-link" title="WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      <span>Criczone</span>
+    </a>
+  </div>
+</div>
 
-    function safeHttpUrl(value) {
-      try { const u = new URL(String(value || ""), location.href); return /^https?:$/.test(u.protocol) ? u.href : ""; }
-      catch { return ""; }
-    }
+<!-- MATCH GRID -->
+<div id="matches-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6"></div>
 
-    function getStreams(match) {
-      const candidates = [];
-      const qualityKey = value => {
-        const key = String(value || "").toLowerCase().replace(/\s+/g,"").replace(/_/g,"");
-        const known = key.match(/^(2160|1440|1080|720|540|480|360|240|144)p$/);
-        return known ? known[1] + "p" : "";
-      };
-      const addStream = (quality, value, language) => {
-        const normalizedQuality = qualityKey(quality);
-        if (!normalizedQuality) return;
-        const safe = safeHttpUrl(value);
-        if (!safe || candidates.some(item => item.url === safe)) return;
-        candidates.push({
-          quality: normalizedQuality,
-          url: safe,
-          language: String(language || match.language || "Default")
-        });
-      };
-      const walk = (node, language) => {
-        if (!node || typeof node !== "object") return;
-        if (Array.isArray(node)) {
-          node.forEach(item => walk(item, language));
-          return;
-        }
-        for (const [key, value] of Object.entries(node)) {
-          const quality = qualityKey(key);
-          if (quality && typeof value === "string") {
-            addStream(quality, value, language);
-            continue;
-          }
-          if (quality && value && typeof value === "object") {
-            const url = value.url || value.src || value.file || value.stream_url;
-            if (typeof url === "string") addStream(quality, url, language);
-            continue;
-          }
-          // FanCode feed shape: LANGUAGE -> streams -> RESOLUTION -> URL.
-          if (/^(english|hindi|tamil|telugu|kannada|malayalam|bengali|marathi)$/i.test(key) && value && typeof value === "object") {
-            walk(value, key);
-          } else if (/^(auto_streams|streams|qualities|sources)$/i.test(key) && value && typeof value === "object") {
-            walk(value, language);
-          }
-        }
-      };
-      walk(match && match.auto_streams, match && match.language);
-      walk(match && match.streams, match && match.language);
-      const rank = q => {
-        const index = order.indexOf(String(q).toLowerCase());
-        return index < 0 ? 999 : index;
-      };
-      return candidates.sort((a,b) => rank(a.quality)-rank(b.quality));
-    }
-    function statusOf(match) {
-      const raw = String(match?.status || match?.match_status || "").trim().toUpperCase().replace(/[_-]+/g," ");
-      if (/LIVE|IN PROGRESS|INPLAY|IN PLAY|STARTED/.test(raw)) return "live";
-      if (/COMPLETE|COMPLETED|FINISHED|RESULT|ABANDONED|CANCELLED/.test(raw)) return "completed";
-      return "upcoming";
-    }
+<!-- QUALITY SELECTION MODAL -->
+<div id="qualityModal" class="hidden">
+  <div class="modal-content">
+    <h2>Select Quality</h2>
+    <div id="qualityList"></div>
+    <button onclick="closeQuality()" class="btn">Close</button>
+  </div>
+</div>
 
-    function parseDate(value) {
-      if (!value) return null;
-      const raw = String(value).trim();
-      const match = raw.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)\s*(\d{1,2})-(\d{1,2})-(\d{4})/i);
-      if (match) {
-        let h = Number(match[1]) % 12;
-        if (match[4].toUpperCase() === "PM") h += 12;
-        const d = new Date(Number(match[7]), Number(match[6])-1, Number(match[5]), h, Number(match[2]), Number(match[3] || 0));
-        return Number.isNaN(d.getTime()) ? null : d;
-      }
-      const d = new Date(raw);
-      return Number.isNaN(d.getTime()) ? null : d;
-    }
 
-    function formatDate(value) {
-      const d = parseDate(value);
-      if (!d) return value ? String(value) : "Time not announced";
-      return new Intl.DateTimeFormat("en-IN", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }).format(d);
-    }
 
-    function textNode(tag, className, value) {
-      const el = document.createElement(tag);
-      if (className) el.className = className;
-      el.textContent = value == null ? "" : String(value);
-      return el;
-    }
+<script>
+const DATA_URL = 'https://sportlink-fancode10.pages.dev/fan.json';
+const PLAYER_URL = 'fc-play.html?data=';
+const container = document.getElementById("matches-container");
 
-    function showMessage(title, detail, retry) {
-      container.replaceChildren();
-      const box = textNode("div", "empty-state", "");
-      const icon = textNode("div", "empty-icon", retry ? "!" : "🏏");
-      const h = textNode("h3", "", title);
-      const p = textNode("p", "", detail);
-      box.append(icon,h,p);
-      if (retry) {
-        const btn = textNode("button", "primary-button", "TRY AGAIN");
-        btn.type = "button";
-        btn.addEventListener("click", loadMatches);
-        box.append(btn);
-      }
-      container.append(box);
-    }
+let allMatches = [];
 
-    function cardFor(match, index) {
-      const status = statusOf(match);
-      const streams = getStreams(match);
-      const card = document.createElement("article");
-      card.className = "match-card";
-      const visual = document.createElement("div");
-      visual.className = "match-visual";
-      const img = document.createElement("img");
-      img.className = "match-image";
-      img.loading = "lazy";
-      img.alt = String(match.title || "Cricket match");
-      img.src = safeHttpUrl(match.image) || FALLBACK_IMAGE;
-      img.addEventListener("error", () => { if (img.src !== FALLBACK_IMAGE) img.src = FALLBACK_IMAGE; }, { once:true });
-      const badge = textNode("span", "status-badge " + status, status === "live" ? "● LIVE NOW" : status === "completed" ? "COMPLETED" : "UPCOMING");
-      visual.append(img,badge);
-      const body = document.createElement("div");
-      body.className = "match-card-body";
-      const tournament = textNode("span", "tournament-label", match.tournament || match.series || "FANCODE");
-      const title = textNode("h3", "match-title", match.title || match.name || "Cricket Match");
-      const time = textNode("div", "match-time", "◷  " + formatDate(match.startTime || match.start_time || match.date));
-      const footer = document.createElement("div");
-      footer.className = "match-card-footer";
-      const quality = textNode("span", "quality-hint", streams.length ? streams.length + " QUALITIES" : "STREAM UNAVAILABLE");
-      const button = textNode("button", "watch-button" + (status !== "live" || !streams.length ? " disabled" : ""), status === "live" ? (streams.length ? "▶  WATCH NOW" : "STREAM UNAVAILABLE") : status === "completed" ? "MATCH ENDED" : "NOT LIVE YET");
-      button.type = "button";
-      button.disabled = status !== "live" || !streams.length;
-      if (!button.disabled) button.addEventListener("click", () => openQuality(match));
-      footer.append(quality,button);
-      body.append(tournament,title,time,footer);
-      card.append(visual,body);
-      return card;
-    }
+fetch(DATA_URL)
+  .then(res => res.json())
+  .then(data => {
+    allMatches = data.matches || [];
+    container.innerHTML = "";
 
-    function renderMatches() {
-      const query = searchInput.value.trim().toLowerCase();
-      const filtered = allMatches.filter(m => {
-        const status = statusOf(m);
-        const matchesFilter = activeFilter === "all" || (activeFilter === "live" && status === "live") || (activeFilter === "upcoming" && status === "upcoming");
-        const haystack = [m.title,m.name,m.tournament,m.series,m.home_team,m.away_team].join(" ").toLowerCase();
-        return matchesFilter && haystack.includes(query);
-      });
-      container.replaceChildren();
-      if (!filtered.length) {
-        showMessage(allMatches.length ? "No matches found" : "No matches available", allMatches.length ? "Try another search or filter." : "The feed returned no match records.", false);
-        return;
-      }
-      const fragment = document.createDocumentFragment();
-      filtered.forEach((m,i) => fragment.append(cardFor(m,i)));
-      container.append(fragment);
-    }
-
-    async function loadMatches() {
-      if (loading) return;
-      loading = true;
-      const refresh = document.getElementById("refresh-button");
-      refresh.disabled = true;
-      refresh.classList.add("is-loading");
-      if (!allMatches.length) {
-        container.replaceChildren();
-        for (let i=0;i<3;i++) {
-          const sk = textNode("div","loading-card","");
-          sk.append(textNode("span","loader",""),textNode("strong","","Loading matches"),textNode("span","","Fetching the latest FanCode fixtures…"));
-          container.append(sk);
-        }
-      }
-      try {
-        const response = await fetch(DATA_URL, { cache:"no-store", headers:{ "Accept":"application/json" } });
-        if (!response.ok) throw new Error("Feed returned HTTP " + response.status);
-        const data = await response.json();
-        const rows = Array.isArray(data) ? data : Array.isArray(data.matches) ? data.matches : Array.isArray(data.data) ? data.data : [];
-        if (!rows.every(row => row && typeof row === "object")) throw new Error("Unexpected feed format");
-        allMatches = rows.slice().sort((a,b) => {
-          const rank = x => statusOf(x) === "live" ? 0 : statusOf(x) === "upcoming" ? 1 : 2;
-          const diff = rank(a)-rank(b);
-          if (diff) return diff;
-          const da = parseDate(a.startTime || a.start_time || a.date)?.getTime() || 0;
-          const db = parseDate(b.startTime || b.start_time || b.date)?.getTime() || 0;
-          return da-db;
-        });
-        document.getElementById("live-count").textContent = allMatches.filter(m => statusOf(m)==="live").length;
-        document.getElementById("total-count").textContent = allMatches.length;
-        document.getElementById("updated-time").textContent = new Intl.DateTimeFormat("en-IN",{hour:"2-digit",minute:"2-digit"}).format(new Date());
-        document.getElementById("data-note").textContent = "Feed updated successfully · " + allMatches.length + " match record(s)";
-        renderMatches();
-      } catch (error) {
-        console.error("FanCode feed error:", error);
-        if (allMatches.length) {
-          document.getElementById("data-note").textContent = "Refresh failed. Showing the last successfully loaded matches.";
-          renderMatches();
-        } else {
-          showMessage("Unable to load matches", error.message || "Please check your connection and try again.", true);
-          document.getElementById("data-note").textContent = "The FanCode feed could not be reached.";
-        }
-      } finally {
-        loading = false;
-        refresh.disabled = false;
-        refresh.classList.remove("is-loading");
-      }
-    }
-
-    function openQuality(match) {
-      const streams = getStreams(match);
-      if (!streams.length) return;
-      try {
-        sessionStorage.setItem("cz_fancode_streams", JSON.stringify(streams));
-        sessionStorage.setItem("cz_fancode_stream", streams[0].url);
-        sessionStorage.setItem("cz_fancode_title", String(match.title || match.name || "CRICZONE FanCode"));
-        location.href = PLAYER_URL;
-      } catch (error) {
-        const encoded = btoa(unescape(encodeURIComponent(streams[0].url)));
-        location.href = PLAYER_URL + "?data=" + encodeURIComponent(encoded);
-      }
-    }
-
-    function closeQuality() {
-      modal.hidden = true;
-      activeMatch = null;
-    }
-
-    document.getElementById("refresh-button").addEventListener("click",loadMatches);
-    document.getElementById("close-quality").addEventListener("click",closeQuality);
-    modal.addEventListener("click",event => { if (event.target === modal) closeQuality(); });
-    document.addEventListener("keydown",event => { if (event.key === "Escape" && !modal.hidden) closeQuality(); });
-    searchInput.addEventListener("input",renderMatches);
-    document.querySelectorAll(".filter-tab").forEach(button => button.addEventListener("click",() => {
-      activeFilter = button.dataset.filter;
-      document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.toggle("active",tab===button));
-      renderMatches();
-    }));
-    loadMatches();
-    // Keep live status and newly available stream qualities fresh without requiring a manual reload.
-    window.setInterval(() => {
-      if (!document.hidden) loadMatches();
-    }, 60000);
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadMatches();
+    const matches = allMatches.sort((a, b) => {
+      const aLive = (a.status || "").toUpperCase() === "LIVE";
+      const bLive = (b.status || "").toUpperCase() === "LIVE";
+      return bLive - aLive;
     });
-  })();
-  </script>
+
+    matches.forEach((m, index) => {
+      const isLive = (m.status || "").toUpperCase() === "LIVE";
+      const img = m.image || "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg";
+      const card = document.createElement("div");
+      card.className = "match-tile";
+      card.innerHTML = `
+        <div class="img-wrapper">
+          <img src="${img}" class="match-img">
+          ${isLive
+            ? '<span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>'
+            : '<span class="scheduled-badge"><i class="far fa-calendar"></i> SCHEDULED</span>'}
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <h3 class="text-xl font-bold">${m.title || 'Match'}</h3>
+          <div class="text-sm text-gray-400 mt-2">${m.tournament || ''}</div>
+          <div class="match-time">${formatDate(m.startTime)}</div>
+          ${isLive
+            ? `<div onclick="openQuality(${index})" class="watch-btn"><i class="fas fa-play"></i> WATCH NOW</div>`
+            : `<div class="watch-btn not-live"><i class="far fa-clock"></i> NOT LIVE</div>`}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  })
+  .catch(() => {
+    container.innerHTML = "<p class='text-center col-span-full'>Failed to load matches</p>";
+  });
+
+function formatDate(time) {
+  if (!time) return "";
+  // Try to parse "07:00:00 AM 10-09-2026" format
+  const parts = time.match(/(\d{2}):(\d{2}):(\d{2})\s*(AM|PM)\s*(\d{2})-(\d{2})-(\d{4})/i);
+  if (parts) {
+    let [, hh, mm, ss, ampm, dd, mo, yyyy] = parts;
+    hh = parseInt(hh, 10);
+    if (ampm.toUpperCase() === 'PM' && hh < 12) hh += 12;
+    if (ampm.toUpperCase() === 'AM' && hh === 12) hh = 0;
+    const d = new Date(yyyy, parseInt(mo, 10) - 1, parseInt(dd, 10), hh, parseInt(mm, 10), parseInt(ss, 10));
+    return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  }
+  const d = new Date(time);
+  if (isNaN(d)) return time;
+  return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function openQuality(index) {
+  const match = allMatches[index];
+  // Use auto_streams: { ENGLISH: { streams: { "1080p": url, ... } } }
+  const streams = match.auto_streams && match.auto_streams.ENGLISH && match.auto_streams.ENGLISH.streams;
+  if (!streams || Object.keys(streams).length === 0) {
+    alert("Stream not available");
+    return;
+  }
+
+  const list = document.getElementById("qualityList");
+  list.innerHTML = "";
+
+  // Sort qualities high to low
+  const order = ['1080p','720p','540p','480p','360p','240p'];
+  const sortedKeys = Object.keys(streams).sort((a, b) => { const ai = order.indexOf(a), bi = order.indexOf(b); return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi); });
+
+  sortedKeys.forEach(q => {
+    const btn = document.createElement("div");
+    btn.className = "quality-item";
+    btn.innerText = q;
+    btn.onclick = function () {
+      const encoded = btoa(streams[q]);
+      window.location.href = PLAYER_URL + encodeURIComponent(encoded);
+    };
+    list.appendChild(btn);
+  });
+
+  document.getElementById("qualityModal").classList.remove("hidden");
+}
+
+function closeQuality() {
+  document.getElementById("qualityModal").classList.add("hidden");
+}
+</script>
+
+
+
+
+
+
+
+<!-- CRICZONE Telegram join banner + local Telegram popup (self-contained per page) -->
+<style>
+#cz-tg-local-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:calc(100% - 28px);max-width:1200px;min-height:76px;margin:12px auto;padding:11px 17px;border:1px solid #28a7ff;border-radius:17px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 0 22px #008bff55,0 10px 28px #0004;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;position:relative;z-index:30}#cz-tg-local-bar *{box-sizing:border-box}#cz-tg-local-bar .cz-tg-left{display:flex;align-items:center;gap:13px;min-width:0;color:#fff;text-decoration:none}#cz-tg-local-bar .cz-tg-logo{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:13px;background:#ffffff30}#cz-tg-local-bar svg{width:27px;height:27px}#cz-tg-local-bar .cz-tg-label{display:flex;flex-direction:column;gap:3px;min-width:0}#cz-tg-local-bar strong{font-size:clamp(13px,2vw,18px);font-weight:900;line-height:1.15}#cz-tg-local-bar small{font-size:11px;font-weight:650;color:#ffffffdf}#cz-tg-local-bar .cz-tg-tap{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 16px;border-radius:11px;background:#fff;color:#0754dc;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px #0003}
+#cz-tg-local-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:#020812d9;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Inter,system-ui,sans-serif}#cz-tg-local-modal.cz-open{opacity:1;visibility:visible}#cz-tg-local-modal .cz-tg-card{position:relative;width:min(100%,380px);padding:29px 23px 24px;border:1px solid #229ed966;border-radius:24px;background:radial-gradient(circle at 50% 0,#229ed933,transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #0009,0 0 32px #229ed922;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}#cz-tg-local-modal.cz-open .cz-tg-card{transform:none}#cz-tg-local-modal .cz-tg-x{position:absolute;right:11px;top:11px;width:32px;height:32px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}#cz-tg-local-modal .cz-tg-modal-logo{width:70px;height:70px;margin:3px auto 15px}#cz-tg-local-modal .cz-tg-modal-logo svg{width:100%;height:100%}#cz-tg-local-modal .cz-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}#cz-tg-local-modal h2{margin:0;font-size:24px;line-height:1.2;font-weight:900}#cz-tg-local-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:13px;line-height:1.55}#cz-tg-local-modal .cz-tg-join{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 9px 25px #229ed94d}#cz-tg-local-modal .cz-tg-foot{margin:12px 0 0;font-size:10px;color:#9eb4c8}@media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}}@media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-local-modal .cz-tg-card{transition:none}}
+</style>
+<script>(function(){if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;var link="https://t.me/+pN15_8gc54s2NDU1";var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#fff"/></svg>';function init(){if(document.getElementById("cz-tg-local-bar"))return;var bar=document.createElement("aside");bar.id="cz-tg-local-bar";bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';var target=document.querySelector("body>.text-center,main .hero,main .intro,.hero-section,.hero-box,.player-header,header,main");if(target){target.insertAdjacentElement("afterend",bar);}else{document.body.appendChild(bar);}var modal=document.createElement("div");modal.id="cz-tg-local-modal";modal.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-local-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-local-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 Free to join · Stay connected with CRICZONE</div></section>';document.body.appendChild(modal);function close(){modal.classList.remove("cz-open")}modal.querySelector(".cz-tg-x").addEventListener("click",close);modal.addEventListener("click",function(e){if(e.target===modal)close()});document.addEventListener("keydown",function(e){if(e.key==="Escape")close()});window.setTimeout(function(){modal.classList.add("cz-open")},5000)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()})();</script>
 </body>
 </html>
