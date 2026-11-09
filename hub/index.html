@@ -1463,7 +1463,7 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
         <div id="detailTitle" class="detail-title"></div>
         <div class="detail-meta-row" id="detailMetaRow"></div>
         <div class="detail-desc" id="detailDesc"></div>
-        <div class="detail-actions"><button type="button" class="detail-share-btn" id="detailWatchlist"><span class="material-icons">bookmark_add</span> Add to My List</button><button type="button" class="detail-share-btn" id="detailResume" hidden><span class="material-icons">play_circle</span> Resume last source</button><button type="button" class="detail-share-btn" id="detailTrailer" hidden><span class="material-icons">smart_display</span> Trailer</button><button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button></div>
+        <div class="detail-actions"><button type="button" class="detail-share-btn" id="detailWatchlist"><span class="material-icons">bookmark_add</span> Add to My List</button><button type="button" class="detail-share-btn" id="detailPlay"><span class="material-icons">play_arrow</span> Play</button><button type="button" class="detail-share-btn" id="detailTrailer" hidden><span class="material-icons">smart_display</span> Trailer</button><button type="button" class="detail-share-btn" id="detailShare"><span class="material-icons">share</span> Share movie link</button></div>
       </div>
     </div>
     <div class="section-title">
@@ -1514,7 +1514,7 @@ var $detailMetaRow = document.getElementById("detailMetaRow");
 var $detailDesc = document.getElementById("detailDesc");
 var $detailShare = document.getElementById("detailShare");
 var $detailWatchlist = document.getElementById("detailWatchlist");
-var $detailResume = document.getElementById("detailResume");
+var $detailPlay = document.getElementById("detailPlay");
 var $detailTrailer = document.getElementById("detailTrailer");
 var $similarSection = document.getElementById("similarSection");
 var $similarGrid = document.getElementById("similarGrid");
@@ -1662,9 +1662,19 @@ document.addEventListener("visibilitychange",function(){if(document.hidden){if(h
 function readStoredIds(key){try{var value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value.filter(function(x){return typeof x==="string";}):[];}catch(e){return [];}}
 function getWatchlist(){return watchlistIds.map(function(id){return allMovies.find(function(movie){return getMovieId(movie)===id;});}).filter(Boolean);}
 function isInWatchlist(movie){return !!movie&&watchlistIds.indexOf(getMovieId(movie))!==-1;}
-function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;var saved=isInWatchlist(currentMovie);$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=saved?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(saved?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",saved?"true":"false");var channels=Array.isArray(currentMovie.channels)?currentMovie.channels:[];$detailResume.hidden=!(lastWatchedId===getMovieId(currentMovie)&&Number.isInteger(lastWatchedSource)&&lastWatchedSource>=0&&lastWatchedSource<channels.length&&!!safeHttpUrl(channels[lastWatchedSource]&&channels[lastWatchedSource].streamUrl));$detailTrailer.hidden=!safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);}
+function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;var saved=isInWatchlist(currentMovie);$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=saved?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(saved?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",saved?"true":"false");var channels=Array.isArray(currentMovie.channels)?currentMovie.channels:[];var hasPlayableSource=channels.some(function(channel){return !!safeHttpUrl(channel&&(channel.streamUrl||channel.url||channel.src||channel.file||channel.link));});$detailPlay.disabled=!hasPlayableSource;$detailPlay.style.opacity=hasPlayableSource?"1":".55";$detailPlay.title=hasPlayableSource?"Play the first available source":"No playable source is available for this title";$detailTrailer.hidden=!safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);}
 function toggleWatchlist(movie){if(!movie)return;var id=getMovieId(movie),index=watchlistIds.indexOf(id);if(index>=0){watchlistIds.splice(index,1);toast("Removed from My List.","ok",2200);}else{watchlistIds.unshift(id);toast("Added to My List.","ok",2200);}watchlistIds=watchlistIds.slice(0,200);try{localStorage.setItem("cz_hub_watchlist",JSON.stringify(watchlistIds));}catch(e){}updateWatchlistButton();renderHomeRails();if(activeNav==="mylist")filterMovies();}
 $detailWatchlist.addEventListener("click",function(){toggleWatchlist(currentMovie);});
+$detailPlay.addEventListener("click",function(event){
+  if(event){event.preventDefault();event.stopPropagation();}
+  if(!currentMovie)return;
+  var sources=Array.isArray(currentMovie.channels)?currentMovie.channels:[];
+  var index=sources.findIndex(function(channel){return !!safeHttpUrl(channel&&(channel.streamUrl||channel.url||channel.src||channel.file||channel.link));});
+  if(index<0){toast("No playable source is available for this movie yet.","err",5000);return;}
+  var channel=sources[index];
+  var stream=safeHttpUrl(channel.streamUrl||channel.url||channel.src||channel.file||channel.link);
+  openPlayer(stream,currentMovie.title+" - "+(channel.name||channel.quality||"Play"),currentMovie.title,index);
+});
 $detailResume.addEventListener("click",function(event){
   if(event){event.preventDefault();event.stopPropagation();}
   var savedId="",savedIndex=-1;
