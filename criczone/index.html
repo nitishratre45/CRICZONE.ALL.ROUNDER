@@ -1088,5 +1088,41 @@ window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=
 </script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
+
+<!-- CRICZONE desktop-safe fallback for shared navbar photo and Telegram popup -->
+<script>
+(function(){
+  "use strict";
+  var photos=[
+    {name:"ROHIT SHARMA",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
+    {name:"VIRAT KOHLI",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
+  ];
+  var telegram="https://t.me/+pN15_8gc54s2NDU1";
+  function startFallback(){
+    var logo=document.querySelector(".cz-brand-mark");
+    if(logo&&!logo.querySelector(".cz-player-brand-img")){
+      logo.classList.add("cz-player-brand-photo");
+      var img=document.createElement("img");
+      img.className="cz-player-brand-img";img.alt=photos[0].name;img.src=photos[0].src;
+      img.onerror=function(){this.style.display="none";logo.textContent="🏏";};
+      logo.replaceChildren(img);
+      var i=0;window.setInterval(function(){i=(i+1)%photos.length;img.alt=photos[i].name;img.src=photos[i].src;},3000);
+    }
+    if(!document.getElementById("cz-global-community")){
+      var style=document.createElement("style");
+      style.textContent="#cz-global-community{position:fixed;inset:0;z-index:2147483645;display:grid;place-items:center;padding:18px;background:#05050bdc;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s;font-family:Inter,system-ui,sans-serif;color:#f8f7ff}#cz-global-community.cz-show{opacity:1;visibility:visible}#cz-global-community .cz-community-card{position:relative;width:min(100%,440px);padding:30px 22px 25px;text-align:center;border:1px solid #ffffff20;border-radius:26px;background:linear-gradient(145deg,#171323,#090a12 78%);box-shadow:0 25px 90px #000a}#cz-global-community .cz-community-close{position:absolute;right:13px;top:13px;width:36px;height:36px;border:1px solid #ffffff25;border-radius:50%;background:#ffffff0b;color:#fff;font-size:23px;cursor:pointer}#cz-global-community .cz-community-photo{width:86px;height:86px;margin:4px auto 16px;border-radius:22px;overflow:hidden}#cz-global-community .cz-community-photo img{width:100%;height:100%;object-fit:cover;object-position:center 20%}#cz-global-community .cz-community-tag{color:#c8b2ff;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:12px}#cz-global-community h2{font-size:27px;line-height:1.2;margin:0;color:#fff}#cz-global-community .cz-community-copy{color:#c3bfd0;font-size:14px;line-height:1.55;margin:12px auto 20px}#cz-global-community .cz-community-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:20px}#cz-global-community .cz-community-cat{padding:13px 5px;border:1px solid #ffffff18;border-radius:14px;color:#ddd;background:#ffffff08;font-size:12px}#cz-global-community .cz-community-cat b{display:block;font-size:23px;margin-bottom:5px}#cz-global-community .cz-community-join{min-height:54px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;background:linear-gradient(105deg,#7838e8,#285fe9 58%,#168bd4);color:#fff;text-decoration:none;font-size:14px;font-weight:900}#cz-global-community .cz-community-foot{margin:14px 0 0;color:#aaa;font-size:10px}@media(max-width:420px){#cz-global-community .cz-community-card{padding:27px 16px 21px}#cz-global-community h2{font-size:23px}}";
+      document.head.appendChild(style);
+      var popup=document.createElement("div");popup.id="cz-global-community";
+      popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community"></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2>Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_blank" rel="noopener noreferrer">✈ &nbsp; JOIN TELEGRAM &nbsp; ➜</a><div class="cz-community-foot">Free to join · Stay connected with CRICZONE</div></section>';
+      document.body.appendChild(popup);
+      var pimg=popup.querySelector("img");pimg.src=photos[0].src;
+      popup.querySelector(".cz-community-close").addEventListener("click",function(){popup.classList.remove("cz-show");});
+      window.setInterval(function(){var p=photos[Math.floor(Date.now()/3000)%photos.length];pimg.src=p.src;pimg.alt=p.name;},3000);
+      window.setTimeout(function(){popup.classList.add("cz-show");},5000);
+    }
+  }
+  window.setTimeout(startFallback,1200);
+})();
+</script>
 </body>
 </html>
