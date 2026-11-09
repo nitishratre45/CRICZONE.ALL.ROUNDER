@@ -82,10 +82,7 @@
     window.clearInterval(rotateTimer);
     loader.classList.add("cz-hide");
     window.setTimeout(function(){
-      if(!sessionStorage.getItem("czCommunityShown")){
-        popup.classList.add("cz-show");
-        sessionStorage.setItem("czCommunityShown","1");
-      }
+      popup.classList.add("cz-show");
     },450);
   },5000);
   window.addEventListener("pagehide",function(){window.clearInterval(rotateTimer);window.clearInterval(popupRotate);legacyObserver.disconnect();});
