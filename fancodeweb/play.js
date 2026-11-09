@@ -565,6 +565,9 @@ window.addEventListener(
 
   let playerActivated = false;
 
+  let activeStreamUrl = '';
+  let playbackRequestPending = false;
+
 
   /* =======================================================
      FILL MODES
@@ -1054,9 +1057,7 @@ vid?.addEventListener(
 
       playerActivated = true;
 
-      vid.play().catch(
-        () => {}
-      );
+      resumePlayback();
 
     }
   );
@@ -1200,6 +1201,54 @@ vid?.addEventListener(
 
 
   /* =======================================================
+     RELIABLE LIVE RESUME
+  ======================================================== */
+
+  async function resumePlayback() {
+
+    if (!vid || playbackRequestPending) return;
+
+    playbackRequestPending = true;
+    userPaused = false;
+    playerActivated = true;
+
+    try {
+      // Reattach a live manifest if the media element has ended,
+      // lost its source, or encountered a media error.
+      if (vid.ended || vid.error || vid.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+        showLoading();
+
+        if (activeStreamUrl && shakaPlayer) {
+          await shakaPlayer.load(activeStreamUrl);
+        } else if (activeStreamUrl) {
+          vid.pause();
+          vid.removeAttribute('src');
+          vid.load();
+          vid.src = activeStreamUrl;
+          vid.load();
+        } else {
+          await start();
+        }
+      }
+
+      await vid.play();
+      syncBigPlay();
+      syncPlayIcon();
+
+    } catch (error) {
+      console.warn('Live resume failed:', error);
+      syncBigPlay();
+      if (activeStreamUrl && !hasError) {
+        showError('Reconnecting live stream', 'The stream paused or disconnected. Tap Retry to reconnect.', true);
+      }
+
+    } finally {
+      playbackRequestPending = false;
+    }
+  }
+
+
+  /* =======================================================
      PLAY / PAUSE
   ======================================================== */
 
@@ -1212,9 +1261,7 @@ vid?.addEventListener(
 
       userPaused = false;
 
-      vid.play().catch(
-        () => {}
-      );
+      resumePlayback();
 
     } else {
 
@@ -2816,6 +2863,8 @@ async function switchQuality(
         );
 
 
+    activeStreamUrl = url || '';
+
     let lastError =
       null;
 
@@ -2913,47 +2962,21 @@ async function switchQuality(
        Start playback
     ---------------------------------------- */
 
-    vid.muted =
-      true;
+    vid.muted = true;
 
+    // Register before play(): fast playback can emit "playing" immediately.
+    const playingHandler = () => {
+      hideLoading();
+    };
+    vid.addEventListener('playing', playingHandler, { once: true });
 
     try {
-
       await vid.play();
-
     } catch {
-
-      /*
-        Browser autoplay may require
-        user interaction. The big play
-        button will remain available.
-      */
-
       syncBigPlay();
-
     }
 
-
     syncVolume();
-
-
-    const playingHandler =
-      () => {
-
-        vid.removeEventListener(
-          'playing',
-          playingHandler
-        );
-
-        hideLoading();
-
-      };
-
-
-    vid.addEventListener(
-      'playing',
-      playingHandler
-    );
 
 
     setTimeout(
