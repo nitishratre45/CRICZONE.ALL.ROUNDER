@@ -1494,7 +1494,7 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
 (function(){
 "use strict";
 
-var API_URL = "https://cinearena-movies-api.asifadmincinearena.workers.dev/";
+var API_URL = "/api/hub-catalog";
 
 var $overlay = document.getElementById("overlay");
 var $loadMsg = document.getElementById("loadMsg");
@@ -2166,7 +2166,7 @@ async function main(){
     errorTitle.textContent = "Unable to load movies";
     errorTitle.style.cssText = "color:var(--text-primary);font-size:1.1rem;margin-bottom:10px";
     var errorText = document.createElement("p");
-    errorText.textContent = "Please check your internet connection and try again.";
+    errorText.textContent = e && e.message ? ("Catalogue error: " + e.message) : "Please check your internet connection and try again.";
     errorText.style.marginBottom = "18px";
     var retry = document.createElement("button");
     retry.type = "button";
