@@ -999,6 +999,15 @@ vid?.addEventListener(
       bufspin.style.display = 'none';
     }
 
+    // A real "playing" event is authoritative: clear stale reconnect
+    // warnings that may have been raised by a rejected play() promise.
+    hasError = false;
+    clearTimeout(retryTimer);
+    errorOverlay?.classList.remove('show');
+    hideLoading();
+    syncBigPlay();
+    syncPlayIcon();
+
     if (
       matchId &&
       !firebaseReady &&
@@ -1238,8 +1247,21 @@ vid?.addEventListener(
     } catch (error) {
       console.warn('Live resume failed:', error);
       syncBigPlay();
-      if (activeStreamUrl && !hasError) {
-        showError('Reconnecting live stream', 'The stream paused or disconnected. Tap Retry to reconnect.', true);
+
+      // play() can reject during a browser/source transition. Never cover
+      // a stream that is already rendering; wait before showing a real error.
+      if (vid && !vid.paused && vid.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        hasError = false;
+        errorOverlay?.classList.remove('show');
+        hideLoading();
+      } else if (activeStreamUrl && !hasError) {
+        showLoading();
+        clearTimeout(retryTimer);
+        retryTimer = setTimeout(() => {
+          if (vid && vid.paused && !vid.ended && activeStreamUrl && !hasError) {
+            showError('Reconnecting live stream', 'The stream paused or disconnected. Tap Retry to reconnect.', true);
+          }
+        }, 1800);
       }
 
     } finally {
