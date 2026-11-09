@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sony SAB HD - Live Stream</title>
+    <!-- Shaka Player Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .channel-info img {
+            width: 60px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        video {
+            width: 100%;
+            background-color: black;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="channel-info">
+        <img src="https://jiotv.catchup.cdn.jio.com/dare_images/images/SonySAB.png" alt="Sony SAB HD Logo">
+        <h2>Sony SAB HD</h2>
+    </div>
+
+    <div class="video-container">
+        <video id="video" controls autoplay></video>
+    </div>
+
+    <script>
+        // Aapka Stream URL aur DRM Keys
+        const manifestUri = 'https://jiotvmblive.cdn.jio.com/bpk-tv/SonySAB_MOB/WDVLive/index.mpd?__hdnea__=st=1791964811~exp=1791986411~acl=/*~hmac=e189c4ac1a9fc36d9adb6d2b44087de05de624ae12a8a66eb01bcedcccb6a6c6';
+        const keyId = 'f223cf2122d7510da9fcec6e523ffba1';
+        const key = 'c55848470f58d3bd934fbfe844522b0e';
+
+        async function initPlayer() {
+            const video = document.getElementById('video');
+            const player = new shaka.Player(video);
+
+            // Listen for errors
+            player.addEventListener('error', onErrorEvent);
+
+            // Configure ClearKey DRM
+            player.configure({
+                drm: {
+                    clearKeys: {
+                        [keyId]: key
+                    }
+                }
+            });
+
+            try {
+                await player.load(manifestUri);
+                console.log('Video loaded successfully!');
+            } catch (e) {
+                onError(e);
+            }
+        }
+
+        function onErrorEvent(event) {
+            onError(event.detail);
+        }
+
+        function onError(error) {
+            console.error('Error code', error.code, 'object', error);
+            if (error.code === 403) {
+                alert("Stream ka URL expire ho chuka hai (Token expired). Kripya naya URL generate karein.");
