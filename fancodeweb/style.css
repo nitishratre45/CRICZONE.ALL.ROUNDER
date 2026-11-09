@@ -3603,3 +3603,159 @@ a {
     transition: none;
   }
 }
+
+
+
+/* =========================================================
+   PLAYER UI POLISH — STREAM IDENTITY + FINISHING DETAILS
+========================================================= */
+
+.stream-info {
+  left: 22px;
+  top: 88px;
+  z-index: 25;
+}
+
+.stream-info-inner {
+  min-width: 118px;
+  padding: 10px 13px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(9, 18, 30, .76), rgba(3, 8, 15, .56));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.stream-status {
+  gap: 7px;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  animation: pulseDot 1.6s ease-in-out infinite;
+}
+
+.stream-title {
+  max-width: min(280px, 62vw);
+  margin-top: 5px;
+  color: #f5f9ff;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .1px;
+}
+
+.player-overlay {
+  z-index: 28;
+  background:
+    radial-gradient(ellipse at center, rgba(14, 36, 57, .34), rgba(0, 0, 0, .82) 72%),
+    rgba(0, 0, 0, .35);
+}
+
+.loading-ring {
+  width: 52px;
+  height: 52px;
+  border-width: 3px;
+  border-color: rgba(255, 255, 255, .13);
+  border-top-color: #36c8ff;
+  box-shadow: 0 0 26px rgba(37, 180, 255, .15);
+}
+
+.loading-content {
+  gap: 6px;
+  text-align: center;
+}
+
+.loading-content strong {
+  color: #f5f9ff;
+  font-size: 14px;
+  letter-spacing: .1px;
+}
+
+.loading-content span {
+  color: rgba(229, 240, 251, .58);
+  font-size: 11px;
+}
+
+.buffer-spinner {
+  z-index: 29;
+}
+
+.quality-menu {
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 16px;
+  background: rgba(7, 14, 23, .96);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .58);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.quality-option {
+  min-height: 43px;
+  border-radius: 10px;
+}
+
+.quality-option.active {
+  background: rgba(36, 160, 255, .14);
+}
+
+.player-controls,
+.player-brand,
+.stream-info-inner,
+.error-card,
+.quality-menu {
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 620px) {
+  .stream-info {
+    left: 12px;
+    top: 76px;
+  }
+
+  .stream-info-inner {
+    min-width: 106px;
+    padding: 8px 10px;
+    border-radius: 11px;
+  }
+
+  .stream-status {
+    font-size: 8px;
+  }
+
+  .stream-title {
+    max-width: 58vw;
+    font-size: 11px;
+  }
+
+  .loading-ring {
+    width: 46px;
+    height: 46px;
+  }
+
+  .loading-content strong {
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .stream-info {
+    top: 55px;
+    left: 12px;
+  }
+
+  .stream-info-inner {
+    padding: 6px 9px;
+  }
+
+  .player-page::before {
+    height: 80px;
+  }
+
+  .player-page::after {
+    height: 95px;
+  }
+}
