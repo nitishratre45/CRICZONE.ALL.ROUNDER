@@ -2,24 +2,69 @@
   const $ = id => document.getElementById(id);
   const grid = $('channelGrid'), search = $('searchInput'), select = $('categorySelect');
   const video = $('video'), empty = $('playerEmpty');
-  let channels = [], activeCategory = '', selectedId = null, hls = null;
+  let channels = [], activeCategory = '', selectedId = null, hls = null, shakaPlayer = null;
   const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const getId = c => c.id || c.tvg_id || c.name + '|' + c.url;
-  function stopPlayer(){ if(hls){hls.destroy();hls=null;} video.pause(); video.removeAttribute('src'); video.load(); }
-  function play(c){
-    if(!c.url){$('playerStatus').textContent='NO STREAM';return;}
-    stopPlayer(); selectedId=getId(c); $('nowTitle').textContent=c.name || 'Selected channel';
+  function status(message){ $('playerStatus').textContent = message; }
+  function stopPlayer(){
+    if(hls){hls.destroy();hls=null;}
+    if(shakaPlayer){shakaPlayer.destroy().catch(()=>{});shakaPlayer=null;}
+    video.pause(); video.removeAttribute('src'); video.load();
+    video.onplaying=null; video.onerror=null;
+  }
+  function explainError(error){
+    const text = String(error && (error.message || error.code) || error || '').toLowerCase();
+    if(location.protocol==='https:' && text.includes('mixed')) return 'HTTP BLOCKED';
+    if(text.includes('cors') || text.includes('cross-origin')) return 'CORS BLOCKED';
+    if(text.includes('manifest') || text.includes('404') || text.includes('403')) return 'SOURCE UNAVAILABLE';
+    if(text.includes('drm') || text.includes('license') || text.includes('encrypted')) return 'DRM / LICENSE REQUIRED';
+    return 'PLAYBACK ERROR';
+  }
+  async function play(c){
+    if(!c.url){status('NO STREAM URL');return;}
+    stopPlayer(); selectedId=getId(c);
+    $('nowTitle').textContent=c.name || 'Selected channel';
     $('nowMeta').textContent=[c.category,c.language].filter(Boolean).join(' • ') || 'Live channel';
-    $('playerStatus').textContent='LOADING'; empty.style.display='none';
-    const url=c.url;
-    if(video.canPlayType('application/vnd.apple.mpegurl')){video.src=url;video.play().catch(()=>{});}
-    else if(window.Hls && Hls.isSupported() && /\.m3u8?(?:$|\?)/i.test(url)){
-      hls=new Hls({enableWorker:true,lowLatencyMode:true});hls.loadSource(url);hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>{}));
-      hls.on(Hls.Events.ERROR,(_,data)=>{if(data.fatal)$('playerStatus').textContent='PLAYBACK ERROR';});
-    } else { video.src=url; video.play().catch(()=>{$('playerStatus').textContent='UNSUPPORTED / BLOCKED';}); }
-    video.onplaying=()=>$('playerStatus').textContent='PLAYING';
-    video.onerror=()=>$('playerStatus').textContent='UNAVAILABLE';
+    empty.style.display='none'; status('LOADING');
+    video.onplaying=()=>status('PLAYING');
+    video.onerror=()=>status('SOURCE UNAVAILABLE');
+    let url=c.url;
+    // HTTPS pages cannot load HTTP media. Try the same endpoint over HTTPS;
+    // the origin must support HTTPS and authorize browser playback.
+    if(location.protocol==='https:' && url.startsWith('http://')) url='https://'+url.slice(7);
+    const isDash=/\.mpd(?:$|\?)/i.test(url);
+    const isHls=/\.m3u8?(?:$|\?)/i.test(url);
+    try{
+      if(isDash){
+        if(!window.shaka || !shaka.Player.isBrowserSupported()){
+          status('DASH NOT SUPPORTED'); render(); return;
+        }
+        shaka.polyfill.installAll();
+        shakaPlayer=new shaka.Player();
+        await shakaPlayer.attach(video);
+        shakaPlayer.addEventListener('error',event=>{
+          const detail=event.detail||{};
+          status(detail.code===6007?'DRM / LICENSE REQUIRED':detail.code===1001?'NETWORK / CORS ERROR':'DASH ERROR '+(detail.code||''));
+        });
+        await shakaPlayer.load(url);
+        await video.play();
+      } else if(isHls && window.Hls && Hls.isSupported()){
+        hls=new Hls({enableWorker:true,lowLatencyMode:true});
+        hls.on(Hls.Events.ERROR,(_,data)=>{
+          if(data.fatal) status(data.type==='networkError'?'NETWORK / CORS ERROR':'HLS ERROR');
+        });
+        hls.loadSource(url); hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>status('TAP PLAY TO START')));
+      } else if(video.canPlayType('application/vnd.apple.mpegurl') && isHls){
+        video.src=url; await video.play();
+      } else {
+        status('UNSUPPORTED STREAM FORMAT'); render(); return;
+      }
+      render();
+    }catch(error){
+      console.warn('CRICZONE12 playback error:',error);
+      status(explainError(error));
+    }
     render();
   }
   function render(){
@@ -41,11 +86,11 @@
       const data=await res.json();channels=Array.isArray(data)?data:(data.channels||[]);
       $('totalCount').textContent=channels.length.toLocaleString();
       const cats=[...new Set(channels.map(c=>c.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-      cats.forEach(cat=>{select.add(new Option(cat,cat));});
+      cats.forEach(cat=>select.add(new Option(cat,cat)));
       $('categoryChips').innerHTML=['All',...cats].map((cat,i)=>'<button class="chip '+(!i?'active':'')+'" data-cat="'+(i?safe(cat):'')+'">'+safe(cat)+'</button>').join('');
       document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>setCategory(b.dataset.cat)));
       select.addEventListener('change',()=>setCategory(select.value));search.addEventListener('input',render);render();
-    }catch(err){grid.innerHTML='<div class="loading">Channel data could not load. Run the Python extractor and publish data/channels.json. ('+safe(err.message)+')</div>';$('totalCount').textContent='0';}
+    }catch(err){grid.innerHTML='<div class="loading">Channel data could not load. ('+safe(err.message)+')</div>';$('totalCount').textContent='0';}
   }
   init();
 })();
