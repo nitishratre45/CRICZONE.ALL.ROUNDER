@@ -13,11 +13,11 @@
   var logoPhotoIndex = 0;
   function updateBrandPhotos(root) {
     var scope = root && root.querySelectorAll ? root : document;
-    var candidates = scope.querySelectorAll(".cz-brand-mark,.brand-mark,.brand-icon,.logo-icon,.header-logo,.header-logo-wrap,.splash-logo-container,[class*='brand-mark']");
+    var candidates = scope.querySelectorAll(".cz-brand-mark,.brand-mark,.brand-icon,.logo-icon,[class*='brand-mark']");
     candidates.forEach(function (el) {
       if (el.dataset.czPlayerLogo === "1") return;
       var hasCricketEmoji = (el.textContent || "").trim() === "🏏";
-      var isLogoContainer = /brand-mark|brand-icon|logo-icon|header-logo|splash-logo/i.test(el.className || "");
+      var isLogoContainer = /brand-mark|brand-icon|logo-icon/i.test(el.className || "");
       if (!hasCricketEmoji && !isLogoContainer) return;
       if (!hasCricketEmoji && el.querySelector("img,svg")) return;
       el.dataset.czPlayerLogo = "1";
