@@ -78,12 +78,13 @@
   /* Dismiss only through the explicit close button. */
   popup.querySelector(".cz-community-close").addEventListener("click",closePopup);
 
+  /* Fade the loader out just before the 5-second mark; reveal the popup at 5 seconds. */
   window.setTimeout(function(){
     window.clearInterval(rotateTimer);
     loader.classList.add("cz-hide");
-    window.setTimeout(function(){
-      popup.classList.add("cz-show");
-    },450);
+  },4550);
+  window.setTimeout(function(){
+    popup.classList.add("cz-show");
   },5000);
   window.addEventListener("pagehide",function(){window.clearInterval(rotateTimer);window.clearInterval(popupRotate);legacyObserver.disconnect();});
 })();
