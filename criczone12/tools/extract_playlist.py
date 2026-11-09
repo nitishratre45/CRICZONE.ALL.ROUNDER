@@ -1,68 +1,80 @@
 #!/usr/bin/env python3
-"""Build the CRICZONE12 channel catalogue from an M3U/M3U8 playlist.
+"""Import metadata from an M3U playlist you own or are authorized to use.
 
-Use only a playlist URL/file that you own or are authorized to access.
-This extracts playlist metadata; it does not bypass DRM, authentication,
-geoblocking, paywalls, or provider restrictions.
+This tool does not bypass DRM, authentication, geoblocking, paywalls,
+or provider restrictions.
 """
-import argparse, json, os, re, sys
+import argparse
+import json
+import os
+import re
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "channels.json"
 
+ATTR_RE = re.compile(r'([\w-]+)="([^"]*)"')
+
 def read_source(source: str) -> str:
     if source.startswith(("https://", "http://")):
-        req = Request(source, headers={"User-Agent": "CRICZONE12-Playlist-Importer/1.0"})
-        with urlopen(req, timeout=45) as response:
+        request = Request(source, headers={"User-Agent": "CRICZONE12-Playlist-Importer/1.1"})
+        with urlopen(request, timeout=60) as response:
             return response.read().decode("utf-8-sig", errors="replace")
     return Path(source).read_text(encoding="utf-8-sig", errors="replace")
 
-def attrs(line: str) -> dict:
-    return {k.lower(): v for k, v in re.findall(r'([\w-]+)="([^"]*)"', line)}
-
-def parse(text: str) -> list:
-    rows, pending = [], None
+def parse_playlist(text: str) -> list:
+    channels = []
+    pending = None
     for raw in text.splitlines():
         line = raw.strip()
         if not line:
             continue
         if line.startswith("#EXTINF:"):
-            meta = attrs(line)
-            name = line.split(",", 1)[1].strip() if "," in line else meta.get("tvg-name", "Unknown")
+            metadata = {key.lower(): value for key, value in ATTR_RE.findall(line)}
+            display_name = line.split(",", 1)[1].strip() if "," in line else ""
             pending = {
-                "name": name or meta.get("tvg-name", "Unknown"),
-                "tvg_id": meta.get("tvg-id", ""),
-                "logo": meta.get("tvg-logo", ""),
-                "category": meta.get("group-title", "Others") or "Others",
-                "language": meta.get("tvg-language", ""),
+                "name": display_name or metadata.get("tvg-name") or "Unknown channel",
+                "tvg_id": metadata.get("tvg-id", ""),
+                "logo": metadata.get("tvg-logo", ""),
+                "category": metadata.get("group-title", "Others") or "Others",
+                "language": metadata.get("tvg-language", ""),
                 "url": ""
             }
-        elif not line.startswith("#") and pending is not None:
+        elif pending is not None and not line.startswith("#"):
             pending["url"] = line
-            pending["id"] = pending["tvg_id"] or str(len(rows) + 1)
-            rows.append(pending)
+            pending["id"] = pending["tvg_id"] or f"channel-{len(channels) + 1}"
+            channels.append(pending)
             pending = None
-    return rows
+    return channels
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--source", default=os.getenv("PLAYLIST_URL") or os.getenv("PLAYLIST_FILE"),
-                   help="Authorized M3U URL or local M3U file; alternatively set PLAYLIST_URL")
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description="Build CRICZONE12 channel JSON from an authorized M3U playlist.")
+    parser.add_argument("--source", default=os.getenv("PLAYLIST_URL") or os.getenv("PLAYLIST_FILE"),
+                        help="Authorized M3U URL or local playlist file")
+    args = parser.parse_args()
     if not args.source:
-        sys.exit("Set PLAYLIST_URL to an authorized playlist URL, or pass --source /path/to/list.m3u")
-    text = read_source(args.source)
-    if "#EXTM3U" not in text[:500]:
-        sys.exit("Source does not look like an M3U playlist.")
-    channels = parse(text)
+        sys.exit("Missing playlist source. Set PLAYLIST_URL or pass --source.")
+    source_text = read_source(args.source)
+    if "#EXTM3U" not in source_text[:1000]:
+        sys.exit("The source did not return an M3U playlist (#EXTM3U not found).")
+    channels = parse_playlist(source_text)
+    if not channels:
+        sys.exit("No channel entries found; existing published JSON was left unchanged.")
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps({"updated_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
-                               "total": len(channels), "channels": channels},
-                              ensure_ascii=False, indent=2), encoding="utf-8")
-    cats = sorted({c["category"] for c in channels})
-    print(f"Saved {len(channels)} channel records across {len(cats)} categories to {OUT}")
+    payload = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "total": len(channels),
+        "categories": sorted({item["category"] for item in channels}),
+        "channels": channels
+    }
+    temporary = OUT.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(OUT)
+    print(f"Imported {len(channels)} channels in {len(payload['categories'])} categories.")
+    print(f"Output: {OUT}")
 
 if __name__ == "__main__":
     main()
