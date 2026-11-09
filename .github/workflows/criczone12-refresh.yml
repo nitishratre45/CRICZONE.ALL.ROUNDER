@@ -20,18 +20,9 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check playlist configuration
-        env:
-          PLAYLIST_URL: ${{ secrets.CRICZONE12_PLAYLIST_URL }}
-        run: |
-          if [ -z "$PLAYLIST_URL" ]; then
-            echo "::error::Add CRICZONE12_PLAYLIST_URL under Settings > Secrets and variables > Actions > Secrets."
-            exit 1
-          fi
-
       - name: Extract playlist metadata
         env:
-          PLAYLIST_URL: ${{ secrets.CRICZONE12_PLAYLIST_URL }}
+          PLAYLIST_URL: http://sflex.fun/Sflex-Jio/ZioTvPlus.php
         run: python criczone12/tools/extract_playlist.py
 
       - name: Commit refreshed channel catalogue
