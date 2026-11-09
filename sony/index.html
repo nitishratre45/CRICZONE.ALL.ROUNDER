@@ -62,7 +62,7 @@
        #status             → 9999
        #overlay            → 10000
        #tgBadge            → 10001
-       #tgOverlay          → 999999
+       #sonyTgOverlay          → 999999
     ──────────────────────────────────────── */
 
     /* Overlay */
@@ -457,7 +457,7 @@
     /* ════════════════════════════════════════════
        TELEGRAM POPUP
     ════════════════════════════════════════════ */
-    #tgOverlay {
+    #sonyTgOverlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.85);
@@ -470,7 +470,7 @@
       padding: 20px;
       animation: fadeInPopup 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    #tgOverlay.show { display: flex; }
+    #sonyTgOverlay.show { display: flex; }
 
     #tgCard {
       width: 100%;
@@ -603,14 +603,14 @@
     #status.warn{color:#f5c96b}
     #status.err{color:#ff8585}
     /* CRICZONE premium Telegram popup */
-    #tgOverlay{
+    #sonyTgOverlay{
       z-index:2147483000;
       padding:clamp(16px,4vw,28px);
       background:rgba(2,7,16,.82);
       backdrop-filter:blur(18px) saturate(125%);
       -webkit-backdrop-filter:blur(18px) saturate(125%);
     }
-    #tgOverlay.show #tgCard{animation:tgCardEnter .48s cubic-bezier(.2,.8,.2,1) both}
+    #sonyTgOverlay.show #tgCard{animation:tgCardEnter .48s cubic-bezier(.2,.8,.2,1) both}
     #tgCard{
       width:min(100%,430px);
       padding:54px clamp(22px,5vw,34px) 28px;
@@ -698,7 +698,7 @@
       .tgBtn{width:100%}
     }
     @media(prefers-reduced-motion:reduce){
-      #tgOverlay.show #tgCard{animation:none}
+      #sonyTgOverlay.show #tgCard{animation:none}
       .tgBtn{transition:none}
     }
 
@@ -1237,6 +1237,7 @@ function hidePlayer(){
   $toolbar.classList.remove("show");
 
   if(resumeTmr) { clearInterval(resumeTmr); resumeTmr = null; }
+  if(window.stopSonyWatching) window.stopSonyWatching();
 
   if(currentHls) {
     try { currentHls.destroy(); } catch(e){}
@@ -1593,6 +1594,8 @@ async function main(){
 window.addEventListener("popstate", function(e){
   if($playerContainer.style.display === "flex") {
     hidePlayer();
+  } else if(window.stopSonyWatching) {
+    window.stopSonyWatching();
   }
 });
 
@@ -1608,7 +1611,7 @@ document.addEventListener("DOMContentLoaded", main);
 </script>
 
 <!-- CRICZONE Telegram popup -->
-<div id="tgOverlay" role="dialog" aria-modal="true" aria-labelledby="tgPopupTitle">
+<div id="sonyTgOverlay" role="dialog" aria-modal="true" aria-labelledby="tgPopupTitle">
   <div id="tgCard">
     <button type="button" id="tgClose" aria-label="Close Telegram popup" title="Close">&times;</button>
     <div id="tgIcon" aria-hidden="true">
@@ -1623,7 +1626,7 @@ document.addEventListener("DOMContentLoaded", main);
 </div>
 <script>
 (function(){
-  var popup=document.getElementById("tgOverlay");
+  var popup=document.getElementById("sonyTgOverlay");
   var join=document.getElementById("joinNow");
   var closeX=document.getElementById("tgClose");
   if(!popup) return;
