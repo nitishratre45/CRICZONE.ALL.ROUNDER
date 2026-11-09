@@ -87,8 +87,9 @@
     try{
       const remote=await fetch('/api/channel-catalog',{cache:'no-store'});
       if(!remote.ok) throw new Error('Remote JSON HTTP '+remote.status);
-      const rows=await remote.json();
-      if(!Array.isArray(rows)) throw new Error('Remote JSON format is not an array');
+      const payload=await remote.json();
+      const rows=Array.isArray(payload)?payload:(Array.isArray(payload.channels)?payload.channels:null);
+      if(!rows) throw new Error('Remote JSON format is not an array or {channels:[...]}');
       const imported=rows.map((item,index)=>({
         id:String(item.id||'remote-'+(index+1)),
         tvg_id:String(item.id||''),
