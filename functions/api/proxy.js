@@ -17,8 +17,17 @@ function json(data, status = 400) {
 function isAllowed(url) {
   if (url.protocol !== "https:") return false;
   const host = url.hostname.toLowerCase();
+  const path = url.pathname;
+
+  // Exact, read-only JSON feeds used by the Sony channel directory.
+  const sonyJsonFeed =
+    (host === "sonujson-v5.pages.dev" && path === "/loura.json") ||
+    (host === "sportlink-tv10.pages.dev" && (path === "/id.json" || path === "/Data.json"));
+  if (sonyJsonFeed) return true;
+
+  // Existing restricted stream proxy remains limited to approved hosts/paths.
   return [...ALLOWED_HOST_SUFFIXES].some((suffix) => host === suffix || host.endsWith("." + suffix))
-    && url.pathname.startsWith("/sony-new/");
+    && path.startsWith("/sony-new/");
 }
 
 function proxyHref(target) {
