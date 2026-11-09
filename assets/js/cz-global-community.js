@@ -88,6 +88,6 @@
         sessionStorage.setItem("czCommunityShown","1");
       }
     },450);
-  },2600);
+  },5000);
   window.addEventListener("pagehide",function(){window.clearInterval(rotateTimer);window.clearInterval(popupRotate);legacyObserver.disconnect();});
 })();
