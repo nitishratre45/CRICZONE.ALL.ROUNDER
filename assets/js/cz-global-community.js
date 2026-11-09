@@ -30,7 +30,7 @@
     });
   }
   var brandPhotoStyle = document.createElement("style");
-  brandPhotoStyle.textContent = ".cz-player-brand-photo{overflow:hidden!important;padding:0!important}.cz-player-brand-img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 20%!important;border-radius:inherit!important}";
+  brandPhotoStyle.textContent = ".cz-player-brand-photo{overflow:hidden!important;padding:0!important}.cz-player-brand-photo{border:1px solid rgba(116,231,178,.48)!important;box-shadow:0 0 0 2px rgba(116,231,178,.08),0 5px 16px rgba(0,0,0,.28)!important;background:#10251c!important}.cz-player-brand-img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 20%!important;border-radius:inherit!important;opacity:1;transition:opacity .22s ease,transform .35s ease!important}.cz-player-brand-photo:hover .cz-player-brand-img{transform:scale(1.06)}@media(prefers-reduced-motion:reduce){.cz-player-brand-img{transition:none!important}.cz-player-brand-photo:hover .cz-player-brand-img{transform:none}}";
   document.head.appendChild(brandPhotoStyle);
   updateBrandPhotos(document);
   var brandObserver = new MutationObserver(function(){ updateBrandPhotos(document); });
