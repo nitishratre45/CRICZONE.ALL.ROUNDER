@@ -1667,28 +1667,30 @@ function toggleWatchlist(movie){if(!movie)return;var id=getMovieId(movie),index=
 $detailWatchlist.addEventListener("click",function(){toggleWatchlist(currentMovie);});
 $detailResume.addEventListener("click",function(event){
   if(event){event.preventDefault();event.stopPropagation();}
-  if(!currentMovie){toast("Open a movie first, then resume playback.","err",3500);return;}
-  var movieId=getMovieId(currentMovie);
-  var savedId="";
-  var savedIndex=-1;
+  var savedId="",savedIndex=-1;
   try{
-    savedId=localStorage.getItem("cz_hub_continue")||"";
-    savedIndex=Number.parseInt(localStorage.getItem("cz_hub_continue_source")||"-1",10);
+    savedId=localStorage.getItem("cz_hub_continue")||lastWatchedId||"";
+    savedIndex=Number.parseInt(localStorage.getItem("cz_hub_continue_source")||String(lastWatchedSource),10);
   }catch(error){}
-  if(savedId && savedId!==movieId){
-    var savedMovie=allMovies.find(function(item){return getMovieId(item)===savedId;});
-    if(savedMovie){openDetailModal(savedMovie);toast("Resuming your last watched title.","ok",2500);return;}
-  }
-  var index=Number.isInteger(savedIndex)&&savedIndex>=0?savedIndex:lastWatchedSource;
-  var channel=Array.isArray(currentMovie.channels)?currentMovie.channels[index]:null;
-  var stream=channel&&safeHttpUrl(channel.streamUrl||channel.url||channel.src||channel.file||channel.link);
-  if(!stream){
-    toast("Saved source is no longer available. Select an available quality/source again.","err",5000);
+  var targetMovie=savedId?allMovies.find(function(item){return getMovieId(item)===savedId;}):currentMovie;
+  if(!targetMovie){
+    toast("No saved movie found yet. Play a movie source once, then Resume will work.","err",5000);
     return;
   }
-  lastWatchedId=movieId;lastWatchedSource=index;
+  var sources=Array.isArray(targetMovie.channels)?targetMovie.channels:[];
+  var index=Number.isInteger(savedIndex)&&savedIndex>=0?savedIndex:0;
+  var channel=sources[index];
+  var stream=channel&&safeHttpUrl(channel.streamUrl||channel.url||channel.src||channel.file||channel.link);
+  if(!stream){
+    toast("The saved movie has no valid source at this quality. Open the movie and choose an available source.","err",5500);
+    openDetailModal(targetMovie);
+    return;
+  }
+  currentMovie=targetMovie;
+  lastWatchedId=getMovieId(targetMovie);
+  lastWatchedSource=index;
   $detailModal.style.display="none";
-  openPlayer(stream,currentMovie.title+" - "+(channel.name||channel.quality||"Resume"),currentMovie.title,index);
+  openPlayer(stream,targetMovie.title+" - "+(channel.name||channel.quality||"Resume"),targetMovie.title,index);
 });
 $detailTrailer.addEventListener("click",function(){if(!currentMovie)return;var url=safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);if(url)window.open(url,"_blank","noopener,noreferrer");});
 function getRecentMovies(){
