@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080d18"><meta name="description" content="CRICZONE12 live channel directory">
+  <title>CRICZONE12 • Live TV</title><link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="./"><span class="brand-mark">CZ</span><span>CRICZONE<span class="gold">12</span><small>LIVE TV HUB</small></span></a><div class="top-actions"><span class="live-dot"></span><span>CHANNEL DIRECTORY</span></div></header>
+<main class="shell">
+  <section class="hero"><div><p class="eyebrow">YOUR ENTERTAINMENT HUB</p><h1>Find your <span class="gold">channel.</span><br>Enjoy the moment.</h1><p class="sub">Browse channels by category and play streams you are authorized to access.</p></div><div class="hero-stat"><strong id="totalCount">—</strong><span>CHANNELS LOADED</span></div></section>
+  <section class="player-section">
+    <div class="player-wrap"><video id="video" controls playsinline></video><div class="player-empty" id="playerEmpty"><div class="play-symbol">▶</div><b>Ready when you are</b><span>Select an available channel to start playback</span></div></div>
+    <div class="now-playing"><div><small>NOW SELECTED</small><h2 id="nowTitle">No channel selected</h2><p id="nowMeta">Choose a channel from the directory</p></div><span class="status-pill" id="playerStatus">STANDBY</span></div>
+  </section>
+  <section class="directory">
+    <div class="section-head"><div><p class="eyebrow">EXPLORE</p><h2>Channel directory</h2></div><span id="resultCount" class="muted">Loading…</span></div>
+    <div class="toolbar"><label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search channels, language, category…" autocomplete="off"></label><select id="categorySelect" aria-label="Filter category"><option value="">All categories</option></select></div>
+    <div id="categoryChips" class="chips"></div>
+    <div id="channelGrid" class="channel-grid"><div class="loading">Loading channel data…</div></div>
+    <p id="emptyState" class="empty-state" hidden>No channels match your search.</p>
+  </section>
+  <footer>CRICZONE12 <span>•</span> Stream availability depends on the source provider, region and authorization.</footer>
+</main>
+<script src="app.js"></script>
+</body></html>
