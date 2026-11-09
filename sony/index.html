@@ -13,6 +13,8 @@
 
   <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- MPEG-DASH -->
+  <script src="https://cdn.jsdelivr.net/npm/dashjs@latest/dist/dash.all.min.js"></script>
 
   <!-- Plyr JS -->
   <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
@@ -1404,8 +1406,27 @@ function setupHLSPlayer(url){
   };
 
   var isM3U8 = /\.m3u8(\?|$)/i.test(url) || url.indexOf('.m3u8') !== -1;
+  var isMPD = /\.mpd(\?|$)/i.test(url) || url.indexOf('.mpd') !== -1;
 
-  if(Hls.isSupported() && isM3U8) {
+  if(isMPD && window.dashjs && window.dashjs.MediaPlayer) {
+    try {
+      currentPlayer = new Plyr($video, defaultOptions);
+      var dashPlayer = window.dashjs.MediaPlayer().create();
+      currentHls = { destroy: function(){ try{dashPlayer.reset();}catch(e){} } };
+      dashPlayer.initialize($video, playUrl, true);
+      dashPlayer.on(window.dashjs.MediaPlayer.events.STREAM_INITIALIZED, function(){
+        hideOverlay();
+        toast("● Live", "ok", 3000);
+      });
+      dashPlayer.on(window.dashjs.MediaPlayer.events.ERROR, function(event){
+        console.warn("Sony DASH playback error",event);
+        toast("DASH stream error", "err", 0);
+      });
+    } catch(dashError) {
+      console.error("Sony DASH player setup failed",dashError);
+      toast("DASH playback unavailable", "err", 0);
+    }
+  } else if(Hls.isSupported() && isM3U8) {
     var hls = new Hls({
       autoStartLoad: true,
       enableWorker: true,
