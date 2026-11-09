@@ -8,6 +8,40 @@
     { name: "VIRAT KOHLI", src: "https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png" }
   ];
   var telegram = "https://t.me/+pN15_8gc54s2NDU1";
+
+  /* Replace cricket emoji in site navbar/brand marks with rotating player portraits. */
+  var logoPhotoIndex = 0;
+  function updateBrandPhotos(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var candidates = scope.querySelectorAll(".cz-brand-mark,.brand-mark,.brand-icon,.logo-icon,.header-logo,.header-logo-wrap,.splash-logo-container,[class*='brand-mark']");
+    candidates.forEach(function (el) {
+      if (el.dataset.czPlayerLogo === "1") return;
+      var hasCricketEmoji = (el.textContent || "").trim() === "🏏";
+      var isLogoContainer = /brand-mark|brand-icon|logo-icon|header-logo|splash-logo/i.test(el.className || "");
+      if (!hasCricketEmoji && !isLogoContainer) return;
+      if (!hasCricketEmoji && el.querySelector("img,svg")) return;
+      el.dataset.czPlayerLogo = "1";
+      el.classList.add("cz-player-brand-photo");
+      var img = document.createElement("img");
+      img.className = "cz-player-brand-img";
+      img.alt = photos[logoPhotoIndex].name;
+      img.src = photos[logoPhotoIndex].src;
+      el.replaceChildren(img);
+    });
+  }
+  var brandPhotoStyle = document.createElement("style");
+  brandPhotoStyle.textContent = ".cz-player-brand-photo{overflow:hidden!important;padding:0!important}.cz-player-brand-img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 20%!important;border-radius:inherit!important}";
+  document.head.appendChild(brandPhotoStyle);
+  updateBrandPhotos(document);
+  var brandObserver = new MutationObserver(function(){ updateBrandPhotos(document); });
+  brandObserver.observe(document.documentElement,{childList:true,subtree:true});
+  window.setInterval(function(){
+    logoPhotoIndex = (logoPhotoIndex + 1) % photos.length;
+    document.querySelectorAll(".cz-player-brand-img").forEach(function(img){
+      img.style.opacity = "0.35";
+      window.setTimeout(function(){img.src=photos[logoPhotoIndex].src;img.alt=photos[logoPhotoIndex].name;img.style.opacity="1";},140);
+    });
+  },1000);
   var style = document.createElement("style");
   style.textContent = `
     #cz-global-loader{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 48%,#17112c 0%,#090910 42%,#050509 100%);color:#f7f5ff;font-family:Inter,system-ui,sans-serif;opacity:1;visibility:visible;transition:opacity .45s,visibility .45s}
