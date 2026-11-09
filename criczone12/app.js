@@ -82,10 +82,35 @@
     grid.querySelectorAll('.channel-card').forEach(btn=>btn.addEventListener('click',()=>{const c=channels.find(x=>getId(x)===btn.dataset.id);if(c)play(c);}));
   }
   function setCategory(cat){activeCategory=cat;select.value=cat;document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));render();}
+  async function loadChannelData(){
+    // Import public channel metadata only. DRM keys/key IDs are deliberately ignored.
+    try{
+      const remote=await fetch('https://giotv-6op.pages.dev/jstr4web.json',{cache:'no-store'});
+      if(!remote.ok) throw new Error('Remote JSON HTTP '+remote.status);
+      const rows=await remote.json();
+      if(!Array.isArray(rows)) throw new Error('Remote JSON format is not an array');
+      const imported=rows.map((item,index)=>({
+        id:String(item.id||'remote-'+(index+1)),
+        tvg_id:String(item.id||''),
+        name:String(item.name||'Unnamed channel'),
+        category:String(item.category||'Others'),
+        language:String(item.language||''),
+        logo:String(item.logo||''),
+        url:String(item.url||'')
+      })).filter(item=>item.name && item.url);
+      if(!imported.length) throw new Error('No usable channel metadata in remote JSON');
+      return imported;
+    }catch(remoteError){
+      console.warn('Remote channel JSON unavailable; using local catalogue:',remoteError.message);
+      const fallback=await fetch('data/channels.json',{cache:'no-store'});
+      if(!fallback.ok) throw new Error('Remote JSON unavailable and local catalogue HTTP '+fallback.status);
+      const data=await fallback.json();
+      return Array.isArray(data)?data:(data.channels||[]);
+    }
+  }
   async function init(){
     try{
-      const res=await fetch('data/channels.json',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
-      const data=await res.json();channels=Array.isArray(data)?data:(data.channels||[]);
+      channels=await loadChannelData();
       $('totalCount').textContent=channels.length.toLocaleString();
       const cats=[...new Set(channels.map(c=>c.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
       cats.forEach(cat=>select.add(new Option(cat,cat)));
