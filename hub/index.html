@@ -1494,7 +1494,7 @@ body[data-active-nav="search"] .home-section-heading .section-note{display:none}
 (function(){
 "use strict";
 
-var API_URL = "/api/hub-catalog";
+var API_URL = "https://cinearena-movies-api.asifadmincinearena.workers.dev/";
 
 var $overlay = document.getElementById("overlay");
 var $loadMsg = document.getElementById("loadMsg");
@@ -1573,9 +1573,13 @@ function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
 
 async function loadData(){
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 20000);
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 12000);
   try {
-    var res = await fetch(API_URL, {cache:"no-store", signal:controller.signal, headers:{"Accept":"application/json"}});
+    var request = fetch(API_URL, {cache:"no-store", signal:controller.signal, mode:"cors", headers:{"Accept":"application/json"}});
+    var res = await Promise.race([
+      request,
+      new Promise(function(_,reject){setTimeout(function(){reject(new Error("Movie catalogue timed out after 12 seconds"));},12000);})
+    ]);
     if(!res.ok) throw new Error("Movie catalogue returned HTTP " + res.status);
     var json = await res.json();
     var rows = Array.isArray(json) ? json :
@@ -1583,7 +1587,7 @@ async function loadData(){
        Array.isArray(json.movies) ? json.movies :
        Array.isArray(json.data) ? json.data :
        Array.isArray(json.results) ? json.results : null));
-    if(!rows) throw new Error("Catalogue format not recognized (expected matches/movies/data/results array)");
+    if(!rows) throw new Error("Catalogue format not recognized");
     return rows.filter(function(item){
       return item && typeof item === "object" && typeof (item.title || item.name) === "string" && String(item.title || item.name).trim();
     }).map(function(item){
