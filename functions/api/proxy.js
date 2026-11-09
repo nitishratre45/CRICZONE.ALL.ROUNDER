@@ -23,7 +23,8 @@ function isAllowed(url) {
   const sonyJsonFeed =
     (host === "sonujson-v5.pages.dev" && path === "/loura.json") ||
     (host === "sportlink-tv10.pages.dev" && (path === "/id.json" || path === "/Data.json"));
-  if (sonyJsonFeed) return true;
+  const sonyPlaylist = host === "sportlink-jtv.pages.dev" && path === "/sony3.m3u";
+  if (sonyJsonFeed || sonyPlaylist) return true;
 
   // Existing restricted stream proxy remains limited to approved hosts/paths.
   return [...ALLOWED_HOST_SUFFIXES].some((suffix) => host === suffix || host.endsWith("." + suffix))
