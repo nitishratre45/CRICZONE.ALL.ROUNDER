@@ -47,7 +47,8 @@
         shakaPlayer.addEventListener('error',event=>{
           const detail=event.detail||{};
           const data=Array.isArray(detail.data)?detail.data:[];
-          const httpStatus=Number(data[1])||0;
+          const response=data.find(value=>value && typeof value==="object" && typeof value.status==="number");
+          const httpStatus=response ? response.status : (Number(data[1])||0);
           if(detail.code===1001){
             status(httpStatus?'HTTP '+httpStatus+' · '+(httpStatus===401||httpStatus===403?'AUTH / TOKEN DENIED':httpStatus===404?'MANIFEST / SEGMENT NOT FOUND':'REQUEST REJECTED'):'HTTP REQUEST FAILED');
           } else if(detail.code===1002){
