@@ -1,29 +1,92 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <base href="../">
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#080d18"><meta name="description" content="CRICZONE12 live channel directory">
-  <title>CRICZONE12 • Live TV</title><link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.12.8/shaka-player.compiled.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sony SAB HD - Live Stream</title>
+    <!-- Shaka Player Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .channel-info img {
+            width: 60px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        video {
+            width: 100%;
+            background-color: black;
+            outline: none;
+        }
+    </style>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="./"><span class="brand-mark">CZ</span><span>CRICZONE<span class="gold">12</span><small>LIVE TV HUB</small></span></a><div class="top-actions"><span class="live-dot"></span><span>CHANNEL DIRECTORY</span></div></header>
-<main class="shell">
-  <section class="hero"><div><p class="eyebrow">YOUR ENTERTAINMENT HUB</p><h1>Find your <span class="gold">channel.</span><br>Enjoy the moment.</h1><p class="sub">Browse channels by category and play streams you are authorized to access.</p></div><div class="hero-stat"><strong id="totalCount">—</strong><span>CHANNELS LOADED</span></div></section>
-  <section class="player-section">
-    <div class="player-wrap"><video id="video" controls playsinline></video><div class="player-empty" id="playerEmpty"><div class="play-symbol">▶</div><b>Ready when you are</b><span>Select an available channel to start playback</span></div></div>
-    <div class="now-playing"><div><small>NOW SELECTED</small><h2 id="nowTitle">No channel selected</h2><p id="nowMeta">Choose a channel from the directory</p></div><span class="status-pill" id="playerStatus">STANDBY</span></div>
-  </section>
-  <section class="directory">
-    <div class="section-head"><div><p class="eyebrow">EXPLORE</p><h2>Channel directory</h2></div><span id="resultCount" class="muted">Loading…</span></div>
-    <div class="toolbar"><label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search channels, language, category…" autocomplete="off"></label><select id="categorySelect" aria-label="Filter category"><option value="">All categories</option></select></div>
-    <div id="categoryChips" class="chips"></div>
-    <div id="channelGrid" class="channel-grid"><div class="loading">Loading channel data…</div></div>
-    <p id="emptyState" class="empty-state" hidden>No channels match your search.</p>
-  </section>
-  <footer>CRICZONE12 <span>•</span> Stream availability depends on the source provider, region and authorization.</footer>
-</main>
-<script src="app.js"></script>
-</body></html>
+
+    <div class="channel-info">
+        <img src="https://jiotv.catchup.cdn.jio.com/dare_images/images/SonySAB.png" alt="Sony SAB HD Logo">
+        <h2>Sony SAB HD</h2>
+    </div>
+
+    <div class="video-container">
+        <video id="video" controls autoplay></video>
+    </div>
+
+    <script>
+        // Aapka Stream URL aur DRM Keys
+        const manifestUri = 'https://jiotvmblive.cdn.jio.com/bpk-tv/SonySAB_MOB/WDVLive/index.mpd?__hdnea__=st=1791964811~exp=1791986411~acl=/*~hmac=e189c4ac1a9fc36d9adb6d2b44087de05de624ae12a8a66eb01bcedcccb6a6c6';
+        const keyId = 'f223cf2122d7510da9fcec6e523ffba1';
+        const key = 'c55848470f58d3bd934fbfe844522b0e';
+
+        async function initPlayer() {
+            const video = document.getElementById('video');
+            const player = new shaka.Player(video);
+
+            // Listen for errors
+            player.addEventListener('error', onErrorEvent);
+
+            // Configure ClearKey DRM
+            player.configure({
+                drm: {
+                    clearKeys: {
+                        [keyId]: key
+                    }
+                }
+            });
+
+            try {
+                await player.load(manifestUri);
+                console.log('Video loaded successfully!');
+            } catch (e) {
+                onError(e);
+            }
+        }
+
+        function onErrorEvent(event) {
+            onError(event.detail);
+        }
+
+        function onError(error) {
+            console.error('Error code', error.code, 'object', error);
+            if (error.code === 403) {
+                alert("Stream ka URL expire ho chuka hai (Token expired). Kripya naya URL generate karein.");
