@@ -1572,49 +1572,36 @@ function setMsg(m)    { if($loadMsg) $loadMsg.textContent = m; }
 function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
 
 async function loadData(){
-  var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 12000);
-  try {
-    var request = fetch(API_URL, {cache:"no-store", signal:controller.signal, mode:"cors", headers:{"Accept":"application/json"}});
-    var res = await Promise.race([
-      request,
-      new Promise(function(_,reject){setTimeout(function(){reject(new Error("Movie catalogue timed out after 12 seconds"));},12000);})
-    ]);
-    if(!res.ok) throw new Error("Movie catalogue returned HTTP " + res.status);
-    var json = await res.json();
-    var rows = Array.isArray(json) ? json :
-      (json && (Array.isArray(json.matches) ? json.matches :
-       Array.isArray(json.movies) ? json.movies :
-       Array.isArray(json.data) ? json.data :
-       Array.isArray(json.results) ? json.results : null));
-    if(!rows) throw new Error("Catalogue format not recognized");
-    return rows.filter(function(item){
-      return item && typeof item === "object" && typeof (item.title || item.name) === "string" && String(item.title || item.name).trim();
-    }).map(function(item){
-      var movie = Object.assign({}, item);
-      movie.title = String(item.title || item.name).trim();
-      movie.poster = item.poster || item.posterUrl || item.image || item.thumbnail || "";
-      movie.backdrop = item.backdrop || item.backdropUrl || item.banner || movie.poster;
-      var sourceRows = Array.isArray(item.channels) ? item.channels :
-        Array.isArray(item.sources) ? item.sources :
-        Array.isArray(item.episodes) ? item.episodes :
-        Array.isArray(item.qualities) ? item.qualities : [];
-      movie.channels = sourceRows.map(function(source, index){
-        if(typeof source === "string") return {name:"Source " + (index + 1), streamUrl:source};
-        source = source || {};
-        return Object.assign({}, source, {
-          name: source.name || source.quality || source.label || source.title || ("Source " + (index + 1)),
-          streamUrl: source.streamUrl || source.url || source.src || source.file || source.link || ""
-        });
+  var cached=[];
+  try{cached=JSON.parse(localStorage.getItem("cz_hub_catalog_cache")||"[]");if(!Array.isArray(cached))cached=[];}catch(error){cached=[];}
+  var controller=new AbortController();
+  var timeoutId=setTimeout(function(){controller.abort();},10000);
+  try{
+    var res=await fetch(API_URL,{cache:"no-store",signal:controller.signal,mode:"cors",headers:{"Accept":"application/json"}});
+    if(!res.ok)throw new Error("Movie catalogue HTTP "+res.status);
+    var json=await res.json();
+    var rows=Array.isArray(json)?json:(json&&(Array.isArray(json.matches)?json.matches:Array.isArray(json.movies)?json.movies:Array.isArray(json.data)?json.data:Array.isArray(json.results)?json.results:null));
+    if(!rows)throw new Error("Catalogue response format is invalid");
+    var movies=rows.filter(function(item){return item&&typeof item==="object"&&typeof(item.title||item.name)==="string"&&String(item.title||item.name).trim();}).map(function(item){
+      var movie=Object.assign({},item);
+      movie.title=String(item.title||item.name).trim();
+      movie.poster=item.poster||item.posterUrl||item.image||item.thumbnail||"";
+      movie.backdrop=item.backdrop||item.backdropUrl||item.banner||movie.poster;
+      var sources=Array.isArray(item.channels)?item.channels:Array.isArray(item.sources)?item.sources:Array.isArray(item.episodes)?item.episodes:Array.isArray(item.qualities)?item.qualities:[];
+      movie.channels=sources.map(function(source,index){
+        if(typeof source==="string")return{name:"Source "+(index+1),streamUrl:source};
+        source=source||{};
+        return Object.assign({},source,{name:source.name||source.quality||source.label||source.title||("Source "+(index+1)),streamUrl:source.streamUrl||source.url||source.src||source.file||source.link||""});
       });
       return movie;
     });
-  } catch(error) {
-    if(error && error.name === "AbortError") throw new Error("Movie catalogue request timed out. Please retry.");
+    try{localStorage.setItem("cz_hub_catalog_cache",JSON.stringify(movies));}catch(error){}
+    return movies;
+  }catch(error){
+    if(cached.length){toast("Using saved movie catalogue — live refresh failed.","err",5000);return cached;}
+    if(error&&error.name==="AbortError")throw new Error("Movie API timed out. Check API availability.");
     throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  }finally{clearTimeout(timeoutId);}
 }
 
 var heroMovies=[];
@@ -2170,7 +2157,7 @@ async function main(){
     errorTitle.textContent = "Unable to load movies";
     errorTitle.style.cssText = "color:var(--text-primary);font-size:1.1rem;margin-bottom:10px";
     var errorText = document.createElement("p");
-    errorText.textContent = e && e.message ? ("Catalogue error: " + e.message) : "Please check your internet connection and try again.";
+    errorText.textContent = e && e.message ? ("Catalogue error: " + e.message) : "Please check your internet connection and try again."; errorText.style.color="var(--text-primary)";
     errorText.style.marginBottom = "18px";
     var retry = document.createElement("button");
     retry.type = "button";
