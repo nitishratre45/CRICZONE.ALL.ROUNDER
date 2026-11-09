@@ -78,11 +78,11 @@
   /* Dismiss only through the explicit close button. */
   popup.querySelector(".cz-community-close").addEventListener("click",closePopup);
 
-  /* Fade the loader out just before the 5-second mark; reveal the popup at 5 seconds. */
+  /* Hide the loading screen after 2 seconds; show the community popup at 5 seconds. */
   window.setTimeout(function(){
     window.clearInterval(rotateTimer);
     loader.classList.add("cz-hide");
-  },4550);
+  },2000);
   window.setTimeout(function(){
     popup.classList.add("cz-show");
   },5000);
