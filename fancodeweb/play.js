@@ -2881,6 +2881,8 @@ async function switchQuality(
 
       try {
 
+        activeStreamUrl = urls[index];
+
         await initializeShaka(
           urls[index]
         );
@@ -2923,9 +2925,10 @@ async function switchQuality(
 
       try {
 
+        activeStreamUrl = urls[0] || url;
+
         vid.src =
-          urls[0] ||
-          url;
+          activeStreamUrl;
 
 
         vid.load();
