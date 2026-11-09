@@ -177,6 +177,28 @@ margin-bottom:12px;
   #waBadge svg{ width:20px; height:20px; }
 }
 
+
+/* CRICZONE FANCODE PLAYER — premium visual refresh, playback logic unchanged */
+:root{color-scheme:dark;--cz-gold:#ffd34e;--cz-gold2:#f59e0b}
+html,body,.video-container,.shaka-video-container{background:#02050a!important}
+.video-container{isolation:isolate}
+.shaka-video-container{overflow:hidden}
+video{background:#000;object-fit:contain}
+.shaka-controls-container{background:linear-gradient(0deg,rgba(0,0,0,.82),transparent 68%)!important}
+.shaka-controls-button-panel{padding:0 10px 9px!important}
+.shaka-controls-button-panel button,.shaka-overflow-menu button,.shaka-settings-menu button{color:#f8fafc!important}
+.shaka-controls-button-panel button:hover,.shaka-overflow-menu button:hover,.shaka-settings-menu button:hover{color:var(--cz-gold)!important}
+.shaka-seek-bar-container .shaka-seek-bar{accent-color:var(--cz-gold)!important}
+.shaka-seek-bar-container input[type=range]{accent-color:var(--cz-gold)!important}
+.shaka-range-container input{accent-color:var(--cz-gold)!important}
+.shaka-overflow-menu,.shaka-settings-menu{border:1px solid rgba(255,211,78,.2)!important;border-radius:13px!important;background:rgba(10,19,32,.96)!important;box-shadow:0 16px 45px #000b!important;backdrop-filter:blur(12px)}
+#loading{background:radial-gradient(ellipse at center,rgba(18,35,57,.55),rgba(0,0,0,.96))!important;color:#f8fafc!important;font-size:14px!important;font-weight:700;letter-spacing:.2px}
+.spinner{border-color:rgba(255,255,255,.16)!important;border-top-color:var(--cz-gold)!important;box-shadow:0 0 20px rgba(255,211,78,.16)}
+#waBadge{border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 24px #0007,0 0 0 1px rgba(255,255,255,.05);backdrop-filter:blur(12px)}
+#waBadge:focus-visible{outline:2px solid var(--cz-gold);outline-offset:3px}
+@media(max-width:480px){.shaka-controls-button-panel{padding:0 5px 7px!important}}
+@media(prefers-reduced-motion:reduce){.spinner{animation-duration:2s}}
+
 </style>
 
   <link rel="stylesheet" href="../site-polish.css?v=20261019-premium-ui">
