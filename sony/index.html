@@ -1450,14 +1450,17 @@ async function main(){
 
   document.title = "CRICZONE · " + ch.name;
   renderList(data);
-  // Play the exact stream URL from the Sony playlist on this page.
-  // Do not forward the channel ID to a second site with a different playlist.
+  // Route every Sony channel through the external Sony player using its channel ID.
   var externalFrame = document.getElementById("sonyExternalFrame");
   if(externalFrame) {
-    externalFrame.src = "about:blank";
-    externalFrame.style.display = "none";
+    $video.style.display = "none";
+    externalFrame.src = "https://sportlink-sonyliv10.pages.dev/?id=" + encodeURIComponent(ch.id);
+    externalFrame.style.display = "block";
+    showPlayer();
+    hideOverlay();
+    toast("● Live", "ok", 3000);
+    return;
   }
-  $video.style.display = "block";
   setupHLSPlayer(ch.stream_url);
   if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
 }
@@ -1568,7 +1571,5 @@ show(watchingEl,WATCH_BASE,WATCH_BASE);show(totalEl,TOTAL_BASE,TOTAL_BASE);
 initSonyTotal();
 window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(watchOff)watchOff();if(totalOff)totalOff()});
 </script>
-
-<script src="/assets/js/cz-global-community.js" defer></script>
 </body>
 </html>
