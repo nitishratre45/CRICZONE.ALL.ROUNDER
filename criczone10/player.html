@@ -10,8 +10,241 @@
 <title>CRICZONE — Live Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--gold:#ffd34e;--ink:#0b0b08;--panel:#17150e;--muted:#b9ad8e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#080807;color:#fffdf5;font-family:Inter,system-ui,sans-serif}
+body{min-height:100vh;min-height:100dvh;min-height:100svh}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(14px,env(safe-area-inset-left));background:linear-gradient(110deg,#211b0c,#11110d);border-bottom:1px solid #5d4818}
+.brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}.brand-photo{width:38px;height:38px;flex:0 0 38px;object-fit:cover;object-position:center;border-radius:12px;border:1px solid #f7d66b;box-shadow:0 0 0 3px #ffd34e18,0 6px 16px #0007;background:#17150e}
+.actions{display:flex;gap:8px}.btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid #6d551c;border-radius:11px;background:#29220f;color:#ffe38a;font:700 12px Inter, sans-serif;text-decoration:none;cursor:pointer}
+.btn.primary{background:linear-gradient(120deg,#ffe37a,#f5bf32);color:#211805;border-color:#ffe37a}
+main{width:min(100%,1050px);margin:0 auto;padding:14px}
+.player-card{overflow:hidden;border:1px solid #5d4818;border-radius:16px;background:#090908;box-shadow:0 20px 70px #0008}
+.player-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:linear-gradient(110deg,#211b0c,#11110d);border-bottom:1px solid #3d3218}
+.kicker{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--gold);margin-bottom:5px}.channel-name{font-size:19px;font-weight:850;overflow-wrap:anywhere}
+.frame{position:relative;width:100%;aspect-ratio:16/9;min-height:0;background:#000;overflow:hidden}.frame:before{content:"";display:block;padding-top:56.25%}.frame{aspect-ratio:auto}.frame:before{display:none}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;display:block;border:0;background:#000;max-width:100%}
+.loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(circle,#30270f,#080807 72%);color:#fff0bd;font-size:13px;pointer-events:none}
+.loading.hidden{display:none}.spinner{width:30px;height:30px;border:3px solid #6e571b;border-top-color:#ffd34e;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+.hint{padding:14px 4px 4px;text-align:center;color:#9f967e;font-size:11px}
+@media(max-width:600px){.top{padding:calc(10px + env(safe-area-inset-top)) 12px 10px}.brand{font-size:14px}.brand-photo{width:34px;height:34px;flex-basis:34px;border-radius:10px}.btn{min-height:38px;padding:8px 10px;font-size:11px}main{padding:10px 8px}.player-card{border-radius:13px}.player-head{padding:11px 12px}.channel-name{font-size:17px}.telegram .btn{width:100%;min-height:42px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Cross-device fallbacks for Safari/iOS, Android WebView and narrow screens. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-y:auto}
+button,a{-webkit-appearance:none;appearance:none;touch-action:manipulation}
+.frame{height:auto;min-height:0}
+@supports not (aspect-ratio:16/9){.frame{height:0;padding-top:56.25%}.frame iframe,.frame .loading{height:100%}}
+@media(max-width:380px){.actions{gap:5px}.btn{padding:8px;font-size:10px}.channel-name{font-size:16px}main{padding-left:6px;padding-right:6px}}
+@media(orientation:landscape) and (max-height:500px){main{padding-top:8px}.top{padding-top:8px;padding-bottom:8px}.player-head{padding:8px 12px}.frame{max-height:calc(100vh - 120px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+/* Ensure the iframe has real height on mobile: previous overrides collapsed this wrapper to 0px. */
+.frame{width:100%;height:auto;min-height:180px;aspect-ratio:16/9;position:relative}
+.frame:before{display:none!important;content:none!important}
+.frame iframe,.frame .loading{position:absolute;inset:0;width:100%;height:100%}
 
 
+/* Premium champagne-gold palette, matched to the channel directory. */
+:root{--gold:#c6a66b;--ink:#0b0c0e;--panel:#17191c;--muted:#b8b1a3}
+html,body{background:#090b0e;color:#f4f0e7}
+.top{background:linear-gradient(110deg,#252219,#121416);border-bottom-color:#5d4e33;box-shadow:0 8px 28px #0004}
+.brand span{color:#dfc895}
+.brand-photo{border-color:#c6a66b;box-shadow:0 0 0 3px #c6a66b18,0 6px 18px #0008}
+.btn{background:linear-gradient(135deg,#29261f,#171819);border-color:#655438;color:#e3ce9d;box-shadow:inset 0 1px #ffffff08}
+.btn:hover{border-color:#c6a66b;background:linear-gradient(135deg,#373024,#1c1d1d)}
+.btn.primary{background:linear-gradient(120deg,#e0d0a8,#b99b65);color:#211c12;border-color:#e8d7af;box-shadow:0 7px 20px #0003}
+.btn.primary:hover{background:linear-gradient(120deg,#eadbb8,#c8ad79)}
+.player-card{background:#0d0f11;border-color:#5e5036;box-shadow:0 22px 70px #0008}
+.player-head{background:linear-gradient(110deg,#252219,#141516);border-bottom-color:#3f3728}
+.kicker{color:#d9c28f}
+.channel-name{color:#f5f0e5}
+.frame{background:#000}
+.loading{background:radial-gradient(circle,#29251b,#08090a 72%);color:#ead8ad}
+.spinner{border-color:#66563a;border-top-color:#d3bb87}
+
+.hint{color:#9f998c}
+
+</style>
+
+<style id="criczone-blue-theme">
+/* Premium blue theme */
+:root{--gold:#58a6ff;--ink:#07101c;--panel:#101d2d;--muted:#a8bed8}
+body{background:radial-gradient(ellipse at top,#102746 0%,#070d17 58%,#05080e 100%)!important;color:#edf5ff}
+.top,.player-head{background:linear-gradient(110deg,#102b4c,#0b1422)!important;border-color:#234b78!important}
+.brand span,.kicker{color:#8fc5ff!important}
+.brand-photo{border-color:#58a6ff!important;box-shadow:0 0 0 3px #58a6ff20,0 6px 18px #0008!important}
+.btn{background:linear-gradient(135deg,#132945,#0d1929)!important;border-color:#31567e!important;color:#d9eaff!important}
+.btn:hover{border-color:#58a6ff!important;background:linear-gradient(135deg,#1b3a60,#10213a)!important}
+.btn.primary{background:linear-gradient(120deg,#8fc5ff,#347fce)!important;color:#061322!important;border-color:#9acbff!important}
+.btn.primary:hover{background:linear-gradient(120deg,#b0d8ff,#4b96e8)!important}
+.player-card,.player-shell,.now-playing{border-color:#28496d!important}
+
+.spinner{border-color:#27496d!important;border-top-color:#58a6ff!important}
+a{accent-color:#58a6ff}
+</style>
+
+<style id="criczone-live-watching">
+.live-watching{display:flex;align-items:center;gap:7px;margin-top:8px;min-height:20px;color:#a8bed8;font-size:11px;font-weight:700;letter-spacing:.25px}
+.live-watching-dot{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#38d996;box-shadow:0 0 10px #38d99688;animation:czLivePulse 1.5s ease-in-out infinite}
+#live-watching-count{color:#8fc5ff;font-variant-numeric:tabular-nums}
+.live-watching-label{color:#9bb0c8;letter-spacing:.8px;font-size:9px}
+@keyframes czLivePulse{50%{opacity:.45;transform:scale(.78)}}
+@media(prefers-reduced-motion:reduce){.live-watching-dot{animation:none}}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img class="brand-photo" src="../photos/photo_2026-10-28_14-52-23.jpg" alt="CRICZONE logo"><span>CRICZONE</span></div>
+  <div class="actions"><a class="btn" href="./">← All Channels</a><button class="btn primary" id="reload-player" type="button">↻ Reload</button></div>
+</header>
+<main>
+  <section class="player-card" aria-label="Live channel player">
+    <div class="player-head"><div><div class="kicker">NOW PLAYING</div><div class="channel-name" id="channel-name">Loading channel…</div>
+<div class="live-watching" role="status" aria-live="polite"><span class="live-watching-dot"></span><span id="live-watching-count">Connecting…</span><span class="live-watching-label">WATCHING LIVE</span></div></div><a class="btn" href="./" aria-label="Back to all channels">✕</a></div>
+    <div class="frame"><div class="loading" id="loading"><span class="spinner"></span><span>Connecting to channel…</span></div><iframe id="stream-frame" title="CRICZONE live channel" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen playsinline referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    
+  </section>
+  <p class="hint">Refresh this page to reload the same selected channel.</p>
+</main>
+<script src="stream.js?v=20261029-crossdevice1"></script>
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const channelId = params.get('channel');
+  const name = document.getElementById('channel-name');
+  const frame = document.getElementById('stream-frame');
+  const loading = document.getElementById('loading');
+  const reload = document.getElementById('reload-player');
+  let currentUrl = '';
+  function showMessage(message) {
+    loading.replaceChildren();
+    const text = document.createElement('span');
+    text.textContent = message;
+    loading.appendChild(text);
+  }
+  function loadChannel() {
+    const item = (window.streamsData || {})[channelId];
+    if (!channelId || !item || !item.url || !(item.url.startsWith('https://') || item.url.startsWith('http://'))) {
+      name.textContent = 'Channel unavailable';
+      showMessage('This channel ID is missing or has no configured stream.');
+      const back = document.createElement('a');
+      back.className = 'btn primary';
+      back.href = './';
+      back.textContent = 'Back to all channels';
+      loading.appendChild(back);
+      return false;
+    }
+    currentUrl = item.url;
+    name.textContent = item.name || 'Live Channel';
+    document.title = 'CRICZONE — ' + name.textContent;
+    loading.classList.remove('hidden');
+    frame.src = currentUrl;
+    return true;
+  }
+  frame.addEventListener('load', () => {
+    // load fires for cross-origin frames too; hide the overlay after navigation has started.
+    loading.classList.add('hidden');
+  });
+  reload.addEventListener('click', () => {
+    if (!currentUrl) { loadChannel(); return; }
+    loading.classList.remove('hidden');
+    frame.src = 'about:blank';
+    window.setTimeout(() => { frame.src = currentUrl; }, 100);
+  });
+  // stream.js is loaded synchronously above; retry briefly for slow Safari/WebView startup.
+  if (!loadChannel()) {
+    let tries = 0;
+    const retry = window.setInterval(() => {
+      tries += 1;
+      if (loadChannel() || tries >= 20) window.clearInterval(retry);
+    }, 250);
+  }
+})();
+</script>
+<script type="module">
+/* Realtime live-watching presence, using the existing CRICZONE Firebase project. */
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, onValue, onDisconnect, set, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",
+  authDomain: "criczone-4daa2.firebaseapp.com",
+  databaseURL: "https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "criczone-4daa2",
+  storageBucket: "criczone-4daa2.firebasestorage.app",
+  messagingSenderId: "113293633217",
+  appId: "1:113293633217:web:a96d9b3af3045bcd99d640",
+  measurementId: "G-Q9RJ0VSSPP"
+};
+
+const countEl = document.getElementById("live-watching-count");
+const params = new URLSearchParams(location.search);
+const channelKey = params.get("channel");
+const safeKey = String(channelKey || "unknown").replace(/[.#$\[\]\/]/g, "_");
+let db, presenceRef, unsubscribeCount, presenceStarted = false;
+
+function showCount(value) {
+  if (countEl) countEl.textContent = Number(value).toLocaleString("en-IN");
+}
+
+async function startPresence() {
+  if (!channelKey || presenceStarted) {
+    if (!channelKey && countEl) countEl.textContent = "—";
+    return;
+  }
+  presenceStarted = true;
+  try {
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    const auth = getAuth(app);
+    await signInAnonymously(auth);
+    const viewerId = globalThis.crypto?.randomUUID?.() || (Date.now() + "_" + Math.random().toString(36).slice(2));
+    const channelPath = "liveViewers/" + safeKey;
+    presenceRef = ref(db, channelPath + "/" + viewerId);
+    await onDisconnect(presenceRef).remove();
+    await set(presenceRef, { online: true, joinedAt: Date.now(), page: "criczone10" });
+    unsubscribeCount = onValue(ref(db, channelPath), snapshot => {
+      const data = snapshot.val() || {};
+      showCount(Object.keys(data).length);
+    }, error => {
+      console.warn("CRICZONE live-watching count unavailable:", error);
+      if (countEl) countEl.textContent = "—";
+    });
+  } catch (error) {
+    console.warn("CRICZONE Firebase presence unavailable:", error);
+    if (countEl) countEl.textContent = "—";
+    presenceStarted = false;
+  }
+}
+
+async function leavePresence() {
+  if (unsubscribeCount) unsubscribeCount();
+  if (presenceRef) {
+    try { await remove(presenceRef); } catch (error) {}
+    presenceRef = null;
+  }
+}
+window.addEventListener("pagehide", leavePresence);
+startPresence();
+</script>
+
+
+<!-- CRICZONE Telegram join banner + local Telegram popup (self-contained per page) -->
+<style>
+#cz-tg-local-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:calc(100% - 28px);max-width:1200px;min-height:76px;margin:12px auto;padding:11px 17px;border:1px solid #28a7ff;border-radius:17px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 0 22px #008bff55,0 10px 28px #0004;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;position:relative;z-index:30}
+#cz-tg-local-bar *{box-sizing:border-box}#cz-tg-local-bar .cz-tg-left{display:flex;align-items:center;gap:13px;min-width:0;color:#fff;text-decoration:none}#cz-tg-local-bar .cz-tg-logo{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:13px;background:#ffffff30}#cz-tg-local-bar svg{width:27px;height:27px}#cz-tg-local-bar .cz-tg-label{display:flex;flex-direction:column;gap:3px;min-width:0}#cz-tg-local-bar strong{font-size:clamp(13px,2vw,18px);font-weight:900;line-height:1.15}#cz-tg-local-bar small{font-size:11px;font-weight:650;color:#ffffffdf}#cz-tg-local-bar .cz-tg-tap{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 16px;border-radius:11px;background:#fff;color:#0754dc;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px #0003}
+#cz-tg-local-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:#020812d9;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Inter,system-ui,sans-serif}#cz-tg-local-modal.cz-open{opacity:1;visibility:visible}#cz-tg-local-modal .cz-tg-card{position:relative;width:min(100%,380px);padding:29px 23px 24px;border:1px solid #229ed966;border-radius:24px;background:radial-gradient(circle at 50% 0,#229ed933,transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #0009,0 0 32px #229ed922;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}#cz-tg-local-modal.cz-open .cz-tg-card{transform:none}#cz-tg-local-modal .cz-tg-x{position:absolute;right:11px;top:11px;width:32px;height:32px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}#cz-tg-local-modal .cz-tg-modal-logo{width:70px;height:70px;margin:3px auto 15px}#cz-tg-local-modal .cz-tg-modal-logo svg{width:100%;height:100%}#cz-tg-local-modal .cz-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}#cz-tg-local-modal h2{margin:0;font-size:24px;line-height:1.2;font-weight:900}#cz-tg-local-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:13px;line-height:1.55}#cz-tg-local-modal .cz-tg-join{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 9px 25px #229ed94d}#cz-tg-local-modal .cz-tg-foot{margin:12px 0 0;font-size:10px;color:#9eb4c8}
+@media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}}
+@media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-local-modal .cz-tg-card{transition:none}}
+</style>
+<script>
+(function(){if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;var link="https://t.me/+pN15_8gc54s2NDU1";var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#fff"/></svg>';function init(){if(document.getElementById("cz-tg-local-bar"))return;var bar=document.createElement("aside");bar.id="cz-tg-local-bar";bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';var target=document.querySelector("main .hero,main .intro,.hero-section,.hero-box,.player-header,header,main");if(target){target.insertAdjacentElement("afterend",bar);}else{document.body.appendChild(bar);}var modal=document.createElement("div");modal.id="cz-tg-local-modal";modal.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-local-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-local-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 Free to join · Stay connected with CRICZONE</div></section>';document.body.appendChild(modal);function close(){modal.classList.remove("cz-open")}modal.querySelector(".cz-tg-x").addEventListener("click",close);window.setTimeout(function(){modal.classList.add("cz-open")},5000)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()})();
+</script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
 </body>
