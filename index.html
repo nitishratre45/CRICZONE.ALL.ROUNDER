@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="monetag" content="e303b3469728b8875459fb9e10023e5f">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#08100d">
+    
     <meta name="description" content="Choose a Criczone live sports channel hub.">
     <title>Criczone | Live Sports Hubs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -147,11 +147,9 @@
             line-height: 1.65;
         }
 
-        .hub-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 520px);
-            gap: 12px;
-        }
+        .hub-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-width:900px; }
+        .hub-card { min-width:0; }
+        @media(max-width:620px){ .hub-grid{grid-template-columns:1fr;} }
 
         .hub-card {
             display: grid;
@@ -278,15 +276,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
     </style>
 
 <meta name="theme-color" content="#08100d">
-<meta name="description" content="CricZone live sports hubs">
+
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
 <link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
   <link rel="stylesheet" href="/site-polish.css?v=20261030-api-path-fix">
-    <!-- Monetag rewarded ads SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='12161399' data-sdk='show_12161399'></script>
 </head>
 <body>
 <!-- CRICZONE anti-popunder guard: block unsolicited script-opened tabs/windows -->
@@ -338,18 +334,24 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
         <main>
             <section class="intro" aria-labelledby="page-title">
-                <div class="eyebrow">CRICZONE LIVE</div>
-                <h1 id="page-title">Live updates.<br><span>One channel.</span></h1>
-                <p>Explore CRICZONE live sports and match coverage.</p>
+                <div class="eyebrow">YOUR SPORTS. YOUR ZONE.</div>
+                <h1 id="page-title">Choose Your <span>CRICZONE</span></h1>
+                <p>All your live sports destinations in one place. Pick a hub and enjoy the action.</p>
             </section>
 
-            <nav class="hub-grid" aria-label="Criczone links"></nav>
+            <nav class="hub-grid" aria-label="Choose a CRICZONE destination">
+                <a class="hub-card" href="/criczone/"><span class="hub-number">01</span><span class="hub-copy"><span class="hub-title">CRICZONE LIVE</span><span class="hub-detail">Main live sports channel lineup</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/criczone1/"><span class="hub-number">02</span><span class="hub-copy"><span class="hub-title">CRICZONE 1</span><span class="hub-detail">Live channels and sports coverage</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/criczone2/"><span class="hub-number">03</span><span class="hub-copy"><span class="hub-title">CRICZONE 2</span><span class="hub-detail">Alternative live channel hub</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/criczone3/"><span class="hub-number">04</span><span class="hub-copy"><span class="hub-title">CRICZONE 3</span><span class="hub-detail">Explore another live sports lineup</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/criczone8/"><span class="hub-number">05</span><span class="hub-copy"><span class="hub-title">CRICZONE 8</span><span class="hub-detail">Live channels with viewer indicators</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/criczone10/"><span class="hub-number">06</span><span class="hub-copy"><span class="hub-title">CRICZONE 10</span><span class="hub-detail">Sports channels and player</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/sony/"><span class="hub-number">07</span><span class="hub-copy"><span class="hub-title">SONY SPORTS</span><span class="hub-detail">Sony sports channel hub</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/fancodeweb/"><span class="hub-number">08</span><span class="hub-copy"><span class="hub-title">FANCODE WEB</span><span class="hub-detail">FanCode live sports experience</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+                <a class="hub-card" href="/hub/"><span class="hub-number">09</span><span class="hub-copy"><span class="hub-title">MOVIES & SERIES</span><span class="hub-detail">CRICZONE entertainment hub</span></span><span class="hub-arrow" aria-hidden="true">→</span></a>
+            </nav>
 
-            <section class="monetag-reward-wrap" id="criczone-monetag-reward" aria-label="Sponsored reward advertisement">
-                <p style="margin:0 0 12px;color:var(--text);font-weight:700">Support CRICZONE</p>
-                <button class="monetag-reward-button" id="criczone-monetag-reward-button" type="button">▶ Watch Ad</button>
-                <p class="monetag-reward-status" id="criczone-monetag-reward-status" role="status" aria-live="polite">Watch an optional sponsored ad to support CRICZONE.</p>
-            </section>
+
 
 
             
@@ -357,20 +359,13 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 
         <footer>
             <span>CRICZONE · LIVE SPORTS</span>
-            <span class="community-link">CRICZONE LIVE</span>
+            <a class="community-link" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">JOIN OUR TELEGRAM ↗</a>
         </footer>
     </div>
 
 
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js",{scope:"/"}).catch(e=>console.warn("CricZone PWA:",e)));}</script>\n
 
-
-<!-- CRICZONE Telegram join banner + local Telegram popup (self-contained per page) -->
-<style>
-#cz-tg-local-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:calc(100% - 28px);max-width:1200px;min-height:76px;margin:12px auto;padding:11px 17px;border:1px solid #28a7ff;border-radius:17px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 0 22px #008bff55,0 10px 28px #0004;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;position:relative;z-index:30}#cz-tg-local-bar *{box-sizing:border-box}#cz-tg-local-bar .cz-tg-left{display:flex;align-items:center;gap:13px;min-width:0;color:#fff;text-decoration:none}#cz-tg-local-bar .cz-tg-logo{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:13px;background:#ffffff30}#cz-tg-local-bar svg{width:27px;height:27px}#cz-tg-local-bar .cz-tg-label{display:flex;flex-direction:column;gap:3px;min-width:0}#cz-tg-local-bar strong{font-size:clamp(13px,2vw,18px);font-weight:900;line-height:1.15}#cz-tg-local-bar small{font-size:11px;font-weight:650;color:#ffffffdf}#cz-tg-local-bar .cz-tg-tap{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 16px;border-radius:11px;background:#fff;color:#0754dc;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px #0003}
-#cz-tg-local-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:#020812d9;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Inter,system-ui,sans-serif}#cz-tg-local-modal.cz-open{opacity:1;visibility:visible}#cz-tg-local-modal .cz-tg-card{position:relative;width:min(100%,380px);padding:29px 23px 24px;border:1px solid #229ed966;border-radius:24px;background:radial-gradient(circle at 50% 0,#229ed933,transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #0009,0 0 32px #229ed922;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}#cz-tg-local-modal.cz-open .cz-tg-card{transform:none}#cz-tg-local-modal .cz-tg-x{position:absolute;right:11px;top:11px;width:32px;height:32px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}#cz-tg-local-modal .cz-tg-modal-logo{width:70px;height:70px;margin:3px auto 15px}#cz-tg-local-modal .cz-tg-modal-logo svg{width:100%;height:100%}#cz-tg-local-modal .cz-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}#cz-tg-local-modal h2{margin:0;font-size:24px;line-height:1.2;font-weight:900}#cz-tg-local-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:13px;line-height:1.55}#cz-tg-local-modal .cz-tg-join{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:14px;font-weight:900;box-shadow:0 9px 25px #229ed94d}#cz-tg-local-modal .cz-tg-foot{margin:12px 0 0;font-size:10px;color:#9eb4c8}@media(max-width:520px){#cz-tg-local-bar{width:calc(100% - 18px);min-height:68px;padding:9px 10px;gap:8px}#cz-tg-local-bar .cz-tg-left{gap:8px}#cz-tg-local-bar .cz-tg-logo{flex-basis:39px;width:39px;height:39px}#cz-tg-local-bar .cz-tg-logo svg{width:23px;height:23px}#cz-tg-local-bar strong{font-size:11px}#cz-tg-local-bar small{font-size:9px}#cz-tg-local-bar .cz-tg-tap{min-height:34px;padding:0 10px;font-size:10px}#cz-tg-local-modal .cz-tg-card{padding:27px 18px 21px}#cz-tg-local-modal h2{font-size:22px}}@media(prefers-reduced-motion:reduce){#cz-tg-local-modal,#cz-tg-local-modal .cz-tg-card{transition:none}}
-</style>
-<script>(function(){if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;var link="https://t.me/+pN15_8gc54s2NDU1";var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#229ED9"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#fff"/></svg>';function init(){if(document.getElementById("cz-tg-local-bar"))return;var bar=document.createElement("aside");bar.id="cz-tg-local-bar";bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';var target=document.querySelector("main .intro");if(target){target.insertAdjacentElement("afterend",bar);}else{document.body.appendChild(bar);}var modal=document.createElement("div");modal.id="cz-tg-local-modal";modal.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-local-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-local-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 Free to join · Stay connected with CRICZONE</div></section>';document.body.appendChild(modal);function close(){modal.classList.remove("cz-open")}modal.querySelector(".cz-tg-x").addEventListener("click",close);window.setTimeout(function(){modal.classList.add("cz-open")},5000)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()})();</script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
 </body>
