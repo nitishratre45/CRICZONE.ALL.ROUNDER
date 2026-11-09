@@ -1,17 +1,59 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080b12"><meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#080b12"><meta name="referrer" content="strict-origin-when-cross-origin">
 <title>CRICZONE TV+ | CRICZONE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><link rel="stylesheet" href="./style.css">
 </head><body>
 <header class="topbar"><a class="brand" href="/hub/"><span class="brand-mark"><span class="material-icons">sports_cricket</span></span><span>CRICZONE<span class="brand-sub">TV+</span></span></a><a class="back-link" href="/hub/"><span class="material-icons">arrow_back</span><span>OTT Hub</span></a></header>
-<main class="shell"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ENTERTAINMENT • LIVE TV</div><h1>Jio TV<span>+</span></h1><p>Open the external provider page below. If it does not load inside this frame, open the provider directly.</p></section>
-<section class="player-card" aria-label="External provider page"><div class="player-head"><div><span class="mini-label">NOW OPENING</span><h2>Zio TV Plus</h2></div><span class="secure-pill"><span class="material-icons">open_in_new</span> External source</span></div>
-<div class="frame-wrap"><iframe id="providerFrame" title="External Jio TV Plus page" src="https://sflex.fun/Sflex-Jio/ZioTvPlus.php" referrerpolicy="no-referrer" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="eager"></iframe><div class="frame-note"><span class="material-icons">info</span><span>If the provider blocks embedding, use the Open Provider button below.</span></div></div>
-<div class="actions"><a class="primary-btn" href="https://sflex.fun/Sflex-Jio/ZioTvPlus.php" target="_blank" rel="noopener noreferrer"><span class="material-icons">open_in_new</span> Open Provider</a><button class="secondary-btn" id="reloadFrame" type="button"><span class="material-icons">refresh</span> Reload</button></div></section>
-<p class="disclaimer">CRICZONE provides a navigation interface only. The external provider controls page availability and content. Use only content you are authorized to access.</p></main>
-<script>document.getElementById('reloadFrame').addEventListener('click',function(){var f=document.getElementById('providerFrame');f.src=f.src;});</script>
+<main class="shell">
+<section class="intro"><div class="eyebrow"><span class="live-dot"></span> CRICZONE • LIVE PLAYER</div><h1>TV<span>+</span></h1><p>Load an M3U playlist you are authorized to use, browse channels and play HLS streams in one place.</p></section>
+<section class="player-card">
+<div class="player-head"><div><span class="mini-label">NOW PLAYING</span><h2 id="nowTitle">Choose a channel</h2></div><span class="secure-pill"><span class="live-dot"></span> PLAYER READY</span></div>
+<div class="video-wrap"><video id="video" controls playsinline preload="metadata"></video><div class="video-empty" id="videoEmpty"><span class="material-icons">live_tv</span><b>Your stream appears here</b><small>Load your authorized M3U playlist to begin</small></div></div>
+<div class="player-tools"><label class="playlist-label" for="playlistUrl">M3U / M3U8 playlist URL</label><div class="load-row"><input id="playlistUrl" type="url" placeholder="https://example.com/playlist.m3u" autocomplete="url"><button class="primary-btn" id="loadUrl"><span class="material-icons">playlist_add</span> Load</button></div><details class="paste-box"><summary>Or paste playlist text</summary><textarea id="playlistText" rows="5" placeholder="#EXTM3U&#10;#EXTINF:-1,Channel name&#10;https://.../stream.m3u8"></textarea><button class="secondary-btn" id="loadText">Load pasted playlist</button></details><p class="status" id="status" role="status">No playlist loaded yet.</p></div>
+</section>
+<section class="channels-card"><div class="channels-head"><div><span class="mini-label">YOUR PLAYLIST</span><h2>Channels <span id="channelCount">0</span></h2></div><input id="search" type="search" placeholder="Search channels..." aria-label="Search channels"></div><div class="filters" id="filters"><button class="filter active" data-category="All">All</button></div><div class="channel-list" id="channelList"><div class="empty-state">Load an M3U playlist to see channels here.</div></div></section>
+<p class="disclaimer">CRICZONE is a player interface only. Add playlists and streams only when you have permission to access and use them. Some playlist hosts block browser requests through CORS; in that case, paste the M3U contents or use a permitted CORS-enabled source.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script>
+(function(){
+ const $=id=>document.getElementById(id), video=$('video'); let channels=[],category='All',hls=null;
+ function setStatus(message,error){$('status').textContent=message;$('status').classList.toggle('error',!!error);}
+ function parseM3U(text){
+  const lines=text.replace(/^\\uFEFF/,'').split(/\\r?\\n/);let pending=null,out=[];
+  for(const raw of lines){const line=raw.trim();if(!line)continue;
+   if(line.startsWith('#EXTINF:')){const comma=line.indexOf(',');const meta=comma>=0?line.slice(0,comma):line;const name=comma>=0?line.slice(comma+1).trim():'Unnamed channel';const attr=k=>{const m=meta.match(new RegExp(k+'="([^"]*)"','i'));return m?m[1]:'';};pending={name:name||'Unnamed channel',group:attr('group-title')||'Other',logo:attr('tvg-logo')};}
+   else if(!line.startsWith('#')&&pending){out.push({...pending,url:line});pending=null;}
+  }return out;
+ }
+ function render(){
+  const filtered=channels.filter(c=>(category==='All'||c.group===category)&&c.name.toLowerCase().includes($('search').value.trim().toLowerCase()));
+  $('channelCount').textContent=channels.length;
+  $('channelList').innerHTML='';
+  if(!filtered.length){$('channelList').innerHTML='<div class="empty-state">No matching channels. Check your playlist or search.</div>';return;}
+  filtered.forEach((c)=>{const b=document.createElement('button');b.className='channel';b.type='button';const icon=document.createElement('span');icon.className='channel-icon material-icons';icon.textContent='play_circle';const name=document.createElement('span');name.className='channel-name';name.textContent=c.name;const group=document.createElement('small');group.textContent=c.group;b.append(icon,name,group);b.addEventListener('click',()=>play(c));$('channelList').append(b);});
+ }
+ function categories(){
+  const groups=['All',...new Set(channels.map(c=>c.group))];$('filters').innerHTML='';
+  groups.forEach(g=>{const b=document.createElement('button');b.className='filter'+(g===category?' active':'');b.textContent=g;b.dataset.category=g;b.addEventListener('click',()=>{category=g;categories();render();});$('filters').append(b);});
+ }
+ function play(c){
+  $('nowTitle').textContent=c.name;$('videoEmpty').classList.add('hidden');
+  if(hls){hls.destroy();hls=null;}video.pause();video.removeAttribute('src');video.load();
+  if(window.Hls&&Hls.isSupported()){hls=new Hls();hls.loadSource(c.url);hls.attachMedia(video);hls.on(Hls.Events.ERROR,(_,data)=>{if(data.fatal)setStatus('Stream could not be played. It may be offline, unsupported, or blocked.',true);});}
+  else if(video.canPlayType('application/vnd.apple.mpegurl')){video.src=c.url;}
+  else{setStatus('This browser cannot play this stream format.',true);return;}
+  video.play().then(()=>setStatus('Playing: '+c.name)).catch(()=>setStatus('Channel selected. Press Play to start, or check stream availability.'));
+ }
+ function load(text){channels=parseM3U(text);category='All';if(!channels.length){setStatus('No valid EXTINF channel entries found in this playlist.',true);categories();render();return;}categories();render();setStatus('Loaded '+channels.length+' channels. Select one to play.');}
+ $('loadUrl').addEventListener('click',async()=>{const url=$('playlistUrl').value.trim();if(!url){setStatus('Enter an M3U playlist URL first.',true);return;}try{setStatus('Fetching playlist…');const response=await fetch(url);if(!response.ok)throw new Error('HTTP '+response.status);load(await response.text());}catch(e){setStatus('Could not fetch playlist ('+e.message+'). The host may block browser CORS. Paste the playlist text instead.',true);}});
+ $('loadText').addEventListener('click',()=>load($('playlistText').value));
+ $('search').addEventListener('input',render);
+ video.addEventListener('error',()=>setStatus('Playback error. The stream may be offline or require access not available in this browser.',true));
+})();
+</script>
 </body></html>
