@@ -659,6 +659,34 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
   <link rel="stylesheet" href="../site-polish.css?v=20261019-premium-ui">
 
+
+<style id="cz2-fullscreen-layout">
+/* Expand CRICZONE2 content to use the full desktop viewport */
+.app>.container{
+  width:calc(100% - 56px)!important;
+  max-width:none!important;
+  margin-left:auto!important;margin-right:auto!important;
+}
+.app>.container>header.header{width:100%!important}
+.app>.container>.hero,
+.app>.container>#stream-content,
+.app>.container>.footer{width:100%!important;max-width:none!important}
+.app>.container>.hero{padding-top:clamp(38px,4vw,58px)!important}
+#stream-content .channels-grid,
+#stream-content .channel-grid{
+  grid-template-columns:repeat(auto-fit,minmax(205px,1fr))!important;
+}
+@media(min-width:1500px){
+  .app>.container{width:calc(100% - 80px)!important}
+}
+@media(max-width:760px){
+  .app>.container{width:calc(100% - 24px)!important}
+}
+@media(max-width:420px){
+  .app>.container{width:calc(100% - 20px)!important}
+}
+</style>
+
 <style id="cz2-premium-header">
 /* CRICZONE2 premium emerald header */
 .app .container>header.header{
