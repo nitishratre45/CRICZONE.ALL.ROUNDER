@@ -658,6 +658,62 @@ html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:tr
 <link rel="icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
 <link rel="apple-touch-icon" href="/photos/photo_2026-10-28_14-52-23.jpg">
   <link rel="stylesheet" href="../site-polish.css?v=20261019-premium-ui">
+
+<style id="cz2-premium-header">
+/* CRICZONE2 premium emerald header */
+.app .container>header.header{
+  position:sticky!important;top:0!important;z-index:100!important;
+  height:auto!important;min-height:76px!important;
+  padding:12px clamp(16px,3vw,28px)!important;
+  margin:0!important;
+  background:
+    radial-gradient(ellipse at 14% 50%,rgba(67,220,139,.2),transparent 36%),
+    linear-gradient(105deg,#123f2b 0%,#0d3424 45%,#09291d 100%)!important;
+  border-bottom:1px solid rgba(120,255,177,.45)!important;
+  box-shadow:0 9px 28px rgba(0,0,0,.34),inset 0 1px 0 rgba(224,255,235,.12)!important;
+  backdrop-filter:blur(18px) saturate(1.2)!important;
+}
+.app .container>header.header .brand{
+  display:flex!important;align-items:center!important;gap:13px!important;
+  text-decoration:none!important;color:#fff!important;
+}
+.app .container>header.header .brand-logo{
+  flex:0 0 46px!important;width:46px!important;height:46px!important;
+  display:grid!important;place-items:center!important;
+  border:1px solid rgba(157,255,194,.72)!important;border-radius:14px!important;
+  background:linear-gradient(145deg,#26794c,#155233 58%,#103d29)!important;
+  box-shadow:0 0 0 4px rgba(121,255,176,.1),0 7px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+.app .container>header.header .brand-name{
+  color:#fff!important;font-weight:900!important;letter-spacing:-.45px!important;
+  text-shadow:0 2px 14px rgba(115,255,171,.16);
+}
+.app .container>header.header .brand-sub{
+  color:#c0e8ce!important;font-weight:800!important;letter-spacing:1.25px!important;
+}
+.app .container>header.header .header-right{gap:14px!important}
+.app .container>header.header .theme-toggle{
+  border:1px solid rgba(157,255,194,.38)!important;border-radius:12px!important;
+  background:linear-gradient(145deg,rgba(38,121,76,.38),rgba(16,61,41,.8))!important;
+  color:#eafff0!important;box-shadow:0 5px 16px rgba(0,0,0,.2)!important;
+}
+.app .container>header.header .live-status{
+  color:#caffdc!important;font-weight:900!important;
+}
+.app .container>header.header .live-status-dot{
+  background:#8bffb8!important;box-shadow:0 0 0 4px rgba(139,255,184,.13),0 0 14px rgba(139,255,184,.9)!important;
+}
+@media(max-width:600px){
+  .app .container>header.header{min-height:66px!important;padding:9px 13px!important}
+  .app .container>header.header .brand{gap:9px!important}
+  .app .container>header.header .brand-logo{flex-basis:41px!important;width:41px!important;height:41px!important;border-radius:12px!important}
+  .app .container>header.header .brand-name{font-size:16px!important}
+  .app .container>header.header .brand-sub{font-size:8px!important;letter-spacing:1px!important}
+  .app .container>header.header .header-right{gap:8px!important}
+  .app .container>header.header .live-status{font-size:10px!important}
+}
+</style>
+
 </head>
 
 <body>
