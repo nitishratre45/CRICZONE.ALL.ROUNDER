@@ -2,14 +2,13 @@
 
 Responsive channel directory with category filters, search, logos and an HLS-capable player.
 
-## Import an authorized playlist
+## Refresh channel data
 
-1. Open repository **Settings → Secrets and variables → Actions → Secrets**.
-2. Add a repository secret named `CRICZONE12_PLAYLIST_URL`.
-3. Set its value to an M3U playlist URL you own or are authorized to use.
-4. Open **Actions → CRICZONE12 Playlist Refresh → Run workflow**.
+No GitHub secret or repository variable is required. The workflow uses the configured public playlist endpoint directly:
 
-The workflow also refreshes the catalogue every six hours. It writes metadata to `criczone12/data/channels.json`. The website reads this file automatically.
+`http://sflex.fun/Sflex-Jio/ZioTvPlus.php`
+
+Open **Actions → CRICZONE12 Playlist Refresh → Run workflow** to refresh manually. It also runs every six hours and commits updated metadata to `criczone12/data/channels.json`.
 
 For local testing:
 
