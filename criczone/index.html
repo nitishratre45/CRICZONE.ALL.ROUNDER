@@ -261,6 +261,79 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 }
 /* ===== END RESPONSIVE NAVBAR + FULL-WIDTH DESKTOP LAYOUT ===== */
 
+/* ===== CRICZONE PREMIUM NAVBAR FINISH ===== */
+#ch-header{
+  isolation:isolate!important;
+  min-height:76px!important;
+  padding:12px clamp(20px,5vw,90px)!important;
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(69,190,126,.16),transparent 38%),
+    linear-gradient(100deg,#07150f 0%,#0d2419 48%,#07150f 100%)!important;
+  border-bottom:1px solid rgba(124,232,164,.24)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#ch-header:after{
+  content:"";position:absolute;z-index:-1;left:5%;right:5%;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(139,245,177,.5),transparent);
+  pointer-events:none;
+}
+#ch-header .cz-brand{
+  position:relative;display:flex!important;align-items:center!important;
+  gap:14px!important;padding:4px 0!important;min-height:48px;
+}
+#ch-header .cz-brand-mark{
+  position:relative;display:grid!important;place-items:center!important;
+  flex:0 0 46px!important;width:46px!important;height:46px!important;
+  border-radius:15px!important;border:1px solid rgba(130,238,172,.62)!important;
+  background:linear-gradient(145deg,#1c5638,#102d20 72%)!important;
+  box-shadow:0 0 0 4px rgba(114,224,170,.07),0 8px 22px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+#ch-header .cz-brand-copy{gap:5px!important}
+#ch-header .cz-brand-copy strong{
+  color:#f4fff7!important;font:800 19px/1 'Space Grotesk',Manrope,sans-serif!important;
+  letter-spacing:1.15px!important;text-shadow:0 2px 14px rgba(104,232,157,.12);
+}
+#ch-header .cz-brand-copy small{
+  color:#9fc5ad!important;font-size:9px!important;font-weight:800!important;
+  letter-spacing:2px!important;
+}
+#ch-header .cz-live-pill{
+  position:relative;min-height:36px!important;padding:0 15px!important;
+  border:1px solid rgba(105,239,164,.48)!important;border-radius:999px!important;
+  background:linear-gradient(120deg,rgba(40,119,75,.28),rgba(16,54,35,.55))!important;
+  color:#a8ffd0!important;font-size:10px!important;font-weight:900!important;
+  letter-spacing:1.15px!important;box-shadow:0 5px 18px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+#ch-header .cz-live-pill i{
+  width:8px!important;height:8px!important;background:#66f2a6!important;
+  box-shadow:0 0 0 4px rgba(102,242,166,.12),0 0 13px rgba(102,242,166,.8)!important;
+}
+#ch-header .cz-brand:hover .cz-brand-mark{transform:translateY(-1px);box-shadow:0 0 0 5px rgba(114,224,170,.1),0 10px 25px rgba(0,0,0,.4)}
+#ch-header .cz-brand-mark{transition:transform .2s ease,box-shadow .2s ease!important}
+@media(min-width:621px){
+  #ch-header{padding-left:clamp(28px,6vw,110px)!important;padding-right:clamp(28px,6vw,110px)!important}
+}
+@media(max-width:620px){
+  #ch-header{min-height:66px!important;padding:9px 14px!important}
+  #ch-header .cz-brand{gap:10px!important;min-height:44px}
+  #ch-header .cz-brand-mark{flex-basis:42px!important;width:42px!important;height:42px!important;border-radius:13px!important}
+  #ch-header .cz-brand-copy strong{font-size:15px!important;letter-spacing:.8px!important}
+  #ch-header .cz-brand-copy small{font-size:7.5px!important;letter-spacing:1.35px!important}
+  #ch-header .cz-live-pill{min-height:31px!important;padding:0 10px!important;font-size:8px!important;letter-spacing:.65px!important;gap:6px!important}
+  #ch-header .cz-live-pill i{width:6px!important;height:6px!important}
+}
+@media(max-width:360px){
+  #ch-header{padding:8px 10px!important}
+  #ch-header .cz-brand{gap:8px!important}
+  #ch-header .cz-brand-mark{flex-basis:38px!important;width:38px!important;height:38px!important}
+  #ch-header .cz-brand-copy strong{font-size:13px!important}
+  #ch-header .cz-brand-copy small{font-size:6.5px!important;letter-spacing:1px!important}
+  #ch-header .cz-live-pill{padding:0 7px!important;font-size:7px!important}
+}
+@media(prefers-reduced-motion:reduce){#ch-header .cz-brand-mark{transition:none!important}}
+/* ===== END PREMIUM NAVBAR FINISH ===== */
+
+
 
 
 /* CRICZONE5 TELEGRAM JOIN UI */
