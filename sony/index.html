@@ -1013,17 +1013,114 @@ function parseM3U(text){
   return channels;
 }
 
-// ============ LOAD DATA ============
+// ============ MULTI-SOURCE CHANNEL DATA ============
+var JSON_SOURCES = [
+  "https://sonujson-v5.pages.dev/loura.json",
+  "https://sportlink-tv10.pages.dev/id.json",
+  "https://sportlink-tv10.pages.dev/Data.json"
+];
+
+function fetchSourceText(url){
+  var candidates = [proxyUrl(url), url];
+  return candidates.reduce(function(chain, candidate){
+    return chain.catch(function(){
+      return fetch(candidate, {cache:"no-store"}).then(function(r){
+        if(!r.ok) throw new Error("HTTP " + r.status + " for " + candidate);
+        return r.text();
+      });
+    });
+  }, Promise.reject(new Error("No source attempted")));
+}
+
+function normalizeKey(value){
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g,"");
+}
+
+function collectJsonEntries(value, out, parentKey, depth){
+  if(depth > 12 || value == null) return;
+  if(Array.isArray(value)){
+    value.forEach(function(item){ collectJsonEntries(item,out,parentKey,depth+1); });
+    return;
+  }
+  if(typeof value === "string"){
+    if(/^https?:\/\//i.test(value.trim())) out.push({key:parentKey || "",url:value.trim()});
+    return;
+  }
+  if(typeof value !== "object") return;
+
+  var id = value.id || value.channel_id || value.channelId || value.tvg_id || value.tvgId || value.slug || value.key || value.code || "";
+  var name = value.name || value.title || value.channel_name || value.channelName || value.label || "";
+  var url = value.stream_url || value.streamUrl || value.url || value.link || value.src || value.file || value.m3u8 || value.hls || value.dash || value.embed || value.iframe || value.player_url || value.playerUrl || value.channel_url || "";
+  if(typeof url === "string" && /^https?:\/\//i.test(url.trim())){
+    out.push({key:String(id || parentKey || name || ""),id:String(id || ""),name:String(name || ""),url:url.trim(),logo:value.logo || value.tvg_logo || "",category:value.category || value.group || value.group_title || "General"});
+  }
+  Object.keys(value).forEach(function(k){
+    var child=value[k];
+    if(typeof child === "string" && /^https?:\/\//i.test(child.trim())){
+      out.push({key:String(id || k),id:String(id || ""),name:String(name || k),url:child.trim(),logo:value.logo || "",category:value.category || value.group || "General"});
+    } else if(child && typeof child === "object"){
+      collectJsonEntries(child,out,k,depth+1);
+    }
+  });
+}
+
+function getJsonEntries(json){
+  var entries=[];
+  collectJsonEntries(json,entries,"",0);
+  var seen={};
+  return entries.filter(function(entry){
+    var k=normalizeKey(entry.id || entry.key || entry.name)+"|"+entry.url;
+    if(seen[k]) return false;
+    seen[k]=true; return true;
+  });
+}
+
 async function loadData(){
-  var r = await fetch(M3U_URL, {cache:"no-store"});
-  if(!r.ok) throw new Error("HTTP " + r.status);
-  var text = await r.text();
-  var channels = parseM3U(text);
+  var results = await Promise.allSettled([
+    fetch(M3U_URL,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("M3U HTTP "+r.status);return r.text();}),
+    fetchSourceText(JSON_SOURCES[0]).then(function(t){return JSON.parse(t);}),
+    fetchSourceText(JSON_SOURCES[1]).then(function(t){return JSON.parse(t);}),
+    fetchSourceText(JSON_SOURCES[2]).then(function(t){return JSON.parse(t);})
+  ]);
 
-  channels = channels.filter(function(c){ return c.stream_url && c.stream_url.length > 0; });
+  var channels = results[0].status === "fulfilled" ? parseM3U(results[0].value) : [];
+  var jsonEntries=[];
+  results.slice(1).forEach(function(result){
+    if(result.status === "fulfilled") jsonEntries=jsonEntries.concat(getJsonEntries(result.value));
+    else console.warn("A Sony JSON source could not be loaded:",result.reason);
+  });
 
-  if(!channels.length) throw new Error("No channels found");
-  return { channels: channels };
+  // Match JSON entries against the M3U channel ID/name. JSON sources may
+  // provide the final player/embed URL while M3U supplies display metadata.
+  channels.forEach(function(ch){
+    var idKey=normalizeKey(ch.id), nameKey=normalizeKey(ch.name);
+    var match=jsonEntries.find(function(entry){
+      var entryId=normalizeKey(entry.id || entry.key), entryName=normalizeKey(entry.name);
+      return (entryId && (entryId===idKey || entryId===nameKey)) ||
+             (entryName && (entryName===nameKey || entryName===idKey)) ||
+             (normalizeKey(entry.key) && (normalizeKey(entry.key)===idKey || normalizeKey(entry.key)===nameKey));
+    });
+    if(match){ch.stream_url=match.url;ch.json_source=true;}
+  });
+
+  // Include valid channels that exist only in the JSON feeds.
+  jsonEntries.forEach(function(entry){
+    var url=entry.url;
+    var name=entry.name || entry.key || entry.id;
+    if(!url || !name) return;
+    var key=normalizeKey(entry.id || entry.key || name);
+    var exists=channels.some(function(ch){return normalizeKey(ch.id)===key || normalizeKey(ch.name)===normalizeKey(name);});
+    if(!exists) channels.push({
+      id:String(entry.id || entry.key || name).replace(/[^a-z0-9_-]/gi,"_"),
+      name:String(name),logo:entry.logo || "",category:entry.category || "General",
+      stream_url:url,json_source:true
+    });
+  });
+
+  channels=channels.filter(function(ch){return ch.stream_url;});
+  if(!channels.length) throw new Error("No channels found in M3U or JSON feeds");
+  console.info("Sony data loaded:",channels.length,"channels;",jsonEntries.length,"JSON stream entries;",results.map(function(r){return r.status;}));
+  return {channels:channels};
 }
 
 // ============ RENDER FILTERS ============
