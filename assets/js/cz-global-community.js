@@ -75,9 +75,8 @@
   var popupRotate=window.setInterval(function(){setPopupPhoto(popupPhotoIndex+1);},3000);
 
   function closePopup(){popup.classList.remove("cz-show");}
+  /* Dismiss only through the explicit close button. */
   popup.querySelector(".cz-community-close").addEventListener("click",closePopup);
-  popup.addEventListener("click",function(e){if(e.target===popup)closePopup();});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape")closePopup();});
 
   window.setTimeout(function(){
     window.clearInterval(rotateTimer);
