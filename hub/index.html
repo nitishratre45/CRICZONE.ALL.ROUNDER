@@ -42,6 +42,9 @@ body {
   min-height: 100vh;
 }
 
+/* Loading overlay disabled: keep Hub visible even when catalogue API is slow */
+#overlay{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
 /* Loading Overlay */
 #overlay {
   position: fixed;
