@@ -13,12 +13,14 @@
     video.onplaying=null; video.onerror=null;
   }
   function explainError(error){
-    const text = String(error && (error.message || error.code) || error || '').toLowerCase();
+    const code = error && (error.code || error.category) ? 'CODE '+(error.code || error.category)+' · ' : '';
+    const raw = String(error && (error.message || error.code) || error || 'Unknown error').replace(/\\s+/g,' ').slice(0,54);
+    const text = raw.toLowerCase();
     if(location.protocol==='https:' && text.includes('mixed')) return 'HTTP BLOCKED';
     if(text.includes('cors') || text.includes('cross-origin')) return 'CORS BLOCKED';
     if(text.includes('manifest') || text.includes('404') || text.includes('403')) return 'SOURCE UNAVAILABLE';
     if(text.includes('drm') || text.includes('license') || text.includes('encrypted')) return 'DRM / LICENSE REQUIRED';
-    return 'PLAYBACK ERROR';
+    return (code+'ERROR '+raw).slice(0,64).toUpperCase();
   }
   async function play(c){
     if(!c.url){status('NO STREAM URL');return;}
@@ -44,7 +46,7 @@
         await shakaPlayer.attach(video);
         shakaPlayer.addEventListener('error',event=>{
           const detail=event.detail||{};
-          status(detail.code===6007?'DRM / LICENSE REQUIRED':detail.code===1001?'NETWORK / CORS ERROR':'DASH ERROR '+(detail.code||''));
+          status(detail.code===6007?'DRM / LICENSE REQUIRED':detail.code===1001?'NETWORK / CORS ERROR':'DASH ERROR '+(detail.code||'UNKNOWN')+' · '+String(detail.message||'').slice(0,24));
         });
         await shakaPlayer.load(url);
         await video.play();
