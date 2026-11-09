@@ -46,7 +46,20 @@
         await shakaPlayer.attach(video);
         shakaPlayer.addEventListener('error',event=>{
           const detail=event.detail||{};
-          status(detail.code===6007?'DRM / LICENSE REQUIRED':detail.code===1001?'NETWORK / CORS ERROR':'DASH ERROR '+(detail.code||'UNKNOWN')+' · '+String(detail.message||'').slice(0,24));
+          const data=Array.isArray(detail.data)?detail.data:[];
+          const httpStatus=Number(data[1])||0;
+          if(detail.code===1001){
+            status(httpStatus?'HTTP '+httpStatus+' · '+(httpStatus===401||httpStatus===403?'AUTH / TOKEN DENIED':httpStatus===404?'MANIFEST / SEGMENT NOT FOUND':'REQUEST REJECTED'):'HTTP REQUEST FAILED');
+          } else if(detail.code===1002){
+            status('BROWSER NETWORK / CORS BLOCK');
+          } else if(detail.code===1003){
+            status('STREAM REQUEST TIMEOUT');
+          } else if(detail.code===6007){
+            status('DRM LICENSE REQUEST FAILED');
+          } else {
+            status('DASH ERROR '+(detail.code||'UNKNOWN'));
+          }
+          console.warn('CRICZONE12 Shaka error details:',{code:detail.code,data:data.map((v,i)=>i===0&&typeof v==='string'?v.split('?')[0]:v)});
         });
         await shakaPlayer.load(url);
         await video.play();
