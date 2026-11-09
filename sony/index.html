@@ -1449,20 +1449,47 @@ async function main(){
   }
 
   document.title = "CRICZONE · " + ch.name;
-  renderList(data);
-  // Route every Sony channel through the external Sony player using its channel ID.
+  // Open only the channel the visitor selected. Do not load the external
+  // all-channels dashboard inside the player frame.
   var externalFrame = document.getElementById("sonyExternalFrame");
-  if(externalFrame) {
-    $video.style.display = "none";
-    externalFrame.src = "https://sportlink-sonyliv10.pages.dev/?id=" + encodeURIComponent(ch.id);
-    externalFrame.style.display = "block";
-    showPlayer();
-    hideOverlay();
-    toast("● Live", "ok", 3000);
+  var streamUrl = String(ch.stream_url || "").trim();
+  if(!streamUrl) {
+    errMsg("Channel stream URL is missing.");
     return;
   }
-  setupHLSPlayer(ch.stream_url);
   if (window.startSonyRealtimeWatching) window.startSonyRealtimeWatching(ch.id || id);
+
+  var isDirectHls = /\\.m3u8(?:\\?|$)/i.test(streamUrl);
+  var isDash = /\\.mpd(?:\\?|$)/i.test(streamUrl);
+  if(externalFrame && !isDirectHls && !isDash) {
+    // Web/player URLs are embedded directly, so the iframe contains only
+    // the selected channel rather than the provider's channel directory.
+    try {
+      var parsedStreamUrl = new URL(streamUrl, window.location.href);
+      if(parsedStreamUrl.protocol !== "https:" && parsedStreamUrl.protocol !== "http:") {
+        throw new Error("Unsupported channel URL");
+      }
+      $video.pause();
+      $video.removeAttribute("src");
+      $video.load();
+      $video.style.display = "none";
+      externalFrame.src = parsedStreamUrl.href;
+      externalFrame.style.display = "block";
+      showPlayer();
+      hideOverlay();
+      toast("● " + cleanSourceTag(ch.name), "ok", 3000);
+      return;
+    } catch(frameError) {
+      console.warn("Selected channel iframe URL could not be opened; using video player.", frameError);
+    }
+  }
+
+  if(externalFrame) {
+    externalFrame.src = "about:blank";
+    externalFrame.style.display = "none";
+  }
+  $video.style.display = "";
+  setupHLSPlayer(streamUrl);
 }
 
 // Handle browser back button
