@@ -178,7 +178,7 @@ const DATA_FEEDS = [
   { key: "willow_v4", folder: "criczonebuzz", url: "https://sonujson-v4.pages.dev/Data/willow.json" },
   { key: "prime_v4", folder: "criczonebuzz", url: "https://sonujson-v4.pages.dev/Data/prime.json" },
   { key: "willow_v5", folder: "criczonebuzz", url: "https://sonujson-v5.pages.dev/Data/willow.json" },
-  { key: "fancode", folder: "criczonefancode", url: "https://sportlink-fancode10.pages.dev/fan.json" },
+  { key: "fancode", folder: "fancodeweb", url: "https://sportlink-fancode10.pages.dev/fan.json" },
   { key: "sony_star", folder: "criczonesony", url: "https://sportlink-tv11.pages.dev/Star3.json" },
   { key: "sony_playlist", folder: "sony", url: "https://sportlink-jtv.pages.dev/sony3.m3u", format: "m3u" },
   { key: "sony_playlist_backup", folder: "criczonesony", url: "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sony.m3u", format: "m3u" },
@@ -192,6 +192,7 @@ const FOLDER_URLS = {
   criczone2: "https://criczone.pages.dev/criczone2/",
   criczone3: "https://criczone.pages.dev/criczone3/",
   criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
+  fancodeweb: "https://criczone.pages.dev/fancodeweb/",
   criczonefancode: "https://criczone.pages.dev/criczonefancode/",
   sony: "https://criczone.pages.dev/sony/",
   criczonesony: "https://criczone.pages.dev/criczonesony/"
@@ -446,7 +447,7 @@ async function handleText({ request, env, message }) {
 
   if (/^(?:fancode|fan code)\\s+web$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-      return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Explore the available FanCode channels on CRICZONE.</i>\n\n<blockquote>Tap the button below to open FanCode. 🔗</blockquote>", buildChannelKeyboard([{ name: "🎬 OPEN FANCODE", page_url: "https://criczone.pages.dev/criczonefancode/" }]), "HTML");
+      return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Explore the available FanCode channels on CRICZONE.</i>\n\n<blockquote>Tap the button below to open FanCode. 🔗</blockquote>", buildChannelKeyboard([{ name: "🎬 FANCODE WEB (PRIMARY)", page_url: "https://criczone.pages.dev/fancodeweb/" }, { name: "🛟 OLD FANCODE WEB (BACKUP)", page_url: "https://criczone.pages.dev/criczonefancode/" }]), "HTML");
   }
 
   // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
@@ -541,7 +542,10 @@ async function handleText({ request, env, message }) {
           const buttons = list.filter(item => item.name && (item.page_url || item.url))
             .map(item => [{ text: String(item.name).slice(0, 64), url: item.page_url || item.url }]);
           const providerKey = normalize(requestedProvider.name);
-          if (providerKey === "fancode") buttons.push([{ text: "FanCode Web", url: "https://criczone.pages.dev/criczonefancode/" }]);
+          if (providerKey === "fancode") {
+            buttons.push([{ text: "🎬 FanCode Web (Primary)", url: "https://criczone.pages.dev/fancodeweb/" }]);
+            buttons.push([{ text: "🛟 Old FanCode Web (Backup)", url: "https://criczone.pages.dev/criczonefancode/" }]);
+          }
           if (providerKey === "sony sports") buttons.push([{ text: "Sony Web", url: "https://criczone.pages.dev/sony/" }]);
           const message = "📺 <b>" + requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")</b>\n\n<i>Choose a channel button below to open it.</i>";
           return reply(message, { inline_keyboard: buttons }, "HTML");
