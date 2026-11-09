@@ -1665,7 +1665,31 @@ function isInWatchlist(movie){return !!movie&&watchlistIds.indexOf(getMovieId(mo
 function updateWatchlistButton(){if(!$detailWatchlist||!currentMovie)return;var saved=isInWatchlist(currentMovie);$detailWatchlist.textContent="";var icon=document.createElement("span");icon.className="material-icons";icon.textContent=saved?"bookmark_added":"bookmark_add";$detailWatchlist.append(icon,document.createTextNode(saved?"Added to My List":"Add to My List"));$detailWatchlist.setAttribute("aria-pressed",saved?"true":"false");var channels=Array.isArray(currentMovie.channels)?currentMovie.channels:[];$detailResume.hidden=!(lastWatchedId===getMovieId(currentMovie)&&Number.isInteger(lastWatchedSource)&&lastWatchedSource>=0&&lastWatchedSource<channels.length&&!!safeHttpUrl(channels[lastWatchedSource]&&channels[lastWatchedSource].streamUrl));$detailTrailer.hidden=!safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);}
 function toggleWatchlist(movie){if(!movie)return;var id=getMovieId(movie),index=watchlistIds.indexOf(id);if(index>=0){watchlistIds.splice(index,1);toast("Removed from My List.","ok",2200);}else{watchlistIds.unshift(id);toast("Added to My List.","ok",2200);}watchlistIds=watchlistIds.slice(0,200);try{localStorage.setItem("cz_hub_watchlist",JSON.stringify(watchlistIds));}catch(e){}updateWatchlistButton();renderHomeRails();if(activeNav==="mylist")filterMovies();}
 $detailWatchlist.addEventListener("click",function(){toggleWatchlist(currentMovie);});
-$detailResume.addEventListener("click",function(){if(!currentMovie)return;var channel=(currentMovie.channels||[])[lastWatchedSource];if(channel){$detailModal.style.display="none";openPlayer(channel.streamUrl,currentMovie.title+" - "+(channel.name||"Resume"),currentMovie.title,lastWatchedSource);}});
+$detailResume.addEventListener("click",function(event){
+  if(event){event.preventDefault();event.stopPropagation();}
+  if(!currentMovie){toast("Open a movie first, then resume playback.","err",3500);return;}
+  var movieId=getMovieId(currentMovie);
+  var savedId="";
+  var savedIndex=-1;
+  try{
+    savedId=localStorage.getItem("cz_hub_continue")||"";
+    savedIndex=Number.parseInt(localStorage.getItem("cz_hub_continue_source")||"-1",10);
+  }catch(error){}
+  if(savedId && savedId!==movieId){
+    var savedMovie=allMovies.find(function(item){return getMovieId(item)===savedId;});
+    if(savedMovie){openDetailModal(savedMovie);toast("Resuming your last watched title.","ok",2500);return;}
+  }
+  var index=Number.isInteger(savedIndex)&&savedIndex>=0?savedIndex:lastWatchedSource;
+  var channel=Array.isArray(currentMovie.channels)?currentMovie.channels[index]:null;
+  var stream=channel&&safeHttpUrl(channel.streamUrl||channel.url||channel.src||channel.file||channel.link);
+  if(!stream){
+    toast("Saved source is no longer available. Select an available quality/source again.","err",5000);
+    return;
+  }
+  lastWatchedId=movieId;lastWatchedSource=index;
+  $detailModal.style.display="none";
+  openPlayer(stream,currentMovie.title+" - "+(channel.name||channel.quality||"Resume"),currentMovie.title,index);
+});
 $detailTrailer.addEventListener("click",function(){if(!currentMovie)return;var url=safeHttpUrl(currentMovie.metadata&&currentMovie.metadata.trailerUrl||currentMovie.trailerUrl);if(url)window.open(url,"_blank","noopener,noreferrer");});
 function getRecentMovies(){
   try{
@@ -1975,22 +1999,36 @@ function closeDetailModal(){
 }
 
 function openPlayer(streamUrl, title, movieTitle, sourceIndex){
-  if(!streamUrl){
-    toast("Stream URL is missing for this selection.", "err", 4000);
-    return;
+  var safeStreamUrl=safeHttpUrl(streamUrl);
+  if(!safeStreamUrl){
+    toast("This saved stream URL is invalid or unavailable. Choose another source.","err",5000);
+    return false;
   }
-  currentWatch = { title: movieTitle || title, sourceIndex: Number.isInteger(sourceIndex) ? sourceIndex : 0 };
-  if(currentMovie){lastWatchedId=getMovieId(currentMovie);lastWatchedSource=currentWatch.sourceIndex;try{localStorage.setItem("cz_hub_continue",lastWatchedId);localStorage.setItem("cz_hub_continue_source",String(lastWatchedSource));}catch(e){}renderHomeRails();}
-  if(currentMovie)updateMovieUrl(currentMovie,currentWatch.sourceIndex);
-  var safeStreamUrl = safeHttpUrl(streamUrl);
-  if(!safeStreamUrl){toast("This stream URL is invalid or unsupported.","err",4000);return;}
-  var iframeUrl = "https://cineplyr-ios.pages.dev/?url=" + encodeURIComponent(safeStreamUrl);
-  $frame.src = "about:blank";
-  $playerModal.style.display = "flex";
+  if(!$frame||!$playerModal){
+    toast("Video player could not initialize. Please reload Hub.","err",4500);
+    return false;
+  }
+  currentWatch={title:movieTitle||title||"CRICZONE",sourceIndex:Number.isInteger(sourceIndex)&&sourceIndex>=0?sourceIndex:0};
+  if(currentMovie){
+    lastWatchedId=getMovieId(currentMovie);
+    lastWatchedSource=currentWatch.sourceIndex;
+    try{
+      localStorage.setItem("cz_hub_continue",lastWatchedId);
+      localStorage.setItem("cz_hub_continue_source",String(lastWatchedSource));
+    }catch(error){}
+    renderHomeRails();
+    updateMovieUrl(currentMovie,currentWatch.sourceIndex);
+  }
+  var iframeUrl="https://cineplyr-ios.pages.dev/?url="+encodeURIComponent(safeStreamUrl);
+  $detailModal.style.display="none";
+  $playerModal.style.display="flex";
   document.body.classList.add("modal-open");
-  // Block pop-up windows and top-level navigation commonly used by redirect ads.
-  requestAnimationFrame(function(){ $frame.src = iframeUrl; });
-  toast("Loading " + title + "…", "live", 3000);
+  $frame.src="about:blank";
+  window.setTimeout(function(){
+    if($playerModal.style.display==="flex")$frame.src=iframeUrl;
+  },80);
+  toast("Opening "+(title||"video")+"…","live",3500);
+  return true;
 }
 
 function closePlayer(){
