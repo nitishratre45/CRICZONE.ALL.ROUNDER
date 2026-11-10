@@ -26,6 +26,35 @@
   <meta name="description" content="CricZone Sony sports channel player">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+  <style id="cz-sony-premium-community-ui">
+    /* Premium player community card + clear Join Now action */
+    .player-community{gap:13px;margin-top:18px}
+    .audience-stat{min-height:96px;padding:16px 17px;border-color:rgba(159,184,219,.18);background:linear-gradient(145deg,rgba(20,35,57,.98),rgba(9,17,30,.98));box-shadow:0 12px 28px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035)}
+    .audience-stat:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.035),transparent 42%)}
+    .player-telegram{position:relative;isolation:isolate;overflow:hidden;min-height:82px;padding:14px 16px;border:1px solid rgba(64,166,255,.42);border-radius:18px;background:radial-gradient(circle at 0 50%,rgba(35,154,255,.22),transparent 36%),linear-gradient(105deg,#102d4c 0%,#0d1c31 58%,#111d30 100%);box-shadow:0 12px 30px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.07);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .player-telegram:before{content:"";position:absolute;z-index:-1;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,#59c4ff,#f5c542)}
+    .player-telegram:after{content:"";position:absolute;z-index:-1;width:130px;height:130px;right:15%;top:-85px;border-radius:50%;background:rgba(56,163,255,.12);filter:blur(3px)}
+    .player-telegram:hover,.player-telegram:focus-visible{transform:translateY(-2px);border-color:rgba(245,197,66,.72);box-shadow:0 16px 36px rgba(0,0,0,.34),0 0 22px rgba(40,151,255,.12);outline:none}
+    .telegram-icon{width:46px;height:46px;flex:0 0 46px;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:linear-gradient(145deg,#45baff,#0876cf);font-size:23px;box-shadow:0 7px 19px rgba(16,137,225,.35),inset 0 1px rgba(255,255,255,.3)}
+    .telegram-copy{gap:5px}
+    .telegram-copy strong{font-size:12px;letter-spacing:.75px;font-weight:950}
+    .telegram-copy small{font-size:10px;color:#b8cce1}
+    .telegram-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-left:auto;padding:10px 13px;border:1px solid rgba(255,224,138,.52);border-radius:999px;background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033;font-size:10px;font-weight:1000;letter-spacing:.65px;box-shadow:0 5px 15px rgba(245,197,66,.22);transition:transform .2s,box-shadow .2s}
+    .telegram-cta b{font-size:17px;line-height:10px;margin:0;color:#172033}
+    .player-telegram:hover .telegram-cta{transform:translateX(2px);box-shadow:0 7px 19px rgba(245,197,66,.34)}
+    @media(max-width:560px){
+      .player-community{gap:10px;margin-top:13px}
+      .audience-stat{min-height:88px;padding:12px 10px}
+      .player-telegram{min-height:76px;padding:11px 10px;gap:8px;border-radius:15px}
+      .telegram-icon{width:39px;height:39px;flex-basis:39px;border-radius:13px;font-size:20px}
+      .telegram-copy strong{font-size:9px;letter-spacing:.45px}
+      .telegram-copy small{font-size:8px;line-height:1.35}
+      .telegram-cta{gap:4px;padding:9px 9px;font-size:8px;letter-spacing:.3px}
+      .telegram-cta b{font-size:14px}
+    }
+    @media(max-width:360px){.telegram-copy small{display:none}.telegram-cta{padding:8px 7px}}
+    @media(prefers-reduced-motion:reduce){.player-telegram,.telegram-cta{transition:none}}
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
   <style>
