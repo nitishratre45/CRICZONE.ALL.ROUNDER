@@ -231,7 +231,7 @@
     .plyr{height:100%;--plyr-color-main:var(--gold);--plyr-video-control-color:#fff;--plyr-menu-background:#111b2a;--plyr-menu-color:#f5f7fb;--plyr-tooltip-background:#f5c542;--plyr-tooltip-color:#111}
     .plyr__control--overlaid{background:var(--gold)!important;color:#111!important;box-shadow:0 8px 28px rgba(245,197,66,.28)}
     .plyr__control--overlaid:hover{background:var(--gold-bright)!important}
-    #overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;background:radial-gradient(ellipse at 50% 42%,rgba(27,51,81,.78),rgba(5,9,16,.97) 68%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    #overlay{display:none!important;position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;background:radial-gradient(ellipse at 50% 42%,rgba(27,51,81,.78),rgba(5,9,16,.97) 68%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
     .loader-card{position:relative;width:min(390px,92vw);display:flex;flex-direction:column;align-items:center;padding:27px 25px 22px;border:1px solid rgba(245,197,66,.22);border-radius:24px;background:linear-gradient(155deg,rgba(20,34,54,.97),rgba(8,14,24,.98));box-shadow:0 28px 90px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.07);overflow:hidden;animation:loaderEnter .45s cubic-bezier(.2,.8,.2,1) both}
     .loader-card:before{content:"";position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,#f5c542,transparent);box-shadow:0 0 18px #f5c54288}
     .loader-brand{display:flex;align-items:center;gap:10px;align-self:flex-start;text-align:left}
@@ -865,9 +865,10 @@ async function main(){
   try{
     allChannels=await loadData();renderChannelView();$overlay.style.display="none";updateResumeCard();
     var id=getChId();if(id){var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}
-  }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="flex";$count.textContent="OFFLINE";}
+  }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="none";$count.textContent="OFFLINE";console.warn("CRICZONE Sony playlist:",error);}
 }
-$search.addEventListener("input",renderChannelView);\n$sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
+$search.addEventListener("input",renderChannelView);
+$sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
 document.getElementById("refresh").addEventListener("click",function(){$loadMsg.textContent="Refreshing channels…";$overlay.style.display="flex";main();});
 document.getElementById("back").addEventListener("click",showList);
 $sonyPipBtn&&$sonyPipBtn.addEventListener("click",async function(){
