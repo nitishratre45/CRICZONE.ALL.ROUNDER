@@ -1255,13 +1255,16 @@ vid?.addEventListener(
         errorOverlay?.classList.remove('show');
         hideLoading();
       } else if (activeStreamUrl && !hasError) {
+        // A rejected play() promise is common while the live source is
+        // attaching on mobile. Keep the player in its normal loading state
+        // and retry silently instead of flashing the reconnect error card.
         showLoading();
         clearTimeout(retryTimer);
         retryTimer = setTimeout(() => {
-          if (vid && vid.paused && !vid.ended && activeStreamUrl && !hasError) {
-            showError('Reconnecting live stream', 'The stream paused or disconnected. Tap Retry to reconnect.', true);
+          if (vid && vid.paused && !vid.ended && activeStreamUrl && !hasError && !userPaused) {
+            resumePlayback();
           }
-        }, 1800);
+        }, 10000);
       }
 
     } finally {
