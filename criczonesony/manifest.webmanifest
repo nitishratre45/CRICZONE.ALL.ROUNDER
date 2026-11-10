@@ -5,7 +5,6 @@
   "description": "CRICZONE Sony live sports channels",
   "start_url": "./?source=pwa",
   "scope": "./",
-  "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#080b12",
