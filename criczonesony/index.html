@@ -1042,7 +1042,7 @@ var miniButton=document.getElementById("czMiniBtn"),miniShell=document.querySele
 function setMiniMode(enabled){document.body.classList.toggle("cz-mini-mode",enabled);miniButton.setAttribute("aria-pressed",String(enabled));miniButton.textContent=enabled?"▣ Exit mini player":"▣ Mini player";if(!enabled&&miniShell){miniShell.style.left="";miniShell.style.top="";miniShell.style.right="";miniShell.style.bottom="";}}
 miniButton.addEventListener("click",function(){setMiniMode(!document.body.classList.contains("cz-mini-mode"));});
 if(miniShell){
- miniShell.addEventListener("pointerdown",function(e){if(!document.body.classList.contains("cz-mini-mode")||e.target.closest("video,button,.plyr__controls"))return;var r=miniShell.getBoundingClientRect();miniDrag={x:e.clientX,y:e.clientY,left:r.left,top:r.top};miniShell.setPointerCapture(e.pointerId);});
+ miniShell.addEventListener("pointerdown",function(e){if(!document.body.classList.contains("cz-mini-mode")||e.target.closest("button,.plyr__controls"))return;var r=miniShell.getBoundingClientRect();miniDrag={x:e.clientX,y:e.clientY,left:r.left,top:r.top};miniShell.setPointerCapture(e.pointerId);});
  miniShell.addEventListener("pointermove",function(e){if(!miniDrag)return;var r=miniShell.getBoundingClientRect(),left=Math.max(6,Math.min(innerWidth-r.width-6,miniDrag.left+e.clientX-miniDrag.x)),top=Math.max(6,Math.min(innerHeight-r.height-6,miniDrag.top+e.clientY-miniDrag.y));miniShell.style.left=left+"px";miniShell.style.top=top+"px";miniShell.style.right="auto";miniShell.style.bottom="auto";});
  ["pointerup","pointercancel","lostpointercapture"].forEach(function(t){miniShell.addEventListener(t,function(){miniDrag=null;});});
 }
