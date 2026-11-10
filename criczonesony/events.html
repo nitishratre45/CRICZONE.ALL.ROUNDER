@@ -45,8 +45,8 @@ header{padding:34px 18px 24px;text-align:center}h1{margin:0;font-size:clamp(28px
 <script>
 (function(){
 "use strict";
-var JSON_URL="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
-var PLAYER_URL="https://events-1fe.pages.dev/player.html?url=";
+var JSON_URL="/api/sonyliv-events";
+var PLAYER_URL="./player.html?url=";
 var data=[],activeFilter="all";
 var list=document.getElementById("list"),updated=document.getElementById("updated");
 function escapeHTML(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
@@ -55,7 +55,8 @@ function render(){
  if(!rows.length){list.innerHTML='<div class="empty">No events available in this category.</div>';return;}
  list.innerHTML=rows.map(function(m){
   var live=m.isLive===true, title=m.match_name||m.event_name||"Live Event";
-  var watch=live&&m.video_url?'<a class="watch" target="_blank" rel="noopener noreferrer" href="'+PLAYER_URL+encodeURIComponent(m.video_url)+'">WATCH LIVE ↗</a>':'';
+  var stream=m.video_url||m.pub_url||m.dai_url||"";
+  var watch=live&&stream?'<a class="watch" href="'+PLAYER_URL+encodeURIComponent(stream)+'&title='+encodeURIComponent(title)+'">▶ WATCH LIVE</a>':'';
   return '<article class="card"><img loading="lazy" referrerpolicy="no-referrer" src="'+escapeHTML(m.src||"")+'" alt="'+escapeHTML(title)+'"><div class="body"><span class="badge '+(live?"":"up")+'">'+(live?"LIVE NOW":"UPCOMING")+'</span><div class="title">'+escapeHTML(title)+'</div><div class="meta">'+escapeHTML(m.broadcast_channel||"")+(m.audioLanguageName?" · "+escapeHTML(m.audioLanguageName):"")+'</div><div class="footer"><span class="meta">'+escapeHTML(m.event_category||"")+'</span>'+watch+'</div></div></article>';
  }).join("");
 }
