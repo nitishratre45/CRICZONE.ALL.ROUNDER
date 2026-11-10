@@ -27,6 +27,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
   <style id="cz-sony-premium-community-ui">
+    .sony-fav-filter{min-height:40px;padding:0 13px;border:1px solid rgba(245,197,66,.25);border-radius:12px;background:#172438;color:#ffe08a;font-size:10px;font-weight:850;cursor:pointer}
+    .sony-fav-filter[aria-pressed="true"]{background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033}
     .sony-tools{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0 4px}
     .sony-tools button,.sony-resume button{min-height:38px;padding:9px 13px;border:1px solid rgba(170,194,225,.2);border-radius:11px;background:linear-gradient(145deg,#172940,#101b2b);color:#dce8f7;font-size:10px;font-weight:850;cursor:pointer}
     .sony-tools button:hover,.sony-tools button[aria-pressed="true"]{border-color:rgba(245,197,66,.6);color:#ffe08a}
@@ -574,6 +576,7 @@
       <div id="channels-content">
       <div class="toolbar">
         <div class="search-wrap"><input id="search" type="search" placeholder="Search sports channels…" autocomplete="off" aria-label="Search channels"></div>
+        <button class="sony-fav-filter" id="sonyFavFilter" type="button" aria-pressed="false">☆ Favourites</button>
         <button class="refresh" id="refresh" type="button">↻ Refresh</button>
       </div>
       <div id="ch-grid" aria-live="polite"></div>
@@ -589,7 +592,8 @@
       <div class="sony-tools" aria-label="Player tools">
         <button type="button" id="sonyPipBtn">▣ Picture in Picture</button>
         <button type="button" id="sonyShareBtn">↗ Share channel</button>
-        <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button>
+        <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button><button type="button" id="sonyNetworkBtn" title="Network status">◉ Network</button>
+        <button type="button" id="sonyReportBtn">⚑ Report issue</button>
       </div>
       <section class="more-channels" id="quickChannels" aria-label="Quick channel switcher" hidden>
         <div class="more-channels-head"><div><span class="community-eyebrow">KEEP WATCHING</span><h3>Quick channel switch</h3></div><span class="more-live-tag"><i></i> CHANNELS</span></div>
@@ -710,6 +714,20 @@ var allChannels=[],currentPlayer=null,currentHls=null,retryTimer=null,retryCount
 var $playerStatus=document.getElementById("playerStatus"),$quickChannels=document.getElementById("quickChannels"),$quickChannelList=document.getElementById("quickChannelList");
 var $sonyResume=document.getElementById("sonyResume"),$sonyResumeName=document.getElementById("sonyResumeName");
 var $sonyFavBtn=document.getElementById("sonyFavBtn"),$sonyPipBtn=document.getElementById("sonyPipBtn"),$sonyShareBtn=document.getElementById("sonyShareBtn");
+var $sonyFavFilter=document.getElementById("sonyFavFilter"),$sonyNetworkBtn=document.getElementById("sonyNetworkBtn"),$sonyReportBtn=document.getElementById("sonyReportBtn"),favoritesOnly=false;
+function renderChannelView(){
+  var q=$search.value.trim().toLowerCase(),fav=getFavorites();
+  renderChannels(allChannels.filter(function(ch){return ch.name.toLowerCase().indexOf(q)!==-1&&(!favoritesOnly||fav.indexOf(ch.id)!==-1)}));
+  if($sonyFavFilter){$sonyFavFilter.setAttribute("aria-pressed",String(favoritesOnly));$sonyFavFilter.textContent=favoritesOnly?"★ Favourites ON":"☆ Favourites"}
+}
+function updateNetworkStatus(){
+  if(!$sonyNetworkBtn)return;
+  var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  if(!c){$sonyNetworkBtn.textContent="◉ Network: N/A";return}
+  var type=c.effectiveType||"online",down=c.downlink?c.downlink+" Mbps":"";
+  $sonyNetworkBtn.textContent=(navigator.onLine?"◉ ":"⚠ ")+type.toUpperCase()+(down?" · "+down:"");
+}
+
 function safeStoreGet(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback}catch(e){return fallback}}
 function getFavorites(){return safeStoreGet("czSonyFavorites",[])}
 function updateFavoriteButton(ch){
@@ -843,11 +861,11 @@ $video.addEventListener("pause",function(){if(!$video.ended&&$video.currentTime>
 $video.addEventListener("error",function(){if(activeChannelId)setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");});
 async function main(){
   try{
-    allChannels=await loadData();renderChannels(allChannels);$overlay.style.display="none";updateResumeCard();
+    allChannels=await loadData();renderChannelView();$overlay.style.display="none";updateResumeCard();
     var id=getChId();if(id){var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}
   }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="flex";$count.textContent="OFFLINE";}
 }
-$search.addEventListener("input",function(){var q=$search.value.trim().toLowerCase();renderChannels(allChannels.filter(function(ch){return ch.name.toLowerCase().indexOf(q)!==-1;}));});
+$search.addEventListener("input",renderChannelView);\n$sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
 document.getElementById("refresh").addEventListener("click",function(){$loadMsg.textContent="Refreshing channels…";$overlay.style.display="flex";main();});
 document.getElementById("back").addEventListener("click",showList);
 $sonyPipBtn&&$sonyPipBtn.addEventListener("click",async function(){
@@ -869,6 +887,15 @@ $sonyFavBtn&&$sonyFavBtn.addEventListener("click",function(){
   try{localStorage.setItem("czSonyFavorites",JSON.stringify(fav))}catch(e){}
   updateFavoriteButton(allChannels.find(function(ch){return ch.id===activeChannelId}));
 });
+$sonyNetworkBtn&&$sonyNetworkBtn.addEventListener("click",updateNetworkStatus);
+window.addEventListener("online",updateNetworkStatus);window.addEventListener("offline",updateNetworkStatus);
+if(navigator.connection&&navigator.connection.addEventListener)navigator.connection.addEventListener("change",updateNetworkStatus);
+$sonyReportBtn&&$sonyReportBtn.addEventListener("click",async function(){
+  var ch=allChannels.find(function(item){return item.id===activeChannelId});
+  var report=["CRICZONE Sony Player Issue","Channel: "+(ch?ch.name:activeChannelId||"Not selected"),"Page: "+location.href,"Network: "+(navigator.onLine?"Online":"Offline"),"Browser: "+navigator.userAgent,"Time: "+new Date().toISOString()].join("\\n");
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(report);$sonyReportBtn.textContent="✓ Copied report";setTimeout(function(){$sonyReportBtn.textContent="⚑ Report issue"},2000)}else window.prompt("Copy this diagnostic report",report)}catch(e){window.prompt("Copy this diagnostic report",report)}
+});
+updateNetworkStatus();
 document.getElementById("sonyResumeBtn")&&document.getElementById("sonyResumeBtn").addEventListener("click",function(){
   var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});
   if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch)}
