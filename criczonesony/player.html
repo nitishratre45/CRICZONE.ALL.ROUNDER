@@ -45,7 +45,7 @@ async function start(){
  stop();
  if(!url||!/^https?:\/\//i.test(url)){status.textContent="Invalid or missing stream URL.";return;}
  status.textContent="Connecting to stream…";
- var playbackUrl=STREAM_PROXY+encodeURIComponent(url);
+ var playbackUrl=url;
  var type=url.split("?")[0].toLowerCase();
  if(type.endsWith(".mpd")&&window.shaka){
   shaka.polyfill.installAll();
@@ -58,13 +58,13 @@ async function start(){
  }
  if(type.endsWith(".m3u8")&&window.Hls&&Hls.isSupported()){
   hls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30});
-  hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal)status.textContent="HLS error: "+data.type+" — proxy/source may be unavailable or expired.";});
+  hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal)status.textContent="HLS "+data.type+" error: "+(data.details||"stream request failed")+(data.response&&data.response.code?" (HTTP "+data.response.code+")":"")+". Direct source playback.";});
   hls.on(Hls.Events.MANIFEST_PARSED,function(){status.textContent="Live stream loaded. Starting player…";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});});
   hls.loadSource(playbackUrl);hls.attachMedia(video);return;
  }
  video.src=playbackUrl;video.load();
  video.addEventListener("loadedmetadata",function(){status.textContent="Stream ready.";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});},{once:true});
- video.addEventListener("error",function(){status.textContent="Playback failed. The stream may be expired, blocked by CORS, or unsupported.";},{once:true});
+ video.addEventListener("error",function(){status.textContent="Playback failed. Check the failed playlist/segment request; source may be expired or access-restricted.";},{once:true});
 }
 document.getElementById("retry").addEventListener("click",start);
 document.getElementById("fullscreen").addEventListener("click",function(){var box=video.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(box.requestFullscreen)box.requestFullscreen();});
