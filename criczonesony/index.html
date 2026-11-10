@@ -1004,8 +1004,8 @@ function showPlayer(ch){
       if(data.fatal){
         setPlayerStatus("retry","RECONNECTING","Trying to restore the stream…");
         $loadMsg.textContent="Reconnecting to stream…";
-        if(data.type===Hls.ErrorTypes.NETWORK_ERROR&&retryCount<4){retryCount++;currentHls.startLoad();}
-        else if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&retryCount<4){retryCount++;currentHls.recoverMediaError();}
+        if(data.type===Hls.ErrorTypes.NETWORK_ERROR&&retryCount<4){retryCount++;clearRetry();retryTimer=setTimeout(function(){if(currentHls)currentHls.startLoad();},Math.min(8000,1000*Math.pow(2,retryCount-1)));}
+        else if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&retryCount<4){retryCount++;clearRetry();retryTimer=setTimeout(function(){if(currentHls)currentHls.recoverMediaError();},Math.min(5000,700*retryCount));}
         else{setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");$loadMsg.textContent="Stream unavailable. Please try again shortly.";$overlay.style.display="flex";}
       }
     });
