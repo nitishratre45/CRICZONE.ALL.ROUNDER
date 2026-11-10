@@ -99,7 +99,7 @@
     .event-card img{display:block;width:100%;height:clamp(145px,12vw,205px);object-fit:contain;object-position:center center;background:#080f1b;padding:3px}
     #event-player-panel{display:none;margin:0 0 18px;padding:16px;border:1px solid rgba(245,197,66,.34);border-radius:18px;background:linear-gradient(145deg,#111d2e,#080f19);box-shadow:0 16px 42px #0006}
     .event-player-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.event-player-title{font-size:16px;font-weight:950;color:#ffe28a}.event-player-close{border:1px solid var(--line);border-radius:10px;background:#1a2638;color:#fff;padding:9px 13px;font-weight:800;cursor:pointer}
-    .event-video-wrap{position:relative;width:100%;aspect-ratio:16/9;max-height:78vh;background:#000;border-radius:13px;overflow:hidden;border:1px solid rgba(245,197,66,.2)}\n    #event-stream-frame{width:100%;height:100%;border:0;display:block;background:#000}
+    .event-video-wrap{position:relative;width:100%;aspect-ratio:16/9;max-height:78vh;background:#000;border-radius:13px;overflow:hidden;border:1px solid rgba(245,197,66,.2)}\n    
     #event-video{display:block;width:100%;height:100%;background:#000;object-fit:contain}
     #event-player-status{padding:9px 2px 0;color:var(--muted);font-size:11px}
     .event-watch{border:0}
@@ -511,7 +511,7 @@
         <div id="event-grid" aria-live="polite"><div class="event-empty">Loading events…</div></div>
         <section id="event-player-panel" aria-label="SonyLiv event player">
           <div class="event-player-top"><div class="event-player-title" id="event-player-title">Now Playing</div><button type="button" class="event-player-close" id="event-player-close">✕ Close Player</button></div>
-          <div class="event-video-wrap"><iframe id="event-stream-frame" title="SonyLiv live stream" src="about:blank" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" loading="lazy"></iframe></div>
+          <div class="event-video-wrap"></div>
           <div id="event-player-status">CRICZONE Player · Select a live event to start</div>
         </section>
       </section>
@@ -565,7 +565,7 @@
   var endpoint="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
   var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
   var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
-  var panel=document.getElementById("event-player-panel"),frame=document.getElementById("event-stream-frame"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
+  var panel=document.getElementById("event-player-panel"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
   var channelsContent=document.getElementById("channels-content"),eventsSection=document.getElementById("sony-events");
   document.querySelectorAll("[data-sony-view]").forEach(function(btn){
     btn.addEventListener("click",function(){
