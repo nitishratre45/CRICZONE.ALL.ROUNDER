@@ -649,6 +649,50 @@ html,body{
 }
 body{position:relative;inset:auto;width:100%;max-width:100%}
 </style>
+<style id="cz-force-mobile-page-scroll">
+html{
+  display:block!important;
+  height:auto!important;
+  min-height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:scroll!important;
+  touch-action:pan-y!important;
+}
+body{
+  display:block!important;
+  position:static!important;
+  inset:auto!important;
+  height:auto!important;
+  min-height:100vh!important;
+  overflow-x:hidden!important;
+  overflow-y:visible!important;
+  touch-action:pan-y!important;
+}
+.app{
+  display:flex!important;
+  position:relative!important;
+  height:auto!important;
+  min-height:100vh!important;
+  overflow:visible!important;
+}
+main{
+  display:block!important;
+  position:relative!important;
+  flex:0 0 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  touch-action:pan-y!important;
+}
+#channel-list{
+  display:block!important;
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  touch-action:pan-y!important;
+}
+</style>
 </head>
 <body>
 <div class="app">
