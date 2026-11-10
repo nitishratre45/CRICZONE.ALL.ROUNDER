@@ -50,7 +50,12 @@ try{var r=await check("https://raw.githubusercontent.com/drmlive/sliv-live-event
 try{var r=await check("./manifest.webmanifest");var j=await r.response.json();set("manifest",!!j.start_url&&!!j.icons,"VALID",j.name||"Manifest loaded")}catch(e){set("manifest",false,"UNAVAILABLE",e.message)}
 try{if(!("serviceWorker" in navigator))throw new Error("Not supported by this browser");var reg=await navigator.serviceWorker.getRegistration("./");set("worker",!!reg,reg?"REGISTERED":"NOT REGISTERED",reg?"Scope: "+reg.scope:"Open the homepage online to register")}catch(e){set("worker",false,"UNAVAILABLE",e.message)}
 }
-$("refresh").addEventListener("click",run);run();
+$("refresh").addEventListener("click",run);
+var nextRun=null;
+function scheduleNext(){if(nextRun)clearTimeout(nextRun);nextRun=setTimeout(async function(){await run();scheduleNext();},60000);}
+run().finally(scheduleNext);
+window.addEventListener("online",function(){set("network",true,"ONLINE","Connection restored");run().finally(scheduleNext);});
+window.addEventListener("offline",function(){set("network",false,"OFFLINE","Browser reports no network connection");});
 })();
 </script>
 </body></html>
