@@ -910,9 +910,7 @@ function setPlayerStatus(state,label,detail){
 function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}}
 function renderQuickChannels(current){
   if(!$quickChannels||!$quickChannelList)return;
-  var index=allChannels.findIndex(function(ch){return ch.id===current.id;});
-  var start=Math.max(0,Math.min(index-3,allChannels.length-7));
-  var nearby=allChannels.slice(start,start+7).filter(function(ch){return ch.id!==current.id;});
+  var nearby=allChannels.filter(function(ch){return ch.id!==current.id;});
   $quickChannelList.innerHTML="";
   if(!nearby.length){$quickChannels.hidden=true;return;}
   nearby.forEach(function(ch){
@@ -922,6 +920,8 @@ function renderQuickChannels(current){
     });
     $quickChannelList.appendChild(button);
   });
+  var countLabel=$quickChannels.querySelector(".more-live-tag");
+  if(countLabel)countLabel.innerHTML="<i></i> "+nearby.length+" CHANNELS · SWIPE";
   $quickChannels.hidden=false;
 }
 
