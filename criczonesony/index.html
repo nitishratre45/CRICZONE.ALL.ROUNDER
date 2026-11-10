@@ -265,7 +265,7 @@
 // SonyLiv events with native in-page CRICZONE player.
 (function(){
   "use strict";
-  var endpoint="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
+  var endpoint="/api/sonyliv-events";
   var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
   var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
   var panel=document.getElementById("event-player-panel"),video=document.getElementById("event-video"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
