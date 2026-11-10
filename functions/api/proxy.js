@@ -1,210 +1,101 @@
-// CricZone HLS proxy — restricted to explicitly approved streaming/feed hosts.
-const ALLOWED_HOST_SUFFIXES = new Set([
-  "allinonereborn2.online",
-  "fallinoreborn2.online",
-  "sonyliv.com"
-]);
+export async function onRequest(context) {
+  const { request } = context;
+  const url = new URL(request.url);
+  const targetUrl = url.searchParams.get("u");
 
-const EXACT_FEEDS = new Set([
-  "sonujson-v5.pages.dev/loura.json",
-  "sportlink-tv10.pages.dev/id.json",
-  "sportlink-tv10.pages.dev/Data.json",
-  "sportlink-jtv.pages.dev/sony3.m3u"
-]);
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "Range, Accept, Origin, Content-Type, If-Range",
-  "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges, Content-Type",
-  "Cache-Control": "no-store"
-};
-
-function responseError(message, status = 400, detail) {
-  return new Response(JSON.stringify({
-    ok: false,
-    error: message,
-    ...(detail ? { detail } : {})
-  }), {
-    status,
-    headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8" }
-  });
-}
-
-function isAllowed(value) {
-  let parsed;
-  try {
-    parsed = value instanceof URL ? value : new URL(value);
-  } catch {
-    return false;
+  if (!targetUrl) {
+    return new Response("Missing target URL parameter 'u'", { status: 400 });
   }
 
-  if (parsed.protocol !== "https:" || parsed.username || parsed.password) return false;
+  try {
+    const clientUserAgent = request.headers.get("user-agent") || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
-  const host = parsed.hostname.toLowerCase();
-  const exactPath = host + parsed.pathname;
-  if (EXACT_FEEDS.has(exactPath)) return true;
-
-  return [...ALLOWED_HOST_SUFFIXES].some((suffix) =>
-    host === suffix || host.endsWith("." + suffix)
-  );
-}
-
-function makeProxyUrl(target, proxyEndpoint) {
-  return proxyEndpoint + "?u=" + encodeURIComponent(target.href);
-}
-
-function isSonyHost(hostname) {
-  return hostname === "sonyliv.com" || hostname.endsWith(".sonyliv.com");
-}
-
-async function fetchUpstream(initialUrl, request) {
-  let target = initialUrl;
-
-  for (let hop = 0; hop < 6; hop++) {
-    // Validate every redirect destination; never turn this into an open proxy.
-    if (!isAllowed(target)) {
-      throw new Error("Redirect target is not on the approved proxy host list: " + target.hostname);
-    }
-
-    const headers = new Headers();
-    for (const name of ["Accept", "Accept-Language", "User-Agent", "Range", "If-Range"]) {
-      const value = request.headers.get(name);
-      if (value) headers.set(name, value);
-    }
-
-    if (!headers.has("Accept")) headers.set("Accept", "*/*");
-    if (!headers.has("User-Agent")) {
-      headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36");
-    }
-
-    // Sony endpoints commonly require Sony's web origin; other hosts get their own origin.
-    if (isSonyHost(target.hostname)) {
-      headers.set("Referer", "https://www.sonyliv.com/");
-      headers.set("Origin", "https://www.sonyliv.com");
-    } else {
-      headers.set("Referer", target.origin + "/");
-      headers.set("Origin", target.origin);
-    }
-
-    const upstream = await fetch(target.href, {
-      method: request.method === "HEAD" ? "HEAD" : "GET",
-      headers,
-      redirect: "manual"
+    const modifiedRequest = new Request(targetUrl, {
+      headers: {
+        "User-Agent": clientUserAgent,
+        "Referer": "https://www.sonyliv.com/",
+        "Origin": "https://www.sonyliv.com/",
+        "Accept": "*/*"
+      },
+      method: request.method,
+      redirect: "follow"
     });
 
-    if ([301, 302, 303, 307, 308].includes(upstream.status)) {
-      const location = upstream.headers.get("Location");
-      if (!location) return { response: upstream, finalUrl: target };
-      target = new URL(location, target);
-      continue;
-    }
+    const response = await fetch(modifiedRequest);
+    const contentType = response.headers.get("content-type") || "";
 
-    return { response: upstream, finalUrl: target };
-  }
+    // Intercept and rewrite HLS playlists (.m3u8)
+    if (contentType.includes("mpegurl")  contentType.includes("vnd.apple.mpegurl")  targetUrl.includes(".m3u8")) {
+      let m3u8Text = await response.text();
+      const targetObj = new URL(targetUrl);
+      const baseUrl = targetObj.origin + targetObj.pathname.substring(0, targetObj.pathname.lastIndexOf('/') + 1);
+      const proxyDomain = url.origin + url.pathname;
 
-  throw new Error("Too many upstream redirects");
-}
+      const lines = m3u8Text.split('\n');
+      const rewrittenLines = lines.map(line => {
+        let trimmed = line.trim();
+        if (!trimmed) return line;
 
-function rewritePlaylist(playlistText, finalPlaylistUrl, proxyEndpoint) {
-  const base = new URL(finalPlaylistUrl);
-
-  return playlistText.split(/\r?\n/).map((originalLine) => {
-    const line = originalLine.trim();
-    if (!line) return originalLine;
-
-    // Rewrite key, map, media and other HLS tag URI attributes.
-    if (line.startsWith("#")) {
-      return originalLine.replace(/URI="([^"]+)"/g, (match, uri) => {
-        try {
-          const absolute = new URL(uri, base);
-          return isAllowed(absolute)
-            ? 'URI="' + makeProxyUrl(absolute, proxyEndpoint) + '"'
-            : match;
-        } catch {
-          return match;
+        // Handle tags containing URI attributes (like #EXT-X-KEY encryption keys, #EXT-X-MAP, etc.)
+        if (trimmed.startsWith('#')) {
+          if (trimmed.includes('URI="')) {
+            return line.replace(/URI="([^"]+)"/, (match, uri) => {
+              let absoluteUri = uri;
+              if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
+                absoluteUri = new URL(uri, baseUrl).toString();
+              }
+              return URI="${proxyDomain}?u=${encodeURIComponent(absoluteUri)}";
+            });
+          }
+          return line;
         }
+
+        // Handle regular segment lines or variant stream playlist links
+        let absoluteSegmentUrl = trimmed;
+        if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+          absoluteSegmentUrl = new URL(trimmed, baseUrl).toString();
+        }
+        return ${proxyDomain}?u=${encodeURIComponent(absoluteSegmentUrl)};
       });
+
+      const newBody = rewrittenLines.join('\n');
+      const newResponse = new Response(newBody, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+      });
+
+      newResponse.headers.set("Access-Control-Allow-Origin", "*");
+      newResponse.headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST");
+      newResponse.headers.set("Access-Control-Allow-Headers", "*");
+      newResponse.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      return newResponse;
     }
 
-    // Rewrite variant playlists and media segment URLs (relative or absolute).
-    try {
-      const absolute = new URL(line, base);
-      return isAllowed(absolute) ? makeProxyUrl(absolute, proxyEndpoint) : originalLine;
-    } catch {
-      return originalLine;
-    }
-  }).join("\n");
+    // Pass through actual video chunks (.ts, .m4s, .mp4) smoothly
+    const newResponse = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+
+    newResponse.headers.set("Access-Control-Allow-Origin", "*");
+    newResponse.headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST");
+    newResponse.headers.set("Access-Control-Allow-Headers", "*");
+    newResponse.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+
+    return newResponse;
+  } catch (err) {
+    return new Response("Proxy fetch error: " + err.message, { status: 500 });
+  }
 }
 
-export async function onRequest({ request }) {
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
-  }
-
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return responseError("Method not allowed", 405);
-  }
-
-  const requestUrl = new URL(request.url);
-  // Accept both parameter names for compatibility; generated playlist links use ?u=.
-  const rawTarget = requestUrl.searchParams.get("u") || requestUrl.searchParams.get("url");
-  if (!rawTarget) return responseError("Missing target URL parameter 'u'", 400);
-
-  let target;
-  try {
-    target = new URL(rawTarget);
-  } catch {
-    return responseError("Invalid target URL", 400);
-  }
-
-  if (!isAllowed(target)) {
-    return responseError("Target host is not approved for the CricZone proxy", 403, target.hostname);
-  }
-
-  try {
-    const { response: upstream, finalUrl } = await fetchUpstream(target, request);
-    const contentType = upstream.headers.get("Content-Type") || "";
-    const isPlaylist = /mpegurl|vnd\.apple\.mpegurl/i.test(contentType) || /\.m3u8?$/i.test(finalUrl.pathname);
-
-    const headers = new Headers(CORS_HEADERS);
-    for (const name of [
-      "Content-Type",
-      "Content-Length",
-      "Content-Range",
-      "Accept-Ranges",
-      "ETag",
-      "Last-Modified"
-    ]) {
-      const value = upstream.headers.get(name);
-      if (value) headers.set(name, value);
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS, POST",
+      "Access-Control-Allow-Headers": "*"
     }
-
-    if (isPlaylist && upstream.ok && request.method !== "HEAD") {
-      const playlistText = await upstream.text();
-      const proxyEndpoint = requestUrl.origin + requestUrl.pathname;
-      const rewritten = rewritePlaylist(playlistText, finalUrl.href, proxyEndpoint);
-      headers.set("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8");
-      headers.delete("Content-Length");
-      headers.delete("Content-Range");
-
-      return new Response(rewritten, {
-        status: upstream.status,
-        statusText: upstream.statusText,
-        headers
-      });
-    }
-
-    return new Response(request.method === "HEAD" ? null : upstream.body, {
-      status: upstream.status,
-      statusText: upstream.statusText,
-      headers
-    });
-  } catch (error) {
-    return responseError(
-      "CricZone proxy fetch failed",
-      502,
-      String(error?.message || error)
-    );
-  }
+  });
 }
