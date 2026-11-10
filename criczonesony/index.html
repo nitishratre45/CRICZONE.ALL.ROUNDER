@@ -976,6 +976,8 @@ function destroyPlayer(){
 }
 function showList(){
   activeChannelId="";
+  document.body.classList.remove("cz-mini-mode");
+  var miniButton=document.getElementById("czMiniBtn");if(miniButton){miniButton.setAttribute("aria-pressed","false");miniButton.textContent="▣ Mini player";}
   if(window.stopSonyPlayerStats)window.stopSonyPlayerStats();
   destroyPlayer();$playerContainer.style.display="none";$list.style.display="block";
   var url=new URL(location.href);url.searchParams.delete("id");history.pushState({}, "",url.pathname+url.search+url.hash);
@@ -1137,11 +1139,27 @@ window.startSonyPlayerStats=start;window.stopSonyPlayerStats=stop;show(liveEl,LI
   });
   if("serviceWorker" in navigator){
     window.addEventListener("load",function(){
-      navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(function(error){
-        console.warn("CRICZONE PWA service worker:",error);
-      });
+      navigator.serviceWorker.register("./sw.js",{scope:"./"}).then(function(reg){
+        if(reg.waiting)showUpdateNotice(reg);
+        reg.addEventListener("updatefound",function(){
+          var worker=reg.installing;if(!worker)return;
+          worker.addEventListener("statechange",function(){
+            if(worker.state==="installed"&&navigator.serviceWorker.controller)showUpdateNotice(reg);
+          });
+        });
+      }).catch(function(error){console.warn("CRICZONE PWA service worker:",error);});
     });
   }
+  function showUpdateNotice(reg){
+    if(document.getElementById("czPwaUpdate"))return;
+    var notice=document.createElement("div");notice.id="czPwaUpdate";
+    notice.innerHTML='<span>CRICZONE update ready</span><button type="button">UPDATE</button>';
+    notice.style.cssText="position:fixed;z-index:9999;left:14px;right:14px;bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid #f5c54288;border-radius:14px;background:#142238;color:#fff;font:700 12px system-ui;box-shadow:0 12px 35px #0009";
+    var button=notice.querySelector("button");button.style.cssText="border:0;border-radius:999px;padding:9px 13px;background:#f5c542;color:#172033;font-weight:950";
+    button.addEventListener("click",function(){if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});});
+    document.body.appendChild(notice);
+  }
+  navigator.serviceWorker&&navigator.serviceWorker.addEventListener("controllerchange",function(){if(!window.__czPwaReloading){window.__czPwaReloading=true;location.reload();}});
 })();
 </script>
 <script src="/assets/js/cz-global-community.js" defer></script>
