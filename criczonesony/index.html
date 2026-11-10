@@ -750,6 +750,37 @@ body{position:relative!important;inset:auto!important}
   background:#0c1523!important;
 }
 </style>
+<style id="cz-recent-history-readable">
+#czRecentGrid{align-items:stretch;gap:10px}
+#czRecentGrid .cz-history-item{flex:0 0 174px;width:174px;min-width:174px}
+#czRecentGrid .cz-recent-card{
+  box-sizing:border-box;
+  width:100%;
+  min-height:68px;
+  flex:1 1 auto;
+  padding:10px 29px 10px 9px;
+  gap:9px;
+  align-items:center;
+}
+#czRecentGrid .cz-recent-card img{width:46px;height:42px;flex:0 0 46px}
+#czRecentGrid .cz-recent-card span{
+  display:-webkit-box;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  font-size:11px;
+  line-height:1.3;
+}
+#czRecentGrid .cz-history-remove{z-index:2;top:5px;right:5px}
+@media(max-width:600px){
+  #czRecentGrid .cz-history-item{flex-basis:174px;width:174px;min-width:174px}
+}
+</style>
 </head>
 <body>
 <div class="app">
