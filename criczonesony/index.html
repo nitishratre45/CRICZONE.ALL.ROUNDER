@@ -417,6 +417,24 @@
       .audience-stat small{font-size:6.5px}
     }
 
+
+    /* Phone-first audience cards: stack to guarantee both counters remain visible */
+    .player-community{width:100%;min-width:0;max-width:100%;overflow:visible}
+    .audience-stats{width:100%;min-width:0;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    .audience-stat{width:100%;min-width:0;max-width:100%;display:grid;overflow:visible}
+    .audience-stat strong,.audience-stat small,.stat-label{min-width:0}
+    @media(max-width:480px){
+      .audience-stats{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+      .audience-stat{grid-template-columns:10px minmax(0,1fr);padding:10px 12px!important;min-height:62px}
+      .stat-label{font-size:8px!important;letter-spacing:.8px!important}
+      .audience-stat strong{font-size:20px!important;line-height:1.1}
+      .audience-stat small{font-size:8px!important;white-space:normal;overflow:visible;text-overflow:clip}
+    }
+    @media(max-width:340px){
+      .audience-stat{padding:9px 10px!important}
+      .audience-stat strong{font-size:18px!important}
+    }
+
     @media(prefers-reduced-motion:reduce){.player-community{animation:none}}
 
   </style>
