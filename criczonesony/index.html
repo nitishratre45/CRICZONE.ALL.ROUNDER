@@ -21,6 +21,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#080b12">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CRICZONE">
   <meta name="referrer" content="no-referrer">
   <title>CricZone Sony | Live Sports</title>
   <meta name="description" content="CricZone Sony sports channel player">
@@ -114,6 +120,10 @@
       backdrop-filter:blur(20px) saturate(145%);-webkit-backdrop-filter:blur(20px) saturate(145%);
       position:sticky;top:0;z-index:30;box-shadow:0 8px 32px rgba(0,0,0,.16)
     }
+    .topbar-actions{display:flex;align-items:center;gap:12px}
+    .cz-install-btn{min-height:40px;padding:0 14px;border:1px solid rgba(245,197,66,.55);border-radius:999px;background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033;font-size:10px;font-weight:950;letter-spacing:.45px;cursor:pointer;box-shadow:0 6px 18px rgba(245,197,66,.16)}
+    .cz-install-btn[hidden]{display:none!important}
+    @media(max-width:560px){.topbar-actions{gap:7px}.cz-install-btn{min-height:35px;padding:0 10px;font-size:8px}.live-tag{padding:8px 9px;font-size:8px;letter-spacing:.8px}}
     .brand{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text);font-weight:950;letter-spacing:.8px;font-size:21px;min-width:0}
     .brand-mark{
       width:46px;height:46px;flex:0 0 46px;border-radius:50%;padding:2px;
@@ -548,7 +558,7 @@
 <div class="app">
   <header class="topbar">
     <a class="brand" href="./" aria-label="CricZone home"><span class="brand-mark"><img id="cz-brand-photo" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="CRICZONE sports"></span><span>CRIC<span>ZONE</span><small style="display:block;margin-top:2px;color:#91a0b5;font-size:8px;letter-spacing:1.5px;font-weight:800">LIVE SPORTS NETWORK</small></span></a>
-    <div class="live-tag"><i class="live-dot"></i> SPORTS HUB</div>
+    <div class="topbar-actions"><button type="button" id="czInstallBtn" class="cz-install-btn" hidden>＋ INSTALL APP</button><div class="live-tag"><i class="live-dot"></i> SPORTS HUB</div></div>
   </header>
   <main>
     <section id="channel-list">
@@ -941,6 +951,44 @@ async function start(channel){const key=String(channel||"all").replace(/[^a-zA-Z
 window.startSonyPlayerStats=start;window.stopSonyPlayerStats=stop;show(liveEl,LIVE_BASE,LIVE_BASE);show(totalEl,TOTAL_BASE,TOTAL_BASE);startTotal();window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(liveOff)liveOff();if(totalOff)totalOff()});
 </script>
 
+<script>
+(function(){
+  "use strict";
+  var installBtn=document.getElementById("czInstallBtn");
+  var installPrompt=null;
+  var isStandalone=window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
+  if(isStandalone && installBtn){installBtn.hidden=true;}
+  window.addEventListener("beforeinstallprompt",function(event){
+    event.preventDefault();
+    installPrompt=event;
+    if(installBtn && !isStandalone) installBtn.hidden=false;
+  });
+  if(installBtn){
+    installBtn.addEventListener("click",async function(){
+      if(!installPrompt){
+        installBtn.textContent="OPEN BROWSER MENU";
+        setTimeout(function(){installBtn.textContent="＋ INSTALL APP";},2200);
+        return;
+      }
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt=null;
+      installBtn.hidden=true;
+    });
+  }
+  window.addEventListener("appinstalled",function(){
+    installPrompt=null;
+    if(installBtn) installBtn.hidden=true;
+  });
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",function(){
+      navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(function(error){
+        console.warn("CRICZONE PWA service worker:",error);
+      });
+    });
+  }
+})();
+</script>
 <script src="/assets/js/cz-global-community.js" defer></script>
 </body>
 </html>
