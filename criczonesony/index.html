@@ -174,12 +174,29 @@
     .plyr{height:100%;--plyr-color-main:var(--gold);--plyr-video-control-color:#fff;--plyr-menu-background:#111b2a;--plyr-menu-color:#f5f7fb;--plyr-tooltip-background:#f5c542;--plyr-tooltip-color:#111}
     .plyr__control--overlaid{background:var(--gold)!important;color:#111!important;box-shadow:0 8px 28px rgba(245,197,66,.28)}
     .plyr__control--overlaid:hover{background:var(--gold-bright)!important}
-    #overlay{
-      position:fixed;inset:0;z-index:100;background:rgba(5,9,15,.91);backdrop-filter:blur(12px);
-      display:flex;align-items:center;justify-content:center;text-align:center;padding:24px
-    }
-    .loader{display:flex;flex-direction:column;align-items:center;gap:16px;color:#d5deeb;font-size:13px;font-weight:700;max-width:min(420px,90vw)}
-    .spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.12);border-top-color:var(--gold);border-right-color:var(--gold-bright);border-radius:50%;animation:spin .8s linear infinite;box-shadow:0 0 24px rgba(245,197,66,.10)}
+    #overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;background:radial-gradient(ellipse at 50% 42%,rgba(27,51,81,.78),rgba(5,9,16,.97) 68%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .loader-card{position:relative;width:min(390px,92vw);display:flex;flex-direction:column;align-items:center;padding:27px 25px 22px;border:1px solid rgba(245,197,66,.22);border-radius:24px;background:linear-gradient(155deg,rgba(20,34,54,.97),rgba(8,14,24,.98));box-shadow:0 28px 90px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.07);overflow:hidden;animation:loaderEnter .45s cubic-bezier(.2,.8,.2,1) both}
+    .loader-card:before{content:"";position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,#f5c542,transparent);box-shadow:0 0 18px #f5c54288}
+    .loader-brand{display:flex;align-items:center;gap:10px;align-self:flex-start;text-align:left}
+    .loader-logo{width:39px;height:39px;display:grid;place-items:center;border:1px solid rgba(245,197,66,.65);border-radius:50%;background:linear-gradient(145deg,#243b5a,#101b2b);color:#ffda70;font-size:15px;font-weight:1000;box-shadow:0 0 20px rgba(245,197,66,.14)}
+    .loader-brand-copy{display:grid;gap:3px}.loader-brand-copy strong{font-size:14px;letter-spacing:.8px;color:#f7f9fc}.loader-brand-copy small{font-size:7px;letter-spacing:1.7px;color:#91a0b5;font-weight:850}
+    .loader-animation{position:relative;width:116px;height:116px;margin:25px 0 18px;display:grid;place-items:center}
+    .loader-core{width:54px;height:54px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#f8d66f,#d99a22);font-size:26px;box-shadow:0 0 28px rgba(245,197,66,.25),inset 0 1px rgba(255,255,255,.65);animation:corePulse 1.7s ease-in-out infinite}
+    .loader-orbit{position:absolute;inset:4px;border:1px solid rgba(245,197,66,.22);border-radius:50%;border-top:2px solid #f5c542;border-right:2px solid transparent;animation:spin 1.25s linear infinite}
+    .orbit-two{inset:14px;border-color:rgba(95,167,239,.2);border-bottom:2px solid #61b4ff;border-left:2px solid transparent;animation:spinReverse 1.8s linear infinite}
+    .loader-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:#ffe28a;box-shadow:0 0 12px #ffe28a}
+    .spark-one{top:7px;right:24px}.spark-two{bottom:10px;left:21px;width:4px;height:4px;background:#68bdff;box-shadow:0 0 10px #68bdff}
+    .loader-title{min-height:20px;color:#f6f8fc;font-size:14px;font-weight:850;letter-spacing:.1px}
+    .loader-subtitle{margin-top:7px;color:#8f9fb5;font-size:10px;font-weight:600}
+    .loader-progress{width:100%;height:3px;margin-top:23px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}
+    .loader-progress span{display:block;width:36%;height:100%;border-radius:9px;background:linear-gradient(90deg,#d99a22,#ffe28a,#66b9ff);box-shadow:0 0 12px #f5c54288;animation:loadingSweep 1.55s ease-in-out infinite}
+    .loader-foot{display:flex;align-items:center;gap:7px;margin-top:14px;color:#71839c;font-size:7px;font-weight:950;letter-spacing:1.55px}
+    .loader-foot i{width:5px;height:5px;border-radius:50%;background:#49dfa5;box-shadow:0 0 8px #49dfa5}
+    @keyframes loaderEnter{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes corePulse{50%{transform:scale(1.08);box-shadow:0 0 38px rgba(245,197,66,.4),inset 0 1px rgba(255,255,255,.65)}}
+    @keyframes spinReverse{to{transform:rotate(-360deg)}}
+    @keyframes loadingSweep{0%{transform:translateX(-110%)}100%{transform:translateX(310%)}}
+    @media(max-width:560px){.loader-card{padding:23px 19px 19px;border-radius:20px}.loader-animation{width:104px;height:104px;margin:21px 0 15px}.loader-title{font-size:13px}}
     footer{color:#66758b;text-align:center;font-size:10px;font-weight:750;letter-spacing:1.1px;padding:30px 10px 0}
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes livePulse{50%{box-shadow:0 0 0 7px rgba(255,83,102,.035);opacity:.72}}
@@ -420,7 +437,22 @@
     <footer>CRICZONE · Sports, scores &amp; live action</footer>
   </main>
 </div>
-<div id="overlay"><div class="loader"><span class="spinner"></span><span id="loadMsg">Loading CricZone channels…</span></div></div>
+<div id="overlay" role="status" aria-live="polite">
+  <div class="loader-card">
+    <div class="loader-brand">
+      <span class="loader-logo">CZ</span>
+      <span class="loader-brand-copy"><strong>CRICZONE</strong><small>LIVE SPORTS NETWORK</small></span>
+    </div>
+    <div class="loader-animation" aria-hidden="true">
+      <span class="loader-orbit orbit-one"></span><span class="loader-orbit orbit-two"></span>
+      <span class="loader-core">🏏</span><span class="loader-spark spark-one"></span><span class="loader-spark spark-two"></span>
+    </div>
+    <strong class="loader-title" id="loadMsg">Loading CricZone channels…</strong>
+    <span class="loader-subtitle">Getting your matchday experience ready</span>
+    <div class="loader-progress"><span></span></div>
+    <span class="loader-foot">PLEASE WAIT <i></i> CONNECTING SECURELY</span>
+  </div>
+</div>
 <script>
 
 // SonyLiv events with native in-page CRICZONE player.
