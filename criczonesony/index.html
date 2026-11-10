@@ -814,11 +814,13 @@ function destroyPlayer(){
   $video.pause();$video.removeAttribute("src");$video.load();
 }
 function showList(){
+  activeChannelId="";
   if(window.stopSonyPlayerStats)window.stopSonyPlayerStats();
   destroyPlayer();$playerContainer.style.display="none";$list.style.display="block";
   var url=new URL(location.href);url.searchParams.delete("id");history.pushState({}, "",url.pathname+url.search+url.hash);
 }
 function showPlayer(ch){
+  activeChannelId=ch.id;
   try{localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}))}catch(e){}
   updateFavoriteButton(ch);
   $list.style.display="none";$playerContainer.style.display="block";
@@ -886,6 +888,7 @@ $sonyFavBtn&&$sonyFavBtn.addEventListener("click",function(){
   if(idx===-1)fav.push(activeChannelId);else fav.splice(idx,1);
   try{localStorage.setItem("czSonyFavorites",JSON.stringify(fav))}catch(e){}
   updateFavoriteButton(allChannels.find(function(ch){return ch.id===activeChannelId}));
+  renderChannelView();
 });
 $sonyNetworkBtn&&$sonyNetworkBtn.addEventListener("click",updateNetworkStatus);
 window.addEventListener("online",updateNetworkStatus);window.addEventListener("offline",updateNetworkStatus);
