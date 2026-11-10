@@ -269,13 +269,16 @@
   var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
   var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
   var panel=document.getElementById("event-player-panel"),frame=document.getElementById("event-stream-frame"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
-  function stopEventPlayer(){frame.src="about:blank";panel.style.display="none";}
+  function stopEventPlayer(){
+    frame.src="about:blank";
+    panel.style.display="none";
+  }
   function playEvent(m){
     var stream=m&&(m.video_url||m.pub_url||m.dai_url);
     if(!stream){status.textContent="No stream URL is available for this event.";return;}
     panel.style.display="block";
     title.textContent=m.match_name||m.event_name||"SonyLiv Live Event";
-    status.textContent="Opening stream inside CRICZONE…";
+    status.textContent="Opening stream in embedded frame…";
     frame.src=stream;
     panel.scrollIntoView({behavior:"smooth",block:"center"});
   }
