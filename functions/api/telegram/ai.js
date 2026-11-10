@@ -771,10 +771,16 @@ export async function onRequestPost({ request, env }) {
             parse_mode: "HTML",
             disable_web_page_preview: true,
             reply_markup: {
-              inline_keyboard: [[{
-                text: "📢 JOIN CRICZONE CHANNEL",
-                url: "https://t.me/+zAubvy7Li2VmMWY9"
-              }]]
+              inline_keyboard: [
+                [{
+                  text: "📢 JOIN CRICZONE CHANNEL",
+                  url: "https://t.me/+zAubvy7Li2VmMWY9"
+                }],
+                [{
+                  text: "💙 JOIN CRICZONE HUB",
+                  url: "https://t.me/criczonehubb"
+                }]
+              ]
             }
           })
         });
