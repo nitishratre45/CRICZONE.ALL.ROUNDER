@@ -693,6 +693,52 @@ main{
   touch-action:pan-y!important;
 }
 </style>
+<style id="cz-dedicated-scroll-container">
+html,body{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+body{position:relative!important;inset:auto!important}
+.app{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:100vh!important;
+  height:100dvh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.topbar{
+  position:relative!important;
+  top:auto!important;
+  flex:0 0 auto!important;
+}
+.app>main{
+  display:block!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:scroll!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  padding-bottom:max(40px,env(safe-area-inset-bottom))!important;
+}
+#channel-list{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+#player-container{min-height:100%;padding-bottom:40px}
+</style>
 </head>
 <body>
 <div class="app">
