@@ -4310,3 +4310,198 @@ a {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   FAN-CODE INSPIRED HOME LAYOUT — RESPONSIVE POLISH
+   Keeps CricZone branding and existing match/player logic.
+========================================================= */
+@media (max-width: 700px) {
+  .topbar-inner {
+    width: calc(100% - 28px);
+    min-height: 66px;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .brand-name { font-size: 19px; }
+  .header-actions { gap: 7px; }
+  .icon-btn,
+  .telegram-btn {
+    min-width: 42px;
+    min-height: 42px;
+  }
+  .telegram-btn { width: 42px; padding: 0; }
+  .telegram-btn span,
+  .language-select { display: none; }
+
+  .hero {
+    width: calc(100% - 32px);
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 34px 0 22px;
+  }
+
+  .hero-content {
+    max-width: none;
+    padding: 25px 20px 20px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(35,185,255,.16), transparent 48%),
+      linear-gradient(135deg, rgba(17,35,57,.96), rgba(8,13,22,.98));
+    box-shadow: 0 18px 45px rgba(0,0,0,.2);
+  }
+
+  .hero-badge {
+    margin-bottom: 15px;
+    padding: 7px 10px;
+    font-size: 9px;
+  }
+
+  .hero h1 {
+    max-width: 520px;
+    font-size: clamp(37px, 10vw, 54px);
+    line-height: .99;
+    letter-spacing: -2.1px;
+  }
+
+  .hero-content > p {
+    margin-top: 13px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 19px;
+  }
+
+  .hero-primary,
+  .hero-secondary {
+    min-height: 46px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  .hero-stats {
+    margin-top: 20px;
+    padding-top: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    border-top: 1px solid rgba(255,255,255,.09);
+  }
+
+  .hero-stat { gap: 3px; }
+  .hero-stat strong { font-size: 19px; }
+  .hero-stat span {
+    font-size: 8px;
+    letter-spacing: .7px;
+  }
+  .hero-stat-divider { height: 25px; }
+
+  /* The oversized abstract ball/orbits were wasting the first screen. */
+  .hero-visual { display: none !important; }
+
+  .content-section,
+  .matches-section,
+  .telegram-section {
+    width: calc(100% - 32px);
+  }
+
+  .content-section { padding: 14px 0 25px; }
+
+  .section-heading {
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .section-heading h2,
+  .matches-title h2 {
+    font-size: 25px;
+    letter-spacing: -1px;
+  }
+
+  .section-heading p { font-size: 11px; }
+  .last-update-wrap {
+    max-width: 112px;
+    font-size: 7px;
+    line-height: 1.4;
+    text-align: right;
+  }
+
+  .featured-live-card {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    border-radius: 15px;
+  }
+
+  .featured-image {
+    height: 190px;
+    min-height: 190px;
+  }
+
+  .featured-image img {
+    height: 190px;
+    min-height: 190px;
+    object-fit: cover;
+  }
+
+  .featured-image-overlay {
+    background: linear-gradient(0deg, #0b1017 0%, transparent 65%);
+  }
+
+  .featured-live-content { padding: 15px 16px 17px; }
+  .featured-live-content h3 { font-size: 19px; }
+  .featured-watch-btn { min-height: 43px; }
+
+  .matches-section { padding-top: 12px; }
+  .matches-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .toolbar-right,
+  .search-wrap { width: 100%; }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 3px 0 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-btn { flex: 0 0 auto; }
+
+  .matches-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .telegram-section { padding-top: 24px; }
+}
+
+@media (min-width: 701px) and (max-width: 1024px) {
+  .hero {
+    min-height: 460px;
+    grid-template-columns: 1fr .7fr;
+    padding: 48px 0;
+  }
+  .hero-visual { min-height: 360px; }
+  .hero-ball { width: 165px; height: 165px; }
+  .orbit-one { width: 300px; }
+  .orbit-two { height: 330px; }
+}
