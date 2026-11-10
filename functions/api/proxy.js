@@ -26,9 +26,10 @@ function isAllowed(url) {
   const sonyPlaylist = host === "sportlink-jtv.pages.dev" && path === "/sony3.m3u";
   if (sonyJsonFeed || sonyPlaylist) return true;
 
-  // Existing restricted stream proxy remains limited to approved hosts/paths.
-  return [...ALLOWED_HOST_SUFFIXES].some((suffix) => host === suffix || host.endsWith("." + suffix))
-    && path.startsWith("/sony-new/");
+  // Stream manifests, quality variants, segments and media resources may use
+  // different paths on these explicitly approved upstream hostnames.
+  // Keep the hostname allowlist strict; never turn this into an open proxy.
+  return [...ALLOWED_HOST_SUFFIXES].some((suffix) => host === suffix || host.endsWith("." + suffix));
 }
 
 function proxyHref(target) {
