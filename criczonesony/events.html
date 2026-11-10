@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b12">
+<title>SonyLiv Live Events | CRICZONE</title>
+<style>
+:root{color-scheme:dark;--bg:#080b12;--panel:#121a2a;--line:#26344a;--text:#f5f7fb;--muted:#9aa8ba;--accent:#ff365d;--gold:#f5c542}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1b2944,#080b12 55%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+header{padding:34px 18px 24px;text-align:center}h1{margin:0;font-size:clamp(28px,5vw,44px);font-weight:900;background:linear-gradient(90deg,#ff416c,#ffb347);color:transparent;background-clip:text}header p{color:var(--muted);font-size:14px}
+.tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 16px 24px}.tabs button{border:1px solid var(--line);border-radius:999px;padding:10px 20px;background:#18243a;color:#fff;font-weight:750;cursor:pointer}.tabs button.active{background:var(--accent);border-color:var(--accent)}
+#updated{color:var(--muted);font-size:12px;text-align:center;margin:0 0 22px}
+#list{width:min(1200px,100%);margin:auto;padding:0 16px 50px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{background:linear-gradient(145deg,#17243a,#101827);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 12px 32px #0005;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#f5c54288}.card img{width:100%;height:165px;object-fit:cover;background:#0b1220}.body{padding:16px}.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--accent);font-size:10px;font-weight:900;letter-spacing:.7px}.badge.up{background:#596579}.title{font-size:16px;font-weight:850;margin:12px 0 6px}.meta{color:var(--muted);font-size:12px;line-height:1.5}.footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px}.watch{display:inline-block;text-decoration:none;color:#111;background:var(--gold);padding:9px 17px;border-radius:999px;font-size:12px;font-weight:900}.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:50px 12px}
+@media(max-width:560px){#list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-inline:10px}.card img{height:112px}.body{padding:11px}.title{font-size:13px}.meta{font-size:11px}.watch{padding:8px 12px;font-size:10px}}
+</style>
+</head>
+<body>
+<header><h1>SonyLiv Live Events</h1><p>Live and upcoming sports events · CRICZONE</p></header>
+<div class="tabs" aria-label="Event filters">
+<button class="active" type="button" data-filter="all">All Events</button>
+<button type="button" data-filter="live">Live Now</button>
+<button type="button" data-filter="upcoming">Upcoming</button>
+</div>
+<div id="updated">Loading events…</div>
+<main id="list" aria-live="polite"><div class="empty">Loading events…</div></main>
+<script>
+(function(){
+"use strict";
+var JSON_URL="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
+var PLAYER_URL="https://events-1fe.pages.dev/player.html?url=";
+var data=[],activeFilter="all";
+var list=document.getElementById("list"),updated=document.getElementById("updated");
+function escapeHTML(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function render(){
+ var rows=data.filter(function(m){return activeFilter==="all"||(activeFilter==="live"?m.isLive===true:m.isLive!==true);});
+ if(!rows.length){list.innerHTML='<div class="empty">No events available in this category.</div>';return;}
+ list.innerHTML=rows.map(function(m){
+  var live=m.isLive===true, title=m.match_name||m.event_name||"Live Event";
+  var watch=live&&m.video_url?'<a class="watch" target="_blank" rel="noopener noreferrer" href="'+PLAYER_URL+encodeURIComponent(m.video_url)+'">WATCH LIVE ↗</a>':'';
+  return '<article class="card"><img loading="lazy" referrerpolicy="no-referrer" src="'+escapeHTML(m.src||"")+'" alt="'+escapeHTML(title)+'"><div class="body"><span class="badge '+(live?"":"up")+'">'+(live?"LIVE NOW":"UPCOMING")+'</span><div class="title">'+escapeHTML(title)+'</div><div class="meta">'+escapeHTML(m.broadcast_channel||"")+(m.audioLanguageName?" · "+escapeHTML(m.audioLanguageName):"")+'</div><div class="footer"><span class="meta">'+escapeHTML(m.event_category||"")+'</span>'+watch+'</div></div></article>';
+ }).join("");
+}
+document.querySelectorAll(".tabs button").forEach(function(button){
+ button.addEventListener("click",function(){
+  document.querySelectorAll(".tabs button").forEach(function(b){b.classList.remove("active");});
+  button.classList.add("active");activeFilter=button.dataset.filter;render();
+ });
+});
+fetch(JSON_URL,{cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("HTTP "+response.status);return response.json();}).then(function(json){
+ data=Array.isArray(json.matches)?json.matches:[];
+ updated.textContent="Last updated: "+(json["last update time"]||"Live");
+ render();
+}).catch(function(error){
+ updated.textContent="Could not load events ("+error.message+").";
+ list.innerHTML='<div class="empty">Events are temporarily unavailable. Please refresh the page.</div>';
+});
+})();
+</script>
+</body>
+</html>
