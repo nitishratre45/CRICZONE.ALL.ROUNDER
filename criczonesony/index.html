@@ -418,6 +418,22 @@
     }
 
 
+
+    /* Desktop player uses the available screen width instead of a narrow column */
+    @media(min-width:900px){
+      main{width:100%;max-width:none;padding-left:clamp(24px,2.2vw,40px);padding-right:clamp(24px,2.2vw,40px)}
+      #player-container{width:100%;max-width:none}
+      .player-shell{width:100%;max-width:none;max-height:none;aspect-ratio:16/9;border-radius:18px}
+      #player,.plyr{width:100%;height:100%}
+      .player-community{width:100%;max-width:none}
+      .player-telegram{min-height:68px;cursor:pointer;position:relative;z-index:2;pointer-events:auto}
+      .telegram-copy strong{font-size:13px}
+      .telegram-copy small{font-size:11px}
+      .telegram-cta{font-size:11px}
+    }
+    .player-telegram{position:relative;z-index:5;pointer-events:auto;cursor:pointer}
+    .player-telegram:focus-visible{outline:3px solid #7fc8ff;outline-offset:4px}
+
     /* Phone-first audience cards: stack to guarantee both counters remain visible */
     .player-community{width:100%;min-width:0;max-width:100%;overflow:visible}
     .audience-stats{width:100%;min-width:0;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
@@ -486,7 +502,7 @@
           <div class="audience-stat live-stat"><span class="stat-icon">●</span><span class="stat-label">LIVE WATCHING</span><strong id="sonyPlayerWatching">245</strong><small>Watching this channel now</small></div>
           <div class="audience-stat total-stat"><span class="stat-icon">◉</span><span class="stat-label">TOTAL VISITS</span><strong id="sonyPlayerVisits">12,000</strong><small>CRICZONE Sony visits</small></div>
         </div>
-        <a class="player-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">
+        <a id="join-criczone-telegram" class="player-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" aria-label="Join CRICZONE Telegram community">
           <span class="telegram-icon">➤</span><span class="telegram-copy"><strong>JOIN CRICZONE TELEGRAM</strong><small>Live match updates · Cricket news · Community</small></span><span class="telegram-cta">JOIN NOW <b>→</b></span>
         </a>
       </section>
