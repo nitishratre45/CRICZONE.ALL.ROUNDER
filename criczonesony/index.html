@@ -626,6 +626,7 @@
 .cz-diagnostics div span{color:#8497b0;font-size:8px;font-weight:900;letter-spacing:1px}
 .cz-diagnostics div strong{color:#f4d77e;font-size:10px;overflow-wrap:anywhere}
 .cz-diagnostics p{grid-column:1/-1;margin:2px 0 0;color:#8191a7;font-size:8px}
+body.cz-mini-mode .player-shell{touch-action:pan-y;cursor:grab}body.cz-mini-mode .player-shell:active{cursor:grabbing}
 body.cz-mini-mode .player-shell{position:fixed!important;z-index:80;right:14px;bottom:18px;width:min(360px,48vw)!important;aspect-ratio:16/9!important;max-height:none!important;border:2px solid rgba(246,201,79,.65);border-radius:14px;box-shadow:0 18px 55px #000b}
 body.cz-mini-mode .player-shell video,body.cz-mini-mode .player-shell .plyr{width:100%;height:100%}
 @media(max-width:600px){.cz-featured,.cz-recent{padding:12px;border-radius:15px}.cz-section-heading h2{font-size:15px}.cz-featured-card,.cz-recent-card{flex-basis:132px}.cz-diagnostics{gap:8px;padding:10px}body.cz-mini-mode .player-shell{right:9px;bottom:12px;width:min(230px,62vw)!important}}
@@ -1037,7 +1038,14 @@ $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly
 document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
 document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
 document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
-document.getElementById("czMiniBtn").addEventListener("click",function(){var enabled=document.body.classList.toggle("cz-mini-mode");this.setAttribute("aria-pressed",String(enabled));this.textContent=enabled?"▣ Exit mini player":"▣ Mini player";});
+var miniButton=document.getElementById("czMiniBtn"),miniShell=document.querySelector(".player-shell"),miniDrag=null;
+function setMiniMode(enabled){document.body.classList.toggle("cz-mini-mode",enabled);miniButton.setAttribute("aria-pressed",String(enabled));miniButton.textContent=enabled?"▣ Exit mini player":"▣ Mini player";if(!enabled&&miniShell){miniShell.style.left="";miniShell.style.top="";miniShell.style.right="";miniShell.style.bottom="";}}
+miniButton.addEventListener("click",function(){setMiniMode(!document.body.classList.contains("cz-mini-mode"));});
+if(miniShell){
+ miniShell.addEventListener("pointerdown",function(e){if(!document.body.classList.contains("cz-mini-mode")||e.target.closest("video,button,.plyr__controls"))return;var r=miniShell.getBoundingClientRect();miniDrag={x:e.clientX,y:e.clientY,left:r.left,top:r.top};miniShell.setPointerCapture(e.pointerId);});
+ miniShell.addEventListener("pointermove",function(e){if(!miniDrag)return;var r=miniShell.getBoundingClientRect(),left=Math.max(6,Math.min(innerWidth-r.width-6,miniDrag.left+e.clientX-miniDrag.x)),top=Math.max(6,Math.min(innerHeight-r.height-6,miniDrag.top+e.clientY-miniDrag.y));miniShell.style.left=left+"px";miniShell.style.top=top+"px";miniShell.style.right="auto";miniShell.style.bottom="auto";});
+ ["pointerup","pointercancel","lostpointercapture"].forEach(function(t){miniShell.addEventListener(t,function(){miniDrag=null;});});
+}
 document.getElementById("czDiagnosticsBtn").addEventListener("click",function(){var panel=document.getElementById("czDiagnostics"),open=panel.hidden;panel.hidden=!open;this.setAttribute("aria-expanded",String(open));if(open)updateDiagnostics();});
 ["playing","waiting","stalled","error","pause","progress"].forEach(function(name){$video.addEventListener(name,function(){if(!document.getElementById("czDiagnostics").hidden)updateDiagnostics();});});
 document.getElementById("refresh").addEventListener("click",function(){$loadMsg.textContent="Refreshing channels…";$overlay.style.display="flex";main();});
