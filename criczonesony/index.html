@@ -96,7 +96,15 @@
     .event-tabs{display:flex;gap:7px;flex-wrap:wrap}.event-tabs button{border:1px solid var(--line);border-radius:999px;padding:8px 13px;background:#17243a;color:#cbd5e1;font-size:10px;font-weight:850;cursor:pointer}.event-tabs button.active{background:var(--accent);border-color:var(--accent);color:#fff}
     #event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
     .event-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:15px;background:linear-gradient(150deg,#19283e,#101827);box-shadow:0 8px 22px rgba(0,0,0,.16)}
-    .event-card img{display:block;width:100%;height:clamp(145px,12vw,205px);object-fit:contain;object-position:center center;background:#080f1b;padding:3px}.event-body{padding:15px}.event-badge{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--red);color:#fff;font-size:9px;font-weight:950;letter-spacing:.7px}.event-badge.up{background:#64748b}.event-title{font-size:14px;font-weight:900;line-height:1.4;margin:10px 0 6px}.event-meta{font-size:10px;line-height:1.5;color:var(--muted)}.event-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}.event-watch{display:inline-flex;align-items:center;text-decoration:none;background:var(--gold);color:#111;padding:9px 15px;border-radius:999px;font-size:11px;font-weight:950;cursor:pointer;position:relative;z-index:2}.event-empty{grid-column:1/-1;padding:28px 12px;text-align:center;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:12px}
+    .event-card img{display:block;width:100%;height:clamp(145px,12vw,205px);object-fit:contain;object-position:center center;background:#080f1b;padding:3px}
+    #event-player-panel{display:none;margin:0 0 18px;padding:16px;border:1px solid rgba(245,197,66,.34);border-radius:18px;background:linear-gradient(145deg,#111d2e,#080f19);box-shadow:0 16px 42px #0006}
+    .event-player-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.event-player-title{font-size:16px;font-weight:950;color:#ffe28a}.event-player-close{border:1px solid var(--line);border-radius:10px;background:#1a2638;color:#fff;padding:9px 13px;font-weight:800;cursor:pointer}
+    .event-video-wrap{position:relative;width:100%;aspect-ratio:16/9;max-height:78vh;background:#000;border-radius:13px;overflow:hidden;border:1px solid rgba(245,197,66,.2)}
+    #event-video{display:block;width:100%;height:100%;background:#000;object-fit:contain}
+    #event-player-status{padding:9px 2px 0;color:var(--muted);font-size:11px}
+    .event-watch{border:0}
+    .event-watch:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.event-body{padding:15px}.event-badge{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--red);color:#fff;font-size:9px;font-weight:950;letter-spacing:.7px}.event-badge.up{background:#64748b}.event-title{font-size:14px;font-weight:900;line-height:1.4;margin:10px 0 6px}.event-meta{font-size:10px;line-height:1.5;color:var(--muted)}.event-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}.event-watch{display:inline-flex;align-items:center;text-decoration:none;background:var(--gold);color:#111;padding:9px 15px;border-radius:999px;font-size:11px;font-weight:950;cursor:pointer;position:relative;z-index:2}.event-empty{grid-column:1/-1;padding:28px 12px;text-align:center;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:12px}
 
     .toolbar{display:flex;gap:11px;margin-bottom:19px}
     .search-wrap{position:relative;flex:1;min-width:0}
@@ -229,6 +237,11 @@
           <div class="event-tabs"><button class="active" type="button" data-event-filter="all">All</button><button type="button" data-event-filter="live">Live Now</button><button type="button" data-event-filter="upcoming">Upcoming</button></div>
         </div>
         <div id="event-grid" aria-live="polite"><div class="event-empty">Loading events…</div></div>
+        <section id="event-player-panel" aria-label="SonyLiv event player">
+          <div class="event-player-top"><div class="event-player-title" id="event-player-title">Now Playing</div><button type="button" class="event-player-close" id="event-player-close">✕ Close Player</button></div>
+          <div class="event-video-wrap"><video id="event-video" playsinline webkit-playsinline controls preload="metadata"></video></div>
+          <div id="event-player-status">CRICZONE Player · Select a live event to start</div>
+        </section>
       </section>
       <div class="toolbar">
         <div class="search-wrap"><input id="search" type="search" placeholder="Search sports channels…" autocomplete="off" aria-label="Search channels"></div>
@@ -249,24 +262,62 @@
 <div id="overlay"><div class="loader"><span class="spinner"></span><span id="loadMsg">Loading CricZone channels…</span></div></div>
 <script>
 
-// SonyLiv live events are rendered inline on this page.
+// SonyLiv events with native in-page CRICZONE player.
 (function(){
   "use strict";
   var endpoint="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
-  var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
   var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
+  var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
+  var panel=document.getElementById("event-player-panel"),video=document.getElementById("event-video"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
+  var hls=null,plyr=null;
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function stopEventPlayer(){
+    if(hls){hls.destroy();hls=null;}
+    if(plyr){plyr.destroy();plyr=null;}
+    video.pause();video.removeAttribute("src");video.load();panel.style.display="none";
+  }
+  function playEvent(m){
+    if(!m||!m.video_url){status.textContent="This event does not have a playable live stream.";return;}
+    stopEventPlayer();
+    panel.style.display="block";
+    title.textContent=m.match_name||m.event_name||"SonyLiv Live Event";
+    status.textContent="Connecting to live stream…";
+    panel.scrollIntoView({behavior:"smooth",block:"center"});
+    var source=STREAM_PROXY+encodeURIComponent(m.video_url);
+    var opts={controls:["play","progress","current-time","mute","volume","settings","fullscreen"],settings:["quality"],autoplay:true,muted:false};
+    if(window.Hls&&Hls.isSupported()&&/\.m3u8(\?|$)/i.test(m.video_url)){
+      hls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:3,fragLoadingMaxRetry:3});
+      hls.loadSource(source);hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED,function(){
+        plyr=new Plyr(video,opts);
+        video.play().then(function(){status.textContent="Playing in CRICZONE Player";}).catch(function(){status.textContent="Press Play to start the live stream.";});
+      });
+      hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal){status.textContent="Stream error: source/proxy unavailable ("+data.type+").";}});
+    }else{
+      video.src=source;plyr=new Plyr(video,opts);
+      video.addEventListener("loadedmetadata",function(){status.textContent="Stream ready in CRICZONE Player";video.play().catch(function(){status.textContent="Press Play to start the live stream.";});},{once:true});
+      video.addEventListener("error",function(){status.textContent="Unable to load this stream. The source or proxy may be unavailable.";},{once:true});
+      video.load();
+    }
+  }
   function draw(){
     var rows=matches.filter(function(m){return filter==="all"||(filter==="live"?m.isLive===true:m.isLive!==true);});
-    if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live":"")+ ' events available right now.</div>';return;}
-    grid.innerHTML=rows.map(function(m){
-      var live=m.isLive===true,title=m.match_name||m.event_name||"Live Event";
-      var watch=live&&m.video_url?'<a class="event-watch" target="_blank" rel="noopener noreferrer" href="https://events-1fe.pages.dev/player.html?url='+encodeURIComponent(STREAM_PROXY+m.video_url)+'">▶ WATCH LIVE</a>':'';
-      return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(title)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(title)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
+    if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live ":"")+'events available right now.</div>';return;}
+    grid.innerHTML=rows.map(function(m,i){
+      var live=m.isLive===true,titleText=m.match_name||m.event_name||"Live Event";
+      var watch=live&&m.video_url?'<button type="button" class="event-watch" data-event-index="'+matches.indexOf(m)+'">▶ WATCH LIVE</button>':'';
+      return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(titleText)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(titleText)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
     }).join("");
   }
+  grid.addEventListener("click",function(event){
+    var button=event.target.closest("[data-event-index]");
+    if(!button)return;
+    var item=matches[Number(button.getAttribute("data-event-index"))];
+    if(item)playEvent(item);
+  });
+  document.getElementById("event-player-close").addEventListener("click",stopEventPlayer);
   document.querySelectorAll("[data-event-filter]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-event-filter]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");filter=btn.dataset.eventFilter;draw();});});
-  fetch(endpoint,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){matches=Array.isArray(j.matches)?j.matches:[];updated.textContent="Last updated: "+(j["last update time"]||"Live")+" · "+matches.length+" events";draw();}).catch(function(){updated.textContent="Live event feed is temporarily unavailable.";grid.innerHTML='<div class="event-empty">Could not load SonyLiv events. Refresh the page to try again.</div>';});
+  fetch(endpoint,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){matches=Array.isArray(j.matches)?j.matches:[];updated.textContent="Last updated: "+(j["last update time"]||"Live")+" · "+matches.length+" events";draw();}).catch(function(){updated.textContent="Live event feed is temporarily unavailable.";grid.innerHTML='<div class="event-empty">Could not load SonyLiv events. Please refresh the page.</div>';});
 })();
 
 (function(){
