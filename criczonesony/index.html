@@ -831,9 +831,9 @@ var $sonyFavFilter=document.getElementById("sonyFavFilter"),$sonyNetworkBtn=docu
 var activeCategory="all";
 function channelCategory(ch){
   var n=(ch.name||"").toLowerCase();
-  if(/football|soccer|epl|premier league|laliga|bundesliga|uefa|fifa/.test(n))return "football";
-  if(/sony|ten|sports|star|espn|willow|cricket|ptv|sky sport|fox sport/.test(n))return "sports";
   if(/sab|max|pal|marathi|aat|yay|entertain|movie|music|tv serial/.test(n))return "entertainment";
+  if(/football|soccer|epl|premier league|laliga|bundesliga|uefa|fifa/.test(n))return "football";
+  if(/cricket|ten[ _-]?[1-5]|sony sports|sony ten|star sports|espn|willow|ptv|sky sport|fox sport/.test(n))return "cricket";
   return "sports";
 }
 function renderChannelView(){
@@ -841,7 +841,7 @@ function renderChannelView(){
   var visible=allChannels.filter(function(ch){
     var matchName=ch.name.toLowerCase().indexOf(q)!==-1;
     var matchFav=!favoritesOnly||fav.indexOf(ch.id)!==-1;
-    var category=activeCategory==="all"||activeCategory==="cricket"&&/cricket|ten|sports|sony|willow|star/.test(ch.name.toLowerCase())||channelCategory(ch)===activeCategory;
+    var category=activeCategory==="all"||activeCategory==="cricket"&&channelCategory(ch)==="cricket"||channelCategory(ch)===activeCategory;
     return matchName&&matchFav&&category;
   });
   renderChannels(visible);
