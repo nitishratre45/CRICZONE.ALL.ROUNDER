@@ -27,6 +27,21 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
   <style id="cz-sony-premium-community-ui">
+    /* Live status + quick channel navigation */
+    .player-status{display:flex;align-items:center;gap:9px;min-height:38px;margin:0 0 10px;padding:8px 12px;border:1px solid rgba(245,197,66,.2);border-radius:12px;background:linear-gradient(100deg,rgba(19,32,51,.96),rgba(10,17,29,.96));color:#c5d2e2;font-size:9px;font-weight:900;letter-spacing:.8px}
+    .player-status .status-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#f5c542;box-shadow:0 0 10px currentColor}
+    .player-status .status-label{color:#ffe08a}
+    .player-status .status-detail{margin-left:auto;color:#8497b0;font-size:9px;font-weight:650;letter-spacing:0;text-align:right}
+    .player-status[data-state="live"] .status-dot{background:#43dda0;color:#43dda0}
+    .player-status[data-state="live"] .status-label{color:#72e9b7}
+    .player-status[data-state="retry"] .status-dot,.player-status[data-state="offline"] .status-dot{background:#ff6575;color:#ff6575}
+    .player-status[data-state="retry"] .status-label,.player-status[data-state="offline"] .status-label{color:#ff8a98}
+    #quickChannels[hidden]{display:none!important}
+    #quickChannels{margin-top:13px}
+    .quick-channel-list{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+    .quick-channel{scroll-snap-align:start}
+    .quick-channel:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+    @media(max-width:560px){.player-status{min-height:35px;margin-bottom:8px;padding:7px 10px;font-size:8px}.player-status .status-detail{font-size:8px}.quick-channel{padding:9px 11px;font-size:10px}}
     /* Premium player community card + clear Join Now action */
     .player-community{gap:13px;margin-top:18px}
     .player-community:before{content:"CRICZONE COMMUNITY  ·  STAY CONNECTED";display:block;margin:0 2px -4px;color:#9eafc5;font-size:9px;font-weight:950;letter-spacing:1.55px}
@@ -559,7 +574,12 @@
         <button class="back" id="back" type="button">← All channels</button>
         <div class="now-playing" id="now-playing">Now Playing</div>
       </div>
+      <div class="player-status" id="playerStatus" data-state="connecting" role="status" aria-live="polite"><span class="status-dot"></span><span class="status-label">CONNECTING TO STREAM</span><span class="status-detail">Preparing live playback…</span></div>
       <div class="player-shell"><video id="player" playsinline webkit-playsinline controls preload="metadata"></video></div>
+      <section class="more-channels" id="quickChannels" aria-label="Quick channel switcher" hidden>
+        <div class="more-channels-head"><div><span class="community-eyebrow">KEEP WATCHING</span><h3>Quick channel switch</h3></div><span class="more-live-tag"><i></i> CHANNELS</span></div>
+        <div class="quick-channel-list" id="quickChannelList"></div>
+      </section>
       <section class="player-community" aria-label="CRICZONE live audience and community">
         <div class="audience-stats">
           <div class="audience-stat live-stat"><span class="stat-icon">●</span><span class="stat-label">LIVE WATCHING</span><strong id="sonyPlayerWatching">245</strong><small>Watching this channel now</small></div>
@@ -671,7 +691,31 @@ var $overlay=document.getElementById("overlay"),$loadMsg=document.getElementById
 var $list=document.getElementById("channel-list"),$grid=document.getElementById("ch-grid");
 var $playerContainer=document.getElementById("player-container"),$video=document.getElementById("player");
 var $count=document.getElementById("channel-count"),$search=document.getElementById("search");
-var allChannels=[],currentPlayer=null,currentHls=null;
+var allChannels=[],currentPlayer=null,currentHls=null,retryTimer=null,retryCount=0,activeChannelId="";
+var $playerStatus=document.getElementById("playerStatus"),$quickChannels=document.getElementById("quickChannels"),$quickChannelList=document.getElementById("quickChannelList");
+function setPlayerStatus(state,label,detail){
+  if(!$playerStatus)return;
+  $playerStatus.dataset.state=state;
+  $playerStatus.querySelector(".status-label").textContent=label;
+  $playerStatus.querySelector(".status-detail").textContent=detail||"";
+}
+function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}}
+function renderQuickChannels(current){
+  if(!$quickChannels||!$quickChannelList)return;
+  var index=allChannels.findIndex(function(ch){return ch.id===current.id;});
+  var start=Math.max(0,Math.min(index-3,allChannels.length-7));
+  var nearby=allChannels.slice(start,start+7).filter(function(ch){return ch.id!==current.id;});
+  $quickChannelList.innerHTML="";
+  if(!nearby.length){$quickChannels.hidden=true;return;}
+  nearby.forEach(function(ch){
+    var button=document.createElement("button");button.type="button";button.className="quick-channel";button.textContent=ch.name;
+    button.addEventListener("click",function(){
+      var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);
+    });
+    $quickChannelList.appendChild(button);
+  });
+  $quickChannels.hidden=false;
+}
 
 function proxyUrl(url){
   if(!url)return url;
@@ -717,6 +761,7 @@ function renderChannels(channels){
   $grid.appendChild(fragment);
 }
 function destroyPlayer(){
+  clearRetry();retryCount=0;
   if(currentHls){currentHls.destroy();currentHls=null;}
   if(currentPlayer){currentPlayer.destroy();currentPlayer=null;}
   $video.pause();$video.removeAttribute("src");$video.load();
@@ -741,19 +786,30 @@ function showPlayer(ch){
       var heights=data.levels.map(function(level){return level.height;}).filter(Boolean);
       var unique=heights.filter(function(value,index){return heights.indexOf(value)===index;}).sort(function(a,b){return b-a;});
       currentPlayer=new Plyr($video,Object.assign({},options,unique.length?{quality:{default:unique[0],options:unique,forced:true,onChange:function(q){currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
-      $video.play().catch(function(){});$overlay.style.display="none";
+      $video.play().then(function(){setPlayerStatus("live","LIVE PLAYBACK","Stream connected");}).catch(function(){setPlayerStatus("connecting","TAP PLAY TO START","Waiting for playback permission");});$overlay.style.display="none";
     });
     currentHls.on(Hls.Events.ERROR,function(_,data){
-      if(data.fatal){$loadMsg.textContent="Playback error. The source or proxy may be unavailable.";if(data.type===Hls.ErrorTypes.NETWORK_ERROR)currentHls.startLoad();else if(data.type===Hls.ErrorTypes.MEDIA_ERROR)currentHls.recoverMediaError();else $overlay.style.display="flex";}
+      if(data.fatal){
+        setPlayerStatus("retry","RECONNECTING","Trying to restore the stream…");
+        $loadMsg.textContent="Reconnecting to stream…";
+        if(data.type===Hls.ErrorTypes.NETWORK_ERROR&&retryCount<4){retryCount++;currentHls.startLoad();}
+        else if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&retryCount<4){retryCount++;currentHls.recoverMediaError();}
+        else{setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");$loadMsg.textContent="Stream unavailable. Please try again shortly.";$overlay.style.display="flex";}
+      }
     });
   }else{
     $video.src=source;currentPlayer=new Plyr($video,options);
     $video.addEventListener("loadedmetadata",function(){ $overlay.style.display="none";},{once:true});
-    $video.addEventListener("error",function(){ $loadMsg.textContent="Unable to play this stream. Check source/proxy access."; $overlay.style.display="flex";},{once:true});
-    $video.play().catch(function(){ $loadMsg.textContent="Press play to start the stream.";});
+    $video.addEventListener("error",function(){setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");$loadMsg.textContent="Unable to play this stream. Check source/proxy access.";$overlay.style.display="flex";},{once:true});
+    $video.play().catch(function(){setPlayerStatus("connecting","TAP PLAY TO START","Waiting for playback permission");$loadMsg.textContent="Press play to start the stream.";});
   }
 }
 
+$video.addEventListener("playing",function(){clearRetry();retryCount=0;setPlayerStatus("live","LIVE PLAYBACK","Stream connected");$overlay.style.display="none";});
+$video.addEventListener("waiting",function(){setPlayerStatus("retry","BUFFERING","Waiting for network data…");});
+$video.addEventListener("stalled",function(){setPlayerStatus("retry","CONNECTION SLOW","Attempting to recover…");});
+$video.addEventListener("pause",function(){if(!$video.ended&&$video.currentTime>0)setPlayerStatus("connecting","PLAYBACK PAUSED","Press play to resume");});
+$video.addEventListener("error",function(){if(activeChannelId)setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");});
 async function main(){
   try{
     allChannels=await loadData();renderChannels(allChannels);$overlay.style.display="none";
