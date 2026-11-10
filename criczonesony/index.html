@@ -828,10 +828,58 @@ var $playerStatus=document.getElementById("playerStatus"),$quickChannels=documen
 var $sonyResume=document.getElementById("sonyResume"),$sonyResumeName=document.getElementById("sonyResumeName");
 var $sonyFavBtn=document.getElementById("sonyFavBtn"),$sonyPipBtn=document.getElementById("sonyPipBtn"),$sonyShareBtn=document.getElementById("sonyShareBtn");
 var $sonyFavFilter=document.getElementById("sonyFavFilter"),$sonyNetworkBtn=document.getElementById("sonyNetworkBtn"),$sonyReportBtn=document.getElementById("sonyReportBtn"),favoritesOnly=false;
+var activeCategory="all";
+function channelCategory(ch){
+  var n=(ch.name||"").toLowerCase();
+  if(/football|soccer|epl|premier league|laliga|bundesliga|uefa|fifa/.test(n))return "football";
+  if(/sony|ten|sports|star|espn|willow|cricket|ptv|sky sport|fox sport/.test(n))return "sports";
+  if(/sab|max|pal|marathi|aat|yay|entertain|movie|music|tv serial/.test(n))return "entertainment";
+  return "sports";
+}
 function renderChannelView(){
   var q=$search.value.trim().toLowerCase(),fav=getFavorites();
-  renderChannels(allChannels.filter(function(ch){return ch.name.toLowerCase().indexOf(q)!==-1&&(!favoritesOnly||fav.indexOf(ch.id)!==-1)}));
+  var visible=allChannels.filter(function(ch){
+    var matchName=ch.name.toLowerCase().indexOf(q)!==-1;
+    var matchFav=!favoritesOnly||fav.indexOf(ch.id)!==-1;
+    var category=activeCategory==="all"||activeCategory==="cricket"&&/cricket|ten|sports|sony|willow|star/.test(ch.name.toLowerCase())||channelCategory(ch)===activeCategory;
+    return matchName&&matchFav&&category;
+  });
+  renderChannels(visible);
+  var title=activeCategory==="all"?"All Channels":activeCategory.charAt(0).toUpperCase()+activeCategory.slice(1);
+  if(favoritesOnly)title="Favourite Channels";
+  document.getElementById("czResultsTitle").textContent=title;
+  document.getElementById("czResultsCount").textContent=visible.length+" shown";
   if($sonyFavFilter){$sonyFavFilter.setAttribute("aria-pressed",String(favoritesOnly));$sonyFavFilter.textContent=favoritesOnly?"★ Favourites ON":"☆ Favourites"}
+}
+function makeChannelShortcut(ch,className){
+  var button=document.createElement("button");button.type="button";button.className=className;
+  if(ch.logo){var img=document.createElement("img");img.src=ch.logo;img.alt="";img.loading="lazy";img.onerror=function(){img.style.display="none"};button.appendChild(img);}
+  var label=document.createElement("span");label.textContent=ch.name;button.appendChild(label);
+  button.addEventListener("click",function(){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});});
+  return button;
+}
+function renderFeatured(){
+  var box=document.getElementById("cz-featured-grid");if(!box)return;
+  box.innerHTML="";var picks=allChannels.slice(0,6);
+  picks.forEach(function(ch){box.appendChild(makeChannelShortcut(ch,"cz-featured-card"));});
+  if(!picks.length)box.textContent="No featured channels available.";
+}
+function renderRecent(){
+  var section=document.getElementById("czRecentSection"),box=document.getElementById("czRecentGrid");
+  if(!section||!box)return;
+  var recent=safeStoreGet("czSonyRecent",[]).map(function(id){return allChannels.find(function(ch){return ch.id===id;});}).filter(Boolean).slice(0,8);
+  section.hidden=!recent.length;box.innerHTML="";
+  recent.forEach(function(ch){box.appendChild(makeChannelShortcut(ch,"cz-recent-card"));});
+}
+function updateDiagnostics(){
+  var ch=allChannels.find(function(item){return item.id===activeChannelId;});
+  var connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  document.getElementById("czDiagChannel").textContent=ch?ch.name:"—";
+  document.getElementById("czDiagConnection").textContent=(navigator.onLine?"Online":"Offline")+(connection&&connection.effectiveType?" · "+connection.effectiveType:"");
+  document.getElementById("czDiagPlayback").textContent=$video.error?"Media error":$video.paused?"Paused / waiting":"Playing";
+  var buffered=$video.buffered.length?Math.max(0,$video.buffered.end($video.buffered.length-1)-$video.currentTime):0;
+  document.getElementById("czDiagBuffer").textContent=buffered.toFixed(1)+" sec";
+  document.getElementById("czDiagDevice").textContent=/Android/i.test(navigator.userAgent)?"Android":/iPhone|iPad/i.test(navigator.userAgent)?"iOS":"Desktop / other";
 }
 function updateNetworkStatus(){
   if(!$sonyNetworkBtn)return;
@@ -905,7 +953,7 @@ async function loadData(){
   return parseM3U(await response.text());
 }
 function renderChannels(channels){
-  $count.textContent=channels.length+" CHANNELS";
+  $count.textContent=allChannels.length+" CHANNELS";
   $grid.innerHTML="";
   if(!channels.length){$grid.innerHTML='<div class="empty">No channels match your search.</div>';return;}
   var fragment=document.createDocumentFragment();
@@ -934,8 +982,8 @@ function showList(){
 }
 function showPlayer(ch){
   activeChannelId=ch.id;
-  try{localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}))}catch(e){}
-  updateFavoriteButton(ch);
+  try{localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}));var recent=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});recent.unshift(ch.id);localStorage.setItem("czSonyRecent",JSON.stringify(recent.slice(0,20)));}catch(e){}
+  updateFavoriteButton(ch);renderRecent();renderQuickChannels(ch);updateDiagnostics();
   $list.style.display="none";$playerContainer.style.display="block";
   if(window.startSonyPlayerStats)window.startSonyPlayerStats(ch.id);
   document.getElementById("now-playing").textContent=ch.name;
@@ -976,14 +1024,19 @@ $video.addEventListener("pause",function(){if(!$video.ended&&$video.currentTime>
 $video.addEventListener("error",function(){if(activeChannelId)setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");});
 async function main(){
   try{
-    allChannels=await loadData();renderChannelView();$overlay.style.display="none";updateResumeCard();
+    allChannels=await loadData();renderChannelView();renderFeatured();renderRecent();$overlay.style.display="none";updateResumeCard();
     var id=getChId();if(id){var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}
   }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="none";$count.textContent="OFFLINE";console.warn("CRICZONE Sony playlist:",error);}
 }
 $search.addEventListener("input",renderChannelView);
 $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
+document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
+document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
+document.getElementById("czMiniBtn").addEventListener("click",function(){var enabled=document.body.classList.toggle("cz-mini-mode");this.setAttribute("aria-pressed",String(enabled));this.textContent=enabled?"▣ Exit mini player":"▣ Mini player";});
+document.getElementById("czDiagnosticsBtn").addEventListener("click",function(){var panel=document.getElementById("czDiagnostics"),open=panel.hidden;panel.hidden=!open;this.setAttribute("aria-expanded",String(open));if(open)updateDiagnostics();});
+["playing","waiting","stalled","error","pause","progress"].forEach(function(name){$video.addEventListener(name,function(){if(!document.getElementById("czDiagnostics").hidden)updateDiagnostics();});});
 document.getElementById("refresh").addEventListener("click",function(){$loadMsg.textContent="Refreshing channels…";$overlay.style.display="flex";main();});
-document.getElementById("back").addEventListener("click",showList);
+document.getElementById("back").addEventListener("click",function(){document.body.classList.remove("cz-mini-mode");document.getElementById("czMiniBtn").setAttribute("aria-pressed","false");showList();});
 $sonyPipBtn&&$sonyPipBtn.addEventListener("click",async function(){
   try{
     if(document.pictureInPictureElement)await document.exitPictureInPicture();
