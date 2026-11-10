@@ -339,7 +339,7 @@
     var stream=item&&(item.video_url||item.pub_url||item.dai_url);
     if(item&&stream){
       var playerUrl="./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(item.match_name||item.event_name||"Live Event");
-      window.location.assign(playerUrl);
+      window.open(playerUrl,"_blank","noopener");
     }
   });
   document.getElementById("event-player-close").addEventListener("click",stopEventPlayer);
