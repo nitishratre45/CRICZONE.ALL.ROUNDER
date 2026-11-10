@@ -328,8 +328,7 @@
     grid.innerHTML=rows.map(function(m,i){
       var live=m.isLive===true,titleText=m.match_name||m.event_name||"Live Event";
       var stream=m.video_url||m.pub_url||m.dai_url||"";
-      var playerUrl=stream?"./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(titleText):"";
-      var watch=live&&stream?'<a class="event-watch" href="'+esc(playerUrl)+'" target="_blank" rel="noopener noreferrer">▶ WATCH LIVE</a>':'';
+      var watch=live&&stream?'<a class="event-watch" href="'+esc(stream)+'" target="_blank" rel="noopener noreferrer">▶ WATCH LIVE</a>':'';
       return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(titleText)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(titleText)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
     }).join("");
   }
