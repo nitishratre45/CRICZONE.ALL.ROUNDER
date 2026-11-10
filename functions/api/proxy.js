@@ -93,7 +93,7 @@ export async function onRequest(context) {
     const ifRange = incomingHeaders.get("If-Range");
     if (ifRange) upstreamHeaders.set("If-Range", ifRange);
 
-    const isSony = target.hostname === "sonyliv.com" || target.hostname.endsWith(".sonyliv.com");
+    const isSony = target.hostname === "sonyliv.com" || target.hostname.endsWith(".sonyliv.com") || target.hostname === "sonyeventsglobal.akamaized.net" || target.hostname.endsWith(".sonyeventsglobal.akamaized.net");
     upstreamHeaders.set(
       "Referer",
       isSony ? "https://www.sonyliv.com/" : target.origin + "/"
