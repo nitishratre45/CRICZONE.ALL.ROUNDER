@@ -456,12 +456,35 @@
   </style>
 
 <style id="cz-plyr-compact-quality">
-/* Compact Plyr quality menu on mobile and desktop */
-.plyr__menu__container{width:min(164px,calc(100vw - 28px))!important;max-height:min(42vh,250px)!important;overflow-y:auto!important;overflow-x:hidden!important;border-radius:11px!important;scrollbar-width:thin!important}
-.plyr__menu__container [role="menu"]{max-height:min(42vh,250px)!important;overflow-y:auto!important;overflow-x:hidden!important;padding:5px!important}
-.plyr__menu__container [role="menuitem"],.plyr__menu__container [role="menuitemradio"]{min-height:30px!important;padding:6px 9px!important;font-size:11px!important;line-height:1.2!important}
-.plyr__menu__container label{font-size:11px!important;padding:6px 9px!important}
-@media(max-width:600px){.plyr__menu__container{width:145px!important;max-height:38vh!important}.plyr__menu__container [role="menu"]{max-height:38vh!important}.plyr__menu__container [role="menuitem"],.plyr__menu__container [role="menuitemradio"]{min-height:28px!important;padding:5px 8px!important;font-size:10px!important}}
+/* Keep the quality menu compact and anchored directly above the settings gear. */
+.plyr__menu__container{
+  position:absolute!important;bottom:100%!important;top:auto!important;
+  right:0!important;left:auto!important;transform:translateY(-5px)!important;
+  width:142px!important;max-width:calc(100vw - 24px)!important;
+  max-height:174px!important;overflow:hidden!important;
+  border-radius:10px!important;box-sizing:border-box!important;
+}
+.plyr__menu__container [role="menu"]{
+  max-height:174px!important;overflow-x:hidden!important;overflow-y:auto!important;
+  padding:4px!important;box-sizing:border-box!important;scrollbar-width:thin!important;
+}
+.plyr__menu__container [role="menuitem"],
+.plyr__menu__container [role="menuitemradio"],
+.plyr__menu__container label{
+  min-height:25px!important;height:auto!important;padding:4px 7px!important;
+  margin:0!important;font-size:10px!important;line-height:1.15!important;
+  white-space:nowrap!important;
+}
+.plyr__menu__container [role="menuitem"] span,
+.plyr__menu__container [role="menuitemradio"] span,
+.plyr__menu__container label span{font-size:10px!important}
+@media(max-width:600px){
+  .plyr__menu__container{width:132px!important;max-height:156px!important;transform:translateY(-4px)!important}
+  .plyr__menu__container [role="menu"]{max-height:156px!important}
+  .plyr__menu__container [role="menuitem"],
+  .plyr__menu__container [role="menuitemradio"],
+  .plyr__menu__container label{min-height:23px!important;padding:3px 6px!important;font-size:9px!important}
+}
 </style>
 </head>
 <body>
