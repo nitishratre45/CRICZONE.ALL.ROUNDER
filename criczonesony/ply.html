@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<title>CRICZONE Player</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+<style>
+:root{color-scheme:dark;--gold:#f5c542;--line:#26344a;--muted:#9aa8ba}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#172944,#070b12 62%);color:#f5f7fb;font-family:Inter,system-ui,Arial,sans-serif}
+header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,36px);background:#080d16;border-bottom:1px solid var(--line)}
+.brand{font-weight:950;letter-spacing:.5px}.brand span{color:var(--gold)}.back{color:#111;background:var(--gold);text-decoration:none;border-radius:10px;padding:10px 15px;font-size:12px;font-weight:900}
+main{width:min(1500px,100%);margin:auto;padding:clamp(14px,3vw,34px)}
+.panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#121e30,#0a111d);padding:clamp(12px,2vw,22px);box-shadow:0 20px 60px #0006}
+h1{font-size:clamp(18px,2.3vw,27px);margin:0 0 6px}.sub{color:var(--muted);font-size:12px;margin:0 0 16px}
+.player{position:relative;width:100%;aspect-ratio:16/9;max-height:78vh;background:#000;border-radius:12px;overflow:hidden;border:1px solid #ffffff18}
+video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+#status{color:var(--muted);font-size:12px;padding:12px 2px 2px;min-height:32px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.actions button{border:1px solid var(--line);background:#1a2940;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+@media(max-width:600px){header{height:58px}.player{aspect-ratio:16/9}.panel{padding:10px}}
+</style>
+</head>
+<body>
+<header><div class="brand">⚡ CRIC<span>ZONE</span> PLAYER</div><a class="back" href="./">← BACK TO SONY</a></header>
+<main><section class="panel">
+<h1 id="title">Live Event</h1><p class="sub">CRICZONE Live Player · HLS / DASH compatible</p>
+<div class="player"><video id="video" controls playsinline webkit-playsinline autoplay></video></div>
+<div id="status" role="status">Preparing stream…</div>
+<div class="actions"><button id="retry" type="button">↻ Reload Stream</button><button id="fullscreen" type="button">⛶ Fullscreen</button></div>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.12.8/dist/shaka-player.compiled.js"></script>
+<script>
+(function(){
+"use strict";
+var params=new URLSearchParams(location.search),url=params.get("url"),title=params.get("title")||"Live Event";
+var video=document.getElementById("video"),status=document.getElementById("status"),titleEl=document.getElementById("title");
+var STREAM_PROXY="/api/proxy?u=";
+var hls=null,shakaPlayer=null;
+titleEl.textContent=title;document.title="CRICZONE Player — "+title;
+function stop(){if(hls){hls.destroy();hls=null;}if(shakaPlayer){shakaPlayer.destroy();shakaPlayer=null;}video.pause();video.removeAttribute("src");video.load();}
+async function start(){
+ stop();
+ if(!url||!/^https?:\/\//i.test(url)){status.textContent="Invalid or missing stream URL.";return;}
+ status.textContent="Connecting to stream…";
+ var playbackUrl=url;
+ var type=url.split("?")[0].toLowerCase();
+ if(type.endsWith(".mpd")&&window.shaka){
+  shaka.polyfill.installAll();
+  if(shaka.Player.isBrowserSupported()){
+   shakaPlayer=new shaka.Player(video);
+   shakaPlayer.addEventListener("error",function(e){status.textContent="DASH error: "+(e.detail&&e.detail.message||"stream unavailable");});
+   try{await shakaPlayer.load(playbackUrl);status.textContent="Stream ready. Press Play if playback does not start.";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});return;}
+   catch(e){status.textContent="DASH playback failed: "+(e.message||"source unavailable");return;}
+  }
+ }
+ if(type.endsWith(".m3u8")&&window.Hls&&Hls.isSupported()){
+  hls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30});
+  hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal)status.textContent="HLS "+data.type+" error: "+(data.details||"stream request failed")+(data.response&&data.response.code?" (HTTP "+data.response.code+")":"")+". Direct source playback.";});
+  hls.on(Hls.Events.MANIFEST_PARSED,function(){status.textContent="Live stream loaded. Starting player…";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});});
+  hls.loadSource(playbackUrl);hls.attachMedia(video);return;
+ }
+ video.src=playbackUrl;video.load();
+ video.addEventListener("loadedmetadata",function(){status.textContent="Stream ready.";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});},{once:true});
+ video.addEventListener("error",function(){status.textContent="Playback failed. Check the failed playlist/segment request; source may be expired or access-restricted.";},{once:true});
+}
+document.getElementById("retry").addEventListener("click",start);
+document.getElementById("fullscreen").addEventListener("click",function(){var box=video.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(box.requestFullscreen)box.requestFullscreen();});
+start();
+window.addEventListener("pagehide",stop);
+})();
+</script>
+<script src="/assets/js/cz-global-community.js" defer></script>
+</body></html>
