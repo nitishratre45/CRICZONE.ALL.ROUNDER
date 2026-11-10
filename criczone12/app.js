@@ -47,10 +47,32 @@
         shakaPlayer.addEventListener('error',event=>{
           const detail=event.detail||{};
           const data=Array.isArray(detail.data)?detail.data:[];
-          const response=data.find(value=>value && typeof value==="object" && typeof value.status==="number");
-          const httpStatus=response ? response.status : (Number(data[1])||0);
-          if(detail.code===1001){
-            status(httpStatus?'HTTP '+httpStatus+' · '+(httpStatus===401||httpStatus===403?'AUTH / TOKEN DENIED':httpStatus===404?'MANIFEST / SEGMENT NOT FOUND':'REQUEST REJECTED'):'HTTP REQUEST FAILED');
+          // Shaka error payloads vary by browser/plugin version. Search nested
+          // response objects and numeric fields so HTTP 401/403 is not hidden.
+          const findStatus=(value,depth=0)=>{
+            if(depth>5||value==null) return 0;
+            if(typeof value==='number'&&value>=100&&value<=599) return value;
+            if(Array.isArray(value)){
+              for(const item of value){const found=findStatus(item,depth+1);if(found)return found;}
+              return 0;
+            }
+            if(typeof value==='object'){
+              for(const key of ['status','statusCode','httpStatus','responseStatus']){
+                const n=Number(value[key]);if(n>=100&&n<=599)return n;
+              }
+              for(const item of Object.values(value)){const found=findStatus(item,depth+1);if(found)return found;}
+            }
+            return 0;
+          };
+          const httpStatus=findStatus(data);
+          if(httpStatus===401||httpStatus===403){
+            status('HTTP '+httpStatus+' · SOURCE ACCESS DENIED');
+          } else if(httpStatus===404){
+            status('HTTP 404 · MANIFEST / SEGMENT NOT FOUND');
+          } else if(httpStatus>=400){
+            status('HTTP '+httpStatus+' · SOURCE REQUEST REJECTED');
+          } else if(detail.code===1001){
+            status('HTTP REQUEST FAILED · CHECK SOURCE ACCESS');
           } else if(detail.code===1002){
             status('BROWSER NETWORK / CORS BLOCK');
           } else if(detail.code===1003){
@@ -60,7 +82,7 @@
           } else {
             status('DASH ERROR '+(detail.code||'UNKNOWN'));
           }
-          console.warn('CRICZONE12 Shaka error details:',{code:detail.code,data:data.map((v,i)=>i===0&&typeof v==='string'?v.split('?')[0]:v)});
+          console.warn('CRICZONE12 Shaka error details:',{code:detail.code,httpStatus,data:data.map((v,i)=>i===0&&typeof v==='string'?v.split('?')[0]:v)});
         });
         await shakaPlayer.load(url);
         await video.play();
