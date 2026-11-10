@@ -194,7 +194,7 @@ const FOLDER_URLS = {
   criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
   fancodeweb: "https://criczone.pages.dev/fancodeweb/",
   criczonefancode: "https://criczone.pages.dev/criczonefancode/",
-  sony: "https://criczone.pages.dev/sony/",
+  sony: "https://criczone.pages.dev/criczonesony/",
   criczonesony: "https://criczone.pages.dev/criczonesony/"
 };
 
@@ -442,7 +442,7 @@ async function handleText({ request, env, message }) {
   // Use only the two Sony source folders and always share the Sony page base URL.
   if (value === "sony") {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("📺 <b>SONY SPORTS DIRECTORY</b>\n\n<i>Explore all available Sony Sports channels in one place.</i>\n\n<blockquote>Tap the button below to open the complete directory. 🏏</blockquote>", buildChannelKeyboard([{ name: "📺 OPEN SONY DIRECTORY", page_url: "https://criczone.pages.dev/sony/" }]), "HTML");
+    return reply("📺 <b>SONY SPORTS DIRECTORY</b>\n\n<i>Explore all available Sony Sports channels in one place.</i>\n\n<blockquote>Tap the button below to open the complete directory. 🏏</blockquote>", buildChannelKeyboard([{ name: "📺 OPEN SONY DIRECTORY", page_url: "https://criczone.pages.dev/criczonesony/" }]), "HTML");
   }
 
   if (/^(?:fancode|fan code)\\s+web$/i.test(value)) {
@@ -546,7 +546,7 @@ async function handleText({ request, env, message }) {
             buttons.push([{ text: "🎬 FanCode Web (Primary)", url: "https://criczone.pages.dev/fancodeweb/" }]);
             buttons.push([{ text: "🛟 Old FanCode Web (Backup)", url: "https://criczone.pages.dev/criczonefancode/" }]);
           }
-          if (providerKey === "sony sports") buttons.push([{ text: "Sony Web", url: "https://criczone.pages.dev/sony/" }]);
+          if (providerKey === "sony sports") buttons.push([{ text: "Sony Web", url: "https://criczone.pages.dev/criczonesony/" }]);
           const message = "📺 <b>" + requestedProvider.name.toUpperCase() + " CHANNELS (" + list.length + ")</b>\n\n<i>Choose a channel button below to open it.</i>";
           return reply(message, { inline_keyboard: buttons }, "HTML");
         }
@@ -639,7 +639,7 @@ async function handleText({ request, env, message }) {
           buttons.push([{ text: "🎬 FanCode Web (Primary)", url: "https://criczone.pages.dev/fancodeweb/" }]);
           buttons.push([{ text: "🛟 Old FanCode Web (Backup)", url: "https://criczone.pages.dev/criczonefancode/" }]);
         }
-        if (selectedProviderKey === "sony sports") buttons.push([{ text: "Sony Web", url: "https://criczone.pages.dev/sony/" }]);
+        if (selectedProviderKey === "sony sports") buttons.push([{ text: "Sony Web", url: "https://criczone.pages.dev/criczonesony/" }]);
         const message = "📺 <b>" + selectedProvider.name.toUpperCase() + " CHANNELS (" + unique.length + ")</b>\n\n<i>Choose a channel button below to open it.</i>";
         return reply(message, { inline_keyboard: buttons }, "HTML");
       }
