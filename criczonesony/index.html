@@ -966,7 +966,11 @@ function renderQuickChannels(current){
   nearby.forEach(function(ch){
     var button=document.createElement("button");button.type="button";button.className="quick-channel";button.textContent=ch.name;
     button.addEventListener("click",function(){
-      var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);
+      var url=new URL(location.href);
+      url.searchParams.set("id",ch.id);
+      // Reload the page on channel switch so the previous HLS/Plyr session
+      // is fully discarded before the next channel initializes.
+      location.assign(url.pathname+url.search+url.hash);
     });
     $quickChannelList.appendChild(button);
   });
