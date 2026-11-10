@@ -137,7 +137,7 @@ export async function onRequest({ request }) {
   try {
     const { response: upstream, finalUrl } = await fetchUpstream(target, request);
     const contentType = upstream.headers.get("content-type") || "";
-    const isPlaylist = /mpegurl|vnd\\.apple\\.mpegurl/i.test(contentType) ||
+    const isPlaylist = /mpegurl|vnd\.apple\\.mpegurl/i.test(contentType) ||
       /\.m3u8?$/i.test(finalUrl.pathname);
 
     const headers = new Headers(CORS);
