@@ -91,7 +91,13 @@
     .sub{color:#a5b1c3;font-size:13px;line-height:1.6;margin:12px 0 0;max-width:470px}
     .count{position:relative;z-index:1;white-space:nowrap;border:1px solid rgba(245,197,66,.23);background:rgba(245,197,66,.075);border-radius:999px;padding:10px 15px;color:#f7d978;font-size:11px;font-weight:900;letter-spacing:.7px}
 
-    .events-link{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 19px;padding:15px 18px;border:1px solid rgba(245,197,66,.35);border-radius:15px;background:linear-gradient(110deg,rgba(245,197,66,.12),rgba(18,30,48,.94));color:#ffe28a;text-decoration:none;font-size:13px;font-weight:900;transition:transform .2s,border-color .2s}.events-link:hover{transform:translateY(-2px);border-color:#f5c542}.events-link small{display:block;color:#a5b1c3;font-size:11px;font-weight:600;margin-top:4px}.events-link span:last-child{font-size:20px}
+    .events-section{margin:0 0 28px;padding:20px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(20,32,50,.92),rgba(10,17,28,.96));box-shadow:0 14px 36px rgba(0,0,0,.18)}
+    .events-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.events-heading h2{font-size:20px;margin:0;font-weight:950;letter-spacing:-.4px}.events-heading p{font-size:11px;color:var(--muted);margin:5px 0 0}
+    .event-tabs{display:flex;gap:7px;flex-wrap:wrap}.event-tabs button{border:1px solid var(--line);border-radius:999px;padding:8px 13px;background:#17243a;color:#cbd5e1;font-size:10px;font-weight:850;cursor:pointer}.event-tabs button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    #event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
+    .event-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:15px;background:linear-gradient(150deg,#19283e,#101827);box-shadow:0 8px 22px rgba(0,0,0,.16)}
+    .event-card img{display:block;width:100%;height:132px;object-fit:cover;background:#0a1220}.event-body{padding:12px}.event-badge{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--red);color:#fff;font-size:9px;font-weight:950;letter-spacing:.7px}.event-badge.up{background:#64748b}.event-title{font-size:13px;font-weight:900;line-height:1.4;margin:9px 0 5px}.event-meta{font-size:10px;line-height:1.5;color:var(--muted)}.event-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}.event-watch{display:inline-flex;align-items:center;text-decoration:none;background:var(--gold);color:#111;padding:8px 13px;border-radius:999px;font-size:10px;font-weight:950}.event-empty{grid-column:1/-1;padding:28px 12px;text-align:center;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:12px}
+
     .toolbar{display:flex;gap:11px;margin-bottom:19px}
     .search-wrap{position:relative;flex:1;min-width:0}
     .search-wrap:before{content:"⌕";position:absolute;left:16px;top:50%;transform:translateY(-54%);font-size:25px;color:#8292aa;pointer-events:none}
@@ -184,7 +190,7 @@
       .toolbar{gap:8px;margin-bottom:14px}
       #search,.refresh{height:46px;min-height:46px;border-radius:12px}
       .refresh{padding-inline:12px;font-size:11px}
-      #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.events-section{padding:14px;margin-bottom:20px}.events-heading{align-items:flex-start;flex-direction:column}.event-tabs{width:100%}#event-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.event-card img{height:92px}.event-body{padding:9px}.event-title{font-size:11px}.event-watch{padding:7px 9px;font-size:9px}
       .ch-card{min-height:146px;padding:14px 8px;border-radius:16px;gap:11px}
       .logo-box{width:80px;height:56px;border-radius:12px;padding:7px}
       .ch-name{font-size:12px}
@@ -218,7 +224,12 @@
         <div class="count" id="channel-count">Loading channels…</div>
       </div>
 
-      <a class="events-link" href="./events.html"><span>🎥 SonyLiv Live Events<small>Live matches and upcoming events</small></span><span>VIEW EVENTS →</span></a>
+      <section class="events-section" id="sony-events">
+        <div class="events-heading"><div><h2>🔴 SonyLiv Live Events</h2><p id="events-updated">Loading live and upcoming events…</p></div>
+          <div class="event-tabs"><button class="active" type="button" data-event-filter="all">All</button><button type="button" data-event-filter="live">Live Now</button><button type="button" data-event-filter="upcoming">Upcoming</button></div>
+        </div>
+        <div id="event-grid" aria-live="polite"><div class="event-empty">Loading events…</div></div>
+      </section>
       <div class="toolbar">
         <div class="search-wrap"><input id="search" type="search" placeholder="Search sports channels…" autocomplete="off" aria-label="Search channels"></div>
         <button class="refresh" id="refresh" type="button">↻ Refresh</button>
@@ -237,6 +248,26 @@
 </div>
 <div id="overlay"><div class="loader"><span class="spinner"></span><span id="loadMsg">Loading CricZone channels…</span></div></div>
 <script>
+
+// SonyLiv live events are rendered inline on this page.
+(function(){
+  "use strict";
+  var endpoint="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
+  var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function draw(){
+    var rows=matches.filter(function(m){return filter==="all"||(filter==="live"?m.isLive===true:m.isLive!==true);});
+    if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live":"")+ ' events available right now.</div>';return;}
+    grid.innerHTML=rows.map(function(m){
+      var live=m.isLive===true,title=m.match_name||m.event_name||"Live Event";
+      var watch=live&&m.video_url?'<a class="event-watch" target="_blank" rel="noopener noreferrer" href="https://events-1fe.pages.dev/player.html?url='+encodeURIComponent(m.video_url)+'">▶ WATCH LIVE</a>':'';
+      return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(title)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(title)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
+    }).join("");
+  }
+  document.querySelectorAll("[data-event-filter]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-event-filter]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");filter=btn.dataset.eventFilter;draw();});});
+  fetch(endpoint,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){matches=Array.isArray(j.matches)?j.matches:[];updated.textContent="Last updated: "+(j["last update time"]||"Live")+" · "+matches.length+" events";draw();}).catch(function(){updated.textContent="Live event feed is temporarily unavailable.";grid.innerHTML='<div class="event-empty">Could not load SonyLiv events. Refresh the page to try again.</div>';});
+})();
+
 (function(){
 "use strict";
 var M3U_URL="https://sportlink-jtv.pages.dev/sony3.m3u";
