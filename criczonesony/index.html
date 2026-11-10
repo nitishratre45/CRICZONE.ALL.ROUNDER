@@ -305,7 +305,8 @@
     if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live ":"")+'events available right now.</div>';return;}
     grid.innerHTML=rows.map(function(m,i){
       var live=m.isLive===true,titleText=m.match_name||m.event_name||"Live Event";
-      var watch=live&&m.video_url?'<button type="button" class="event-watch" data-event-index="'+matches.indexOf(m)+'">▶ WATCH LIVE</button>':'';
+      var stream=m.video_url||m.pub_url||m.dai_url||"";
+      var watch=live&&stream?'<button type="button" class="event-watch" data-event-index="'+matches.indexOf(m)+'">▶ WATCH LIVE</button>':'';
       return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(titleText)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(titleText)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
     }).join("");
   }
@@ -313,8 +314,9 @@
     var button=event.target.closest("[data-event-index]");
     if(!button)return;
     var item=matches[Number(button.getAttribute("data-event-index"))];
-    if(item&&item.video_url){
-      var playerUrl="./player.html?url="+encodeURIComponent(item.video_url)+"&title="+encodeURIComponent(item.match_name||item.event_name||"Live Event");
+    var stream=item&&(item.video_url||item.pub_url||item.dai_url);
+    if(item&&stream){
+      var playerUrl="./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(item.match_name||item.event_name||"Live Event");
       window.location.assign(playerUrl);
     }
   });
