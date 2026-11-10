@@ -35,7 +35,10 @@
   <style id="cz-sony-premium-community-ui">
     .sony-fav-filter{min-height:40px;padding:0 13px;border:1px solid rgba(245,197,66,.25);border-radius:12px;background:#172438;color:#ffe08a;font-size:10px;font-weight:850;cursor:pointer}
     .sony-fav-filter[aria-pressed="true"]{background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033}
-    .sony-tools{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0 4px}
+    .sony-tools-compact{margin:10px 0 4px}
+    #czToolsToggle{min-height:36px;padding:8px 13px;border:1px solid rgba(170,194,225,.2);border-radius:11px;background:#142238;color:#dce8f7;font-size:10px;font-weight:850}
+    #czToolsPanel[hidden]{display:none!important}
+    .sony-tools{display:flex;flex-wrap:wrap;gap:9px;margin:8px 0 4px}
     .sony-tools button,.sony-resume button{min-height:38px;padding:9px 13px;border:1px solid rgba(170,194,225,.2);border-radius:11px;background:linear-gradient(145deg,#172940,#101b2b);color:#dce8f7;font-size:10px;font-weight:850;cursor:pointer}
     .sony-tools button:hover,.sony-tools button[aria-pressed="true"]{border-color:rgba(245,197,66,.6);color:#ffe08a}
     .sony-resume[hidden]{display:none!important}
@@ -702,15 +705,18 @@ body{position:fixed;inset:0;width:100%;max-width:100%;-webkit-overflow-scrolling
       </div>
       <div class="player-status" id="playerStatus" data-state="connecting" role="status" aria-live="polite"><span class="status-dot"></span><span class="status-label">CONNECTING TO STREAM</span><span class="status-detail">Preparing live playback…</span></div>
       <div class="player-shell"><video id="player" playsinline webkit-playsinline controls preload="metadata"></video></div>
-      <div class="sony-tools" aria-label="Player tools">
-        <button type="button" id="czSoundBtn" aria-pressed="false">🔊 Turn sound on</button>
-        <button type="button" id="sonyPipBtn">▣ Picture in Picture</button>
-        <button type="button" id="czMiniBtn" aria-pressed="false">▣ Mini player</button>
-        <button type="button" id="czAutoQualityBtn" title="Return HLS playback to adaptive quality">↻ Auto quality</button>
-        <button type="button" id="czDiagnosticsBtn" aria-expanded="false">⌁ Diagnostics</button>
-        <button type="button" id="sonyShareBtn">↗ Share channel</button>
-        <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button><button type="button" id="sonyNetworkBtn" title="Network status">◉ Network</button>
-        <button type="button" id="sonyReportBtn">⚑ Report issue</button>
+      <div class="sony-tools-compact">
+        <button type="button" id="czToolsToggle" aria-expanded="false">＋ More player tools</button>
+        <div class="sony-tools" id="czToolsPanel" aria-label="Additional player tools" hidden>
+          <button type="button" id="sonyPipBtn">▣ Picture in Picture</button>
+          <button type="button" id="czMiniBtn" aria-pressed="false">▣ Mini player</button>
+          <button type="button" id="czAutoQualityBtn" title="Return HLS playback to adaptive quality">↻ Auto quality</button>
+          <button type="button" id="czDiagnosticsBtn" aria-expanded="false">⌁ Diagnostics</button>
+          <button type="button" id="sonyShareBtn">↗ Share channel</button>
+          <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button>
+          <button type="button" id="sonyNetworkBtn" title="Network status">◉ Network</button>
+          <button type="button" id="sonyReportBtn">⚑ Report issue</button>
+        </div>
       </div>
       <section class="cz-diagnostics" id="czDiagnostics" hidden aria-live="polite">
         <div><span>CHANNEL</span><strong id="czDiagChannel">—</strong></div>
@@ -996,7 +1002,7 @@ function showList(){
 }
 function showPlayer(ch){
   activeChannelId=ch.id;
-  $video.muted=false;$video.volume=1;if(currentPlayer){currentPlayer.muted=false;currentPlayer.volume=1;}syncSoundButton();
+  $video.muted=false;$video.volume=1;if(currentPlayer){currentPlayer.muted=false;currentPlayer.volume=1;}
   try{localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}));var recent=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});recent.unshift(ch.id);localStorage.setItem("czSonyRecent",JSON.stringify(recent.slice(0,20)));}catch(e){}
   updateFavoriteButton(ch);renderRecent();renderQuickChannels(ch);updateDiagnostics();
   $list.style.display="none";$playerContainer.style.display="block";
@@ -1049,18 +1055,8 @@ $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly
 document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
 document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
 document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
-var soundButton=document.getElementById("czSoundBtn");
-function syncSoundButton(){var muted=$video.muted||$video.volume===0;soundButton.textContent=muted?"🔊 Turn sound on":"🔇 Mute sound";soundButton.setAttribute("aria-pressed",String(!muted));}
-soundButton.addEventListener("click",function(){
-  if($video.muted||$video.volume===0){
-    $video.muted=false;$video.volume=1;
-    if(currentPlayer){currentPlayer.muted=false;currentPlayer.volume=1;}
-    var playPromise=$video.play();
-    if(playPromise&&playPromise.catch)playPromise.catch(function(){setPlayerStatus("connecting","TAP PLAY TO START","Sound enabled; press play to resume");});
-  }else{$video.muted=true;if(currentPlayer)currentPlayer.muted=true;}
-  syncSoundButton();
-});
-$video.addEventListener("volumechange",syncSoundButton);
+var toolsToggle=document.getElementById("czToolsToggle"),toolsPanel=document.getElementById("czToolsPanel");
+toolsToggle.addEventListener("click",function(){var open=toolsPanel.hidden;toolsPanel.hidden=!open;toolsToggle.setAttribute("aria-expanded",String(open));toolsToggle.textContent=open?"− Hide player tools":"＋ More player tools";});
 document.getElementById("czAutoQualityBtn").addEventListener("click",function(){if(currentHls){currentHls.currentLevel=-1;this.textContent="✓ Auto quality";setTimeout(()=>{this.textContent="↻ Auto quality";},1800);}else{this.textContent="Auto quality unavailable";}});
 var miniButton=document.getElementById("czMiniBtn"),miniShell=document.querySelector(".player-shell"),miniDrag=null;
 function setMiniMode(enabled){document.body.classList.toggle("cz-mini-mode",enabled);miniButton.setAttribute("aria-pressed",String(enabled));miniButton.textContent=enabled?"▣ Exit mini player":"▣ Mini player";if(!enabled&&miniShell){miniShell.style.left="";miniShell.style.top="";miniShell.style.right="";miniShell.style.bottom="";}}
