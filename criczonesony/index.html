@@ -36,6 +36,7 @@
     .sony-fav-filter{min-height:40px;padding:0 13px;border:1px solid rgba(245,197,66,.25);border-radius:12px;background:#172438;color:#ffe08a;font-size:10px;font-weight:850;cursor:pointer}
     .sony-fav-filter[aria-pressed="true"]{background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033}
     .cz-audio-prompt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0;padding:10px 12px;border:1px solid rgba(245,197,66,.45);border-radius:12px;background:#172940;color:#ffe28a;font-size:11px;font-weight:850}.cz-audio-prompt[hidden]{display:none!important}.cz-audio-prompt button{border:0;border-radius:999px;padding:9px 12px;background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033;font-size:10px;font-weight:950}
+.cz-history-item{position:relative;min-width:0}.cz-history-remove{position:absolute;top:5px;right:5px;width:25px;height:25px;border:1px solid #52647c;border-radius:50%;background:#101c2d;color:#fff;font-size:17px;line-height:1}
 .cz-media-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0;padding:13px;border:1px solid rgba(170,194,225,.2);border-radius:14px;background:#101c2d}.cz-media-settings[hidden]{display:none!important}.cz-media-settings label{display:grid;gap:6px;color:#9fb0c7;font-size:10px;font-weight:800}.cz-media-settings select{width:100%;min-width:0;padding:10px;border:1px solid #34455e;border-radius:9px;background:#0b1422;color:#f5f7fb}.cz-media-settings p{grid-column:1/-1;margin:0;color:#8292a9;font-size:9px}
 .sony-tools-compact{margin:10px 0 4px}
     #czToolsToggle{min-height:36px;padding:8px 13px;border:1px solid rgba(170,194,225,.2);border-radius:11px;background:#142238;color:#dce8f7;font-size:10px;font-weight:850}
@@ -897,7 +898,13 @@ function renderRecent(){
   if(!section||!box)return;
   var recent=safeStoreGet("czSonyRecent",[]).map(function(id){return allChannels.find(function(ch){return ch.id===id;});}).filter(Boolean).slice(0,8);
   section.hidden=!recent.length;box.innerHTML="";
-  recent.forEach(function(ch){box.appendChild(makeChannelShortcut(ch,"cz-recent-card"));});
+  recent.forEach(function(ch){
+    var wrap=document.createElement("div");wrap.className="cz-history-item";
+    wrap.appendChild(makeChannelShortcut(ch,"cz-recent-card"));
+    var remove=document.createElement("button");remove.type="button";remove.className="cz-history-remove";remove.textContent="×";remove.setAttribute("aria-label","Remove "+ch.name+" from watch history");
+    remove.addEventListener("click",function(){var next=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});try{localStorage.setItem("czSonyRecent",JSON.stringify(next));}catch(e){}renderRecent();});
+    wrap.appendChild(remove);box.appendChild(wrap);
+  });
 }
 function refreshMediaTrackOptions(){
   var audioSelect=document.getElementById("czAudioTrack"),subSelect=document.getElementById("czSubtitleTrack");
