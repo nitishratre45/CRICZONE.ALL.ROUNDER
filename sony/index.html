@@ -1572,6 +1572,27 @@ async function main(){
     return;
   }
 
+  // For the legacy Sony Ten 3 ID, embed the dedicated S3 channel page.
+  // The S3 route follows the normal player path, so this does not recurse.
+  if(id === "sony_ten_3_hd_sayan10_15") {
+    var targetFrame = document.getElementById("sonyExternalFrame");
+    if(!targetFrame) {
+      errMsg("Sony player frame is unavailable.");
+      return;
+    }
+    document.title = "CRICZONE · Sony Ten 3 HD";
+    $video.pause();
+    $video.removeAttribute("src");
+    $video.load();
+    $video.style.display = "none";
+    targetFrame.src = window.location.pathname + "?id=S3";
+    targetFrame.style.display = "block";
+    showPlayer();
+    hideOverlay();
+    toast("● Sony Ten 3 HD", "ok", 3000);
+    return;
+  }
+
   var channels = data.channels || data;
   var ch = channels.find(function(c){ return c.id === id; });
   if(!ch) {
