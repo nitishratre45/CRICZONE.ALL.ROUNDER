@@ -1159,6 +1159,14 @@ async function main(){
     return;
   }
   document.title = ch.name;
+
+  // Route the Sony Ten 3 HD card through the dedicated Sony folder player.
+  // The main CRICZONE player already supports embedded provider pages via ch.url.
+  var sonyTen3Name = String(ch.name || "").replace(/[^a-z0-9]+/gi, " ").trim().toLowerCase();
+  if (/sony/.test(sonyTen3Name) && /ten\s*3/.test(sonyTen3Name)) {
+    ch.url = "https://criczone.pages.dev/sony/?id=S3";
+  }
+
   await startPlayer(ch);
   if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
 }
