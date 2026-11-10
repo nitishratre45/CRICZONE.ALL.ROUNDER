@@ -521,7 +521,7 @@ async function handleText({ request, env, message }) {
   // Detect broadcaster intent anywhere in a natural group message, not only exact names
   // or English "link" requests. Keep specific numbered channel searches on the normal matcher.
   const mentionedProvider = providerDefinitions.find(provider => {
-    const aliases = [...(provider.keys || []), provider.name]
+    const aliases = [...(provider.keys || []), provider.name, ...(normalize(provider.name) === "sony sports" ? ["sony"] : [])]
       .map(normalize).filter(Boolean)
       .sort((a, b) => b.length - a.length);
     const paddedText = " " + value + " ";
