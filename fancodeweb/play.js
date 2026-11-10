@@ -2990,7 +2990,11 @@ async function switchQuality(
        Start playback
     ---------------------------------------- */
 
-    vid.muted = true;
+    // Try autoplay with sound first. Browsers may block audible autoplay
+    // after a page navigation; in that case fall back to muted autoplay.
+    vid.volume = 1;
+    vid.muted = false;
+    isMuted = false;
 
     // Register before play(): fast playback can emit "playing" immediately.
     const playingHandler = () => {
@@ -3000,8 +3004,16 @@ async function switchQuality(
 
     try {
       await vid.play();
-    } catch {
-      syncBigPlay();
+    } catch (audioAutoplayError) {
+      // Audible autoplay is restricted by mobile browser policy.
+      // Keep playback automatic with mute, then let the viewer enable sound.
+      vid.muted = true;
+      isMuted = true;
+      try {
+        await vid.play();
+      } catch {
+        syncBigPlay();
+      }
     }
 
     syncVolume();
