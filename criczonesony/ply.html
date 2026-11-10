@@ -35,7 +35,10 @@ var params=new URLSearchParams(location.search),url=params.get("url"),title=para
 var frame=document.getElementById("stream-frame"),status=document.getElementById("status"),titleEl=document.getElementById("title");
 titleEl.textContent=title;document.title="CRICZONE Player — "+title;
 function load(){
- if(!url){status.textContent="Invalid or missing stream URL.";frame.src="about:blank";return;}\n var parsed;try{parsed=new URL(url);}catch(e){parsed=null;}\n if(!parsed||!(parsed.protocol==="https:"||parsed.protocol==="http:")){status.textContent="Invalid or missing stream URL.";frame.src="about:blank";return;}
+  if(!url){status.textContent="Invalid or missing stream URL.";frame.src="about:blank";return;}
+  var parsed;
+  try{parsed=new URL(url);}catch(e){parsed=null;}
+  if(!parsed||!(parsed.protocol==="https:"||parsed.protocol==="http:")){status.textContent="Invalid or missing stream URL.";frame.src="about:blank";return;}
  status.textContent="Opening stream inside embedded player…";
  frame.src=url;
 }
