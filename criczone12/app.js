@@ -30,10 +30,15 @@
     empty.style.display='none'; status('LOADING');
     video.onplaying=()=>status('PLAYING');
     video.onerror=()=>status('SOURCE UNAVAILABLE');
-    let url=c.url;
-    // HTTPS pages cannot load HTTP media. Try the same endpoint over HTTPS;
-    // the origin must support HTTPS and authorize browser playback.
-    if(location.protocol==='https:' && url.startsWith('http://')) url='https://'+url.slice(7);
+    const url=String(c.url).trim();
+    // Do not rewrite HTTP stream URLs to HTTPS: that changes the provider
+    // endpoint and can produce misleading 403 responses. HTTPS pages cannot
+    // play insecure HTTP media; the provider must supply a valid HTTPS URL.
+    if(location.protocol==='https:' && /^http:\/\//i.test(url)){
+      status('HTTP SOURCE BLOCKED · PROVIDER HTTPS URL REQUIRED');
+      render();
+      return;
+    }
     const isDash=/\.mpd(?:$|\?)/i.test(url);
     const isHls=/\.m3u8?(?:$|\?)/i.test(url);
     try{
@@ -89,7 +94,13 @@
       } else if(isHls && window.Hls && Hls.isSupported()){
         hls=new Hls({enableWorker:true,lowLatencyMode:true});
         hls.on(Hls.Events.ERROR,(_,data)=>{
-          if(data.fatal) status(data.type==='networkError'?'NETWORK / CORS ERROR':'HLS ERROR');
+          if(!data.fatal) return;
+          const httpStatus=Number(data.response && data.response.code)||0;
+          if(httpStatus===401||httpStatus===403) status('HTTP '+httpStatus+' · SOURCE ACCESS DENIED');
+          else if(httpStatus===404) status('HTTP 404 · PLAYLIST / SEGMENT NOT FOUND');
+          else if(data.type==='networkError') status('NETWORK / CORS ERROR · CHECK PROVIDER ACCESS');
+          else status('HLS ERROR · '+String(data.details||'PLAYBACK FAILED').replace(/_/g,' ').toUpperCase());
+          console.warn('CRICZONE12 HLS error details:',{type:data.type,details:data.details,httpStatus,url:data.url&&data.url.split('?')[0]});
         });
         hls.loadSource(url); hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>status('TAP PLAY TO START')));
