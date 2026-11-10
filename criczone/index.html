@@ -414,6 +414,16 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 #viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important}
 @media(max-width:699px){#viewerBadge{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;padding:5px 8px!important;gap:4px!important}#watchingCount,#totalVisits{font-size:9px!important}}
 </style>
+
+<style id="cz-shaka-compact-quality">
+/* Compact Shaka quality/settings menu: keep every resolution reachable on small screens. */
+.shaka-overflow-menu,.shaka-settings-menu{width:min(228px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px)!important;max-height:min(46vh,300px)!important;overflow-x:hidden!important;overflow-y:auto!important;border-radius:10px!important;box-sizing:border-box!important;scrollbar-width:thin!important}
+.shaka-overflow-menu button,.shaka-settings-menu button{min-height:32px!important;height:auto!important;padding:7px 10px!important;font-size:11px!important;line-height:1.25!important;white-space:normal!important}
+.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:11px!important}
+.shaka-overflow-menu .shaka-current-selection-span,.shaka-settings-menu .shaka-current-selection-span{font-size:10px!important;max-width:82px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.shaka-controls-container .shaka-controls-button-panel button{min-width:32px!important}
+@media(max-width:600px){.shaka-overflow-menu,.shaka-settings-menu{width:min(196px,calc(100vw - 18px))!important;max-height:42vh!important}.shaka-overflow-menu button,.shaka-settings-menu button{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:10px!important}}
+</style>
 </head>
 <body>
 
