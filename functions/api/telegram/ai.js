@@ -534,7 +534,7 @@ async function handleText({ request, env, message }) {
        (mentionedProvider.keys || []).some(key => value === normalize(key)))) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     if (normalize(mentionedProvider.name) === "sony sports") {
-      return reply("📺 <b>SONY SPORTS DIRECTORY</b>\\n\\n<i>Explore all available Sony Sports channels and live events in one place.</i>\\n\\n<blockquote>Tap below to open the Sony Sports website. 🏏</blockquote>",
+      return reply("📺 <b>SONY SPORTS DIRECTORY</b>\n\n<i>Explore all available Sony Sports channels and live events in one place.</i>\n\n<blockquote>Tap below to open the Sony Sports website. 🏏</blockquote>",
         buildChannelKeyboard([{ name: "📺 OPEN SONY SPORTS WEBSITE", page_url: "https://criczone.pages.dev/criczonesony/" }]), "HTML");
     }
     const list = getProviderChannels(mentionedProvider);
