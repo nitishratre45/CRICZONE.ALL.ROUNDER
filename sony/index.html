@@ -1348,7 +1348,7 @@ async function main(){
 
   // For the legacy Sony Ten 3 ID, embed the dedicated S3 channel page.
   // The S3 route follows the normal player path, so this does not recurse.
-  if(id === "sony_ten_3_hd_sayan10_15") {
+  if(id === "criczone-sony-3hd" || id === "sony_ten_3_hd_sayan10_15") {
     var targetFrame = document.getElementById("sonyExternalFrame");
     if(!targetFrame) {
       errMsg("Sony player frame is unavailable.");
