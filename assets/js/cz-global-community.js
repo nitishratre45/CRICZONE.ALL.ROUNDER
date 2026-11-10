@@ -129,7 +129,7 @@
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
-  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community" /></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_blank" rel="noopener noreferrer"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div><p class="cz-community-trust">Free to join · Get updates in our Telegram community</p></section>';
+  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community" /></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_self" rel="noopener noreferrer" role="button" aria-label="Open CRICZONE Telegram invite"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div><p class="cz-community-trust">Free to join · Get updates in our Telegram community</p></section>';
   document.documentElement.appendChild(popup);
   var popupImg=popup.querySelector(".cz-community-photo img");
   var popupPhotoIndex=0;
@@ -138,6 +138,13 @@
   var popupRotate=window.setInterval(function(){setPopupPhoto(popupPhotoIndex+1);},3000);
 
   function closePopup(){popup.classList.remove("cz-show");}
+  /* Navigate directly to the invite in the same tab so desktop Telegram/browser handoff is not blocked as a popup. */
+  var joinLink=popup.querySelector(".cz-community-join");
+  joinLink.addEventListener("click",function(event){
+    event.preventDefault();
+    window.location.assign(telegram);
+  });
+
   /* Dismiss only through the explicit close button. */
   popup.querySelector(".cz-community-close").addEventListener("click",closePopup);
 
