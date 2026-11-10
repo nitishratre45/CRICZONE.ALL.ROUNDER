@@ -36,7 +36,7 @@ video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
 (function(){
 "use strict";
 var params=new URLSearchParams(location.search),url=params.get("url"),title=params.get("title")||"Live Event";
-var video=document.getElementById("video"),status=document.getElementById("status"),titleEl=document.getElementById("title");\nvar STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
+var video=document.getElementById("video"),status=document.getElementById("status"),titleEl=document.getElementById("title");\nvar STREAM_PROXY="/api/proxy?u=";
 var hls=null,shakaPlayer=null;
 titleEl.textContent=title;document.title="CRICZONE Player — "+title;
 function stop(){if(hls){hls.destroy();hls=null;}if(shakaPlayer){shakaPlayer.destroy();shakaPlayer=null;}video.pause();video.removeAttribute("src");video.load();}
