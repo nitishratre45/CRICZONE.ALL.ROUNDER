@@ -524,8 +524,8 @@ async function handleText({ request, env, message }) {
     const aliases = [...(provider.keys || []), provider.name]
       .map(normalize).filter(Boolean)
       .sort((a, b) => b.length - a.length);
-    return aliases.some(alias => new RegExp("(?:^|\\\\s)" + alias.split(" ").map(part => part.replace(/[.*+?^$\\{\\}()|[\\]\\\\]/g, "\\\\  const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
-")).join("\\\\s+") + "(?:$|\\\\s)", "i").test(value));
+    const paddedText = " " + value + " ";
+    return aliases.some(alias => paddedText.includes(" " + alias + " "));
   });
   const asksForBroadcaster = /\\b(?:link|url|website|web|send|show|give|chahiye|chaiye|bhejo|bhej|do|dikhao|open|watch|live|channel|channels|stream|ka|ki|ke|kaha|kahan|mil|milega|please)\\b/i.test(userText);
   const hasSpecificChannelNumber = /\\b(?:[1-9]|ten\\s*[1-5]|select\\s*[12]|\\d{3,})\\b/i.test(value);
