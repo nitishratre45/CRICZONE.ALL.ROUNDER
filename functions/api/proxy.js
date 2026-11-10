@@ -1,3 +1,4 @@
+// CricZone HLS proxy — restricted to explicitly approved streaming/feed hosts.
 const ALLOWED_HOST_SUFFIXES = new Set([
   "allinonereborn2.online",
   "fallinoreborn2.online",
@@ -11,146 +12,182 @@ const EXACT_FEEDS = new Set([
   "sportlink-jtv.pages.dev/sony3.m3u"
 ]);
 
-const CORS = {
+const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "Range, Accept, Origin, Content-Type",
-  "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges",
+  "Access-Control-Allow-Headers": "Range, Accept, Origin, Content-Type, If-Range",
+  "Access-Control-Expose-Headers": "Content-Length, Content-Range, Accept-Ranges, Content-Type",
   "Cache-Control": "no-store"
 };
 
-function json(data, status = 400) {
-  return new Response(JSON.stringify(data), {
+function responseError(message, status = 400, detail) {
+  return new Response(JSON.stringify({
+    ok: false,
+    error: message,
+    ...(detail ? { detail } : {})
+  }), {
     status,
-    headers: { ...CORS, "Content-Type": "application/json; charset=utf-8" }
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8" }
   });
 }
 
 function isAllowed(value) {
-  let url;
-  try { url = value instanceof URL ? value : new URL(value); }
-  catch (_) { return false; }
-  if (url.protocol !== "https:" || url.username || url.password) return false;
+  let parsed;
+  try {
+    parsed = value instanceof URL ? value : new URL(value);
+  } catch {
+    return false;
+  }
 
-  const host = url.hostname.toLowerCase();
-  const hostPath = host + url.pathname;
-  if (EXACT_FEEDS.has(hostPath)) return true;
+  if (parsed.protocol !== "https:" || parsed.username || parsed.password) return false;
+
+  const host = parsed.hostname.toLowerCase();
+  const exactPath = host + parsed.pathname;
+  if (EXACT_FEEDS.has(exactPath)) return true;
 
   return [...ALLOWED_HOST_SUFFIXES].some((suffix) =>
     host === suffix || host.endsWith("." + suffix)
   );
 }
 
-function proxyHref(target, proxyBase) {
-  return proxyBase + "?u=" + encodeURIComponent(target.href);
+function makeProxyUrl(target, proxyEndpoint) {
+  return proxyEndpoint + "?u=" + encodeURIComponent(target.href);
+}
+
+function isSonyHost(hostname) {
+  return hostname === "sonyliv.com" || hostname.endsWith(".sonyliv.com");
 }
 
 async function fetchUpstream(initialUrl, request) {
   let target = initialUrl;
 
   for (let hop = 0; hop < 6; hop++) {
-    if (!isAllowed(target)) throw new Error("Redirect target is not on the approved proxy host list");
-
-    const headers = new Headers();
-    headers.set("Accept", request.headers.get("Accept") || "*/*");
-    headers.set("User-Agent", request.headers.get("User-Agent") ||
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-    headers.set("Referer", target.hostname === "sonyliv.com" || target.hostname.endsWith(".sonyliv.com")
-      ? "https://www.sonyliv.com/"
-      : target.origin + "/");
-    if (target.hostname === "sonyliv.com" || target.hostname.endsWith(".sonyliv.com")) {
-      headers.set("Origin", "https://www.sonyliv.com");
+    // Validate every redirect destination; never turn this into an open proxy.
+    if (!isAllowed(target)) {
+      throw new Error("Redirect target is not on the approved proxy host list: " + target.hostname);
     }
 
-    const range = request.headers.get("Range");
-    if (range) headers.set("Range", range);
+    const headers = new Headers();
+    for (const name of ["Accept", "Accept-Language", "User-Agent", "Range", "If-Range"]) {
+      const value = request.headers.get(name);
+      if (value) headers.set(name, value);
+    }
 
-    const response = await fetch(target.href, {
+    if (!headers.has("Accept")) headers.set("Accept", "*/*");
+    if (!headers.has("User-Agent")) {
+      headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36");
+    }
+
+    // Sony endpoints commonly require Sony's web origin; other hosts get their own origin.
+    if (isSonyHost(target.hostname)) {
+      headers.set("Referer", "https://www.sonyliv.com/");
+      headers.set("Origin", "https://www.sonyliv.com");
+    } else {
+      headers.set("Referer", target.origin + "/");
+      headers.set("Origin", target.origin);
+    }
+
+    const upstream = await fetch(target.href, {
       method: request.method === "HEAD" ? "HEAD" : "GET",
       headers,
       redirect: "manual"
     });
 
-    if ([301, 302, 303, 307, 308].includes(response.status)) {
-      const location = response.headers.get("Location");
-      if (!location) return { response, finalUrl: target };
+    if ([301, 302, 303, 307, 308].includes(upstream.status)) {
+      const location = upstream.headers.get("Location");
+      if (!location) return { response: upstream, finalUrl: target };
       target = new URL(location, target);
       continue;
     }
 
-    return { response, finalUrl: target };
+    return { response: upstream, finalUrl: target };
   }
 
   throw new Error("Too many upstream redirects");
 }
 
-function rewritePlaylist(text, baseUrl, proxyBase) {
-  const base = new URL(baseUrl);
+function rewritePlaylist(playlistText, finalPlaylistUrl, proxyEndpoint) {
+  const base = new URL(finalPlaylistUrl);
 
-  return text.split(/\r?\n/).map((line) => {
-    const trimmed = line.trim();
-    if (!trimmed) return line;
+  return playlistText.split(/\r?\n/).map((originalLine) => {
+    const line = originalLine.trim();
+    if (!line) return originalLine;
 
-    if (trimmed.startsWith("#")) {
-      return line.replace(/URI="([^"]+)"/g, (match, uri) => {
+    // Rewrite key, map, media and other HLS tag URI attributes.
+    if (line.startsWith("#")) {
+      return originalLine.replace(/URI="([^"]+)"/g, (match, uri) => {
         try {
           const absolute = new URL(uri, base);
           return isAllowed(absolute)
-            ? 'URI="' + proxyHref(absolute, proxyBase) + '"'
+            ? 'URI="' + makeProxyUrl(absolute, proxyEndpoint) + '"'
             : match;
-        } catch (_) {
+        } catch {
           return match;
         }
       });
     }
 
+    // Rewrite variant playlists and media segment URLs (relative or absolute).
     try {
-      const absolute = new URL(trimmed, base);
-      return isAllowed(absolute) ? proxyHref(absolute, proxyBase) : line;
-    } catch (_) {
-      return line;
+      const absolute = new URL(line, base);
+      return isAllowed(absolute) ? makeProxyUrl(absolute, proxyEndpoint) : originalLine;
+    } catch {
+      return originalLine;
     }
   }).join("\n");
 }
 
 export async function onRequest({ request }) {
   if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    return json({ ok: false, error: "Method not allowed" }, 405);
+    return responseError("Method not allowed", 405);
   }
 
   const requestUrl = new URL(request.url);
-  const rawTarget = requestUrl.searchParams.get("u");
-  if (!rawTarget) return json({ ok: false, error: "Missing target URL parameter 'u'" }, 400);
+  // Accept both parameter names for compatibility; generated playlist links use ?u=.
+  const rawTarget = requestUrl.searchParams.get("u") || requestUrl.searchParams.get("url");
+  if (!rawTarget) return responseError("Missing target URL parameter 'u'", 400);
 
   let target;
-  try { target = new URL(rawTarget); }
-  catch (_) { return json({ ok: false, error: "Invalid target URL" }, 400); }
+  try {
+    target = new URL(rawTarget);
+  } catch {
+    return responseError("Invalid target URL", 400);
+  }
 
   if (!isAllowed(target)) {
-    return json({ ok: false, error: "Target host is not approved for the CricZone proxy" }, 403);
+    return responseError("Target host is not approved for the CricZone proxy", 403, target.hostname);
   }
 
   try {
     const { response: upstream, finalUrl } = await fetchUpstream(target, request);
-    const contentType = upstream.headers.get("content-type") || "";
-    const isPlaylist = /mpegurl|vnd\.apple\\.mpegurl/i.test(contentType) ||
-      /\.m3u8?$/i.test(finalUrl.pathname);
+    const contentType = upstream.headers.get("Content-Type") || "";
+    const isPlaylist = /mpegurl|vnd\.apple\.mpegurl/i.test(contentType) || /\.m3u8?$/i.test(finalUrl.pathname);
 
-    const headers = new Headers(CORS);
-    for (const name of ["Content-Type", "Content-Length", "Content-Range", "Accept-Ranges"]) {
+    const headers = new Headers(CORS_HEADERS);
+    for (const name of [
+      "Content-Type",
+      "Content-Length",
+      "Content-Range",
+      "Accept-Ranges",
+      "ETag",
+      "Last-Modified"
+    ]) {
       const value = upstream.headers.get(name);
       if (value) headers.set(name, value);
     }
 
     if (isPlaylist && upstream.ok && request.method !== "HEAD") {
       const playlistText = await upstream.text();
-      const rewritten = rewritePlaylist(playlistText, finalUrl.href, requestUrl.origin + requestUrl.pathname);
+      const proxyEndpoint = requestUrl.origin + requestUrl.pathname;
+      const rewritten = rewritePlaylist(playlistText, finalUrl.href, proxyEndpoint);
       headers.set("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8");
       headers.delete("Content-Length");
+      headers.delete("Content-Range");
+
       return new Response(rewritten, {
         status: upstream.status,
         statusText: upstream.statusText,
@@ -164,6 +201,10 @@ export async function onRequest({ request }) {
       headers
     });
   } catch (error) {
-    return json({ ok: false, error: "CricZone proxy fetch failed", detail: String(error?.message || error) }, 502);
+    return responseError(
+      "CricZone proxy fetch failed",
+      502,
+      String(error?.message || error)
+    );
   }
 }
