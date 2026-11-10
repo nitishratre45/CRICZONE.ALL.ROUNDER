@@ -602,6 +602,34 @@
     }
   </style>
 
+<style id="cz-architecture-upgrade">
+.cz-featured,.cz-recent{margin:0 0 19px;padding:16px;border:1px solid rgba(174,194,222,.15);border-radius:18px;background:linear-gradient(145deg,rgba(20,34,54,.9),rgba(9,16,27,.94))}
+.cz-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.cz-kicker{font-size:8px;font-weight:950;letter-spacing:1.8px;color:var(--gold)}
+.cz-section-heading h2{margin:3px 0 0;font-size:17px;letter-spacing:-.35px}
+.cz-section-note,.cz-muted{color:var(--muted);font-size:10px}
+.cz-featured-grid,.cz-recent-grid{display:flex;gap:10px;overflow-x:auto;padding:2px 1px 6px;scroll-snap-type:x proximity}
+.cz-featured-card,.cz-recent-card{flex:0 0 142px;display:flex;align-items:center;gap:9px;min-width:0;padding:9px;border:1px solid rgba(174,194,222,.15);border-radius:13px;background:#15243a;color:#f5f7fb;text-align:left;cursor:pointer;scroll-snap-align:start}
+.cz-featured-card img,.cz-recent-card img{width:42px;height:36px;flex:0 0 42px;object-fit:contain;background:#fff;border-radius:8px;padding:4px}
+.cz-featured-card span,.cz-recent-card span{font-size:10px;font-weight:850;line-height:1.25}
+.cz-featured-card:hover,.cz-recent-card:hover{border-color:rgba(246,201,79,.5)}
+.cz-category-bar{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 12px;margin-top:-3px;scrollbar-width:none}
+.cz-category-bar::-webkit-scrollbar{display:none}
+.cz-category{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#121e30;color:#aebbd0;font-size:10px;font-weight:850;white-space:nowrap;cursor:pointer}
+.cz-category.active{background:linear-gradient(135deg,#f4c34a,#ffe69a);border-color:#f4c34a;color:#172033}
+.cz-results-heading{display:flex;justify-content:space-between;align-items:center;margin:2px 1px 11px;color:#dfe8f5;font-size:11px}
+.cz-results-heading span{color:var(--muted);font-size:9px}
+.cz-text-button{border:0;background:transparent;color:#ffe08a;font-size:9px;font-weight:850;cursor:pointer}
+.cz-diagnostics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:10px 0 14px;padding:13px;border:1px solid rgba(174,194,222,.16);border-radius:14px;background:#0e1929}
+.cz-diagnostics[hidden]{display:none}
+.cz-diagnostics div{display:grid;gap:4px;min-width:0}
+.cz-diagnostics div span{color:#8497b0;font-size:8px;font-weight:900;letter-spacing:1px}
+.cz-diagnostics div strong{color:#f4d77e;font-size:10px;overflow-wrap:anywhere}
+.cz-diagnostics p{grid-column:1/-1;margin:2px 0 0;color:#8191a7;font-size:8px}
+body.cz-mini-mode .player-shell{position:fixed!important;z-index:80;right:14px;bottom:18px;width:min(360px,48vw)!important;aspect-ratio:16/9!important;max-height:none!important;border:2px solid rgba(246,201,79,.65);border-radius:14px;box-shadow:0 18px 55px #000b}
+body.cz-mini-mode .player-shell video,body.cz-mini-mode .player-shell .plyr{width:100%;height:100%}
+@media(max-width:600px){.cz-featured,.cz-recent{padding:12px;border-radius:15px}.cz-section-heading h2{font-size:15px}.cz-featured-card,.cz-recent-card{flex-basis:132px}.cz-diagnostics{gap:8px;padding:10px}body.cz-mini-mode .player-shell{right:9px;bottom:12px;width:min(230px,62vw)!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -616,6 +644,10 @@
         <div><div class="eyebrow">CRICZONE • LIVE TV</div><h1>Sony Sports</h1><p class="sub">Choose a channel and enjoy the match experience.</p></div>
         <div class="count" id="channel-count">Loading channels…</div>
       </div>
+      <section class="cz-featured" aria-label="Featured channels">
+        <div class="cz-section-heading"><div><span class="cz-kicker">QUICK ACCESS</span><h2>Featured Channels</h2></div><span class="cz-section-note">Popular picks</span></div>
+        <div id="cz-featured-grid" class="cz-featured-grid"><span class="cz-muted">Loading featured channels…</span></div>
+      </section>
       <nav class="sony-view-switch" aria-label="Sony content">
         <button type="button" class="sony-view-btn active" data-sony-view="channels" aria-pressed="true">📺 Channels</button>
         <button type="button" class="sony-view-btn" data-sony-view="events" aria-pressed="false">🔴 SonyLiv Events</button>
@@ -638,6 +670,18 @@
         <button class="sony-fav-filter" id="sonyFavFilter" type="button" aria-pressed="false">☆ Favourites</button>
         <button class="refresh" id="refresh" type="button">↻ Refresh</button>
       </div>
+      <nav class="cz-category-bar" id="czCategories" aria-label="Channel categories">
+        <button type="button" class="cz-category active" data-category="all" aria-pressed="true">All channels</button>
+        <button type="button" class="cz-category" data-category="cricket" aria-pressed="false">Cricket</button>
+        <button type="button" class="cz-category" data-category="football" aria-pressed="false">Football</button>
+        <button type="button" class="cz-category" data-category="sports" aria-pressed="false">Sports</button>
+        <button type="button" class="cz-category" data-category="entertainment" aria-pressed="false">Entertainment</button>
+      </nav>
+      <section class="cz-recent" id="czRecentSection" hidden>
+        <div class="cz-section-heading"><div><span class="cz-kicker">YOUR ACTIVITY</span><h2>Recently Watched</h2></div><button type="button" id="czClearRecent" class="cz-text-button">Clear history</button></div>
+        <div id="czRecentGrid" class="cz-recent-grid"></div>
+      </section>
+      <div class="cz-results-heading"><strong id="czResultsTitle">All Channels</strong><span id="czResultsCount"></span></div>
       <div id="ch-grid" aria-live="polite"></div>
       </div>
     </section>
@@ -650,10 +694,20 @@
       <div class="player-shell"><video id="player" playsinline webkit-playsinline controls preload="metadata"></video></div>
       <div class="sony-tools" aria-label="Player tools">
         <button type="button" id="sonyPipBtn">▣ Picture in Picture</button>
+        <button type="button" id="czMiniBtn" aria-pressed="false">▣ Mini player</button>
+        <button type="button" id="czDiagnosticsBtn" aria-expanded="false">⌁ Diagnostics</button>
         <button type="button" id="sonyShareBtn">↗ Share channel</button>
         <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button><button type="button" id="sonyNetworkBtn" title="Network status">◉ Network</button>
         <button type="button" id="sonyReportBtn">⚑ Report issue</button>
       </div>
+      <section class="cz-diagnostics" id="czDiagnostics" hidden aria-live="polite">
+        <div><span>CHANNEL</span><strong id="czDiagChannel">—</strong></div>
+        <div><span>CONNECTION</span><strong id="czDiagConnection">Checking…</strong></div>
+        <div><span>PLAYBACK</span><strong id="czDiagPlayback">Waiting</strong></div>
+        <div><span>BUFFER</span><strong id="czDiagBuffer">—</strong></div>
+        <div><span>DEVICE</span><strong id="czDiagDevice">—</strong></div>
+        <p>Diagnostics are generated on this device. No private browsing data is collected.</p>
+      </section>
       <section class="more-channels" id="quickChannels" aria-label="Quick channel switcher" hidden>
         <div class="more-channels-head"><div><span class="community-eyebrow">KEEP WATCHING</span><h3>Quick channel switch</h3></div><span class="more-live-tag"><i></i> CHANNELS</span></div>
         <div class="quick-channel-list" id="quickChannelList"></div>
@@ -714,7 +768,7 @@
     var stream=m&&(m.video_url||m.pub_url||m.dai_url);
     if(!stream){status.textContent="No stream URL is available for this event.";return;}
     var eventTitle=m.match_name||m.event_name||"SonyLiv Live Event";
-    var target="./ply.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(eventTitle);
+    var target="./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(eventTitle);
     window.location.href=target;
   }
   function parseSonyLivText(text){
