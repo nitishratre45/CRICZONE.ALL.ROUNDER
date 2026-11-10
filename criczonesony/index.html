@@ -36,6 +36,7 @@
     .sony-fav-filter{min-height:40px;padding:0 13px;border:1px solid rgba(245,197,66,.25);border-radius:12px;background:#172438;color:#ffe08a;font-size:10px;font-weight:850;cursor:pointer}
     .sony-fav-filter[aria-pressed="true"]{background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033}
     .cz-audio-prompt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0;padding:10px 12px;border:1px solid rgba(245,197,66,.45);border-radius:12px;background:#172940;color:#ffe28a;font-size:11px;font-weight:850}.cz-audio-prompt[hidden]{display:none!important}.cz-audio-prompt button{border:0;border-radius:999px;padding:9px 12px;background:linear-gradient(135deg,#ffe58e,#efbd42);color:#172033;font-size:10px;font-weight:950}
+.cz-media-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0;padding:13px;border:1px solid rgba(170,194,225,.2);border-radius:14px;background:#101c2d}.cz-media-settings[hidden]{display:none!important}.cz-media-settings label{display:grid;gap:6px;color:#9fb0c7;font-size:10px;font-weight:800}.cz-media-settings select{width:100%;min-width:0;padding:10px;border:1px solid #34455e;border-radius:9px;background:#0b1422;color:#f5f7fb}.cz-media-settings p{grid-column:1/-1;margin:0;color:#8292a9;font-size:9px}
 .sony-tools-compact{margin:10px 0 4px}
     #czToolsToggle{min-height:36px;padding:8px 13px;border:1px solid rgba(170,194,225,.2);border-radius:11px;background:#142238;color:#dce8f7;font-size:10px;font-weight:850}
     #czToolsPanel[hidden]{display:none!important}
@@ -718,8 +719,15 @@ body{position:fixed;inset:0;width:100%;max-width:100%;-webkit-overflow-scrolling
           <button type="button" id="sonyFavBtn" aria-pressed="false">☆ Add favourite</button>
           <button type="button" id="sonyNetworkBtn" title="Network status">◉ Network</button>
           <button type="button" id="sonyReportBtn">⚑ Report issue</button>
+          <button type="button" id="czMediaSettingsBtn" aria-expanded="false">⚙ Audio & subtitles</button>
+          <button type="button" id="czNotifyBtn" aria-pressed="false">♧ Playback notifications: OFF</button>
         </div>
       </div>
+      <section class="cz-media-settings" id="czMediaSettings" hidden>
+        <label>Audio track <select id="czAudioTrack"><option value="-1">Default audio</option></select></label>
+        <label>Subtitles <select id="czSubtitleTrack"><option value="-1">Off</option></select></label>
+        <p id="czTrackHelp">Only tracks supplied by the selected stream will appear.</p>
+      </section>
       <section class="cz-diagnostics" id="czDiagnostics" hidden aria-live="polite">
         <div><span>CHANNEL</span><strong id="czDiagChannel">—</strong></div>
         <div><span>CONNECTION</span><strong id="czDiagConnection">Checking…</strong></div>
@@ -891,6 +899,21 @@ function renderRecent(){
   section.hidden=!recent.length;box.innerHTML="";
   recent.forEach(function(ch){box.appendChild(makeChannelShortcut(ch,"cz-recent-card"));});
 }
+function refreshMediaTrackOptions(){
+  var audioSelect=document.getElementById("czAudioTrack"),subSelect=document.getElementById("czSubtitleTrack");
+  if(!audioSelect||!subSelect)return;
+  var oldAudio=audioSelect.value,oldSub=subSelect.value;
+  audioSelect.innerHTML='<option value="-1">Default audio</option>';
+  subSelect.innerHTML='<option value="-1">Off</option>';
+  if(currentHls){
+    (currentHls.audioTracks||[]).forEach(function(track,index){var option=document.createElement("option");option.value=String(index);option.textContent=track.name||track.lang||("Audio "+(index+1));audioSelect.appendChild(option);});
+    (currentHls.subtitleTracks||[]).forEach(function(track,index){var option=document.createElement("option");option.value=String(index);option.textContent=track.name||track.lang||("Subtitle "+(index+1));subSelect.appendChild(option);});
+    audioSelect.value=oldAudio;subSelect.value=oldSub;
+  }
+  var nativeTracks=$video.textTracks;
+  if(!currentHls&&nativeTracks&&nativeTracks.length){Array.prototype.forEach.call(nativeTracks,function(track,index){var option=document.createElement("option");option.value="native:"+index;option.textContent=track.label||track.language||("Subtitle "+(index+1));subSelect.appendChild(option);});}
+  document.getElementById("czTrackHelp").textContent=(audioSelect.options.length>1?"Audio tracks available. ":"No alternate audio tracks supplied. ")+(subSelect.options.length>1?"Subtitle tracks available.":"No subtitles supplied by this stream.");
+}
 function updateDiagnostics(){
   var ch=allChannels.find(function(item){return item.id===activeChannelId;});
   var connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
@@ -1020,12 +1043,15 @@ function showPlayer(ch){
     currentHls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:3,fragLoadingMaxRetry:3});
     currentHls.loadSource(source);currentHls.attachMedia($video);
     currentHls.on(Hls.Events.MANIFEST_PARSED,function(_,data){
+      refreshMediaTrackOptions();
       var heights=data.levels.map(function(level){return level.height;}).filter(Boolean);
       var unique=heights.filter(function(value,index){return heights.indexOf(value)===index;}).sort(function(a,b){return b-a;});
       currentPlayer=new Plyr($video,Object.assign({},options,unique.length?{quality:{default:unique[0],options:unique,forced:true,onChange:function(q){if(!currentHls)return;currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
       if(currentHls&&unique.length)currentHls.currentLevel=-1;
       $video.muted=false;$video.volume=1;$video.play().then(function(){setPlayerStatus("live","LIVE PLAYBACK","Stream connected · sound on");audioPrompt.hidden=true;}).catch(function(){audioPrompt.hidden=false;setPlayerStatus("connecting","TAP TO PLAY WITH SOUND","Your browser requires a tap to start audio");});$overlay.style.display="none";
     });
+    currentHls.on(Hls.Events.AUDIO_TRACKS_UPDATED,refreshMediaTrackOptions);
+    currentHls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,refreshMediaTrackOptions);
     currentHls.on(Hls.Events.ERROR,function(_,data){
       if(data.fatal){
         setPlayerStatus("retry","RECONNECTING","Trying to restore the stream…");
@@ -1067,6 +1093,19 @@ document.getElementById("czEnableAudio").addEventListener("click",function(){
   if(result&&result.then)result.then(function(){audioPrompt.hidden=true;setPlayerStatus("live","LIVE PLAYBACK","Stream connected · sound on");}).catch(function(){setPlayerStatus("connecting","AUDIO BLOCKED","Use the device/browser media controls to allow sound");});
 });
 $video.addEventListener("playing",function(){if(!$video.muted&&$video.volume>0)audioPrompt.hidden=true;});
+var mediaSettings=document.getElementById("czMediaSettings"),mediaSettingsBtn=document.getElementById("czMediaSettingsBtn");
+mediaSettingsBtn.addEventListener("click",function(){var open=mediaSettings.hidden;mediaSettings.hidden=!open;this.setAttribute("aria-expanded",String(open));if(open)refreshMediaTrackOptions();});
+document.getElementById("czAudioTrack").addEventListener("change",function(){if(currentHls)currentHls.audioTrack=Number(this.value);});
+document.getElementById("czSubtitleTrack").addEventListener("change",function(){var value=this.value;if(currentHls)currentHls.subtitleTrack=Number(value);else if(value.indexOf("native:")===0){var index=Number(value.split(":")[1]);Array.prototype.forEach.call($video.textTracks,function(track,i){track.mode=i===index?"showing":"disabled";});}else if($video.textTracks)Array.prototype.forEach.call($video.textTracks,function(track){track.mode="disabled";});});
+var notifyButton=document.getElementById("czNotifyBtn"),notifyEnabled=false;
+notifyButton.addEventListener("click",async function(){
+ if(!("Notification" in window)){notifyButton.textContent="Notifications unsupported";return;}
+ if(Notification.permission==="default"){try{await Notification.requestPermission();}catch(e){}}
+ notifyEnabled=Notification.permission==="granted";notifyButton.textContent="♧ Playback notifications: "+(notifyEnabled?"ON":"OFF");notifyButton.setAttribute("aria-pressed",String(notifyEnabled));
+ if(notifyEnabled)new Notification("CRICZONE Sony",{body:"Playback alerts are enabled for this session."});
+});
+$video.addEventListener("error",function(){if(notifyEnabled&&"Notification" in window&&Notification.permission==="granted")new Notification("CRICZONE playback issue",{body:"The current channel encountered a playback error."});});
+$video.addEventListener("playing",function(){if(notifyEnabled&&"Notification" in window&&Notification.permission==="granted")new Notification("CRICZONE playback restored",{body:"The stream is playing again."});});
 var toolsToggle=document.getElementById("czToolsToggle"),toolsPanel=document.getElementById("czToolsPanel");
 toolsToggle.addEventListener("click",function(){var open=toolsPanel.hidden;toolsPanel.hidden=!open;toolsToggle.setAttribute("aria-expanded",String(open));toolsToggle.textContent=open?"− Hide player tools":"＋ More player tools";});
 document.getElementById("czAutoQualityBtn").addEventListener("click",function(){if(currentHls){currentHls.currentLevel=-1;this.textContent="✓ Auto quality";setTimeout(()=>{this.textContent="↻ Auto quality";},1800);}else{this.textContent="Auto quality unavailable";}});
