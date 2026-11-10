@@ -999,7 +999,9 @@ function showPlayer(ch){
     currentHls.on(Hls.Events.MANIFEST_PARSED,function(_,data){
       var heights=data.levels.map(function(level){return level.height;}).filter(Boolean);
       var unique=heights.filter(function(value,index){return heights.indexOf(value)===index;}).sort(function(a,b){return b-a;});
-      currentPlayer=new Plyr($video,Object.assign({},options,unique.length?{quality:{default:unique[0],options:unique,forced:true,onChange:function(q){currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
+      var qualityOptions=unique.length?["Auto"].concat(unique):[];
+      currentPlayer=new Plyr($video,Object.assign({},options,qualityOptions.length?{quality:{default:"Auto",options:qualityOptions,forced:true,onChange:function(q){if(!currentHls)return;if(q==="Auto"){currentHls.currentLevel=-1;return;}currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
+      if(currentHls&&unique.length)currentHls.currentLevel=-1;
       $video.play().then(function(){setPlayerStatus("live","LIVE PLAYBACK","Stream connected");}).catch(function(){setPlayerStatus("connecting","TAP PLAY TO START","Waiting for playback permission");});$overlay.style.display="none";
     });
     currentHls.on(Hls.Events.ERROR,function(_,data){
@@ -1033,6 +1035,7 @@ async function main(){
 $search.addEventListener("input",renderChannelView);
 $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
 document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
+document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
 document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
 document.getElementById("czMiniBtn").addEventListener("click",function(){var enabled=document.body.classList.toggle("cz-mini-mode");this.setAttribute("aria-pressed",String(enabled));this.textContent=enabled?"▣ Exit mini player":"▣ Mini player";});
 document.getElementById("czDiagnosticsBtn").addEventListener("click",function(){var panel=document.getElementById("czDiagnostics"),open=panel.hidden;panel.hidden=!open;this.setAttribute("aria-expanded",String(open));if(open)updateDiagnostics();});
