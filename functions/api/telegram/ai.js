@@ -518,6 +518,40 @@ async function handleText({ request, env, message }) {
 
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
+  // Detect broadcaster intent anywhere in a natural group message, not only exact names
+  // or English "link" requests. Keep specific numbered channel searches on the normal matcher.
+  const mentionedProvider = providerDefinitions.find(provider => {
+    const aliases = [...(provider.keys || []), provider.name]
+      .map(normalize).filter(Boolean)
+      .sort((a, b) => b.length - a.length);
+    return aliases.some(alias => new RegExp("(?:^|\\\\s)" + alias.split(" ").map(part => part.replace(/[.*+?^$\\{\\}()|[\\]\\\\]/g, "\\\\  const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
+")).join("\\\\s+") + "(?:$|\\\\s)", "i").test(value));
+  });
+  const asksForBroadcaster = /\\b(?:link|url|website|web|send|show|give|chahiye|chaiye|bhejo|bhej|do|dikhao|open|watch|live|channel|channels|stream|ka|ki|ke|kaha|kahan|mil|milega|please)\\b/i.test(userText);
+  const hasSpecificChannelNumber = /\\b(?:[1-9]|ten\\s*[1-5]|select\\s*[12]|\\d{3,})\\b/i.test(value);
+  if (mentionedProvider && !hasSpecificChannelNumber &&
+      (asksForBroadcaster || value === normalize(mentionedProvider.name) ||
+       (mentionedProvider.keys || []).some(key => value === normalize(key)))) {
+    await clearState(env.TELEGRAM_DB, chatId, userId);
+    if (normalize(mentionedProvider.name) === "sony sports") {
+      return reply("📺 <b>SONY SPORTS DIRECTORY</b>\\n\\n<i>Explore all available Sony Sports channels and live events in one place.</i>\\n\\n<blockquote>Tap below to open the Sony Sports website. 🏏</blockquote>",
+        buildChannelKeyboard([{ name: "📺 OPEN SONY SPORTS WEBSITE", page_url: "https://criczone.pages.dev/criczonesony/" }]), "HTML");
+    }
+    const list = getProviderChannels(mentionedProvider);
+    if (list.length) {
+      const buttons = list.filter(item => item.name && (item.page_url || item.url))
+        .map(item => [{ text: String(item.name).slice(0, 64), url: item.page_url || item.url }]);
+      const key = normalize(mentionedProvider.name);
+      if (key === "fancode") {
+        buttons.push([{ text: "🎬 FanCode Web (Primary)", url: "https://criczone.pages.dev/fancodeweb/" }]);
+        buttons.push([{ text: "🛟 Old FanCode Web (Backup)", url: "https://criczone.pages.dev/criczonefancode/" }]);
+      }
+      const title = mentionedProvider.name.toUpperCase();
+      return reply("📺 <b>" + title + " CHANNELS (" + list.length + ")</b>\\n\\n<i>I found the available " + title + " options. Choose one below to open it.</i>", { inline_keyboard: buttons }, "HTML");
+    }
+    return reply("⚠️ <b>" + mentionedProvider.name.toUpperCase() + " options are temporarily unavailable</b>\\n\\n<i>Please try again shortly.</i>", undefined, "HTML");
+  }
+
   // Natural-language broadcaster link requests, e.g. "Sony HD link?" or "Fox hd link".
   const linkIntent = /\b(?:link|url|website|web|send|show|give|hd|4k)\b/i.test(userText);
   const channelQuery = userText
