@@ -253,7 +253,8 @@
 (function(){
   "use strict";
   var endpoint="https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json";
-  var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];\n  var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
+  var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
+  var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
   function draw(){
     var rows=matches.filter(function(m){return filter==="all"||(filter==="live"?m.isLive===true:m.isLive!==true);});
