@@ -22,7 +22,7 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.includes("/api/") || /\\.m3u8?$|\\.mpd$|\\.ts$|\\.m4s$|\\.mp4$/i.test(url.pathname)) return;
+  if (url.pathname.includes("/api/") || /\.m3u8?$|\.mpd$|\.ts$|\.m4s$|\.mp4$/i.test(url.pathname)) return;
 
   if (request.mode === "navigate") {
     event.respondWith(fetch(request).then(response => {
