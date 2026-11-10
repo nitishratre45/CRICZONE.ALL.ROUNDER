@@ -313,7 +313,10 @@
     var button=event.target.closest("[data-event-index]");
     if(!button)return;
     var item=matches[Number(button.getAttribute("data-event-index"))];
-    if(item)playEvent(item);
+    if(item&&item.video_url){
+      var playerUrl="./player.html?url="+encodeURIComponent(item.video_url)+"&title="+encodeURIComponent(item.match_name||item.event_name||"Live Event");
+      window.location.assign(playerUrl);
+    }
   });
   document.getElementById("event-player-close").addEventListener("click",stopEventPlayer);
   document.querySelectorAll("[data-event-filter]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-event-filter]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");filter=btn.dataset.eventFilter;draw();});});
