@@ -29,7 +29,11 @@ body {
 }
 
 body.modal-open {
-  overflow: hidden;
+  overflow-x: hidden!important;
+  overflow-y: auto!important;
+  height: auto!important;
+  min-height: 100vh;
+  touch-action: pan-y!important;
 }
 
 button,
