@@ -471,7 +471,6 @@
         <a class="player-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">
           <span class="telegram-icon">➤</span><span class="telegram-copy"><strong>JOIN CRICZONE TELEGRAM</strong><small>Live match updates · Cricket news · Community</small></span><span class="telegram-cta">JOIN NOW <b>→</b></span>
         </a>
-        <div class="more-channels"><div class="more-channels-head"><div><span class="community-eyebrow">KEEP WATCHING</span><h3>More Sony Channels</h3></div><span class="more-live-tag"><i></i> LIVE CHANNELS</span></div><div id="sonyQuickChannels" class="quick-channel-list"></div></div>
       </section>
     </section>
     <footer>CRICZONE · Sports, scores &amp; live action</footer>
@@ -659,23 +658,9 @@ function showPlayer(ch){
   }
 }
 
-function renderSonyQuickChannels(){
-  var box=document.getElementById("sonyQuickChannels");if(!box)return;
-  var current=getChId();
-  var picks=allChannels.filter(function(ch){return ch&&ch.id;}).slice(0,12);
-  box.innerHTML="";
-  picks.forEach(function(ch){
-    var b=document.createElement("button");b.type="button";b.className="quick-channel"+(String(ch.id)===String(current)?" current":"");
-    b.textContent=ch.name;b.title="Watch "+ch.name;
-    b.addEventListener("click",function(){
-      var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({}, "",url.pathname+url.search+url.hash);showPlayer(ch);
-    });
-    box.appendChild(b);
-  });
-}
 async function main(){
   try{
-    allChannels=await loadData();renderChannels(allChannels);renderSonyQuickChannels();$overlay.style.display="none";
+    allChannels=await loadData();renderChannels(allChannels);$overlay.style.display="none";
     var id=getChId();if(id){var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}
   }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="flex";$count.textContent="OFFLINE";}
 }
