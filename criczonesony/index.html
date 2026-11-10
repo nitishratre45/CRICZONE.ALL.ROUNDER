@@ -957,7 +957,7 @@ window.startSonyPlayerStats=start;window.stopSonyPlayerStats=stop;show(liveEl,LI
   var installBtn=document.getElementById("czInstallBtn");
   var installPrompt=null;
   var isStandalone=window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
-  if(isStandalone && installBtn){installBtn.hidden=true;}
+  if(installBtn){installBtn.hidden=!!isStandalone;}
   window.addEventListener("beforeinstallprompt",function(event){
     event.preventDefault();
     installPrompt=event;
@@ -966,8 +966,7 @@ window.startSonyPlayerStats=start;window.stopSonyPlayerStats=stop;show(liveEl,LI
   if(installBtn){
     installBtn.addEventListener("click",async function(){
       if(!installPrompt){
-        installBtn.textContent="OPEN BROWSER MENU";
-        setTimeout(function(){installBtn.textContent="＋ INSTALL APP";},2200);
+        alert("To install CRICZONE: tap the Chrome menu (⋮), then choose Install app or Add to Home screen.");
         return;
       }
       installPrompt.prompt();
