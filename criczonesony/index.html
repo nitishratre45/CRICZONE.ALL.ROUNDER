@@ -10,7 +10,7 @@
   } catch (_) {}
   window.addEventListener("click", function (event) {
     var link = event.target && event.target.closest ? event.target.closest("a[target='_blank']") : null;
-    if (link && !link.classList.contains("watch") && !link.classList.contains("event-watch")) {
+    if (link && !link.classList.contains("watch") && !link.classList.contains("event-watch") && !link.classList.contains("player-telegram")) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
@@ -29,6 +29,8 @@
   <style id="cz-sony-premium-community-ui">
     /* Premium player community card + clear Join Now action */
     .player-community{gap:13px;margin-top:18px}
+    .player-community:before{content:"CRICZONE COMMUNITY  ·  STAY CONNECTED";display:block;margin:0 2px -4px;color:#9eafc5;font-size:9px;font-weight:950;letter-spacing:1.55px}
+    .player-telegram:focus-visible{outline:3px solid rgba(255,224,138,.8);outline-offset:3px}
     .audience-stat{min-height:96px;padding:16px 17px;border-color:rgba(159,184,219,.18);background:linear-gradient(145deg,rgba(20,35,57,.98),rgba(9,17,30,.98));box-shadow:0 12px 28px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035)}
     .audience-stat:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.035),transparent 42%)}
     .player-telegram{position:relative;isolation:isolate;overflow:hidden;min-height:82px;padding:14px 16px;border:1px solid rgba(64,166,255,.42);border-radius:18px;background:radial-gradient(circle at 0 50%,rgba(35,154,255,.22),transparent 36%),linear-gradient(105deg,#102d4c 0%,#0d1c31 58%,#111d30 100%);box-shadow:0 12px 30px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.07);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
@@ -563,7 +565,7 @@
           <div class="audience-stat live-stat"><span class="stat-icon">●</span><span class="stat-label">LIVE WATCHING</span><strong id="sonyPlayerWatching">245</strong><small>Watching this channel now</small></div>
           <div class="audience-stat total-stat"><span class="stat-icon">◉</span><span class="stat-label">TOTAL VISITS</span><strong id="sonyPlayerVisits">12,000</strong><small>CRICZONE Sony visits</small></div>
         </div>
-        <a id="join-criczone-telegram" class="player-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" aria-label="Join CRICZONE Telegram community">
+        <a id="join-criczone-telegram" class="player-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" aria-label="Join CRICZONE Telegram community" title="Join the CRICZONE Telegram community">
           <span class="telegram-icon">➤</span><span class="telegram-copy"><strong>JOIN CRICZONE TELEGRAM</strong><small>Live match updates · Cricket news · Community</small></span><span class="telegram-cta">JOIN NOW <b>→</b></span>
         </a>
       </section>
