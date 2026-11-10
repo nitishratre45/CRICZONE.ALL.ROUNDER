@@ -305,35 +305,6 @@
     return {"last update time":tm?tm[1]:"Live",matches:rows,recovered:true};
   }
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-  function stopEventPlayer(){
-    if(hls){hls.destroy();hls=null;}
-    if(plyr){plyr.destroy();plyr=null;}
-    video.pause();video.removeAttribute("src");video.load();panel.style.display="none";
-  }
-  function playEvent(m){
-    if(!m||!m.video_url){status.textContent="This event does not have a playable live stream.";return;}
-    stopEventPlayer();
-    panel.style.display="block";
-    title.textContent=m.match_name||m.event_name||"SonyLiv Live Event";
-    status.textContent="Connecting to live stream…";
-    panel.scrollIntoView({behavior:"smooth",block:"center"});
-    var source=STREAM_PROXY+encodeURIComponent(m.video_url);
-    var opts={controls:["play","progress","current-time","mute","volume","settings","fullscreen"],settings:["quality"],autoplay:true,muted:false};
-    if(window.Hls&&Hls.isSupported()&&/\.m3u8(\?|$)/i.test(m.video_url)){
-      hls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:3,fragLoadingMaxRetry:3});
-      hls.loadSource(source);hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED,function(){
-        plyr=new Plyr(video,opts);
-        video.play().then(function(){status.textContent="Playing in CRICZONE Player";}).catch(function(){status.textContent="Press Play to start the live stream.";});
-      });
-      hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal){status.textContent="Stream error: source/proxy unavailable ("+data.type+").";}});
-    }else{
-      video.src=source;plyr=new Plyr(video,opts);
-      video.addEventListener("loadedmetadata",function(){status.textContent="Stream ready in CRICZONE Player";video.play().catch(function(){status.textContent="Press Play to start the live stream.";});},{once:true});
-      video.addEventListener("error",function(){status.textContent="Unable to load this stream. The source or proxy may be unavailable.";},{once:true});
-      video.load();
-    }
-  }
   function draw(){
     var rows=matches.filter(function(m){return filter==="all"||(filter==="live"?m.isLive===true:m.isLive!==true);});
     if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live ":"")+'events available right now.</div>';return;}
