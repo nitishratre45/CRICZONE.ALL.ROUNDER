@@ -241,6 +241,22 @@
       *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
     }
 
+
+    /* Layout safety: prevent accidental narrow/zoomed app canvas */
+    html,body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}
+    body{margin:0!important;padding:0!important;zoom:1!important;transform:none!important}
+    .app{display:flex;width:100%;min-width:0;max-width:none;margin:0;padding:0;transform:none!important}
+    .topbar{width:100%;min-width:0;flex:0 0 auto}
+    main{display:block;width:100%;min-width:0;max-width:none;margin:0;padding-left:clamp(14px,3vw,42px);padding-right:clamp(14px,3vw,42px)}
+    #channel-list,#player-container,.hero,.events-section,.player-shell,.player-community{width:100%;min-width:0;max-width:none}
+    #player{max-width:100%}
+    .audience-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(max-width:560px){
+      .topbar{padding-left:14px;padding-right:14px}
+      main{padding-left:12px;padding-right:12px}
+      .player-head{min-width:0}
+    }
+
     /* CRICZONE Sony — premium responsive polish */
     :root{
       --bg:#070b13;--surface:#101a2a;--surface-2:#152238;
