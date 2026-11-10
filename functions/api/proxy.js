@@ -87,7 +87,7 @@ async function fetchUpstream(initialUrl, request) {
 function rewritePlaylist(text, baseUrl, proxyBase) {
   const base = new URL(baseUrl);
 
-  return text.split(/\\r?\\n/).map((line) => {
+  return text.split(/\r?\n/).map((line) => {
     const trimmed = line.trim();
     if (!trimmed) return line;
 
@@ -110,7 +110,7 @@ function rewritePlaylist(text, baseUrl, proxyBase) {
     } catch (_) {
       return line;
     }
-  }).join("\\n");
+  }).join("\n");
 }
 
 export async function onRequest({ request }) {
@@ -138,7 +138,7 @@ export async function onRequest({ request }) {
     const { response: upstream, finalUrl } = await fetchUpstream(target, request);
     const contentType = upstream.headers.get("content-type") || "";
     const isPlaylist = /mpegurl|vnd\\.apple\\.mpegurl/i.test(contentType) ||
-      /\\.m3u8?$/i.test(finalUrl.pathname);
+      /\.m3u8?$/i.test(finalUrl.pathname);
 
     const headers = new Headers(CORS);
     for (const name of ["Content-Type", "Content-Length", "Content-Range", "Accept-Ranges"]) {
