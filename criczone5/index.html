@@ -18,7 +18,17 @@ main{max-width:1400px;margin:auto;padding:26px 22px 60px}.hero{padding:25px 28px
 .empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);border:1px dashed var(--line);border-radius:14px}.loading{text-align:center;padding:40px;color:var(--muted)}
 .player{display:none;position:fixed;inset:0;z-index:20;background:#030711f5;align-items:center;justify-content:center;padding:14px}.player.open{display:flex}.playerbox{width:min(1100px,100%);background:#0d1727;border:1px solid #345071;border-radius:16px;overflow:hidden}.playerhead{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}.playerhead strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.close{margin-left:auto;border:1px solid #526985;background:#1b304a;color:white;border-radius:10px;padding:10px 14px;font-size:18px;cursor:pointer}.screen{position:relative;background:#000;aspect-ratio:16/9;max-height:72vh}.screen video{width:100%;height:100%;object-fit:contain}.screen video.mode-fill{object-fit:fill}.screen video.mode-cover{object-fit:cover}.fit-pill{font-size:10px;font-weight:800;letter-spacing:.3px;padding:3px 7px;border:1px solid #71829a;border-radius:5px;color:#e8f1ff;white-space:nowrap}.sp-fit-btn{height:34px;padding:0 7px;background:transparent;color:#fff;border:0;cursor:pointer;display:flex;align-items:center}.sp-fit-btn.mode-fill .fit-pill{border-color:#38bdf8;color:#38bdf8}.sp-fit-btn.mode-cover .fit-pill{border-color:#a78bfa;color:#a78bfa}.status{padding:10px 14px;color:var(--muted);font-size:12px}.fitbutton{height:34px;padding:0 8px;background:transparent;color:white;border:1px solid #667;border-radius:5px;cursor:pointer}
 @media(max-width:600px){.head,main{padding-left:13px;padding-right:13px}.hero{padding:21px 18px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.channel{padding:10px}.logo{height:72px}.player{padding:6px}.playerbox{border-radius:10px}.screen{max-height:65vh}}
-</style></head>
+</style>
+<style id="cz-shaka-compact-quality">
+/* Compact Shaka quality/settings menu: keep every resolution reachable on small screens. */
+.shaka-overflow-menu,.shaka-settings-menu{width:min(228px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px)!important;max-height:min(46vh,300px)!important;overflow-x:hidden!important;overflow-y:auto!important;border-radius:10px!important;box-sizing:border-box!important;scrollbar-width:thin!important}
+.shaka-overflow-menu button,.shaka-settings-menu button{min-height:32px!important;height:auto!important;padding:7px 10px!important;font-size:11px!important;line-height:1.25!important;white-space:normal!important}
+.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:11px!important}
+.shaka-overflow-menu .shaka-current-selection-span,.shaka-settings-menu .shaka-current-selection-span{font-size:10px!important;max-width:82px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.shaka-controls-container .shaka-controls-button-panel button{min-width:32px!important}
+@media(max-width:600px){.shaka-overflow-menu,.shaka-settings-menu{width:min(196px,calc(100vw - 18px))!important;max-height:42vh!important}.shaka-overflow-menu button,.shaka-settings-menu button{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:10px!important}}
+</style>
+</head>
 <body>
 <header><div class="head"><div class="brand">CRIC<span>ZONE</span>5</div><div class="live">LIVE CHANNELS</div></div></header>
 <main>
