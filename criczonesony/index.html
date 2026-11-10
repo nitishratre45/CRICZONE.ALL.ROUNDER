@@ -223,6 +223,115 @@
     @media(prefers-reduced-motion:reduce){
       *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
     }
+
+    /* CRICZONE Sony — premium responsive polish */
+    :root{
+      --bg:#070b13;--surface:#101a2a;--surface-2:#152238;
+      --line:rgba(174,194,222,.16);--gold:#f6c94f;--gold-bright:#ffe69a;
+      --shadow:0 24px 70px rgba(0,0,0,.34);
+    }
+    html{scroll-padding-top:88px}
+    body{background:
+      radial-gradient(ellipse at 8% 8%,rgba(38,91,155,.20),transparent 34%),
+      radial-gradient(ellipse at 96% 22%,rgba(209,157,45,.10),transparent 30%),
+      linear-gradient(180deg,#080f1b 0%,#070b13 58%,#0b1220 100%)}
+    .topbar{min-height:78px;padding-inline:clamp(18px,4.5vw,76px);background:rgba(6,11,19,.88);border-bottom-color:rgba(255,255,255,.09)}
+    .brand{letter-spacing:.65px}
+    .brand-mark{box-shadow:0 0 0 5px rgba(246,201,79,.08),0 9px 28px rgba(246,201,79,.19)}
+    .live-tag{border-color:rgba(255,83,102,.27);background:rgba(255,83,102,.09)}
+    main{max-width:1680px;padding:clamp(24px,3vw,46px) clamp(16px,3vw,48px) 58px}
+    .hero{min-height:174px;margin-bottom:24px;border-radius:25px;border-color:rgba(179,199,228,.17);
+      background:linear-gradient(112deg,rgba(23,43,69,.98),rgba(12,22,37,.96) 58%,rgba(48,39,20,.72));
+      box-shadow:0 18px 48px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.04)}
+    .hero:after{content:"";position:absolute;inset:auto -5% -72% 52%;height:230px;background:radial-gradient(ellipse,rgba(246,201,79,.10),transparent 68%);pointer-events:none}
+    .eyebrow{letter-spacing:2.4px}
+    h1{font-size:clamp(34px,4.2vw,54px);letter-spacing:-2px}
+    .sub{font-size:13px}
+    .count{box-shadow:inset 0 1px rgba(255,255,255,.06)}
+    .sony-view-switch{position:sticky;top:88px;z-index:20;padding:6px;margin:0 0 22px;border-radius:16px;
+      background:rgba(11,19,32,.86);border:1px solid rgba(174,194,222,.17);box-shadow:0 12px 30px rgba(0,0,0,.2);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .sony-view-btn{min-height:48px;border-radius:12px;letter-spacing:.2px}
+    .sony-view-btn:not(.active):hover{background:rgba(255,255,255,.06);color:#fff}
+    .sony-view-btn.active{background:linear-gradient(135deg,#f4c34a,#ffe69a);box-shadow:0 5px 18px rgba(246,201,79,.18),inset 0 1px rgba(255,255,255,.5)}
+    #channels-content{animation:sonyFade .28s ease both}
+    #sony-events{scroll-margin-top:150px;animation:sonyFade .28s ease both}
+    #ch-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:17px}
+    .ch-card{min-height:190px;padding:22px 15px 19px;border-radius:20px;
+      background:linear-gradient(155deg,rgba(25,41,64,.98),rgba(12,21,35,.99) 75%);
+      box-shadow:0 10px 28px rgba(0,0,0,.19),inset 0 1px rgba(255,255,255,.035)}
+    .ch-card:before{height:2px}
+    .ch-card:hover{transform:translateY(-6px);box-shadow:0 22px 42px rgba(0,0,0,.34),0 0 0 1px rgba(246,201,79,.08)}
+    .logo-box{width:100px;height:70px;border-radius:16px;box-shadow:0 9px 22px rgba(0,0,0,.25)}
+    .ch-name{font-size:13px;letter-spacing:.05px}
+    .watch-label{padding:7px 11px;border-radius:999px;background:rgba(246,201,79,.09);border:1px solid rgba(246,201,79,.15)}
+    .toolbar{gap:12px;margin-bottom:18px}
+    #search{height:54px;border-radius:15px}
+    .refresh{min-height:54px;border-radius:15px}
+    .events-section{padding:22px;border-radius:22px;border-color:rgba(174,194,222,.17);
+      background:linear-gradient(145deg,rgba(19,32,51,.96),rgba(9,16,27,.98));
+      box-shadow:0 16px 40px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035)}
+    .events-heading h2{font-size:21px}
+    .event-tabs button{transition:background .2s,border-color .2s,transform .2s}
+    .event-tabs button:hover{transform:translateY(-1px);border-color:rgba(246,201,79,.3)}
+    #event-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:17px}
+    .event-card{border-radius:18px;background:linear-gradient(155deg,#1a2a42,#101a2a);box-shadow:0 10px 28px rgba(0,0,0,.2);transition:transform .22s,border-color .22s,box-shadow .22s}
+    .event-card:hover{transform:translateY(-4px);border-color:rgba(246,201,79,.34);box-shadow:0 18px 36px rgba(0,0,0,.3)}
+    .event-card img{height:clamp(150px,13vw,210px);padding:5px}
+    .event-body{padding:16px}
+    .event-title{font-size:14px}
+    .event-watch{box-shadow:0 5px 14px rgba(246,201,79,.15);transition:transform .18s,filter .18s}
+    .event-watch:hover{transform:translateY(-2px);filter:brightness(1.07)}
+    #event-player-panel{border-color:rgba(246,201,79,.3);box-shadow:0 18px 46px rgba(0,0,0,.32)}
+    .player-shell{box-shadow:var(--shadow),0 0 0 5px rgba(246,201,79,.045)}
+    footer{color:#8291a8}
+    @keyframes sonyFade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:760px){
+      main{padding:22px 16px 44px}
+      #ch-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+      .ch-card{min-height:164px;padding:17px 10px}
+      .logo-box{width:86px;height:61px}
+      .sony-view-switch{top:72px}
+    }
+    @media(max-width:560px){
+      .topbar{min-height:64px;padding-inline:13px}
+      main{padding:17px 12px 36px}
+      .hero{min-height:0;padding:20px 17px;border-radius:19px;margin-bottom:17px}
+      h1{font-size:35px}
+      .sony-view-switch{top:66px;margin-bottom:16px;border-radius:14px}
+      .sony-view-btn{min-height:44px;font-size:11px}
+      #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .ch-card{min-height:150px;padding:14px 8px;border-radius:16px;gap:10px}
+      .logo-box{width:78px;height:55px;border-radius:12px}
+      .ch-name{font-size:11.5px}
+      .watch-label{font-size:8px;padding:6px 8px}
+      .toolbar{gap:8px}
+      #search,.refresh{height:47px;min-height:47px;border-radius:12px}
+      .events-section{padding:13px;border-radius:17px}
+      .events-heading{gap:10px}
+      .events-heading h2{font-size:18px}
+      .event-tabs{gap:6px}
+      .event-tabs button{padding:8px 11px}
+      #event-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .event-card{border-radius:13px}
+      .event-card img{height:clamp(88px,25vw,125px);padding:2px}
+      .event-body{padding:9px}
+      .event-title{font-size:10.5px}
+      .event-meta{font-size:9px}
+      .event-footer{align-items:flex-end}
+      .event-watch{padding:7px 8px;font-size:9px}
+    }
+    @media(max-width:360px){
+      .brand{font-size:15px}.brand-mark{width:36px;height:36px;flex-basis:36px}
+      .live-tag{font-size:8px;padding:7px 8px}
+      .sony-view-btn{font-size:10px}
+      #ch-grid{gap:8px}.ch-card{min-height:138px}
+      .logo-box{width:70px;height:50px}
+      #event-grid{grid-template-columns:1fr}
+      .event-card img{height:150px}
+    }
+    @media(prefers-reduced-motion:reduce){#channels-content,#sony-events{animation:none}}
+
   </style>
 </head>
 <body>
