@@ -730,13 +730,14 @@ body{position:relative!important;inset:auto!important}
   padding-bottom:max(40px,env(safe-area-inset-bottom))!important;
 }
 #channel-list{
-  display:block!important;
   position:relative!important;
   width:100%!important;
   height:auto!important;
   min-height:0!important;
   overflow:visible!important;
 }
+#channel-list[style*="display: none"]{display:none!important}
+#player-container[style*="display: block"]{display:block!important}
 #player-container{min-height:100%;padding-bottom:40px}
 </style>
 <style id="cz-view-switch-no-overlap">
