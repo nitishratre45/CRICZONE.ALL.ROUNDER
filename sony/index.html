@@ -1348,7 +1348,15 @@ async function main(){
 
   // For the legacy Sony Ten 3 ID, embed the dedicated S3 channel page.
   // The S3 route follows the normal player path, so this does not recurse.
-  if(id === "criczone-sony-3hd" || id === "sony_ten_3_hd_sayan10_15") {
+  if(id === "sony_ten_3_hd_sayan10_15") {
+    // Canonicalize the retired channel ID so the browser address changes too.
+    var canonicalUrl = new URL(window.location.href);
+    canonicalUrl.searchParams.set("id", "criczone-sony-3hd");
+    window.history.replaceState({}, document.title, canonicalUrl.pathname + canonicalUrl.search + canonicalUrl.hash);
+    id = "criczone-sony-3hd";
+  }
+
+  if(id === "criczone-sony-3hd") {
     var targetFrame = document.getElementById("sonyExternalFrame");
     if(!targetFrame) {
       errMsg("Sony player frame is unavailable.");
