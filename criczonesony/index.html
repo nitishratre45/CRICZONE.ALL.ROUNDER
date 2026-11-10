@@ -1055,7 +1055,8 @@ function showPlayer(ch){
       var unique=heights.filter(function(value,index){return heights.indexOf(value)===index;}).sort(function(a,b){return b-a;});
       currentPlayer=new Plyr($video,Object.assign({},options,unique.length?{quality:{default:unique[0],options:unique,forced:true,onChange:function(q){if(!currentHls)return;currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
       if(currentHls&&unique.length)currentHls.currentLevel=-1;
-      $video.muted=false;$video.volume=1;$video.play().then(function(){setPlayerStatus("live","LIVE PLAYBACK","Stream connected · sound on");audioPrompt.hidden=true;}).catch(function(){audioPrompt.hidden=false;setPlayerStatus("connecting","TAP TO PLAY WITH SOUND","Your browser requires a tap to start audio");});$overlay.style.display="none";
+      setPlayerStatus("connecting","CONNECTING","Stream manifest loaded · waiting for video");
+      $video.muted=false;$video.volume=1;$video.play().then(function(){audioPrompt.hidden=true;}).catch(function(){audioPrompt.hidden=false;setPlayerStatus("connecting","TAP TO PLAY WITH SOUND","Your browser requires a tap to start audio");});$overlay.style.display="none";
     });
     currentHls.on(Hls.Events.AUDIO_TRACKS_UPDATED,refreshMediaTrackOptions);
     currentHls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,refreshMediaTrackOptions);
