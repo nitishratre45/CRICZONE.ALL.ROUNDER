@@ -124,6 +124,12 @@
     }
     .refresh:hover{transform:translateY(-2px);border-color:rgba(245,197,66,.62);background:linear-gradient(135deg,#4a3b1d,#292216);box-shadow:0 8px 22px rgba(0,0,0,.22)}
     .refresh:active{transform:translateY(0)}
+    .sony-view-switch{display:flex;gap:10px;margin:0 0 20px;padding:6px;border:1px solid var(--line);border-radius:15px;background:#0c1523}
+    .sony-view-btn{flex:1;min-height:46px;border:1px solid transparent;border-radius:11px;background:transparent;color:#aebbd0;font-size:13px;font-weight:900;cursor:pointer;transition:.2s}
+    .sony-view-btn.active{background:linear-gradient(135deg,#f5c542,#ffe28a);color:#111827;box-shadow:0 5px 18px #f5c54225}
+    #sony-events{display:none}
+    #channels-content{display:block}
+    @media(max-width:560px){.sony-view-switch{gap:7px;margin-bottom:14px}.sony-view-btn{min-height:43px;font-size:11px;padding:8px 5px}}
     #channel-list{display:block}
     #ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:15px}
     .ch-card{
@@ -231,6 +237,10 @@
         <div><div class="eyebrow">CRICZONE • LIVE TV</div><h1>Sony Sports</h1><p class="sub">Choose a channel and enjoy the match experience.</p></div>
         <div class="count" id="channel-count">Loading channels…</div>
       </div>
+      <nav class="sony-view-switch" aria-label="Sony content">
+        <button type="button" class="sony-view-btn active" data-sony-view="channels" aria-pressed="true">📺 Channels</button>
+        <button type="button" class="sony-view-btn" data-sony-view="events" aria-pressed="false">🔴 SonyLiv Events</button>
+      </nav>
 
       <section class="events-section" id="sony-events">
         <div class="events-heading"><div><h2>🔴 SonyLiv Live Events</h2><p id="events-updated">Loading live and upcoming events…</p></div>
@@ -243,11 +253,13 @@
           <div id="event-player-status">CRICZONE Player · Select a live event to start</div>
         </section>
       </section>
+      <div id="channels-content">
       <div class="toolbar">
         <div class="search-wrap"><input id="search" type="search" placeholder="Search sports channels…" autocomplete="off" aria-label="Search channels"></div>
         <button class="refresh" id="refresh" type="button">↻ Refresh</button>
       </div>
       <div id="ch-grid" aria-live="polite"></div>
+      </div>
     </section>
     <section id="player-container" aria-label="Video player">
       <div class="player-head">
@@ -269,6 +281,18 @@
   var STREAM_PROXY="https://mini.allinonereborn.site/events/stream_proxy.php?url=";
   var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
   var panel=document.getElementById("event-player-panel"),frame=document.getElementById("event-stream-frame"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
+  var channelsContent=document.getElementById("channels-content"),eventsSection=document.getElementById("sony-events");
+  document.querySelectorAll("[data-sony-view]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var showEvents=btn.getAttribute("data-sony-view")==="events";
+      channelsContent.style.display=showEvents?"none":"block";
+      eventsSection.style.display=showEvents?"block":"none";
+      document.querySelectorAll("[data-sony-view]").forEach(function(b){
+        var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",active?"true":"false");
+      });
+      if(showEvents)eventsSection.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
   function stopEventPlayer(){
     panel.style.display="none";
   }
