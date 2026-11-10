@@ -631,6 +631,15 @@ body.cz-mini-mode .player-shell{position:fixed!important;z-index:80;right:14px;b
 body.cz-mini-mode .player-shell video,body.cz-mini-mode .player-shell .plyr{width:100%;height:100%}
 @media(max-width:600px){.cz-featured,.cz-recent{padding:12px;border-radius:15px}.cz-section-heading h2{font-size:15px}.cz-featured-card,.cz-recent-card{flex-basis:132px}.cz-diagnostics{gap:8px;padding:10px}body.cz-mini-mode .player-shell{right:9px;bottom:12px;width:min(230px,62vw)!important}}
 </style>
+<style id="cz-no-page-scroll">
+html,body{
+  height:100%;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+  touch-action:pan-x;
+}
+body{position:fixed;inset:0;width:100%;max-width:100%;-webkit-overflow-scrolling:auto}
+</style>
 </head>
 <body>
 <div class="app">
