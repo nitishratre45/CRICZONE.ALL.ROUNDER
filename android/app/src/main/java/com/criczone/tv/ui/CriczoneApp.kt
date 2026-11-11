@@ -41,7 +41,7 @@ fun CriczoneApp() {
     var selected by remember { mutableStateOf<Channel?>(null) }
     var tab by remember { mutableStateOf(Tab.HOME) }
     var query by remember { mutableStateOf("") }
-    val channels = ChannelCatalog.demo
+    val channels = remember(context) { ChannelCatalog.load(context) }
     val visible = channels.filter { it.name.contains(query, true) || it.category.contains(query, true) }
 
     if (selected != null) {
@@ -122,7 +122,7 @@ private fun SearchField(value: String, onChange: (String) -> Unit) {
 @Composable
 private fun ChannelList(channels: List<Channel>, favorites: Set<String>, onSelect: (Channel) -> Unit, onFavorite: (Channel) -> Unit) {
     if (channels.isEmpty()) {
-        Text("No channels found yet.", color = Muted, modifier = Modifier.padding(vertical = 24.dp))
+        Text("Channel catalogue could not be loaded. Please retry after updating the app.", color = Muted, modifier = Modifier.padding(vertical = 24.dp))
         return
     }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(bottom = 18.dp)) {
@@ -134,7 +134,7 @@ private fun ChannelList(channels: List<Channel>, favorites: Set<String>, onSelec
                 Spacer(Modifier.width(13.dp))
                 Column(Modifier.weight(1f)) {
                     Text(channel.name, color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text("${channel.category} • ${channel.language}", color = Muted, fontSize = 12.sp)
+                    Text(if (channel.language.isBlank()) channel.category else "${channel.category} • ${channel.language}", color = Muted, fontSize = 12.sp)
                 }
                 Text("LIVE", color = Color(0xFFFF6565), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                 IconButton(onClick = { onFavorite(channel) }) {
