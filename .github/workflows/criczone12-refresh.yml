@@ -35,4 +35,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add criczone12/data/channels.json
           git commit -m "Refresh CRICZONE12 channel catalogue"
-          git push
+          for attempt in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            echo "Push race on attempt ${attempt}; retrying..."
+            sleep $((attempt * 3))
+          done
+          echo "::error::Could not push refreshed catalogue after 3 attempts."
+          exit 1
