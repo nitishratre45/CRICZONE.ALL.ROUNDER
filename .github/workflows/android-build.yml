@@ -41,6 +41,9 @@ jobs:
 
       - name: Install Android SDK 35
         uses: android-actions/setup-android@v3
+        with:
+          # The legacy `tools` package was removed from Google's SDK repository.
+          packages: platform-tools
 
       - name: Accept SDK licences and install packages
         shell: bash
