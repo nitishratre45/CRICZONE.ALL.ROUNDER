@@ -98,6 +98,7 @@
         } else playerError("This browser does not support HLS playback.");
       } else if (window.shaka && shaka.Player.isBrowserSupported()) {
         shakaPlayer = new shaka.Player();
+        shakaPlayer.configure({abr:{enabled:true},streaming:{bufferingGoal:30,rebufferingGoal:2,bufferBehind:30,retryParameters:{maxAttempts:4,baseDelay:500,backoffFactor:2,fuzzFactor:0.5}}});
         await shakaPlayer.attach(video);
         shakaPlayer.addEventListener("error", (event) => { console.warn("Shaka error:", event.detail); playerError("DASH playback failed. Check stream availability, segment access and authorized DRM license requirements."); });
         await shakaPlayer.load(url);
