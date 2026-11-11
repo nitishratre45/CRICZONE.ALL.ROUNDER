@@ -24,15 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import com.criczone.tv.data.Channel
 import com.criczone.tv.data.ChannelCatalog
 import com.criczone.tv.data.FavoritesStore
@@ -54,7 +45,7 @@ fun CriczoneApp() {
     val visible = channels.filter { it.name.contains(query, true) || it.category.contains(query, true) }
 
     if (selected != null) {
-        PlayerScreen(channel = selected!!, onBack = { selected = null })
+        IframePlayerScreen(channel = selected!!, onBack = { selected = null })
         return
     }
 
@@ -172,53 +163,3 @@ private fun TelegramPage() {
     }
 }
 
-@Composable
-private fun PlayerScreen(channel: Channel, onBack: () -> Unit) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    var message by remember { mutableStateOf("This channel has no authorized stream URL configured yet.") }
-    val player = remember {
-        ExoPlayer.Builder(context).build().apply {
-            playWhenReady = true
-            addListener(object : Player.Listener {
-                override fun onPlayerError(error: PlaybackException) {
-                    message = "Playback error: ${error.errorCodeName}"
-                }
-            })
-            channel.streamUrl?.takeIf { it.startsWith("https://") }?.let {
-                setMediaItem(MediaItem.fromUri(it))
-                prepare()
-            }
-        }
-    }
-    DisposableEffect(lifecycleOwner, player) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> player.pause()
-                Lifecycle.Event.ON_RESUME -> if (channel.streamUrl != null) player.play()
-                else -> Unit
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            player.release()
-        }
-    }
-    Column(Modifier.fillMaxSize().background(Color.Black)) {
-        Row(Modifier.fillMaxWidth().background(Panel).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("‹", color = Gold, fontSize = 30.sp, modifier = Modifier.clickable { onBack() }.padding(horizontal = 10.dp))
-            Column {
-                Text(channel.name, color = Color.White, fontWeight = FontWeight.Bold)
-                Text("CRICZONE PLAYER", color = Muted, fontSize = 10.sp, letterSpacing = 1.5.sp)
-            }
-        }
-        Box(Modifier.fillMaxWidth().aspectRatio(16f / 9f).background(Color.Black), contentAlignment = Alignment.Center) {
-            AndroidView(factory = { viewContext -> PlayerView(viewContext).apply { useController = true; this.player = player } },
-                update = { it.player = player }, modifier = Modifier.fillMaxSize())
-            if (channel.streamUrl == null) Text("STREAM NOT CONFIGURED", color = Gold, fontWeight = FontWeight.Bold)
-        }
-        Text(message, color = Muted, modifier = Modifier.padding(18.dp))
-        Text("HLS and DASH playback are supported when a valid, authorized URL is supplied.", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 18.dp))
-    }
-}
