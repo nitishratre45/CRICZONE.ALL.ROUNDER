@@ -518,6 +518,25 @@ async function handleText({ request, env, message }) {
 
   const providerHasChannels = (provider) => getProviderChannels(provider).length > 0;
 
+  // Deterministic Sony Sports directory: always return each curated channel URL.
+  // Keep this before broad broadcaster/website intent handling to prevent a page-only reply.
+  if (/^(?:sony\\s+sports|sony\\s+ten(?:\\s+sports)?)$/i.test(value)) {
+    const sonyProvider = providerDefinitions.find(provider => normalize(provider.name) === "sony sports");
+    const sonyChannels = sonyProvider ? getProviderChannels(sonyProvider) : [];
+    if (sonyChannels.length) {
+      await clearState(env.TELEGRAM_DB, chatId, userId);
+      const sonyButtons = sonyChannels
+        .filter(item => item && item.name && (item.page_url || item.url))
+        .map(item => [{ text: String(item.name).slice(0, 64), url: item.page_url || item.url }]);
+      return reply(
+        "📺 <b>SONY SPORTS CHANNELS (" + sonyButtons.length + ")</b>\\n\\n<i>Choose an individual Sony Sports channel below.</i>",
+        { inline_keyboard: sonyButtons },
+        "HTML"
+      );
+    }
+    return reply("⚠️ <b>Sony Sports channels unavailable</b>\\n\\n<i>Please try again shortly.</i>", undefined, "HTML");
+  }
+
   // Detect broadcaster intent anywhere in a natural group message, not only exact names
   // or English "link" requests. Keep specific numbered channel searches on the normal matcher.
   const mentionedProvider = providerDefinitions.find(provider => {
