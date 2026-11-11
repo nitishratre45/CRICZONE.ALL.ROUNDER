@@ -6,7 +6,7 @@ data class Channel(
     val category: String,
     val language: String = "—",
     val logoUrl: String? = null,
-    val streamUrl: String? = null,
+    val streamUrl: String? = null, // HTTPS page to embed in the in-app iframe
     val isLive: Boolean = true
 )
 
