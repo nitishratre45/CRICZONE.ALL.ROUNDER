@@ -55,5 +55,16 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add scorecard.json scorecard_backups/
-          git diff --staged --quiet || git commit -m "Auto-update live scores: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          git push
+          if git diff --staged --quiet; then
+            echo "No score changes; skipping commit."
+            exit 0
+          fi
+          git commit -m "Auto-update live scores: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          for attempt in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            echo "Push race on attempt ${attempt}; retrying..."
+            sleep $((attempt * 3))
+          done
+          echo "::error::Could not push score updates after 3 attempts."
+          exit 1
