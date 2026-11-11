@@ -13,6 +13,7 @@ data class Channel(
     val streamType: String = "",
     val source: String = "",
     val sourceId: String = "",
+    val sourceIds: List<String> = emptyList(),
     val isLive: Boolean = false
 )
 
@@ -41,7 +42,18 @@ object ChannelCatalog {
                             playerPageUrl = row.optString("playerPageUrl"),
                             streamType = row.optString("streamType"),
                             source = row.optString("source"),
-                            sourceId = row.optString("sourceId")
+                            sourceId = row.optString("sourceId"),
+                            sourceIds = buildList {
+                                if (row.has("sourceIds")) {
+                                    val ids = row.optJSONArray("sourceIds")
+                                    if (ids != null) for (index in 0 until ids.length()) {
+                                        val value = ids.optString(index)
+                                        if (value.isNotBlank()) add(value)
+                                    }
+                                }
+                                val primary = row.optString("sourceId")
+                                if (primary.isNotBlank() && primary !in this) add(primary)
+                            }
                         )
                     )
                 }
