@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.criczone.tv.data.Channel
 import com.criczone.tv.data.ChannelCatalog
 import com.criczone.tv.data.FavoritesStore
