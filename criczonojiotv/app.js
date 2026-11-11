@@ -45,14 +45,22 @@
     $("resultCount").textContent = filtered.length.toLocaleString() + " channels";
     $("loadMore").hidden = visible >= filtered.length;
     if (!items.length) { grid.innerHTML = '<div class="empty">No channels found. Try another search or category.</div>'; return; }
-    grid.innerHTML = items.map((c, i) => {
+    grid.innerHTML = items.map((c) => {
       const index = channels.indexOf(c);
       const name = escapeHTML(c.name || "Unknown channel");
       const logo = escapeHTML(c.logo || "");
       const category = escapeHTML(c.category || "Others");
       const selected = current && current.tvg_id === c.tvg_id ? " selected" : "";
-      return '<button class="channel-card'+selected+'" data-index="'+index+'" aria-label="Play '+name+'"><span class="logo-box">'+(logo ? '<img loading="lazy" src="'+logo+'" alt="" onerror="this.remove();this.parentElement.innerHTML=\'<span class=&quot;logo-fallback&quot;>TV</span>\'">' : '<span class="logo-fallback">TV</span>')+'</span><span class="channel-name">'+name+'</span><span class="channel-category">'+category+'</span></button>';
+      const logoMarkup = logo ? '<img loading="lazy" src="'+logo+'" alt="">' : '<span class="logo-fallback">TV</span>';
+      return '<button class="channel-card'+selected+'" data-index="'+index+'" aria-label="Play '+name+'"><span class="logo-box">'+logoMarkup+'</span><span class="channel-name">'+name+'</span><span class="channel-category">'+category+'</span></button>';
     }).join("");
+    grid.querySelectorAll(".logo-box img").forEach(img => img.addEventListener("error", () => {
+      img.remove();
+      const fallback = document.createElement("span");
+      fallback.className = "logo-fallback";
+      fallback.textContent = "TV";
+      img.parentElement.appendChild(fallback);
+    }, {once:true}));
   }
   function cleanupPlayers() {
     if (hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
