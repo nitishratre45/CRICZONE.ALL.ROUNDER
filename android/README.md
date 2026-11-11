@@ -18,12 +18,12 @@ The app bundles `app/src/main/assets/channel-catalog.json`, generated from:
 
 The merged catalogue currently contains 2,386 unique channel metadata records across 47 categories. It includes stable app IDs, primary and alternate source IDs, names, categories, languages, logo URLs and source labels. Search also matches app IDs and source IDs. The matching `criczonojiotv/channels.json` is a mirror of the CRICZONE12 catalogue and is not duplicated. `fancodeweb/` and `criczonefancode/` are intentionally excluded from this pass.
 
-The import intentionally excludes raw upstream playback URLs, DRM keys, cookies, request headers, playlist directives and expiring tokens. Telegram bot/admin state JSON is not a television channel catalogue and is not copied into the APK.
+The import intentionally excludes raw upstream playback URLs, DRM keys, cookies, request headers, playlist directives and expiring tokens. Telegram bot/admin state JSON is not a television channel catalogue and is not copied into the APK. The Android app also bundles a sanitized copy of `criczone/links.json` (`criczone-iframes.json`) containing its 15 HTTPS `iframeSrc` player-page entries.
 
 ## Player behaviour
-The Android app opens first-party CRICZONE player pages inside an in-app WebView iframe. Only matching HTTPS player pages from the configured CRICZONE host allowlist are wired at this stage. The remaining imported channels are visible as catalogue entries but show "player URL not configured" until a CRICZONE-owned, embed-compatible and distribution-authorized player page is assigned.
+The Android app reads the bundled CRICZONE iframe JSON, matches its 15 entries to channel names, and adds missing sports entries where needed. Matching channels open their HTTPS `criczone.pages.dev` player page directly in the in-app WebView; the player page handles its own embedded player. Channels without a configured player page remain catalogue-only.
 
-The embedded page must permit framing by its configured origin. The app does not bypass X-Frame-Options, Content-Security-Policy frame-ancestors, DRM, authentication, geo-restrictions or provider access controls.
+The app does not bypass X-Frame-Options, Content-Security-Policy, DRM, authentication, geo-restrictions or provider access controls.
 
 ## Features
 - Home, Search, Favorites and Telegram tabs
@@ -35,4 +35,4 @@ The embedded page must permit framing by its configured origin. The app does not
 - HTTPS-only first-party player-page allowlist
 
 ## Build status
-Source changes are committed on `android-app-foundation`. A GitHub Actions workflow at `.github/workflows/android-build.yml` now runs unit tests and assembles a debug APK on pushes/PRs affecting `android/`, then uploads `criczone-debug-apk` as a 14-day artifact. The workflow has been added but no run result is available yet; the project has not yet been confirmed built or tested, and no APK artifact is currently verified.
+Source changes are committed on `android-app-foundation`. A GitHub Actions workflow at `.github/workflows/android-build.yml` now runs unit tests and assembles a debug APK on pushes/PRs affecting `android/`, then uploads `criczone-debug-apk` as a 14-day artifact. The workflow runs unit tests and assembles a debug APK; check the latest GitHub Actions run for the current build result.
