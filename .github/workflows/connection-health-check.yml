@@ -16,52 +16,70 @@ jobs:
   health-check:
     name: Check website, APIs and feeds
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Check website and channel feeds
         shell: bash
         run: |
-          set -e
+          set -uo pipefail
           mkdir -p health-report
+          : > health-report/results.txt
+
           check_url() {
-            label="$1"
-            url="$2"
-            expected="$3"
-            body_file="health-report/${label}.body"
-            code="000"
-  for attempt in 1 2 3; do
-    code=$(curl -L -sS --retry 2 --retry-all-errors --retry-delay 2 --max-time 25 -o "$body_file" -w "%{http_code}" "$url" || true)
-    if [ "$code" = "$expected" ]; then break; fi
-    if [ "$attempt" -lt 3 ]; then sleep $((attempt * 3)); fi
-  done
+            local label="$1"
+            local url="$2"
+            local expected="$3"
+            local body_file="health-report/${label}.body"
+            local code="000"
+            local attempt
+
+            for attempt in 1 2 3; do
+              code=$(curl -L -sS --connect-timeout 10 --max-time 25 --retry 2 --retry-all-errors --retry-delay 2 -o "$body_file" -w "%{http_code}" "$url" || true)
+              if [ "$code" = "$expected" ]; then
+                break
+              fi
+              if [ "$attempt" -lt 3 ]; then
+                sleep $((attempt * 3))
+              fi
+            done
+
             if [ "$code" != "$expected" ]; then
-              echo "$label|FAIL|HTTP $code; expected $expected" | tee -a health-report/results.txt
+              echo "$label|FAIL|HTTP $code; expected $expected after retries" | tee -a health-report/results.txt
               return 1
             fi
-            if ! python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$body_file" >/dev/null 2>&1; then
+
+            if ! python3 -c 'import json,sys; json.load(open(sys.argv[1], encoding="utf-8"))' "$body_file" >/dev/null 2>&1; then
               echo "$label|FAIL|HTTP $code but response is not valid JSON" | tee -a health-report/results.txt
               return 1
             fi
+
             echo "$label|PASS|HTTP $code; valid JSON" | tee -a health-report/results.txt
           }
 
           site_code="000"
-  for attempt in 1 2 3; do
-    site_code=$(curl -L -sS --retry 2 --retry-all-errors --retry-delay 2 --max-time 25 -o /dev/null -w "%{http_code}" https://criczone.pages.dev/ || true)
-    if [ "$site_code" -ge 200 ] 2>/dev/null && [ "$site_code" -lt 400 ]; then break; fi
-    if [ "$attempt" -lt 3 ]; then sleep $((attempt * 3)); fi
-  done
-          if [ "$site_code" -ge 200 ] && [ "$site_code" -lt 400 ]; then
+          for attempt in 1 2 3; do
+            site_code=$(curl -L -sS --connect-timeout 10 --max-time 25 --retry 2 --retry-all-errors --retry-delay 2 -o /dev/null -w "%{http_code}" https://criczone.pages.dev/ || true)
+            if [[ "$site_code" =~ ^[0-9]{3}$ ]] && [ "$site_code" -ge 200 ] && [ "$site_code" -lt 400 ]; then
+              break
+            fi
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 3)); fi
+          done
+
+          if [[ "$site_code" =~ ^[0-9]{3}$ ]] && [ "$site_code" -ge 200 ] && [ "$site_code" -lt 400 ]; then
             echo "website|PASS|HTTP $site_code" | tee -a health-report/results.txt
           else
             echo "website|FAIL|HTTP $site_code" | tee -a health-report/results.txt
-            exit 1
           fi
 
-          check_url channels_route "https://criczone.pages.dev/api/channels?feed=__healthcheck_invalid__" 400
-          check_url sports_feed "https://criczone.pages.dev/api/channels?feed=sports" 200
-          check_url directory_feed "https://criczone.pages.dev/api/channels?feed=directory" 200
-          check_url select_feed "https://criczone.pages.dev/api/channels?feed=select" 200
+          check_url channels_route "https://criczone.pages.dev/api/channels?feed=__healthcheck_invalid__" 400 || true
+          check_url sports_feed "https://criczone.pages.dev/api/channels?feed=sports" 200 || true
+          check_url directory_feed "https://criczone.pages.dev/api/channels?feed=directory" 200 || true
+          check_url select_feed "https://criczone.pages.dev/api/channels?feed=select" 200 || true
+
+          if grep -q '|FAIL|' health-report/results.txt; then
+            echo "::error::One or more CRICZONE endpoints failed. See the health report artifact."
+            exit 1
+          fi
 
       - name: Publish health report
         if: always()
@@ -78,10 +96,6 @@ jobs:
               done < health-report/results.txt
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-
-          if grep -q '|FAIL|' health-report/results.txt 2>/dev/null; then
-            exit 1
-          fi
 
       - name: Upload diagnostic report
         if: always()
