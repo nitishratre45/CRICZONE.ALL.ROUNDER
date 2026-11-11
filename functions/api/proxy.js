@@ -27,7 +27,7 @@ function allowedHosts(env) {
 }
 
 function hostAllowed(hostname, allowlist) {
-  const host = String(hostname || "").toLowerCase().replace(/\\.$/, "");
+  const host = String(hostname || "").toLowerCase().replace(/\.$/, "");
   if (!host || host === "localhost" || host.endsWith(".localhost") ||
       host.endsWith(".local") || host.endsWith(".internal")) return false;
   // Exact host matching only. Do not allow broad shared suffixes such as pages.dev.
@@ -35,11 +35,11 @@ function hostAllowed(hostname, allowlist) {
 }
 
 function isPrivateIpLiteral(hostname) {
-  const host = String(hostname || "").toLowerCase().replace(/^\\[|\\]$/g, "");
+  const host = String(hostname || "").toLowerCase().replace(/^\[|\]$/g, "");
   if (host === "::" || host === "::1" || host.startsWith("fc") ||
       host.startsWith("fd") || host.startsWith("fe80:") || host.startsWith("::ffff:")) return true;
   const parts = host.split(".");
-  if (parts.length !== 4 || !parts.every((p) => /^\\d{1,3}$/.test(p) && Number(p) <= 255)) return false;
+  if (parts.length !== 4 || !parts.every((p) => /^\d{1,3}$/.test(p) && Number(p) <= 255)) return false;
   const [a,b] = parts.map(Number);
   return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) ||
     (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) ||
@@ -88,7 +88,7 @@ function proxiedUrl(target, endpoint) {
 
 function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
   const baseUrl = new URL(playlistUrl);
-  return body.split(/\\r?\\n/).map((originalLine) => {
+  return body.split(/\r?\n/).map((originalLine) => {
     const line = originalLine.trim();
     if (!line) return originalLine;
     if (line.startsWith("#")) {
@@ -99,7 +99,7 @@ function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
     }
     try { return proxiedUrl(new URL(line, baseUrl).toString(), proxyEndpoint); }
     catch { return originalLine; }
-  }).join("\\n");
+  }).join("\n");
 }
 
 function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
@@ -108,12 +108,12 @@ function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
     try { return proxiedUrl(new URL(value, manifestUrl).toString(), proxyEndpoint).replace(/%24/gi, "$"); }
     catch { return value; }
   };
-  let output = body.replace(/<(BaseURL|Location)(\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>/gi,
+  let output = body.replace(/<(BaseURL|Location)(\s[^>]*)?>([\s\S]*?)<\/\1>/gi,
     (whole, tag, attrs = "", rawValue) => {
       const value = rawValue.trim();
       return value ? "<" + tag + (attrs || "") + ">" + rewrite(value) + "</" + tag + ">" : whole;
     });
-  return output.replace(/\\b(media|initialization|sourceURL|index|href)="([^"]+)"/gi,
+  return output.replace(/\b(media|initialization|sourceURL|index|href)="([^"]+)"/gi,
     (whole, attribute, value) => attribute + '="' + rewrite(value) + '"');
 }
 
@@ -209,8 +209,8 @@ export async function onRequest(context) {
 
     const finalUrl = result.finalUrl;
     const contentType = upstream.headers.get("content-type") || "";
-    const isPlaylist = /mpegurl|vnd\\.apple\\.mpegurl/i.test(contentType) || /\\.m3u8?($|[?#])/i.test(finalUrl);
-    const isDash = /dash\\+xml|application\\/xml|text\\/xml/i.test(contentType) || /\\.mpd($|[?#])/i.test(finalUrl);
+    const isPlaylist = /mpegurl|vnd\.apple\.mpegurl/i.test(contentType) || /\.m3u8?($|[?#])/i.test(finalUrl);
+    const isDash = /dash\+xml|application\/xml|text\/xml/i.test(contentType) || /\.mpd($|[?#])/i.test(finalUrl);
 
     for (const name of ["Content-Type", "Content-Length", "Content-Range", "Accept-Ranges", "ETag", "Last-Modified"]) {
       const value = upstream.headers.get(name);
