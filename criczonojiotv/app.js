@@ -79,7 +79,7 @@
     renderGrid();
     $("playerSection").scrollIntoView({behavior:"smooth",block:"start"});
     cleanupPlayers();
-    const url = channel.stream_url;
+    // HTTPS page cannot load HTTP media safely; try the secure endpoint first.\n    const url = channel.stream_url.replace(/^http:\/\//i, "https://");
     try {
       if (/\.m3u8($|\?)/i.test(url)) {
         if (window.Hls && Hls.isSupported()) {
@@ -102,7 +102,7 @@
       }
     } catch (error) {
       console.warn("Playback failed:", error);
-      playerError("Unable to play this stream. It may be offline, HTTP-blocked, CORS-restricted or DRM-protected.");
+      playerError("Unable to play this stream. Check HTTPS availability, CORS, stream status and any required authorized DRM license.");
     }
   }
   function playerError(message) {
