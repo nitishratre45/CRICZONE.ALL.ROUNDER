@@ -620,11 +620,14 @@ async function handleText({ request, env, message }) {
     };
     const safeMatchName = userText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const matchMessage =
-      "🏏 <b>CRICZONE MATCH FINDER</b>\n\n" +
-      "🏆 <b>" + safeMatchName + "</b>\n\n" +
-      "📺 <b>Choose your broadcaster</b>\n" +
-      "<i>Select a button below to view available channels.</i>\n" +
-      "<i>Or type a broadcaster name, e.g. Sony Sports.</i>";
+      "🏏 <b>CRICZONE MATCH CENTER</b>\n" +
+      "<i>Live cricket • Find your match stream</i>\n\n" +
+      "<blockquote>🏆 <b>" + safeMatchName + "</b></blockquote>\n" +
+      "📡 <b>SELECT YOUR BROADCASTER</b>\n" +
+      "<i>Choose one of the options below to explore its available channels.</i>\n\n" +
+      "<blockquote>💡 <b>Quick tip</b>\n" +
+      "You can also type a broadcaster name, such as <b>Sony Sports</b> or <b>FanCode</b>.</blockquote>\n" +
+      "⚡ <i>Pick a broadcaster to continue.</i>";
     return reply(matchMessage, providerKeyboard, "HTML");
   }
 
