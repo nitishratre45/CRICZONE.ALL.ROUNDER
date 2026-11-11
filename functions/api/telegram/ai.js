@@ -450,10 +450,22 @@ async function handleText({ request, env, message }) {
       return reply("🎬 <b>FANCODE WEB</b>\n\n<i>Explore the available FanCode channels on CRICZONE.</i>\n\n<blockquote>Tap the button below to open FanCode. 🔗</blockquote>", buildChannelKeyboard([{ name: "🎬 FANCODE WEB (PRIMARY)", page_url: "https://criczone.pages.dev/fancodeweb/" }, { name: "🛟 OLD FANCODE WEB (BACKUP)", page_url: "https://criczone.pages.dev/criczonefancode/" }]), "HTML");
   }
 
-  // Willow and Cricbuzz share the CRICZONE Buzz page. Reply with this folder URL only.
+  // Willow and Cricbuzz share the CRICZONE Buzz destination.
+  // Use one clean CTA button instead of exposing a raw URL in the message body.
   if (/^(?:willow|willow channels|cricbuzz|cricbuzz channels)$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
-    return reply("🏏 <b>CRICZONE BUZZ</b>\n\n<i>Open Willow and Cricbuzz coverage:</i>\nhttps://criczone.pages.dev/criczonebuzz/", undefined, "HTML");
+    const buzzKeyboard = buildChannelKeyboard([
+      { name: "🏏 OPEN CRICZONE BUZZ", page_url: "https://criczone.pages.dev/criczonebuzz/" }
+    ]);
+    return reply(
+      "🏏 <b>CRICZONE BUZZ</b>\n" +
+      "<i>Willow Cricket • Cricbuzz coverage</i>\n\n" +
+      "<blockquote>📡 <b>Your cricket hub</b>\n" +
+      "Explore Willow channels, live cricket coverage and Cricbuzz updates in one place.</blockquote>\n\n" +
+      "⚡ <i>Tap below to open the CRICZONE Buzz hub.</i>",
+      buzzKeyboard,
+      "HTML"
+    );
   }
 
   // Match search works for any teams and uses all channel feeds, not only Willow fixtures.
