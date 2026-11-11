@@ -30,7 +30,7 @@ function hostAllowed(hostname, allowlist) {
   const host = String(hostname || "").toLowerCase().replace(/\.$/, "");
   if (!host || host === "localhost" || host.endsWith(".localhost") ||
       host.endsWith(".local") || host.endsWith(".internal")) return false;
-  // Exact host matching only. Do not allow broad shared suffixes such as pages.dev.
+  // Match exact hosts or subdomains of explicitly trusted roots; never allow broad shared suffixes such as pages.dev.
   return allowlist.has(host) || [...allowlist].some((root) => host.endsWith("." + root));
 }
 
