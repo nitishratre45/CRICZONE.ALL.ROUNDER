@@ -167,24 +167,10 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
                                 }
                             }
 
+                            // links.json already points to the CRICZONE player page.
+                            // Load it as the WebView document so its own player iframe is not double-wrapped.
                             val safeUrl = channel.playerPageUrl
-                            val html = """
-                                <!doctype html>
-                                <html>
-                                <head>
-                                  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-                                  <style>
-                                    html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
-                                    iframe{display:block;border:0;width:100%;height:100%;background:#000}
-                                  </style>
-                                </head>
-                                <body>
-                                  <iframe src="$safeUrl" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                                    allowfullscreen webkitallowfullscreen></iframe>
-                                </body>
-                                </html>
-                            """.trimIndent()
-                            loadDataWithBaseURL("https://criczone.pages.dev/", html, "text/html", "UTF-8", null)
+                            loadUrl(safeUrl)
                             webViewRef = this
                         }
                     },
