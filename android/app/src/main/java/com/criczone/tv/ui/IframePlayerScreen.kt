@@ -82,7 +82,7 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
             Modifier.fillMaxWidth().aspectRatio(16f / 9f).background(AndroidColor.BLACK.let { Color.Black }),
             contentAlignment = Alignment.Center
         ) {
-            if (channel.playerPageUrl.isNullOrBlank() || !channel.streamUrl.startsWith("https://")) {
+            if (channel.playerPageUrl.isNullOrBlank() || !channel.playerPageUrl.startsWith("https://") || Uri.parse(channel.playerPageUrl).host !in setOf("criczone.pages.dev", "criczoneall.vercel.app")) {
                 Column(
                     Modifier.fillMaxWidth().padding(24.dp).clip(RoundedCornerShape(16.dp))
                         .background(PlayerPanel).padding(20.dp),
@@ -167,7 +167,7 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
                                 }
                             }
 
-                            val safeUrl = channel.streamUrl
+                            val safeUrl = channel.playerPageUrl
                             val html = """
                                 <!doctype html>
                                 <html>
