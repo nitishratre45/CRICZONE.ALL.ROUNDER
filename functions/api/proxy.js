@@ -63,14 +63,14 @@ function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
     }
   };
 
-  let output = body.replace(/<(BaseURL|Location)(\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>/gi,
+  let output = body.replace(/<(BaseURL|Location)(\s[^>]*)?>([\s\S]*?)<\/\1>/gi,
     (whole, tag, attrs = "", rawValue) => {
       const value = rawValue.trim();
       if (!value || value.includes("$")) return whole;
       return "<" + tag + (attrs || "") + ">" + rewrite(value) + "</" + tag + ">";
     });
 
-  output = output.replace(/\\b(media|initialization|sourceURL|index|href)="([^"]+)"/gi,
+  output = output.replace(/\b(media|initialization|sourceURL|index|href)="([^"]+)"/gi,
     (whole, attribute, value) => attribute + '="' + rewrite(value) + '"');
 
   return output;
@@ -156,7 +156,7 @@ export async function onRequest(context) {
       if (value) responseHeaders.set(name, value);
     }
 
-    const isDash = /dash\\+xml|application\\/xml|text\\/xml/i.test(contentType) || /\\.mpd($|[?#])/i.test(finalUrl);
+    const isDash = /dash\+xml|application\/xml|text\/xml/i.test(contentType) || /\.mpd($|[?#])/i.test(finalUrl);
     if ((isPlaylist || isDash) && upstream.ok && request.method !== "HEAD") {
       const manifestText = await upstream.text();
       const proxyEndpoint = requestUrl.origin + requestUrl.pathname;
