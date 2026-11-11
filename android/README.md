@@ -34,5 +34,32 @@ The app does not bypass X-Frame-Options, Content-Security-Policy, DRM, authentic
 - Fullscreen custom-view handling and landscape orientation
 - HTTPS-only first-party player-page allowlist
 
-## Build status
-Source changes are committed on `android-app-foundation`. A GitHub Actions workflow at `.github/workflows/android-build.yml` now runs unit tests and assembles a debug APK on pushes/PRs affecting `android/`, then uploads `criczone-debug-apk` as a 14-day artifact. The workflow runs unit tests and assembles a debug APK; check the latest GitHub Actions run for the current build result.
+## APK build workflow
+The workflow runs on pushes to `main` and `android-app-foundation`, pull requests to those branches, and manual dispatch.
+
+It runs unit tests, builds and verifies the debug APK, then uploads it as `criczone-debug-apk` (14-day retention). It builds and uploads `criczone-signed-release-apk` only when the signing secrets below are configured. Release signing is verified with Android `apksigner`.
+
+### Configure signed release builds
+
+Create a private release keystore once and keep a secure backup. Never commit the keystore or passwords to the repository. For example, create it locally with:
+
+```bash
+keytool -genkeypair -v -keystore criczone-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias criczone
+base64 -w 0 criczone-release.jks
+```
+
+In GitHub, open **Settings → Secrets and variables → Actions → New repository secret** and add:
+
+| Secret | Value |
+|---|---|
+| `CRICZONE_RELEASE_KEYSTORE_BASE64` | Base64 output of the JKS file |
+| `CRICZONE_RELEASE_KEYSTORE_PASSWORD` | Keystore password |
+| `CRICZONE_RELEASE_KEY_ALIAS` | `criczone` (or the alias you selected) |
+| `CRICZONE_RELEASE_KEY_PASSWORD` | Private key password |
+
+Keep the same keystore for every future app update. Losing or changing it can prevent existing users from receiving in-place updates. Do not share the keystore or passwords in chat or commit them to Git.
+
+After adding all four secrets, open **Actions → Android Build → Run workflow**. A successful run publishes both APKs as downloadable workflow artifacts. Debug APKs can be installed for testing; the signed release APK is the distribution build.
+
+## Current signing configuration
+The Gradle release build reads signing information from environment variables supplied only by the workflow. No signing key or password is stored in source control.
