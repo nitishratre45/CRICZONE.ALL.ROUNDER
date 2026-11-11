@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <application android:hardwareAccelerated="true" android:allowBackup="false" android:label="CRICZONE"
+    <application android:icon="@drawable/ic_criczone_logo" android:roundIcon="@drawable/ic_criczone_logo" android:hardwareAccelerated="true" android:allowBackup="false" android:label="CRICZONE"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:usesCleartextTraffic="false" android:supportsRtl="true">
         <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden" android:exported="true">
