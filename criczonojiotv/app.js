@@ -79,12 +79,17 @@
     renderGrid();
     $("playerSection").scrollIntoView({behavior:"smooth",block:"start"});
     cleanupPlayers();
-    // HTTPS page cannot load HTTP media safely; try the secure endpoint first.
-    const url = channel.stream_url.replace(/^http:\/\//i, "https://");
+    // Route the media request through CRICZONE's same-origin proxy.
+    // The proxy only accepts HTTPS upstream URLs.
+    const upstreamUrl = channel.stream_url.replace(/^http:\/\//i, "https://");
+    const proxyUrl = new URL("/api/proxy", window.location.origin);
+    proxyUrl.searchParams.set("u", upstreamUrl);
+    const url = proxyUrl.toString();
+    const isHls = /\.m3u8($|\?)/i.test(upstreamUrl);
     try {
-      if (/\.m3u8($|\?)/i.test(url)) {
+      if (isHls) {
         if (window.Hls && Hls.isSupported()) {
-          hlsPlayer = new Hls({enableWorker:true,lowLatencyMode:true});
+          hlsPlayer = new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:30,maxBufferLength:30,manifestLoadingMaxRetry:4,levelLoadingMaxRetry:4,fragLoadingMaxRetry:6});
           hlsPlayer.loadSource(url); hlsPlayer.attachMedia(video);
           hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
           hlsPlayer.on(Hls.Events.ERROR, (_, data) => { if (data.fatal) playerError("HLS playback error. The stream may be unavailable or blocked."); });
@@ -94,7 +99,7 @@
       } else if (window.shaka && shaka.Player.isBrowserSupported()) {
         shakaPlayer = new shaka.Player();
         await shakaPlayer.attach(video);
-        shakaPlayer.addEventListener("error", () => playerError("DASH playback error. The stream may require a supported DRM/license setup."));
+        shakaPlayer.addEventListener("error", (event) => { console.warn("Shaka error:", event.detail); playerError("DASH playback failed. Check stream availability, segment access and authorized DRM license requirements."); });
         await shakaPlayer.load(url);
         await video.play().catch(() => {});
       } else {
