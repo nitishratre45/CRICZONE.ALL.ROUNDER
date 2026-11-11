@@ -66,7 +66,7 @@ function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
   let output = body.replace(/<(BaseURL|Location)(\s[^>]*)?>([\s\S]*?)<\/\1>/gi,
     (whole, tag, attrs = "", rawValue) => {
       const value = rawValue.trim();
-      if (!value || value.includes("$")) return whole;
+      if (!value) return whole;
       return "<" + tag + (attrs || "") + ">" + rewrite(value) + "</" + tag + ">";
     });
 
