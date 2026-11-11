@@ -79,7 +79,8 @@
     renderGrid();
     $("playerSection").scrollIntoView({behavior:"smooth",block:"start"});
     cleanupPlayers();
-    // HTTPS page cannot load HTTP media safely; try the secure endpoint first.\n    const url = channel.stream_url.replace(/^http:\/\//i, "https://");
+    // HTTPS page cannot load HTTP media safely; try the secure endpoint first.
+    const url = channel.stream_url.replace(/^http:\/\//i, "https://");
     try {
       if (/\.m3u8($|\?)/i.test(url)) {
         if (window.Hls && Hls.isSupported()) {
