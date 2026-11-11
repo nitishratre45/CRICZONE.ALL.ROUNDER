@@ -3,6 +3,7 @@ package com.criczone.tv.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.horizontalScroll
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +75,12 @@ fun CriczoneApp() {
         Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 18.dp)) {
             Spacer(Modifier.height(18.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = com.criczone.tv.R.drawable.ic_criczone_logo),
+                    contentDescription = "CRICZONE logo",
+                    modifier = Modifier.size(54.dp)
+                )
+                Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text("CRICZONE", color = Gold, fontSize = 25.sp, fontWeight = FontWeight.Black, letterSpacing = 1.5.sp)
                     Text("SPORTS • LIVE • ACTION", color = Muted, fontSize = 10.sp, letterSpacing = 2.sp)
