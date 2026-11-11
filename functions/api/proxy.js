@@ -131,11 +131,21 @@ export async function onRequest(context) {
       isSony ? "https://www.sonyliv.com" : target.origin
     );
 
-    const upstream = await fetch(target.toString(), {
+    let upstream = await fetch(target.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       redirect: "follow"
     });
+
+    // Some stream origins reject HEAD with non-standard status codes (e.g. 450).
+    // Retry only failed HEAD requests as GET, then suppress the body in our response.
+    if (request.method === "HEAD" && !upstream.ok) {
+      upstream = await fetch(target.toString(), {
+        method: "GET",
+        headers: upstreamHeaders,
+        redirect: "follow"
+      });
+    }
 
     const finalUrl = upstream.url || target.toString();
     const contentType = upstream.headers.get("content-type") || "";
