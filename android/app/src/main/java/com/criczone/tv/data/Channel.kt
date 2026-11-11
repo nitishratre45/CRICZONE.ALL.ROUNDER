@@ -1,6 +1,7 @@
 package com.criczone.tv.data
 
 import android.content.Context
+import android.net.Uri
 import org.json.JSONObject
 
 data class Channel(
@@ -19,17 +20,17 @@ data class Channel(
 
 object ChannelCatalog {
     /**
-     * Reads the repository-generated, metadata-only catalogue bundled in assets.
-     * Raw upstream media URLs, DRM directives, tokens and request headers are
-     * deliberately excluded from the Android catalogue.
+     * Loads channel metadata and overlays CRICZONE-owned iframe player pages
+     * from the bundled copy of criczone/links.json. Raw media URLs, DRM data,
+     * expiring tokens, cookies and request headers are never imported.
      */
     fun load(context: Context): List<Channel> {
         return try {
-            val json = context.assets.open("channel-catalog.json")
+            val catalogText = context.assets.open("channel-catalog.json")
                 .bufferedReader(Charsets.UTF_8).use { it.readText() }
-            val root = JSONObject(json)
+            val root = JSONObject(catalogText)
             val rows = root.getJSONArray("channels")
-            buildList(rows.length()) {
+            val channels = buildList(rows.length()) {
                 for (i in 0 until rows.length()) {
                     val row = rows.getJSONObject(i)
                     add(
@@ -44,12 +45,10 @@ object ChannelCatalog {
                             source = row.optString("source"),
                             sourceId = row.optString("sourceId"),
                             sourceIds = buildList {
-                                if (row.has("sourceIds")) {
-                                    val ids = row.optJSONArray("sourceIds")
-                                    if (ids != null) for (index in 0 until ids.length()) {
-                                        val value = ids.optString(index)
-                                        if (value.isNotBlank()) add(value)
-                                    }
+                                val ids = row.optJSONArray("sourceIds")
+                                if (ids != null) for (index in 0 until ids.length()) {
+                                    val value = ids.optString(index)
+                                    if (value.isNotBlank()) add(value)
                                 }
                                 val primary = row.optString("sourceId")
                                 if (primary.isNotBlank() && primary !in this) add(primary)
@@ -57,7 +56,55 @@ object ChannelCatalog {
                         )
                     )
                 }
+            }.toMutableList()
+
+            val iframeText = context.assets.open("criczone-iframes.json")
+                .bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val iframeRows = JSONObject(iframeText).optJSONArray("iframes")
+                ?: return channels
+
+            fun normalized(value: String) = value.lowercase().filter { it.isLetterOrDigit() }
+
+            for (i in 0 until iframeRows.length()) {
+                val row = iframeRows.getJSONObject(i)
+                val id = row.optString("id")
+                val name = row.optString("name")
+                val category = row.optString("category", "Sports")
+                val url = row.optString("iframeSrc")
+                val uri = Uri.parse(url)
+
+                // Only CRICZONE's HTTPS player pages are accepted from this JSON.
+                if (id.isBlank() || name.isBlank() || uri.scheme != "https" ||
+                    uri.host != "criczone.pages.dev" || !url.startsWith("https://criczone.pages.dev/")
+                ) continue
+
+                val matchingIndexes = channels.indices.filter {
+                    normalized(channels[it].name) == normalized(name)
+                }
+                if (matchingIndexes.isNotEmpty()) {
+                    matchingIndexes.forEach { index ->
+                        channels[index] = channels[index].copy(
+                            playerPageUrl = url,
+                            streamType = "iframe",
+                            source = "criczone/links.json"
+                        )
+                    }
+                } else {
+                    channels.add(
+                        Channel(
+                            id = "iframe-${id.lowercase()}",
+                            name = name,
+                            category = category,
+                            playerPageUrl = url,
+                            streamType = "iframe",
+                            source = "criczone/links.json",
+                            sourceId = id,
+                            sourceIds = listOf(id)
+                        )
+                    )
+                }
             }
+            channels
         } catch (_: Exception) {
             emptyList()
         }
