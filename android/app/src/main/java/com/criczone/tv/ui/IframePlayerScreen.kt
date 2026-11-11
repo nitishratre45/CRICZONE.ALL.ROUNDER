@@ -82,7 +82,7 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
             Modifier.fillMaxWidth().aspectRatio(16f / 9f).background(AndroidColor.BLACK.let { Color.Black }),
             contentAlignment = Alignment.Center
         ) {
-            if (channel.streamUrl.isNullOrBlank() || !channel.streamUrl.startsWith("https://")) {
+            if (channel.playerPageUrl.isNullOrBlank() || !channel.playerPageUrl.startsWith("https://") || Uri.parse(channel.playerPageUrl).host !in setOf("criczone.pages.dev", "criczoneall.vercel.app")) {
                 Column(
                     Modifier.fillMaxWidth().padding(24.dp).clip(RoundedCornerShape(16.dp))
                         .background(PlayerPanel).padding(20.dp),
@@ -167,24 +167,10 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
                                 }
                             }
 
-                            val safeUrl = channel.streamUrl
-                            val html = """
-                                <!doctype html>
-                                <html>
-                                <head>
-                                  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-                                  <style>
-                                    html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
-                                    iframe{display:block;border:0;width:100%;height:100%;background:#000}
-                                  </style>
-                                </head>
-                                <body>
-                                  <iframe src="$safeUrl" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                                    allowfullscreen webkitallowfullscreen></iframe>
-                                </body>
-                                </html>
-                            """.trimIndent()
-                            loadDataWithBaseURL("https://criczone.pages.dev/", html, "text/html", "UTF-8", null)
+                            // links.json already points to the CRICZONE player page.
+                            // Load it as the WebView document so its own player iframe is not double-wrapped.
+                            val safeUrl = channel.playerPageUrl
+                            loadUrl(safeUrl)
                             webViewRef = this
                         }
                     },
