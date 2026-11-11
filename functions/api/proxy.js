@@ -20,7 +20,7 @@ const RATE_WINDOW_SECONDS = 60;
 const RATE_LIMIT = 90;
 const memoryRate = new Map();
 
-function allowedHosts(env) {
+export function allowedHosts(env) {
   const configured = String(env?.PROXY_ALLOWED_HOSTS || "")
     .split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
   return new Set([...BASE_ALLOWED_HOSTS, ...configured]);
@@ -46,7 +46,7 @@ function isPrivateIpLiteral(hostname) {
     (a === 100 && b >= 64 && b <= 127) || a >= 224;
 }
 
-function validateTarget(raw, allowlist) {
+export function validateTarget(raw, allowlist) {
   if (typeof raw !== "string" || raw.length > MAX_URL_LENGTH) throw new Error("Invalid or oversized target URL");
   let url;
   try { url = new URL(raw); } catch { throw new Error("Invalid target URL"); }
@@ -86,7 +86,7 @@ function proxiedUrl(target, endpoint) {
   return endpoint + "?u=" + encodeURIComponent(target);
 }
 
-function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
+export function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
   const baseUrl = new URL(playlistUrl);
   return body.split(/\r?\n/).map((originalLine) => {
     const line = originalLine.trim();
@@ -102,7 +102,7 @@ function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
   }).join("\n");
 }
 
-function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
+export function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
   const rewrite = (value) => {
     if (!value || /^data:/i.test(value) || value.startsWith("#")) return value;
     try { return proxiedUrl(new URL(value, manifestUrl).toString(), proxyEndpoint).replace(/%24/gi, "$"); }
