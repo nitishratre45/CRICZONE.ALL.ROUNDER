@@ -79,13 +79,10 @@
     renderGrid();
     $("playerSection").scrollIntoView({behavior:"smooth",block:"start"});
     cleanupPlayers();
-    // Route the media request through CRICZONE's same-origin proxy.
-    // The proxy only accepts HTTPS upstream URLs.
-    const upstreamUrl = channel.stream_url.replace(/^http:\/\//i, "https://");
-    const proxyUrl = new URL("/api/proxy", window.location.origin);
-    proxyUrl.searchParams.set("u", upstreamUrl);
-    const url = proxyUrl.toString();
-    const isHls = /\.m3u8($|\?)/i.test(upstreamUrl);
+    // Play the source directly; do not route media through /api/proxy.
+    // Upgrade HTTP URLs to HTTPS on this HTTPS website to avoid mixed content.
+    const url = channel.stream_url.replace(/^http:\/\//i, "https://");
+    const isHls = /\.m3u8($|\?)/i.test(url);
     try {
       if (isHls) {
         if (window.Hls && Hls.isSupported()) {
