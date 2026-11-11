@@ -82,7 +82,7 @@ fun IframePlayerScreen(channel: Channel, onBack: () -> Unit) {
             Modifier.fillMaxWidth().aspectRatio(16f / 9f).background(AndroidColor.BLACK.let { Color.Black }),
             contentAlignment = Alignment.Center
         ) {
-            if (channel.streamUrl.isNullOrBlank() || !channel.streamUrl.startsWith("https://")) {
+            if (channel.playerPageUrl.isNullOrBlank() || !channel.streamUrl.startsWith("https://")) {
                 Column(
                     Modifier.fillMaxWidth().padding(24.dp).clip(RoundedCornerShape(16.dp))
                         .background(PlayerPanel).padding(20.dp),
