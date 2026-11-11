@@ -31,7 +31,7 @@ function hostAllowed(hostname, allowlist) {
   if (!host || host === "localhost" || host.endsWith(".localhost") ||
       host.endsWith(".local") || host.endsWith(".internal")) return false;
   // Exact host matching only. Do not allow broad shared suffixes such as pages.dev.
-  return allowlist.has(host);
+  return allowlist.has(host) || [...allowlist].some((root) => host.endsWith("." + root));
 }
 
 function isPrivateIpLiteral(hostname) {
@@ -140,14 +140,8 @@ async function checkRateLimit(request, env) {
 async function fetchValidated(url, init, allowlist) {
   let current = url;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort("Upstream timeout"), FETCH_TIMEOUT_MS);
-    let response;
-    try {
-      response = await fetch(current.toString(), { ...init, redirect: "manual", signal: controller.signal });
-    } finally {
-      clearTimeout(timeout);
-    }
+    const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+    const response = await fetch(current.toString(), { ...init, redirect: "manual", signal });
     if (![301,302,303,307,308].includes(response.status)) {
       return { response, finalUrl: current.toString() };
     }
@@ -244,7 +238,7 @@ export async function onRequest(context) {
     if (request.method === "HEAD") return new Response(null, { status: upstream.status, statusText: upstream.statusText, headers });
     return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers });
   } catch (error) {
-    const timedOut = error?.name === "AbortError";
+    const timedOut = error?.name === "AbortError" || error?.name === "TimeoutError";
     console.error("CRICZONE proxy upstream failure", {
       targetHost: target.hostname,
       error: String(error?.message || error),
