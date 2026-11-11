@@ -48,6 +48,34 @@ function rewriteHlsPlaylist(body, playlistUrl, proxyEndpoint) {
   }).join("\n");
 }
 
+ 
+function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
+  // Rewrite concrete DASH resource URLs (SegmentURL, Initialization, Location and
+  // non-template BaseURL references) through this same-origin proxy. Template
+  // placeholders such as $Number$ are preserved for the DASH player.
+  const rewrite = (value) => {
+    if (!value || /^data:/i.test(value) || value.startsWith("#")) return value;
+    try {
+      const absolute = new URL(value, manifestUrl).toString();
+      return proxiedUrl(absolute, proxyEndpoint).replace(/%24/gi, "$");
+    } catch {
+      return value;
+    }
+  };
+
+  let output = body.replace(/<(BaseURL|Location)(\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>/gi,
+    (whole, tag, attrs = "", rawValue) => {
+      const value = rawValue.trim();
+      if (!value || value.includes("$")) return whole;
+      return "<" + tag + (attrs || "") + ">" + rewrite(value) + "</" + tag + ">";
+    });
+
+  output = output.replace(/\\b(media|initialization|sourceURL|index|href)="([^"]+)"/gi,
+    (whole, attribute, value) => attribute + '="' + rewrite(value) + '"');
+
+  return output;
+}
+
 export async function onRequest(context) {
   const request = context.request;
 
@@ -128,12 +156,18 @@ export async function onRequest(context) {
       if (value) responseHeaders.set(name, value);
     }
 
-    if (isPlaylist && upstream.ok && request.method !== "HEAD") {
-      const playlistText = await upstream.text();
+    const isDash = /dash\\+xml|application\\/xml|text\\/xml/i.test(contentType) || /\\.mpd($|[?#])/i.test(finalUrl);
+    if ((isPlaylist || isDash) && upstream.ok && request.method !== "HEAD") {
+      const manifestText = await upstream.text();
       const proxyEndpoint = requestUrl.origin + requestUrl.pathname;
-      const rewritten = rewriteHlsPlaylist(playlistText, finalUrl, proxyEndpoint);
+      const rewritten = isPlaylist
+        ? rewriteHlsPlaylist(manifestText, finalUrl, proxyEndpoint)
+        : rewriteDashManifest(manifestText, finalUrl, proxyEndpoint);
 
-      responseHeaders.set("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8");
+      responseHeaders.set(
+        "Content-Type",
+        isPlaylist ? "application/vnd.apple.mpegurl; charset=utf-8" : "application/dash+xml; charset=utf-8"
+      );
       responseHeaders.delete("Content-Length");
       responseHeaders.delete("Content-Range");
 
