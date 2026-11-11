@@ -565,9 +565,9 @@ async function handleText({ request, env, message }) {
         buttons.push([{ text: "🛟 Old FanCode Web (Backup)", url: "https://criczone.pages.dev/criczonefancode/" }]);
       }
       const title = mentionedProvider.name.toUpperCase();
-      return reply("📺 <b>" + title + " CHANNELS (" + list.length + ")</b>\\n\\n<i>I found the available " + title + " options. Choose one below to open it.</i>", { inline_keyboard: buttons }, "HTML");
+      return reply("📺 <b>" + title + " CHANNELS (" + list.length + ")</b>\n\n<i>I found the available " + title + " options. Choose one below to open it.</i>", { inline_keyboard: buttons }, "HTML");
     }
-    return reply("⚠️ <b>" + mentionedProvider.name.toUpperCase() + " options are temporarily unavailable</b>\\n\\n<i>Please try again shortly.</i>", undefined, "HTML");
+    return reply("⚠️ <b>" + mentionedProvider.name.toUpperCase() + " options are temporarily unavailable</b>\n\n<i>Please try again shortly.</i>", undefined, "HTML");
   }
 
   // Natural-language broadcaster link requests, e.g. "Sony HD link?" or "Fox hd link".
