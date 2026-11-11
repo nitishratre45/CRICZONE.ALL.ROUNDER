@@ -78,17 +78,16 @@ object ChannelCatalog {
                     uri.host != "criczone.pages.dev" || !url.startsWith("https://criczone.pages.dev/")
                 ) continue
 
-                val matchingIndexes = channels.indices.filter {
-                    normalized(channels[it].name) == normalized(name)
+                val matchingIndex = channels.indices.firstOrNull {
+                    normalized(channels[it].name) == normalized(name) &&
+                        channels[it].playerPageUrl.isBlank()
                 }
-                if (matchingIndexes.isNotEmpty()) {
-                    matchingIndexes.forEach { index ->
-                        channels[index] = channels[index].copy(
-                            playerPageUrl = url,
-                            streamType = "iframe",
-                            source = "criczone/links.json"
-                        )
-                    }
+                if (matchingIndex != null) {
+                    channels[matchingIndex] = channels[matchingIndex].copy(
+                        playerPageUrl = url,
+                        streamType = "iframe",
+                        source = "CRICZONE player-page list"
+                    )
                 } else {
                     channels.add(
                         Channel(
@@ -97,7 +96,7 @@ object ChannelCatalog {
                             category = category,
                             playerPageUrl = url,
                             streamType = "iframe",
-                            source = "criczone/links.json",
+                            source = "CRICZONE player-page list",
                             sourceId = id,
                             sourceIds = listOf(id)
                         )
