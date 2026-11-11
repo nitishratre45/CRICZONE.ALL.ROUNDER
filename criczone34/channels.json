@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-11-11T06:16:26.674318+00:00",
+  "updated_at": "2026-11-11T06:51:11.387336+00:00",
   "source": "https://sportlink-playlist.pages.dev/Combined.m3u",
   "total": 1360,
   "group_counts": {
@@ -45,7 +45,7 @@
     "#DATE:- Wednesday, 11 November 2026 at 11:21:17 am",
     "#===== Willow | Sportlink (2 channels) =====",
     "#PLAYLIST:Willow Cricket Event Info",
-    "#LAST_UPDATE:12:02 PM 11-11-2026",
+    "#LAST_UPDATE:12:32 PM 11-11-2026",
     "#TELEGRAM:https://t.me/livesportsplay",
     "#OWNER:Md Sohanur Rahman Hady",
     "#LIVE_COUNT:1",
@@ -92,7 +92,7 @@
       "tvg_name": "Sri Lanka tour of Pakistan 2026 - 1st Test - Pakistan vs Sri Lanka @virat10",
       "logo": "",
       "group": "Other",
-      "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/dfryu4gk64/out/v1/491b1b4d8ff74cb2bc337737aff1412b/cenc.mpd",
+      "url": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/dfryu4gk64/out/v1/491b1b4d8ff74cb2bc337737aff1412b/cenc.mpd",
       "stream_type": "dash",
       "duration": -1.0,
       "attributes": {
@@ -107,7 +107,7 @@
       ],
       "url_options": {},
       "request_headers": {},
-      "raw_url_line": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/dfryu4gk64/out/v1/491b1b4d8ff74cb2bc337737aff1412b/cenc.mpd",
+      "raw_url_line": "https://dash-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/dfryu4gk64/out/v1/491b1b4d8ff74cb2bc337737aff1412b/cenc.mpd",
       "drm": {
         "required": true,
         "system": [
@@ -5012,7 +5012,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=d0049ab307fd5a13b96e306b953d06dd:8057ff282237f0831dcdc4f8a9b2946f,d0049ab307fd5a13b96e306b953d06dd:8057ff282237f0831dcdc4f8a9b2946f",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794374348~exp=1794377948~acl=/bpk-tv/ZeeCinemaHD_BTS/WDVLive/*~hmac=b193394f583a3c5846b050130485a95c07bcacf103f0574cb7ca3409d8f2fd33\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377887~exp=1794381487~acl=/bpk-tv/ZeeCinemaHD_BTS/WDVLive/*~hmac=ed3c85b3cb69a1ed5d1ffa4f01d29e0879f313053d6216fcffd71bd0ccd3162a\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -5121,7 +5121,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=8ab0674eba3f5adf96a9b65a6e82d208:476f813d8651987fc1b4074693676fd8",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794354313~exp=1794375913~acl=/bpk-tv/ZeeAnmolCinema_BTS/WDVLive/*~hmac=1635553b2729f88ba5af736e1fdd1321bc95d47f3ffced42108e6ded7dac813c\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376665~exp=1794380265~acl=/bpk-tv/ZeeAnmolCinema_BTS/WDVLive/*~hmac=81359d91a696660089d8cede7ccaadcacf361c597605784ec53d50465117da09\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -5273,7 +5273,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=90d8713ba5e85d779d005b1f14a5bc8d:33650314fe1e945017640ba9878c5de9,90d8713ba5e85d779d005b1f14a5bc8d:33650314fe1e945017640ba9878c5de9",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794374899~exp=1794378499~acl=/bpk-tv/ZeeCinema_BTS/WDVLive/*~hmac=5ef4de17b7c4ec841c79b361c30ce747c021a08e759630a7941ccd6dc19ff0c8\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794378670~exp=1794382270~acl=/bpk-tv/ZeeCinema_BTS/WDVLive/*~hmac=1a5105d10d7e8d7f7e0faf2ede65e022ade95329583dcb497760a0612011f1f4\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -5610,7 +5610,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=67e52f4bdcfc525898be0446feb7f185:8cf5c24b168105bca24b358eb05f6df4",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373921~exp=1794377521~acl=/bpk-tv/AndXploreHD_BTS/WDVLive/*~hmac=9848a98ce5a090decbbb518005eef2bfd10b03a01b01c1bb0b5a6749bad8b8f9\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377852~exp=1794381452~acl=/bpk-tv/AndXploreHD_BTS/WDVLive/*~hmac=303af5e61fada7bd8f949953540f58aac733efc17f800c7de766880914730fa6\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -5648,7 +5648,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=a4ca77c81bc556d994f7ecbee3bcbd20:dade64f6771f47a113f6cfdf67606cd0,a4ca77c81bc556d994f7ecbee3bcbd20:dade64f6771f47a113f6cfdf67606cd0",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794355218~exp=1794376818~acl=/bpk-tv/ZeeClassicSD_BTS/WDVLive/*~hmac=9114d67fabf19489eb24fc4c40db47557c6fc9ff80d18c9348c4e56089652480\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376908~exp=1794398508~acl=/bpk-tv/ZeeClassicSD_BTS/WDVLive/*~hmac=cfebd92789f6700cab8b8f09e6ff41ed250c9a5f954213a62ba589007631e10f\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -5724,7 +5724,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=5d495d29b3e754748389f04dab476c89:2509aac0c21ca795b28d3e3ed3ad96df",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794372199~exp=1794375799~acl=/bpk-tv/AndPictures_BTS/WDVLive/*~hmac=f486366739e8ccb66571b92c1e7cea3b10388bd5b5b39d8e718d099dd8155c2b\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376786~exp=1794380386~acl=/bpk-tv/AndPictures_BTS/WDVLive/*~hmac=ce63c7eaf4eaa3119dda483743811bd296242f9f173cfdf27a551143156eb896\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -6411,7 +6411,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=88295124db295a6b9f5027dc6049e294:641c40230a95cb76d1949125f9552fda,88295124db295a6b9f5027dc6049e294:641c40230a95cb76d1949125f9552fda",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794372201~exp=1794375801~acl=/bpk-tv/AndTVHD_BTS/WDVLive/*~hmac=1cbff138d1cf663e5e00b2e7fe643c72c6d58bbab98eb6f19df839569418ac04\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376986~exp=1794380586~acl=/bpk-tv/AndTVHD_BTS/WDVLive/*~hmac=9974a362978d010eb0517c3a1d9ad1c2731fa3ae676c2ef7752eb32f0d234d7b\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -6449,7 +6449,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=dc1c10d157cd56d5a7feaf6540578860:227a41f602baeac002e6cdc46c000e19",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373389~exp=1794376989~acl=/bpk-tv/ZeeAnmol_BTS/WDVLive/*~hmac=861fc10b7e0b3161dc7d523628d0e33c33ffe11a2fde9714d0f0552696a508b5\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376990~exp=1794380590~acl=/bpk-tv/ZeeAnmol_BTS/WDVLive/*~hmac=7deecbb758e1ff2b140a6923ce97b30af5b66a448ef18bfda6112a8656dec4df\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -7095,7 +7095,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=ec8cb7b1b9505fea9ff1015b45991f93:03fe78d2402fe22a47eb55f2cce8a85b",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794371294~exp=1794374894~acl=/bpk-tv/BigMagic_BTS/WDVLive/*~hmac=aec10a52755858acb7e14ea9cd0f5a6d620a63fb0ccd094b6108302494626c8b\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376807~exp=1794398407~acl=/bpk-tv/BigMagic_BTS/WDVLive/*~hmac=20ae33a33a2d799066ef0a142b8fcf4f0d5e20b2acaaaf9e8ce196d5bbeb7854\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -8246,7 +8246,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=648632d8a99d59ef86fd651405ffb587:027c47023b8eb258db20ac6ae7ba46a8",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794372201~exp=1794375801~acl=/bpk-tv/ZeeZing_BTS/WDVLive/*~hmac=68236cf880eeeeb82348b3d9e5d4311aaa79590c93ba072060f8d4d8080ab9af\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376777~exp=1794380377~acl=/bpk-tv/ZeeZing_BTS/WDVLive/*~hmac=eb288a970ab53b6b4f9383c939d66c012857765f32fb09f0a1ef5f95801718b0\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -14800,7 +14800,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=2c443dffefb256a5b7a1364cc4af3529:1d78f35200eb5977a95de669788cf128,25fbb2a932b25e9aacae947b2f873d3c:ac6a6a416b9d26be6819e80c2fe5d39f",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353109~exp=1794374709~acl=/bpk-tv/Star_Sports_Select_HD_2_BTS/WDVLive/*~hmac=36f977349e5f0cad0d2fac0fd250182678c0caad634507e2c63d706370ba1ba2\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376808~exp=1794398408~acl=/bpk-tv/Star_Sports_Select_HD_2_BTS/WDVLive/*~hmac=3a1451621a4e3dcc1dcf34340c90e7fc9a3abcba273fbdaf8085e86d4a830e4b\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -15332,7 +15332,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=8aa7da0842d65285b23e55619ab0f1c6:fe01e21ac81a19049d3ba82b5bd33dfa,c60582b4c0b95e80ae34b1a462f07990:9967dfba4b60a86a9c7a4c861d26337c,4705b7d90af65fa28d3e6b7c9e6b7fc2:bfdbe4ecb7f1496978eb9d022a6640b5,e3321b5b1af253f39010ce4bf6085da6:8eb2ab45a84ca9eef4630d6a2ce9f786,50eaa3fe2ce95eb4908495ea19e3b6d5:a4a789b10f04c39070d64ef131b59911",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353111~exp=1794374711~acl=/bpk-tv/Star_Sports_1_Telugu_BTS/WDVLive/*~hmac=7c5d42d92e3f89ee71537f11919cc984cd10a92991468265bd1f707a9001232c\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376218~exp=1794397818~acl=/bpk-tv/Star_Sports_1_Telugu_BTS/WDVLive/*~hmac=bf47554edfabb4213228f2428d9c1e32f3bfd16245c5df419a6666e41919e19a\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -15370,7 +15370,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=bab01ce8ab695712a5fe390f1b4ffca2:5685130a845e217080b84fc170b67f00,5934f65f151c581d9dc75e181c7a406e:ffd92e68261477c61df082b64e648cbf,ec959436fe455d3a8af330c4c93e86cc:56f3b61ef52fb050671036bf50a109dd,fb2bb07aecbf5bc2b807b2dced129cda:80d4747512a52bb7c64c8f60813a0f8f,ae3f86f454395a8ab0793c8a619aa1f6:6034309b589445745ec1c00fd6161a4a",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353112~exp=1794374712~acl=/bpk-tv/Star_Sports_1_Kannada_BTS/WDVLive/*~hmac=d53db911b9504a3d3f78550d4aa83b05a3733e05b29030c69e7bbb9b085db074\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377113~exp=1794398713~acl=/bpk-tv/Star_Sports_1_Kannada_BTS/WDVLive/*~hmac=1420864042a31f62cfcb68866469c3cf6c3cbb20a1d42f06280c2ab2f66799e5\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -15446,7 +15446,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=92cfd893ab8551d59a773afce91fc790:906e0d6c4accf6bdaad9a6167f8ae53a,bd9dfd385dbc56a99a048f88d3828571:eecf613dad0b8250ffaddc7ba86be68b",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353111~exp=1794374711~acl=/bpk-tv/Star_Sports2_Tamil_HD_BTS/WDVLive/*~hmac=751344fb192095924ac753e01c5825bdf54170bfdea60b151ff0b0c8fd01fe46\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794378013~exp=1794399613~acl=/bpk-tv/Star_Sports2_Tamil_HD_BTS/WDVLive/*~hmac=ae04f72a24ae7c87cda46a5f75f96c6248fb08985c3311d80bd696e86e2f3d23\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -15484,7 +15484,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=0a0ad7fdf02955d483496e5d5ad41b64:cc1d01a4ccfd47da4f5ff62e20686505,dc4c605a752d535e8c0e31b9a5deae16:21cb8bd7a0606e2dd9fb190ff719f126,a9f12248bf2a5da99366dd6ce07ff0e5:e87623a2552185d5fbe2f227354c2b15,bfb4dda563535486a380c44fecc92015:27bbe04fb5447de6f3286e1030c7b179,b9fae8a03b2750a4b0db12f0f6b65f15:3b1ab225fb8e08c9b59cfd6ededaddc8",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353111~exp=1794374711~acl=/bpk-tv/StarSports2Tamil_BTS/WDVLive/*~hmac=5c77adfb67371e18d8d2ad5fbc2b8efbdb10d53a51983f6ec112b158f2e827ca\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794375017~exp=1794396617~acl=/bpk-tv/StarSports2Tamil_BTS/WDVLive/*~hmac=dad0a50a10fdb4c07b64a9195ec6d9823b24a0e1940e68c3bba14ef7c0d30ca9\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -21121,7 +21121,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=0172b8cd13ed59349a05aadc58ae11e0:e4ab7836617767a2a6e7aaae17fad2b6,0172b8cd13ed59349a05aadc58ae11e0:e4ab7836617767a2a6e7aaae17fad2b6",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794370384~exp=1794373984~acl=/bpk-tv/History_HD_BTS/WDVLive/*~hmac=357d0d1357ad937d85e7388f90c8301638431040a97347dd2c1353ccafce8eb8\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376808~exp=1794398408~acl=/bpk-tv/History_HD_BTS/WDVLive/*~hmac=61f2f95626b95e60bc563cdc0aee49b9d9af37df35d851c87e13616d2e367a46\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -24313,7 +24313,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=d76aa217a4575df5bce80ee0ff6b2121:a7292878f520073ea2826959c21ecdfa,a78b3f56bd0151e0861458c275cea361:875f1430d208e9354eb80ee25e70cc88",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373389~exp=1794376989~acl=/bpk-tv/Nat_Geo_Wild_HD_BTS/WDVLive/*~hmac=be4e45fceee490a62bffc8af3ec91f601181b7e31fae2f00a0bee86c25911694\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377291~exp=1794380891~acl=/bpk-tv/Nat_Geo_Wild_HD_BTS/WDVLive/*~hmac=6ba131902d09531c760f02b25552a74beb653ce71e7367bc1a2bc2da21a0223f\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -24351,7 +24351,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=81ac1976053b563b8e157ab2f07a3f6e:38c1412cc587b31a7ee53df457497884,10f476c8ae905d08abc013d975f9aa8c:2429df9c32e89252b2870b05c7a71c1a",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794371745~exp=1794375345~acl=/bpk-tv/National_Geographic_HD_BTS/WDVLive/*~hmac=b8fa4bb1e455b965b9bbbe6e0a42c141e0c0b0a85c7d2554d67eaa08bf263983\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376212~exp=1794397812~acl=/bpk-tv/National_Geographic_HD_BTS/WDVLive/*~hmac=5529d6e77c56aa794510866500f26c0ff1d966c33ec95bae9c115fdd88c6d53d\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -30692,7 +30692,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=f45e69507f0f5aa1a6e82374efb0af25:f84348219837769feb5a26a7b1cd31dc,f45e69507f0f5aa1a6e82374efb0af25:f84348219837769feb5a26a7b1cd31dc",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373990~exp=1794377590~acl=/bpk-tv/SonyBBCEarthHin_BTS/WDVLive/*~hmac=de9b4d465f2a9746d8b0445b7cbdb7deab217e45577622813fe1cf0f4bba5d04\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377887~exp=1794381487~acl=/bpk-tv/SonyBBCEarthHin_BTS/WDVLive/*~hmac=18b570a8541e192e74d6e194aada4060ff7f207893246f323d31efa97f1c342f\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -31141,7 +31141,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=dd1bb73211195ef5a02d9f1acd796a89:12b843dbd649f3e41036ee5be88785b3,dd1bb73211195ef5a02d9f1acd796a89:12b843dbd649f3e41036ee5be88785b3",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373389~exp=1794376989~acl=/bpk-tv/ZeeKannada_BTS/WDVLive/*~hmac=17542dff013585bf70f63a1ec31f3d6cdbadec1c0ec56d3a87c11a00bfbb31ed\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376968~exp=1794380568~acl=/bpk-tv/ZeeKannada_BTS/WDVLive/*~hmac=1b70592e1096db662da282ce79751143f4e86c194a5c23fced0ca79c0dbeaaa2\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -31863,7 +31863,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=02f4cfad19cf547da40f77c29bd303b2:a3ba2f7a824f232d7162f7452fe97a60,02f4cfad19cf547da40f77c29bd303b2:a3ba2f7a824f232d7162f7452fe97a60",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794354911~exp=1794376511~acl=/bpk-tv/ZeeKannadaHD_BTS/WDVLive/*~hmac=fb819d36f6109a0537ee70d12cae27efa05c9711e86207719f93b5f095b0a437\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376990~exp=1794380590~acl=/bpk-tv/ZeeKannadaHD_BTS/WDVLive/*~hmac=d6d043a1d3d2850149fd71871988167300deb583501fc377d92b84b381141c88\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -32958,7 +32958,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=835037f9e2065f40be9a4eafcbea4ed7:1f304d141f3695fa06cae57a44788bf9,c0270543358b5238816359df6c7d2907:6da0259c9cdf4916bed003e1b30a92ae",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373989~exp=1794377589~acl=/bpk-tv/Travel_XP_BTS/WDVLive/*~hmac=e2d5e1870aa063192437631c513f51fb3dfcb6d6b15fdc28973154c6343880c1\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377887~exp=1794381487~acl=/bpk-tv/Travel_XP_BTS/WDVLive/*~hmac=481288f947261aa2129ae27be4ecd0db5e8ff8d01d3e5aa2e03d0cfe60e3d331\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -34440,7 +34440,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=ca03fd99cf33533caecf065085c4dd69:2f6eeefb9d65dffabde6d7c1e15966a7,ca03fd99cf33533caecf065085c4dd69:2f6eeefb9d65dffabde6d7c1e15966a7",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794355218~exp=1794376818~acl=/bpk-tv/ZeeKeralamHD_BTS/WDVLive/*~hmac=f7c185ea4d5474f4b8be9a05eff96b25d864d9151500d1e5b59ab5d6c3632a7b\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376940~exp=1794380540~acl=/bpk-tv/ZeeKeralamHD_BTS/WDVLive/*~hmac=075a78e1c47354ea6d3e941c8264c68f68121b9298fecafd1c418cf8a1de6f05\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -34820,7 +34820,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=509216860f8e594aaf7e921296f53851:536df1e35e2bb055be0117b51db8139c,509216860f8e594aaf7e921296f53851:536df1e35e2bb055be0117b51db8139c",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794374896~exp=1794378496~acl=/bpk-tv/ZeeTalkies_BTS/WDVLive/*~hmac=136298551d5c09837125c8464458d6f29c9abe7072ce19a8d5f693e3fa03dc3a\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794378670~exp=1794382270~acl=/bpk-tv/ZeeTalkies_BTS/WDVLive/*~hmac=d487bf4b045479a485c446baf407e78e0f9cd3d01d026467f2e7527287db8d17\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -34934,7 +34934,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=fa2af2feb3395a7b8b931bd772683831:411e7ecb174921ff97cc0162c2372c69,fa2af2feb3395a7b8b931bd772683831:411e7ecb174921ff97cc0162c2372c69",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794372200~exp=1794375800~acl=/bpk-tv/ZeeYuva_BTS/WDVLive/*~hmac=720f1176bd39d590bbe5a5836ffe1feadd558fa729a343d1e108a2c47c0f690f\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376776~exp=1794380376~acl=/bpk-tv/ZeeYuva_BTS/WDVLive/*~hmac=bf074d64d7625eaea7c6383ef979a5b418135c1b1f3eb83015d8c180b8c9b6d9\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -35043,7 +35043,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=95c378d17d3d5bbabf9ec086820ece00:dbbce65eaf9673918703d3bcb3131b42,95c378d17d3d5bbabf9ec086820ece00:dbbce65eaf9673918703d3bcb3131b42",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794353785~exp=1794375385~acl=/bpk-tv/ZeeMarathi_BTS/WDVLive/*~hmac=d8eb375c41ca3994bb22443e261c014c052cc67bdc857ad69d6a7f1b491a3039\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794376688~exp=1794380288~acl=/bpk-tv/ZeeMarathi_BTS/WDVLive/*~hmac=307965a32f2ca309168acf05b362b009098324f1244e0195b824d0674bed89f9\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -35575,7 +35575,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=0bf930e665a756bab62df644407e0877:42e5003f036f924d5095e0d6f315c9f6,0bf930e665a756bab62df644407e0877:42e5003f036f924d5095e0d6f315c9f6",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794374514~exp=1794378114~acl=/bpk-tv/ZeeMarathiHD_BTS/WDVLive/*~hmac=3011d7b00783425278c2401c116e92c7b5dac162fca196e417cd67aaa9c386de\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794378189~exp=1794381789~acl=/bpk-tv/ZeeMarathiHD_BTS/WDVLive/*~hmac=700198566085a33a75f85caab4fd294c283f663f1c9cbb85b468fd66fa9e1fdc\"}"
       ],
       "url_options": {},
       "request_headers": {},
@@ -41602,7 +41602,7 @@
         "#KODIPROP:inputstream.adaptive.license_type=clearkey",
         "#KODIPROP:inputstream.adaptive.license_key=9ecfc67bf2dd54fa84495c4c299c51ec:85337048d7be42ef66f6198a99376fa7,9ecfc67bf2dd54fa84495c4c299c51ec:85337048d7be42ef66f6198a99376fa7",
         "#EXTVLCOPT:http-user-agent=Virat",
-        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794373965~exp=1794377565~acl=/bpk-tv/ZeeThiraiHD_BTS/WDVLive/*~hmac=0208bc473e810c31bfe384c8beb260d92db21f221903edade627571bf0c05797\"}"
+        "#EXTHTTP:{\"cookie\":\"__hdnea__=st=1794377595~exp=1794381195~acl=/bpk-tv/ZeeThiraiHD_BTS/WDVLive/*~hmac=fe0eb8606b1ee41db0cb00db76d7068f07d9c327346700bf18e63ba274b64531\"}"
       ],
       "url_options": {},
       "request_headers": {},
