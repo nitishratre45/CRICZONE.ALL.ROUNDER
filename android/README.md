@@ -13,8 +13,10 @@ The app bundles `app/src/main/assets/channel-catalog.json`, generated from:
 - `criczone34/channels.json`
 - `criczone12/data/channels.json`
 - `criczone/links.json`
+- `criczone/stream.js`
+- `criczone10/stream.js`
 
-The merged catalogue currently contains 2,355 unique channel metadata records across 47 categories. It includes stable app IDs, source IDs, names, categories, languages, logo URLs and source labels. The matching `criczonojiotv/channels.json` is a mirror of the CRICZONE12 catalogue and is not duplicated.
+The merged catalogue currently contains 2,386 unique channel metadata records across 47 categories. It includes stable app IDs, primary and alternate source IDs, names, categories, languages, logo URLs and source labels. Search also matches app IDs and source IDs. The matching `criczonojiotv/channels.json` is a mirror of the CRICZONE12 catalogue and is not duplicated. `fancodeweb/` and `criczonefancode/` are intentionally excluded from this pass.
 
 The import intentionally excludes raw upstream playback URLs, DRM keys, cookies, request headers, playlist directives and expiring tokens. Telegram bot/admin state JSON is not a television channel catalogue and is not copied into the APK.
 
@@ -25,7 +27,7 @@ The embedded page must permit framing by its configured origin. The app does not
 
 ## Features
 - Home, Search, Favorites and Telegram tabs
-- 2,355 imported channel metadata records
+- 2,386 imported channel metadata records
 - Category filter chips and channel logos
 - Locally stored favorites
 - Embedded WebView iframe player with JavaScript and DOM storage
