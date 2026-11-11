@@ -48,7 +48,11 @@ fun CriczoneApp() {
     val channels = remember(context) { ChannelCatalog.load(context) }
     val categories = remember(channels) { listOf("All") + channels.map { it.category }.distinct().sorted() }
     val homeChannels = if (selectedCategory == "All") channels else channels.filter { it.category == selectedCategory }
-    val visible = channels.filter { it.name.contains(query, true) || it.category.contains(query, true) }
+    val visible = channels.filter { channel ->
+        channel.name.contains(query, true) || channel.category.contains(query, true) ||
+            channel.id.contains(query, true) || channel.sourceId.contains(query, true) ||
+            channel.sourceIds.any { it.contains(query, true) }
+    }
 
     if (selected != null) {
         IframePlayerScreen(channel = selected!!, onBack = { selected = null })
@@ -173,7 +177,12 @@ private fun ChannelList(channels: List<Channel>, favorites: Set<String>, onSelec
                     Text(channel.name, color = Color.White, fontWeight = FontWeight.SemiBold)
                     Text(if (channel.language.isBlank()) channel.category else "${channel.category} • ${channel.language}", color = Muted, fontSize = 12.sp)
                 }
-                Text("LIVE", color = Color(0xFFFF6565), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    if (channel.playerPageUrl.isNotBlank()) "PLAYER" else "INFO",
+                    color = if (channel.playerPageUrl.isNotBlank()) Color(0xFFFF6565) else Muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
                 IconButton(onClick = { onFavorite(channel) }) {
                     Icon(Icons.Default.Favorite, null, tint = if (channel.id in favorites) Gold else Muted)
                 }
