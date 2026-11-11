@@ -35,4 +35,4 @@ The embedded page must permit framing by its configured origin. The app does not
 - HTTPS-only first-party player-page allowlist
 
 ## Build status
-Source changes are committed on `android-app-foundation`. This project has not yet been built or tested in Android Studio, and no APK has been generated.
+Source changes are committed on `android-app-foundation`. A GitHub Actions workflow at `.github/workflows/android-build.yml` now runs unit tests and assembles a debug APK on pushes/PRs affecting `android/`, then uploads `criczone-debug-apk` as a 14-day artifact. The workflow has been added but no run result is available yet; the project has not yet been confirmed built or tested, and no APK artifact is currently verified.
