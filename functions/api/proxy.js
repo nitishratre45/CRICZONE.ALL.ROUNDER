@@ -117,6 +117,30 @@ export function rewriteDashManifest(body, manifestUrl, proxyEndpoint) {
     (whole, attribute, value) => attribute + '="' + rewrite(value) + '"');
 }
 
+async function readTextLimited(response, maxBytes) {
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let total = 0;
+  let output = "";
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) {
+        await reader.cancel("Manifest size limit exceeded");
+        throw new Error("Manifest exceeds size limit");
+      }
+      output += decoder.decode(value, { stream: true });
+    }
+    output += decoder.decode();
+    return output;
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 async function checkRateLimit(request, env) {
   const ip = request.headers.get("CF-Connecting-IP") || request.headers.get("True-Client-IP") || "unknown";
   const now = Math.floor(Date.now() / 1000);
@@ -214,9 +238,11 @@ export async function onRequest(context) {
     if ((isPlaylist || isDash) && upstream.ok && request.method !== "HEAD") {
       const length = Number(upstream.headers.get("Content-Length") || 0);
       if (length > MAX_MANIFEST_BYTES) return proxyError("Manifest exceeds size limit", 413, headers);
-      const manifestText = await upstream.text();
-      if (new TextEncoder().encode(manifestText).byteLength > MAX_MANIFEST_BYTES) {
-        return proxyError("Manifest exceeds size limit", 413, headers);
+      let manifestText;
+      try { manifestText = await readTextLimited(upstream, MAX_MANIFEST_BYTES); }
+      catch (error) {
+        if (String(error?.message || error).includes("size limit")) return proxyError("Manifest exceeds size limit", 413, headers);
+        throw error;
       }
       const endpoint = requestUrl.origin + requestUrl.pathname;
       const rewritten = isPlaylist ? rewriteHlsPlaylist(manifestText, finalUrl, endpoint) :
