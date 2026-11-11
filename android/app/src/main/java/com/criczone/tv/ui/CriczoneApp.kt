@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +43,10 @@ fun CriczoneApp() {
     var selected by remember { mutableStateOf<Channel?>(null) }
     var tab by remember { mutableStateOf(Tab.HOME) }
     var query by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("All") }
     val channels = remember(context) { ChannelCatalog.load(context) }
+    val categories = remember(channels) { listOf("All") + channels.map { it.category }.distinct().sorted() }
+    val homeChannels = if (selectedCategory == "All") channels else channels.filter { it.category == selectedCategory }
     val visible = channels.filter { it.name.contains(query, true) || it.category.contains(query, true) }
 
     if (selected != null) {
@@ -76,7 +81,9 @@ fun CriczoneApp() {
                     Spacer(Modifier.height(20.dp))
                     Text("Browse channels", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(12.dp))
-                    ChannelList(channels, favorites, { selected = it }, { favorites = store.toggle(it.id) })
+                    CategorySelector(categories, selectedCategory) { selectedCategory = it }
+                    Spacer(Modifier.height(12.dp))
+                    ChannelList(homeChannels, favorites, { selected = it }, { favorites = store.toggle(it.id) })
                 }
                 Tab.SEARCH -> {
                     SearchField(query) { query = it }
@@ -106,6 +113,27 @@ private fun HeroBanner() {
 }
 
 @Composable
+private fun CategorySelector(categories: List<String>, selected: String, onSelect: (String) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        categories.forEach { category ->
+            FilterChip(
+                selected = selected == category,
+                onClick = { onSelect(category) },
+                label = { Text(category.substringBefore(" |").take(22), maxLines = 1) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = Gold,
+                    selectedLabelColor = Color.Black,
+                    labelColor = Muted
+                )
+            )
+        }
+    }
+}
+
+@Composable
 private fun SearchField(value: String, onChange: (String) -> Unit) {
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Panel).padding(15.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Default.Search, null, tint = Muted)
@@ -129,7 +157,15 @@ private fun ChannelList(channels: List<Channel>, favorites: Set<String>, onSelec
         items(channels, key = { it.id }) { channel ->
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Panel).clickable { onSelect(channel) }.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF252B36)), contentAlignment = Alignment.Center) {
-                    Text(channel.name.take(2).uppercase(), color = Gold, fontWeight = FontWeight.Bold)
+                    if (channel.logoUrl.startsWith("https://")) {
+                        AsyncImage(
+                            model = channel.logoUrl,
+                            contentDescription = channel.name,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Text(channel.name.take(2).uppercase(), color = Gold, fontWeight = FontWeight.Bold)
+                    }
                 }
                 Spacer(Modifier.width(13.dp))
                 Column(Modifier.weight(1f)) {
