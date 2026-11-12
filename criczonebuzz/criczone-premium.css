@@ -564,3 +564,25 @@ body.cz-player-open{overflow:hidden!important}
  #player-modal .cz-server-auto-note{font-size:7px!important}
  #video-wrapper{width:calc(100% - 12px)!important;margin:4px auto 0!important;border-radius:11px!important}
 }
+
+
+/* Mobile player toast: keep playback guidance away from the match title/video. */
+@media (max-width: 640px) {
+  #toast {
+    top: auto !important;
+    right: 12px !important;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 12px !important;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    margin-inline: auto;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.35;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    z-index: 2147483000;
+  }
+}
