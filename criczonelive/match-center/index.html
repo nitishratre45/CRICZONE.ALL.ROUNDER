@@ -139,11 +139,13 @@ function cricket(item,x){
  return !other.test(category)&&(terms.test(category)||terms.test(title))
 }
 function teamInfo(item,x,side){
- const upper=side==="a"?"A":"B",home=side==="a"?"home":"away";
- const candidates=[x["team"+upper],x[home+"Team"],x[home],x["team"+upper+"Info"],x[home+"TeamInfo"],item["team"+upper],item[home+"Team"],item[home],item["team"+upper+"Info"],item[home+"TeamInfo"]];
+ const n=side==="a"?1:2,upper=side==="a"?"A":"B",home=side==="a"?"home":"away";
+ const candidates=[x["team"+upper],x[home+"Team"],x[home],x["team"+n],x["team"+upper+"Info"],x[home+"TeamInfo"],item["team"+upper],item[home+"Team"],item[home],item["team"+n],item["team"+upper+"Info"],item[home+"TeamInfo"]];
  const obj=candidates.find(v=>v&&typeof v==="object")||{},raw=candidates.find(v=>v!==undefined&&v!==null&&v!=="")??"";
  const name=typeof raw==="string"||typeof raw==="number"?String(raw):String(obj.name||obj.teamName||obj.shortName||obj.title||obj.displayName||"");
- const logo=String(obj.logo||obj.logoUrl||obj.image||obj.imageUrl||obj.flag||obj.teamLogo||obj.team_logo||x["team"+upper+"Logo"]||x[home+"TeamLogo"]||x[home+"Logo"]||item["team"+upper+"Logo"]||item[home+"TeamLogo"]||item[home+"Logo"]||"");
+ const keys=["team"+upper+"Logo","team"+n+"Logo","team"+n+"_logo","team"+n+"_image","team"+n+"Image","team"+n+"Img","team"+upper+"Image","team"+upper+"Img",home+"TeamLogo",home+"TeamImage",home+"Logo",home+"Image"];
+ const extra=keys.map(k=>x[k]||item[k]).find(Boolean);
+ const logo=String(obj.logo||obj.logoUrl||obj.logo_url||obj.image||obj.imageUrl||obj.image_url||obj.flag||obj.teamLogo||obj.team_logo||extra||"");
  return{name:name.trim(),logo:logo.startsWith("https://")||logo.startsWith("http://")?logo:""};
 }
 function parse(data){
