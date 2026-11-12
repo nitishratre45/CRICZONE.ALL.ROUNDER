@@ -285,3 +285,58 @@ header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215
  #matches-container .card-body{padding:8px!important}
  #matches-container .card-title{font-size:.75rem!important}
 }
+
+
+/* =========================================================
+   CRICZONE BUZZ — screenshot-driven final polish
+   ========================================================= */
+header{
+ background:linear-gradient(105deg,rgba(20,31,13,.98),rgba(10,17,8,.98) 62%,rgba(18,27,12,.98))!important;
+ border-bottom:1px solid rgba(215,255,63,.34)!important;
+ box-shadow:0 8px 26px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+header .header-inner{min-height:68px!important;height:auto!important}
+header .brand-name{color:#f6f8ee!important;letter-spacing:.055em!important}
+header .brand-tag{color:#d7ff3f!important}
+header .brand-badge{
+ border:2px solid rgba(215,255,63,.85)!important;
+ box-shadow:0 0 0 4px rgba(215,255,63,.08),0 0 22px rgba(215,255,63,.16)!important;
+}
+header .btn-header{
+ background:linear-gradient(145deg,#1a2612,#10180c)!important;
+ border:1px solid rgba(215,255,63,.45)!important;
+ color:#eaf2d9!important;
+}
+header .btn-header:hover,header .btn-header:focus-visible{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;
+ color:#10130b!important;border-color:transparent!important;
+}
+/* Poster is clickable; Watch Live exists only below match details. */
+.poster-play-hint{display:none!important}
+.card-poster{position:relative!important;overflow:hidden!important}
+.card-poster img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+.card-poster::after{pointer-events:none!important}
+.match-open-link:focus-visible{outline:2px solid #d7ff3f!important;outline-offset:3px!important}
+#matches-container .card-actions{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)!important;gap:8px!important}
+#matches-container .open-match-btn,#matches-container .card-share-btn{
+ min-width:0!important;width:100%!important;min-height:42px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ white-space:nowrap!important;
+}
+#matches-container .open-match-btn{font-size:clamp(10px,2.5vw,13px)!important;letter-spacing:.1px!important}
+#matches-container .card-share-btn{padding-inline:7px!important;font-size:clamp(10px,2.4vw,12px)!important}
+#matches-container .favorite-toggle{z-index:5!important}
+@media(max-width:700px){
+ header .header-inner{min-height:68px!important;padding:9px 13px!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important}
+ #matches-container .card-poster{aspect-ratio:16/10!important}
+}
+@media(max-width:360px){
+ header .brand-name{font-size:1rem!important}
+ header .brand-tag{font-size:.58rem!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)!important;gap:5px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{font-size:9px!important;min-height:38px!important}
+}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+ outline:2px solid #d7ff3f!important;outline-offset:3px!important;
+}
