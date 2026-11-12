@@ -52,3 +52,103 @@ main{max-width:1180px!important;padding:clamp(18px,3vw,34px) clamp(12px,3vw,28px
 .wrap .server:hover{border-color:#d7ff3f!important}.wrap .play{background:var(--gold-gradient)!important;color:#111!important}
 @media(max-width:640px){.header-inner{height:60px;padding-inline:12px}.header-actions .btn-header span{display:none}main{padding:12px 12px 3rem!important}#main-view>.hero{padding:1rem 2px!important}#main-view>.hero h1{font-size:1.85rem!important}.controls-bar{align-items:stretch!important}.filter-tabs{width:100%;padding-bottom:3px}.search-box{min-width:0;max-width:none;width:100%}.matches-grid{grid-template-columns:1fr!important;gap:13px!important}.match-card{border-radius:18px!important}.player-header{height:54px!important;flex-basis:54px!important;padding:0 10px!important}.player-title{font-size:12px!important;max-width:38vw!important}.player-nav{gap:5px!important}.player-nav .btn-header{padding:.48rem .62rem!important;font-size:10px!important}.player-nav .btn-header svg{width:13px!important;height:13px!important}.player-servers-bar{top:54px!important}#video-wrapper{width:calc(100% - 16px)!important;margin-top:9px!important;border-radius:13px!important}#cz-player-details{padding:15px 13px 24px}#cz-player-details .cz-community{align-items:flex-start;flex-direction:column}#cz-player-details .cz-community a{width:100%}.wrap{padding:14px 12px 28px!important}.wrap .servers{gap:9px!important}.wrap .server{min-height:72px!important;padding:11px!important}.wrap .info{padding:14px!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* =========================================================
+   CRICZONE BUZZ — unified premium neon-lime skin
+   Applied consistently to match centre, server chooser,
+   player controls and Telegram community components.
+   ========================================================= */
+:root{
+ --carbon:#050605!important;--surface:#0d100c!important;--elevated:#141811!important;
+ --elevated-hover:#1b2115!important;--border:rgba(214,255,70,.16)!important;
+ --border-highlight:rgba(214,255,70,.48)!important;--gold:#d7ff3f!important;
+ --gold-glow:rgba(215,255,63,.24)!important;
+ --gold-gradient:linear-gradient(115deg,#d7ff3f,#baff22)!important;
+ --signal:#d7ff3f!important;--ink:#f5f6ed!important;--dim:#a2a797!important;
+ --live-red:#d7ff3f!important;--bg:#050605!important;--panel:#0d100c!important;
+ --line:rgba(214,255,70,.2)!important;--muted:#a2a797!important;
+}
+html,body{background:#050605!important;background-color:#050605!important;color:#f5f6ed!important}
+body{background-image:radial-gradient(ellipse at 50% -12%,rgba(215,255,63,.075),transparent 48%)!important}
+header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215,255,63,.16)!important}
+.hero,.match-card,.controls-bar,.wrap .hero,.wrap .server{
+ background:linear-gradient(155deg,#11150e,#090b08 78%)!important;
+ border-color:rgba(215,255,63,.22)!important;
+}
+#main-view>.hero{ text-align:left!important;border-radius:22px!important;padding:clamp(20px,4vw,38px)!important}
+#main-view>.hero h1,.hero h1{background:linear-gradient(100deg,#fff 12%,#d7ff3f 88%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+#main-view>.hero p,.hero p{color:#a2a797!important}
+.brand-badge,.brand-tag,.brand-name span,.wrap .brand span{color:#d7ff3f!important;border-color:#d7ff3f55!important}
+.btn-header,.wrap .back,.card-share-btn,.server-btn,.player-server-pill{
+ background:#11160d!important;color:#e9eddf!important;border:1px solid #d7ff3f38!important;border-radius:999px!important
+}
+.btn-header:hover,.card-share-btn:hover,.server-btn:hover,.wrap .server:hover{
+ border-color:#d7ff3f!important;color:#d7ff3f!important
+}
+.tab-btn{background:#151a11!important;color:#b6bda9!important;border-color:#d7ff3f24!important;border-radius:999px!important}
+.tab-btn.active,.open-match-btn,.server-btn.highlight,.favorite-toggle.is-saved,.player-server-pill.active,.wrap .play{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;border-color:transparent!important;
+ box-shadow:0 4px 18px rgba(215,255,63,.18)!important
+}
+.search-box input{background:#12160f!important;color:#f5f6ed!important;border:1px solid #d7ff3f30!important;border-radius:999px!important}
+.search-box input:focus{border-color:#d7ff3f!important;box-shadow:0 0 0 3px #d7ff3f18!important}
+.match-card{border-radius:22px!important;overflow:hidden!important}
+.card-poster{aspect-ratio:16/9!important}
+.status-badge.live,.wrap .status.live{background:#d7ff3f!important;color:#10130b!important;box-shadow:0 0 14px #d7ff3f44!important}
+.status-badge.live::before{background:#10130b!important}
+.status-badge.upcoming{background:#11170d!important;color:#d7ff3f!important;border-color:#d7ff3f44!important}
+.card-title,.player-title,.wrap .title{color:#f5f6ed!important}
+.card-meta,.wrap .sub,.wrap .hint,.wrap .server small{color:#a2a797!important}
+.server-btn{background:linear-gradient(145deg,#151a10,#0b0e09)!important;border-color:#d7ff3f2b!important}
+.server-btn.highlight{color:#10130b!important}
+.player-servers-bar{background:#090c07!important;border-color:#d7ff3f20!important}
+.player-server-pill.active{background:#d7ff3f!important;color:#10130b!important}
+#player-modal{background:#050605!important}
+#video-wrapper{border-color:#d7ff3f2c!important}
+#toast{background:#10150c!important;border:1px solid #d7ff3f40!important;color:#f5f6ed!important}
+.wrap{color:#f5f6ed!important}
+.wrap .hero{border-radius:22px!important}
+.wrap .status{background:#141a10!important;color:#d7ff3f!important}
+.wrap .server{background:linear-gradient(145deg,#151a10,#0b0e09)!important;color:#f5f6ed!important}
+.wrap .empty{border-color:#d7ff3f38!important;color:#a2a797!important}
+
+/* Telegram banner and popup: remove the leftover blue skin */
+#cz-tg-local-bar{
+ border:1px solid #d7ff3f55!important;
+ background:linear-gradient(110deg,#11170c,#090c07 70%)!important;
+ box-shadow:0 0 24px #d7ff3f12,0 10px 28px #0008!important;
+}
+#cz-tg-local-bar .cz-tg-logo{background:#d7ff3f!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-left{color:#f5f6ed!important}
+#cz-tg-local-bar small{color:#a2a797!important}
+#cz-tg-local-bar .cz-tg-tap{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;
+ border-radius:999px!important;box-shadow:0 5px 16px #d7ff3f20!important
+}
+#cz-tg-local-modal{background:rgba(0,0,0,.84)!important}
+#cz-tg-local-modal .cz-tg-card{
+ border:1px solid #d7ff3f55!important;border-radius:24px!important;
+ background:radial-gradient(circle at 50% 0,#d7ff3f18,transparent 48%),linear-gradient(150deg,#151a10,#080b07 78%)!important;
+ color:#f5f6ed!important;box-shadow:0 28px 90px #000b,0 0 32px #d7ff3f12!important
+}
+#cz-tg-local-modal .cz-tg-x{border-color:#d7ff3f44!important;background:#d7ff3f12!important;color:#f5f6ed!important}
+#cz-tg-local-modal .cz-tg-kicker{color:#d7ff3f!important}
+#cz-tg-local-modal p{color:#a2a797!important}
+#cz-tg-local-modal .cz-tg-join{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;
+ border-radius:999px!important;box-shadow:0 9px 25px #d7ff3f20!important
+}
+#cz-tg-local-modal .cz-tg-foot{color:#a2a797!important}
+@media(max-width:700px){
+ .matches-grid{grid-template-columns:1fr!important;gap:14px!important}
+ .match-card{border-radius:19px!important}
+ .card-poster{aspect-ratio:16/9!important}
+ .card-body{padding:14px!important}
+ .card-title{font-size:1rem!important}
+ .card-actions{gap:8px!important}
+ .open-match-btn{border-radius:999px!important}
+ .card-share-btn{border-radius:999px!important}
+ .player-server-pill{border-radius:999px!important}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
