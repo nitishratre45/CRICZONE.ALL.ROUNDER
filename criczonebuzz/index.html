@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=16">
+    <link rel="stylesheet" href="criczone-premium.css?v=17">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1959,7 +1959,7 @@
             window.playMatch = playMatch;
 
             // Close Player
-            function closePlayer() {
+            function closePlayer(fromPopState = false) {
                 hidePlayerLiveStatus();
                 if (window.__czServerPickerCleanup) {
                     window.__czServerPickerCleanup();
@@ -1989,7 +1989,7 @@
                 document.body.style.overflow = '';
                 currentActiveMatch = null;
                 const cleanUrl = window.location.pathname;
-                window.history.pushState({}, '', cleanUrl);
+                if (!fromPopState) window.history.replaceState({}, '', cleanUrl);
             }
 
             window.playIframeStream = function(url, title, matchId, streamIdx = 1) {
@@ -2038,7 +2038,13 @@
                 setPlayerLiveStatus('SERVER SELECTED', 'connecting');
             };
 
-            $btnClose.addEventListener('click', closePlayer);
+            $btnClose.addEventListener('click', () => closePlayer(false));
+
+            // Android/browser Back should close the player instead of leaving
+            // the player visible after the URL has returned to the match list.
+            window.addEventListener('popstate', () => {
+                if ($playerModal.classList.contains('active')) closePlayer(true);
+            });
 
             // Match sharing: share the actual server-selection page for this match.
             async function copyShareLink(matchId, serverId) {
