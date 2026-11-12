@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080a0e"><title>Opening Match | CRICZONE</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#080a0e;color:#f4f8e9;font:600 15px system-ui;text-align:center}.box{padding:28px}.dot{display:inline-block;width:9px;height:9px;margin-right:9px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 14px #d7ff3f}</style>
+<meta name="theme-color" content="#10170d"><meta name="description" content="Opening your selected CRICZONE live cricket match."><title>Opening Match | CRICZONE</title>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 0,rgba(215,255,63,.12),transparent 45%),#050605;color:#f4f8e9;font:600 15px system-ui;text-align:center}.box{width:min(100%,420px);padding:30px 24px;border:1px solid rgba(215,255,63,.25);border-radius:22px;background:linear-gradient(155deg,#11170d,#090c07);box-shadow:0 20px 60px #0008}.box p{line-height:1.5}.dot{display:inline-block;width:9px;height:9px;margin-right:9px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 14px #d7ff3f}#fallback{display:inline-flex;align-items:center;justify-content:center;min-height:42px;margin-top:12px;padding:0 18px;border:1px solid rgba(215,255,63,.4);border-radius:999px;color:#d7ff3f;text-decoration:none;font-weight:800}</style>
 </head>
 <body><main class="box"><p><span class="dot"></span>Opening live match in CRICZONE…</p><a id="fallback" href="index.html" style="color:#d7ff3f">Continue to matches</a></main>
 <script>
 (function(){
  var p=new URLSearchParams(location.search);
  var match=p.get('match')||p.get('id')||p.get('play')||'';
- var target='index.html'+(match?'?id='+encodeURIComponent(match):'');
- location.replace(target);
+ var server=parseInt(p.get('ser')||p.get('server')||'1',10);
+ if(!Number.isFinite(server)||server<1)server=1;
+ var targetUrl=new URL('index.html',location.href);
+ if(match)targetUrl.searchParams.set('id',match);
+ if(match)targetUrl.searchParams.set('ser',String(server));
+ var target=targetUrl.toString();
  document.getElementById('fallback').href=target;
+ location.replace(target);
 })();
 </script></body></html>
