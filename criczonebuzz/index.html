@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=10">
+    <link rel="stylesheet" href="criczone-premium.css?v=11">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1609,9 +1609,13 @@
                     const rect = trigger.getBoundingClientRect();
                     const width = Math.min(320, window.innerWidth - 28);
                     const left = Math.max(14, Math.min(rect.left, window.innerWidth - width - 14));
-                    menu.style.left = left + 'px';
-                    menu.style.width = width + 'px';
-                    menu.style.top = Math.min(rect.bottom + 8, window.innerHeight - 100) + 'px';
+                    menu.style.setProperty('position', 'fixed', 'important');
+                    menu.style.setProperty('left', left + 'px', 'important');
+                    menu.style.setProperty('right', 'auto', 'important');
+                    menu.style.setProperty('width', width + 'px', 'important');
+                    menu.style.setProperty('min-width', '0', 'important');
+                    menu.style.setProperty('max-width', 'calc(100vw - 28px)', 'important');
+                    menu.style.setProperty('top', Math.min(rect.bottom + 8, window.innerHeight - 100) + 'px', 'important');
                 };
                 const closeMenuOutside = event => {
                     if (!wrapper.contains(event.target) && !menu.contains(event.target)) {
