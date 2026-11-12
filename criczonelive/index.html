@@ -1159,14 +1159,14 @@ $("list").addEventListener("click",e=>{
  if(watchTarget){
   const ev = state.events.find(x => String(x.id) === String(watchTarget.dataset.watchEvent));
   const firstStreamId = ev && ev.streams && ev.streams[0] ? ev.streams[0].id : "0";
-  location.hash=`#watch?id=${encodeURIComponent(watchTarget.dataset.watchEvent)}&stream_id=${encodeURIComponent(firstStreamId)}`;
+  location.href=`./play/?id=${encodeURIComponent(watchTarget.dataset.watchEvent)}&stream_id=${encodeURIComponent(firstStreamId)}`;
   return;
  }
  if(e.target.closest("#retryLoad")){loadData();return}
 });
 
 $("channelCategories").addEventListener("click",e=>{const b=e.target.closest("[data-channel-sport]");if(b){state.channelSport=b.dataset.channelSport;renderChannels()}});
-$("channelGrid").addEventListener("click",e=>{const b=e.target.closest("[data-channel-event]");if(!b)return;location.hash=`#watch?id=${encodeURIComponent(b.dataset.channelEvent)}&stream_id=${encodeURIComponent(b.dataset.channelStream)}`});
+$("channelGrid").addEventListener("click",e=>{const b=e.target.closest("[data-channel-event]");if(!b)return;location.href=`./play/?id=${encodeURIComponent(b.dataset.channelEvent)}&stream_id=${encodeURIComponent(b.dataset.channelStream)}`});
 $("sports").addEventListener("click",e=>{const b=e.target.closest("[data-sport]");if(b){state.sport=b.dataset.sport;renderHub()}});
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){state.tab=b.dataset.tab;renderHub()}});
 
