@@ -493,12 +493,31 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
 
 /* Dedicated player page: no hub below the fold; video is the first main content. */
 #hubView{display:none!important}
-#playerView{display:block!important;padding-bottom:24px}
+#hubView{display:none!important}#playerView{display:block!important;padding-bottom:24px}
 #playerView .player-top-header{position:relative;max-width:1100px;margin:0 auto 12px}
 #playerView .screen{width:100%;max-width:1100px;margin:0 auto;aspect-ratio:16/9}
 #playerView .player-home-link{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--border);border-radius:11px;color:var(--ink);font-size:12px;font-weight:800;background:var(--white)}
 @media(max-width:650px){#playerView .player-top-header{padding:10px 0}#playerView .screen{border-radius:12px}#playerView .player-home-link{font-size:10px;padding:8px 10px}}
-#czEmbedFrame{display:block;width:100%;height:100%;min-height:360px;border:0;background:#000;border-radius:inherit}#player-container.cz-embed-mode{aspect-ratio:16/9;min-height:360px;background:#000;overflow:hidden}</style>
+#czEmbedFrame{display:block;width:100%;height:100%;min-height:360px;border:0;background:#000;border-radius:inherit}#player-container.cz-embed-mode{aspect-ratio:16/9;min-height:360px;background:#000;overflow:hidden}
+/* CRICZONE premium unified app skin */
+:root{--cz-bg:#06131f;--cz-panel:#0d2231;--cz-panel2:#102b3d;--cz-line:rgba(151,198,215,.15);--cz-text:#f1f8fb;--cz-muted:#91a9b6;--cz-cyan:#39d4e5;--cz-cyan2:#8cecf1;--cz-gold:#f2c66d;--cz-shadow:0 22px 60px rgba(0,0,0,.28)}
+html,body{background-color:var(--cz-bg)!important;color:var(--cz-text)!important}body{background-image:radial-gradient(ellipse at 12% -8%,rgba(57,212,229,.16),transparent 32%),radial-gradient(ellipse at 90% 16%,rgba(35,118,160,.13),transparent 30%),linear-gradient(180deg,#06131f,#081a28 60%,#06131f)!important;min-height:100vh}
+.header,.mc-shell>.header{background:rgba(6,19,31,.88)!important;border-color:var(--cz-line)!important;backdrop-filter:blur(24px) saturate(150%)!important;box-shadow:0 14px 40px rgba(0,0,0,.22)!important}
+.brand-text h1,.brand h1{letter-spacing:-.045em!important}.brand-text p{color:var(--cz-cyan2)!important;letter-spacing:.18em!important}
+.cz-desktop-rail{background:linear-gradient(165deg,rgba(14,39,55,.97),rgba(7,23,36,.98))!important;border-color:var(--cz-line)!important;box-shadow:var(--cz-shadow)!important;backdrop-filter:blur(20px)}
+.cz-rail-link,.cz-app-nav-item{transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease!important}.cz-rail-link:hover,.cz-rail-link.active{background:linear-gradient(100deg,rgba(57,212,229,.16),rgba(57,212,229,.045))!important;border-color:rgba(57,212,229,.22)!important;color:#f2fdff!important}.cz-app-nav{background:rgba(6,19,31,.92)!important;border:1px solid var(--cz-line)!important;box-shadow:0 16px 45px rgba(0,0,0,.42)!important;backdrop-filter:blur(24px) saturate(150%)!important}.cz-app-nav-item.active{background:linear-gradient(135deg,rgba(57,212,229,.2),rgba(57,212,229,.07))!important;color:var(--cz-cyan2)!important}
+.hero,.cz-hero,.stat,.card,.match,.channel,.channel-tile,.player-match-showcase,.streams .stream-card,.section-card,.panel,.search-box{background:linear-gradient(145deg,rgba(15,42,59,.96),rgba(9,29,44,.98))!important;border-color:var(--cz-line)!important;box-shadow:0 12px 34px rgba(0,0,0,.18)!important;color:var(--cz-text)!important}
+.hero h1,.section-title,.section-head h2,.card strong,.match strong,.channel strong,.channel-tile strong{color:var(--cz-text)!important}.hero p,.section-head p,.channel small,.match-foot,.stat small{color:var(--cz-muted)!important}
+button,input,select{font-family:inherit}input,select{background:rgba(7,24,37,.9)!important;border-color:var(--cz-line)!important;color:var(--cz-text)!important}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--cz-cyan)!important;outline-offset:3px}
+.card,.match,.channel,.channel-tile{border-radius:19px!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important}.card:hover,.match:hover,.channel:hover,.channel-tile:hover{transform:translateY(-3px);border-color:rgba(57,212,229,.42)!important;box-shadow:0 18px 44px rgba(0,0,0,.3)!important}
+.watch-cta,.watch,.cz-primary-cta,.join-btn,.player-get-app-btn{background:linear-gradient(115deg,#39d4e5,#8cecf1)!important;color:#04212b!important;border:0!important;box-shadow:0 8px 24px rgba(57,212,229,.18)!important}
+.status.live,.tag.live,.live-pill{box-shadow:0 0 0 1px rgba(255,101,125,.12)}
+.screen,#player-container{background:#000!important;border:1px solid rgba(140,236,241,.18)!important;box-shadow:0 24px 65px rgba(0,0,0,.38)!important;border-radius:18px!important;overflow:hidden}
+#player-container video,#player-container iframe{width:100%;height:100%;display:block;object-fit:contain}#czEmbedFrame{width:100%;height:100%;min-height:clamp(240px,56vw,620px);border:0;background:#000}
+.footer{border-color:var(--cz-line)!important;color:var(--cz-muted)!important}
+@media(max-width:999px){body{padding-bottom:calc(86px + env(safe-area-inset-bottom))!important}.cz-app-nav{bottom:calc(10px + env(safe-area-inset-bottom))!important;left:12px!important;right:12px!important;border-radius:20px!important}.cz-app-nav-item{font-size:10px!important}.screen{border-radius:12px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
 <div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
@@ -564,7 +583,7 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
       <div class="brand-mark">CZ</div>
       <h3>CRICZONE PLAY</h3>
     </div>
-    <a class="player-home-link" href="../">← All channels</a>
+    <a class="player-home-link" href="../channels/">← Channels</a>
     <a class="player-get-app-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
       <span>Get App</span>
