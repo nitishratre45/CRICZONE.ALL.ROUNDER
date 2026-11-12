@@ -49,8 +49,8 @@ async function start(){
  // Route HLS/DASH manifests through the repository's same-origin proxy.
  // The proxy rewrites relative playlist/segment URLs so the browser does not
  // request cross-origin media resources directly.
- var isHls=/\\.m3u8?($|[?#])/i.test(url);
- var isDash=/\\.mpd($|[?#])/i.test(url);
+ var isHls=/\.m3u8?($|[?#])/i.test(url);
+ var isDash=/\.mpd($|[?#])/i.test(url);
  var playbackUrl=(isHls||isDash)?STREAM_PROXY+encodeURIComponent(url):url;
  if(type.endsWith(".mpd")&&window.shaka){
   shaka.polyfill.installAll();
