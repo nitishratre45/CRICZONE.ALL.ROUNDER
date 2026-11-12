@@ -1056,6 +1056,10 @@
 .cz-detail-team img{display:block;object-fit:contain;background:#fff;border:1px solid #ffffff30;box-shadow:0 8px 24px #0005}
 .cz-detail-team-fallback{background:linear-gradient(145deg,#202a36,#101720);border:1px solid #ffffff2a}
 </style>
+<style id="cz-team-emblem-fallback">
+.cz-detail-team img{width:clamp(82px,15vw,122px);height:clamp(82px,15vw,122px);padding:12px;object-fit:contain;border-radius:50%;background:linear-gradient(145deg,#fff,#e8edf3);border:2px solid #ffffff55;box-shadow:0 9px 25px #0007}
+.cz-detail-team img[src*="flagcdn.com"]{padding:15px}
+</style>
 </head>
 <body>
 
@@ -1478,7 +1482,24 @@
                         name = home ? left : right;
                     }
                 }
-                return { name: name || (home ? 'TEAM 1' : 'TEAM 2'), logo: /^https?:\/\//i.test(String(logo)) ? String(logo) : '' };
+                name = name || (home ? 'TEAM 1' : 'TEAM 2');
+                if (!/^https?:\/\//i.test(String(logo))) {
+                    const key = name.toLowerCase();
+                    const code = /new zealand|\bnz\b|black caps/.test(key) ? 'nz'
+                        : /india|\bind\b/.test(key) ? 'in'
+                        : /australia|\baus\b/.test(key) ? 'au'
+                        : /england|\beng\b/.test(key) ? 'gb-eng'
+                        : /pakistan|\bpak\b/.test(key) ? 'pk'
+                        : /south africa|\bsa\b|proteas/.test(key) ? 'za'
+                        : /sri lanka|\bsl\b/.test(key) ? 'lk'
+                        : /bangladesh|\bban\b/.test(key) ? 'bd'
+                        : /west indies|\bwi\b/.test(key) ? 'jm'
+                        : /afghanistan|\bafg\b/.test(key) ? 'af'
+                        : /ireland|\bire\b/.test(key) ? 'ie'
+                        : /nepal|\bnep\b/.test(key) ? 'np' : '';
+                    if (code) logo = 'https://flagcdn.com/w320/' + code + '.png';
+                }
+                return { name, logo: /^https?:\/\//i.test(String(logo)) ? String(logo) : '' };
             }
             function renderMatchDetails(match) {
                 if (!$detailsPage || !match) return;
