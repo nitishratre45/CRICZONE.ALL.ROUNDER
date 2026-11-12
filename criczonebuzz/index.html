@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=12">
+    <link rel="stylesheet" href="criczone-premium.css?v=13">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1783,6 +1783,7 @@
 
                 $playerTitle.textContent = `${match.event_name} (${targetServer.label})`;
                 updatePlayerDetails(match, targetServer.label);
+                document.body.classList.add('cz-player-open');
                 $playerModal.classList.add('active');
                 document.body.style.overflow = 'hidden';
 
@@ -1949,6 +1950,7 @@
                 }
                 $video.style.display = '';
                 $playerModal.classList.remove('active');
+                document.body.classList.remove('cz-player-open');
                 document.body.style.overflow = '';
                 currentActiveMatch = null;
                 const cleanUrl = window.location.pathname;
@@ -1990,6 +1992,7 @@
                 iframe.src = url;
                 $playerTitle.textContent = title || 'Live Cricket Stream';
                 updatePlayerDetails(currentActiveMatch, targetSer ? ('Server ' + targetSer) : 'Live Stream');
+                document.body.classList.add('cz-player-open');
                 $playerModal.classList.add('active');
                 document.body.style.overflow = 'hidden';
 
