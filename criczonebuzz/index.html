@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=9">
+    <link rel="stylesheet" href="criczone-premium.css?v=10">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1554,6 +1554,7 @@
                 label.className = 'cz-server-change-label';
                 label.textContent = 'CHANGE SERVER';
                 label.htmlFor = 'cz-player-server-select';
+                if (window.__czServerPickerCleanup) window.__czServerPickerCleanup();
                 const wrapper = document.createElement('div');
                 wrapper.className = 'cz-server-picker';
                 const trigger = document.createElement('button');
@@ -1563,48 +1564,93 @@
                 trigger.setAttribute('aria-label', 'Change live stream server');
                 trigger.setAttribute('aria-haspopup', 'listbox');
                 trigger.setAttribute('aria-expanded', 'false');
-                trigger.innerHTML = '<span class="cz-server-current">Server ' + Number(activeSer) + '</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                trigger.style.cssText = 'width:100%;min-width:0;height:42px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 12px;border:1px solid rgba(215,255,63,.6);border-radius:12px;background:linear-gradient(145deg,#1c2a14,#10190d);color:#f4f8e9;font:800 13px Inter,system-ui,sans-serif;text-align:left;box-shadow:0 4px 14px #0005;appearance:none;-webkit-appearance:none;cursor:pointer';
+                trigger.innerHTML = '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Server ' + Number(activeSer) + '</span><svg style="width:17px;height:17px;flex:0 0 17px;color:#d7ff3f;transition:transform .18s" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
                 const menu = document.createElement('div');
                 menu.className = 'cz-server-menu';
                 menu.id = 'cz-player-server-menu';
                 menu.setAttribute('role', 'listbox');
                 menu.setAttribute('aria-label', 'Available stream servers');
-                menu.hidden = true;
+                menu.style.cssText = 'display:none!important;position:fixed;z-index:2147483647;max-height:52vh;overflow-y:auto;padding:7px;border:1px solid rgba(215,255,63,.5);border-radius:15px;background:linear-gradient(160deg,#1a2714,#0b1209);box-shadow:0 18px 48px #000c,0 0 22px rgba(215,255,63,.14);overscroll-behavior:contain;box-sizing:border-box';
                 serverList.forEach(s => {
                     const option = document.createElement('button');
                     option.type = 'button';
                     option.className = 'cz-server-option' + (s.id === Number(activeSer) ? ' is-active' : '');
                     option.setAttribute('role', 'option');
                     option.setAttribute('aria-selected', s.id === Number(activeSer) ? 'true' : 'false');
-                    option.innerHTML = '<span class="cz-server-option-dot"></span><span class="cz-server-option-copy"><strong>Server ' + Number(s.id) + '</strong><small>' + escapeHtml(s.label || 'Available stream') + '</small></span>' + (s.id === Number(activeSer) ? '<span class="cz-server-option-check">✓</span>' : '');
+                    option.style.cssText = 'width:100%;min-height:52px;display:flex;align-items:center;gap:11px;padding:8px 11px;border:1px solid ' + (s.id === Number(activeSer) ? 'rgba(215,255,63,.38)' : 'transparent') + ';border-radius:10px;background:' + (s.id === Number(activeSer) ? 'rgba(215,255,63,.13)' : 'transparent') + ';color:#f2f7e8;text-align:left;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;box-sizing:border-box';
+                    const dot = document.createElement('span');
+                    dot.style.cssText = 'width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:' + (s.id === Number(activeSer) ? '#d7ff3f' : '#758269') + ';box-shadow:' + (s.id === Number(activeSer) ? '0 0 12px #d7ff3f88' : 'none');
+                    const copy = document.createElement('span');
+                    copy.style.cssText = 'display:flex;flex-direction:column;gap:3px;min-width:0;flex:1';
+                    const title = document.createElement('strong');
+                    title.textContent = 'Server ' + Number(s.id);
+                    title.style.cssText = 'font:800 13px/1.2 Inter,system-ui,sans-serif;color:#f5f8ee';
+                    const desc = document.createElement('small');
+                    desc.textContent = s.label || 'Available stream';
+                    desc.style.cssText = 'font:600 10px/1.25 Inter,system-ui,sans-serif;color:#a8b59a;white-space:normal';
+                    copy.append(title, desc);
+                    option.append(dot, copy);
+                    if (s.id === Number(activeSer)) {
+                        const check = document.createElement('span');
+                        check.textContent = '✓';
+                        check.style.cssText = 'margin-left:auto;color:#d7ff3f;font-size:17px;font-weight:900';
+                        option.appendChild(check);
+                    }
                     option.addEventListener('click', () => {
-                        menu.hidden = true;
+                        menu.style.setProperty('display', 'none', 'important');
                         trigger.setAttribute('aria-expanded', 'false');
                         if (s.id !== Number(activeSer)) playMatch(match.id, s.id);
                     });
                     menu.appendChild(option);
                 });
-                trigger.addEventListener('click', () => {
-                    const opening = menu.hidden;
-                    menu.hidden = !opening;
-                    trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
-                });
-                wrapper.append(trigger, menu);
+                document.body.appendChild(menu);
+                const positionMenu = () => {
+                    const rect = trigger.getBoundingClientRect();
+                    const width = Math.min(320, window.innerWidth - 28);
+                    const left = Math.max(14, Math.min(rect.left, window.innerWidth - width - 14));
+                    menu.style.left = left + 'px';
+                    menu.style.width = width + 'px';
+                    menu.style.top = Math.min(rect.bottom + 8, window.innerHeight - 100) + 'px';
+                };
                 const closeMenuOutside = event => {
-                    if (!wrapper.contains(event.target)) {
-                        menu.hidden = true;
+                    if (!wrapper.contains(event.target) && !menu.contains(event.target)) {
+                        menu.style.setProperty('display', 'none', 'important');
                         trigger.setAttribute('aria-expanded', 'false');
                     }
                 };
                 const closeMenuEscape = event => {
-                    if (event.key === 'Escape' && !menu.hidden) {
-                        menu.hidden = true;
+                    if (event.key === 'Escape') {
+                        menu.style.setProperty('display', 'none', 'important');
                         trigger.setAttribute('aria-expanded', 'false');
                         trigger.focus();
                     }
                 };
+                const repositionMenu = () => {
+                    if (trigger.getAttribute('aria-expanded') === 'true') positionMenu();
+                };
+                trigger.addEventListener('click', () => {
+                    const opening = trigger.getAttribute('aria-expanded') !== 'true';
+                    if (opening) {
+                        positionMenu();
+                        menu.style.setProperty('display', 'block', 'important');
+                    } else {
+                        menu.style.setProperty('display', 'none', 'important');
+                    }
+                    trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+                });
                 document.addEventListener('click', closeMenuOutside);
                 document.addEventListener('keydown', closeMenuEscape);
+                window.addEventListener('resize', repositionMenu);
+                window.addEventListener('scroll', repositionMenu, true);
+                window.__czServerPickerCleanup = () => {
+                    document.removeEventListener('click', closeMenuOutside);
+                    document.removeEventListener('keydown', closeMenuEscape);
+                    window.removeEventListener('resize', repositionMenu);
+                    window.removeEventListener('scroll', repositionMenu, true);
+                    menu.remove();
+                };
+                wrapper.appendChild(trigger);
                 const state = document.createElement('span');
                 state.className = 'cz-server-auto-note';
                 const activeSource = serverList.find(s => s.id === Number(activeSer));
