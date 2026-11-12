@@ -65,7 +65,7 @@
     <div class="brand-text"><h1>CRICZONE</h1><p>CRICKET LIVE NETWORK</p></div>
   </div>
   <div class="header-actions">
-    <button class="icon-action-btn" id="theme" aria-label="Toggle Theme">☀️</button>
+    <button class="icon-action-btn" id="themeToggle" aria-label="Toggle Theme">☀️</button>
     <button class="cz-install-btn" id="czInstallBtn" type="button" hidden><span aria-hidden="true">＋</span> Install App</button>
     <div class="live-pill"><span class="dot"></span> Live</div>
     <div class="clock" id="clock"></div>
@@ -140,6 +140,6 @@ async function load(){ $("refresh").disabled=true;$("refresh").textContent="Load
 $("matches").addEventListener("click",e=>{const b=e.target.closest("[data-embed-match]");if(!b)return;const value=prompt("Paste iframe/embed URL for this match (https://...)");if(!value)return;try{const u=new URL(value);if(!["http:","https:"].includes(u.protocol))throw 0;location.href="../play/?embed_url="+encodeURIComponent(u.href)+"&title="+encodeURIComponent(b.dataset.embedTitle||"Live match")}catch{alert("Enter a valid http:// or https:// URL.")}});$("filters").addEventListener("click",e=>{let b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));matchesView()});
 $("channelFilters").addEventListener("click",e=>{let b=e.target.closest("[data-channel]");if(!b)return;channelFilter=b.dataset.channel;channelsView()});
 $("search").addEventListener("input",e=>{query=e.target.value.toLowerCase().trim();matchesView();channelsView()});
-$("refresh").addEventListener("click",load);$("theme").addEventListener("click",()=>{let t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;localStorage.setItem("cz-match-theme",t);$("theme").textContent=t==="dark"?"☀":"☾"});
+$("refresh").addEventListener("click",load);$("themeToggle").addEventListener("click",()=>{let t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;localStorage.setItem("cz-match-theme",t);$("theme").textContent=t==="dark"?"☀":"☾"});
 let saved=localStorage.getItem("cz-match-theme");if(saved)document.documentElement.dataset.theme=saved;$("theme").textContent=document.documentElement.dataset.theme==="dark"?"☀":"☾";$("year").textContent=new Date().getFullYear();load();setInterval(()=>{if(!document.hidden)load()},120000);
 </script></body></html>
