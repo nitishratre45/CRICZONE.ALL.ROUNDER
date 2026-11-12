@@ -3430,11 +3430,32 @@
         html{scroll-behavior:auto}
         *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
       }
+
+      /* Accessible semantic layout refinements */
+      .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+      .skip-link{position:fixed;z-index:100000;top:10px;left:10px;padding:11px 15px;border-radius:10px;background:#ffda7b;color:#17120a;font-weight:900;transform:translateY(-160%);transition:transform .2s}
+      .skip-link:focus{transform:translateY(0);outline:3px solid #fff;outline-offset:3px}
+      .browse-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:25px 0 5px}
+      .browse-heading h2{margin-top:6px;color:#f5f7fb;font:900 clamp(19px,2.4vw,25px) Archivo,sans-serif;letter-spacing:-.5px}
+      .browse-note{padding-bottom:3px;color:#8391a5;font-size:10px;font-weight:700}
+      footer .footer-inner{max-width:1600px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+      .footer-brand{font:900 17px Archivo,sans-serif;letter-spacing:1px;color:#fff}
+      .footer-brand span{color:#f5bd3e}
+      footer .footer-inner>span:nth-child(2){color:#8f9bad;font-size:11px;letter-spacing:0}
+      footer a{font-size:10px;font-weight:900;letter-spacing:.5px}
+      footer>small{display:block;text-align:center;color:#647287;font-size:8px;letter-spacing:1.5px}
+      @media(max-width:560px){
+        .browse-heading{margin-top:20px}
+        .browse-note{font-size:8px}
+        footer .footer-inner{justify-content:center;text-align:center;gap:10px}
+        footer .footer-inner>span:nth-child(2){width:100%;order:3}
+      }
     </style>
   </head>
 
   <body>
-    <div id="loading">
+    <a class="skip-link" href="#mainContent">Skip to channels</a>
+    <div id="loading" role="status" aria-live="polite">
       <div class="spinner"></div>
       <div id="loadingText">Loading CRICZONE channels…</div>
     </div>
@@ -3447,7 +3468,7 @@
               >CRIC<span>ZONE</span
               ><small>LIVE CRICKET • MATCH CENTRE</small></span
             ></a
-          ><span class="live">● LIVE</span>
+          ><span class="live" aria-label="Live service status">● LIVE</span>
           <div class="spacer"></div>
         </div>
       </header>
@@ -3468,7 +3489,7 @@
           ><span class="cz-stat-note">All-time visits</span>
         </div>
       </section>
-      <main>
+      <main id="mainContent">
         <div class="intro">
           <div>
             <h1>Live Channels</h1>
@@ -3491,7 +3512,8 @@
           ><span>⌕ INSTANT SEARCH</span><span>⚡ QUICK ACCESS</span>
         </div>
         <div class="searchbox">
-          <span>⌕</span
+          <label class="visually-hidden" for="search">Search channels or categories</label>
+          <span aria-hidden="true">⌕</span>
           ><input
             id="search"
             type="search"
@@ -3501,11 +3523,12 @@
             ✕
           </button>
         </div>
+        <div class="browse-heading"><div><span class="eyebrow">EXPLORE THE LINEUP</span><h2>Choose your channel</h2></div><span class="browse-note">Tap any card to open</span></div>
         <nav id="filters" aria-label="Channel categories"></nav>
-        <section id="grid" aria-label="Available channels"></section>
-        <div id="empty">📺<br /><br />No channels match your search.</div>
+        <section id="grid" aria-label="Available channels" aria-live="polite"></section>
+        <div id="empty" role="status">📺<br /><br />No channels match your search.</div>
       </main>
-      <footer>CRICZONE · BUILT FOR CRICKET FANS ·</footer>
+      <footer><div class="footer-inner"><span class="footer-brand">CRIC<span>ZONE</span></span><span>Made for match days. Built for cricket fans.</span><a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join the community ↗</a></div><small>© CRICZONE · LIVE SPORTS HUB</small></footer>
     </div>
     <section id="player">
       <style>
