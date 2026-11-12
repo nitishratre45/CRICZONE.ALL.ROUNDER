@@ -730,7 +730,7 @@ function parseEventsFromData(data){
    events.push({
     id:String(item.id||matchTitle.toLowerCase().replace(/[^a-z0-9]/g,"")),
     title:matchTitle,
-    sport:String(item.Category||item.sport||info.category||info.name||item.cat||"Other").trim(),
+    sport:"Cricket",
     comp:String(info.type||info.eventName||item.title||item.tournament||"").trim(),
     a:teamA,
     b:teamB,
