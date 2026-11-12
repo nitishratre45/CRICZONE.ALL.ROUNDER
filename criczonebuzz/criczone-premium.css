@@ -586,3 +586,21 @@ body.cz-player-open{overflow:hidden!important}
     z-index: 2147483000;
   }
 }
+
+
+/* Refined Willow Live by CRICZONE navbar signature */
+header .brand-tag{
+ display:block!important;
+ color:#d7ff3f!important;
+ font-size:clamp(.56rem,1.3vw,.68rem)!important;
+ font-weight:900!important;
+ letter-spacing:.105em!important;
+ line-height:1.35!important;
+ text-transform:uppercase!important;
+ white-space:nowrap!important;
+ text-shadow:0 0 12px rgba(215,255,63,.14)!important;
+}
+header .brand-tag-separator{color:#f5f8e9!important;padding:0 .22em!important}
+@media(max-width:360px){
+ header .brand-tag{font-size:.51rem!important;letter-spacing:.065em!important}
+}
