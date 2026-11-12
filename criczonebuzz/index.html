@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=8">
+    <link rel="stylesheet" href="criczone-premium.css?v=9">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1554,29 +1554,64 @@
                 label.className = 'cz-server-change-label';
                 label.textContent = 'CHANGE SERVER';
                 label.htmlFor = 'cz-player-server-select';
-                const select = document.createElement('select');
-                select.id = 'cz-player-server-select';
-                select.className = 'cz-player-server-select';
-                select.setAttribute('aria-label', 'Change live stream server');
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cz-server-picker';
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'cz-player-server-select';
+                trigger.id = 'cz-player-server-select';
+                trigger.setAttribute('aria-label', 'Change live stream server');
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.innerHTML = '<span class="cz-server-current">Server ' + Number(activeSer) + '</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                const menu = document.createElement('div');
+                menu.className = 'cz-server-menu';
+                menu.id = 'cz-player-server-menu';
+                menu.setAttribute('role', 'listbox');
+                menu.setAttribute('aria-label', 'Available stream servers');
+                menu.hidden = true;
                 serverList.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = String(s.id);
-                    option.textContent = 'Server ' + s.id;
-                    option.title = s.label;
-                    select.appendChild(option);
+                    const option = document.createElement('button');
+                    option.type = 'button';
+                    option.className = 'cz-server-option' + (s.id === Number(activeSer) ? ' is-active' : '');
+                    option.setAttribute('role', 'option');
+                    option.setAttribute('aria-selected', s.id === Number(activeSer) ? 'true' : 'false');
+                    option.innerHTML = '<span class="cz-server-option-dot"></span><span class="cz-server-option-copy"><strong>Server ' + Number(s.id) + '</strong><small>' + escapeHtml(s.label || 'Available stream') + '</small></span>' + (s.id === Number(activeSer) ? '<span class="cz-server-option-check">✓</span>' : '');
+                    option.addEventListener('click', () => {
+                        menu.hidden = true;
+                        trigger.setAttribute('aria-expanded', 'false');
+                        if (s.id !== Number(activeSer)) playMatch(match.id, s.id);
+                    });
+                    menu.appendChild(option);
                 });
-                select.value = String(activeSer);
-                select.addEventListener('change', () => {
-                    const nextId = parseInt(select.value, 10);
-                    if (Number.isFinite(nextId)) playMatch(match.id, nextId);
+                trigger.addEventListener('click', () => {
+                    const opening = menu.hidden;
+                    menu.hidden = !opening;
+                    trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
                 });
+                wrapper.append(trigger, menu);
+                const closeMenuOutside = event => {
+                    if (!wrapper.contains(event.target)) {
+                        menu.hidden = true;
+                        trigger.setAttribute('aria-expanded', 'false');
+                    }
+                };
+                const closeMenuEscape = event => {
+                    if (event.key === 'Escape' && !menu.hidden) {
+                        menu.hidden = true;
+                        trigger.setAttribute('aria-expanded', 'false');
+                        trigger.focus();
+                    }
+                };
+                document.addEventListener('click', closeMenuOutside);
+                document.addEventListener('keydown', closeMenuEscape);
                 const state = document.createElement('span');
                 state.className = 'cz-server-auto-note';
                 const activeSource = serverList.find(s => s.id === Number(activeSer));
                 state.textContent = activeSource && activeSource.type === 'iframe'
                     ? 'MANUAL SWITCH FOR EMBED'
                     : 'AUTO SWITCH ON FAILURE';
-                bar.append(label, select, state);
+                bar.append(label, wrapper, state);
             }
 
             function clearPlaybackStallTimer() {
