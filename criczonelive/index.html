@@ -320,6 +320,75 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
 .cz-back-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
 @media(max-width:650px){.cz-live-overview{padding:14px;margin-bottom:27px}.cz-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.cz-overview-stat{gap:7px;padding-right:5px}.cz-stat-icon{width:28px;height:28px;font-size:13px;border-radius:8px}.cz-overview-stat strong{font-size:18px}.cz-overview-stat small{font-size:8px}.cz-refresh-btn{grid-column:1/-1;min-height:37px}.cz-refresh-note{font-size:8px}.cz-back-top{right:13px;bottom:15px;width:39px;height:39px}}
 
+
+/* APP-LIKE RESPONSIVE SHELL — desktop workspace + mobile bottom navigation */
+:root{scroll-padding-top:90px}
+body{min-height:100vh}
+.container{width:min(100%,1500px);margin-inline:auto;padding-inline:clamp(18px,3.5vw,52px)}
+#hubView{min-height:100vh}
+.header{top:0;border-radius:0 0 16px 16px}
+.cz-hero{min-height:clamp(310px,31vw,430px)}
+.cz-live-overview{max-width:1120px}
+.search-container{width:min(100%,760px)}
+.channels-first{scroll-margin-top:95px}
+#matchCentre{scroll-margin-top:95px}
+.channel-grid{grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px}
+.channel-tile{min-height:132px;padding:17px}
+.grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:15px}
+.card{min-height:190px}
+.cz-app-nav{display:none}
+button,a{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible{outline:3px solid rgba(54,214,231,.65);outline-offset:3px}
+@media(min-width:1100px){
+ .container{padding-inline:clamp(35px,5vw,76px)}
+ .header{padding-block:16px}
+ .cz-hero{padding:clamp(48px,5vw,78px);border-radius:30px}
+ .channels-first{padding-bottom:50px}
+ .channel-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+ .card{padding:22px}
+ .cz-live-overview{padding:22px 25px}
+}
+@media(max-width:700px){
+ body{padding-bottom:calc(78px + env(safe-area-inset-bottom));}
+ .container{padding-inline:14px}
+ .header{position:sticky;top:0;margin-inline:-14px;padding:10px 14px;border-radius:0 0 15px 15px;z-index:50}
+ .brand-photo-frame{width:42px;height:42px}
+ .header-actions .clock{display:none}
+ .cz-hero{min-height:290px;margin-top:6px}
+ .cz-trust-strip{padding-bottom:20px}
+ .search-container{position:sticky;top:63px;z-index:25;padding:7px 0 9px;margin-bottom:22px;background:var(--cream)}
+ .search-input{height:47px;border-radius:14px}
+ .cz-live-overview{border-radius:15px}
+ .channels-head{align-items:center}
+ .channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .channel-tile{min-height:112px;padding:13px;border-radius:14px}
+ .channels-first{padding-bottom:30px}
+ .matches-heading{padding-top:22px}
+ .filters{position:sticky;top:119px;z-index:20;padding:8px 0;background:var(--cream)}
+ .filter-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:3px}
+ .filter-row::-webkit-scrollbar,.channel-categories::-webkit-scrollbar{display:none}
+ .pill{flex:none;white-space:nowrap}
+ .grid{grid-template-columns:1fr;gap:11px;padding-bottom:26px}
+ .card{min-height:0;padding:16px;border-radius:16px}
+ .cz-footer{padding-bottom:12px}
+ .cz-app-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:80;min-height:62px;padding:6px;border:1px solid var(--border);border-radius:19px;background:color-mix(in srgb,var(--white) 91%,transparent);backdrop-filter:blur(22px);box-shadow:0 12px 38px rgba(0,0,0,.24)}
+ .cz-app-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:13px;background:transparent;color:var(--muted);text-decoration:none;font:700 9px var(--body);cursor:pointer}
+ .cz-app-nav-icon{font-size:18px;line-height:1;color:var(--muted)}
+ .cz-app-nav-item.active{background:rgba(54,214,231,.12);color:var(--accent)}
+ .cz-app-nav-item.active .cz-app-nav-icon{color:var(--accent)}
+ .cz-back-top{bottom:calc(84px + env(safe-area-inset-bottom))}
+ #playerView{padding-bottom:15px}
+ .player-top-header{position:sticky;top:0;z-index:45;background:var(--cream);padding:11px 0;border-bottom:1px solid var(--border)}
+}
+@media(max-width:390px){
+ .header-actions .live-pill{font-size:7px;padding:5px 7px}
+ .join-btn{padding:8px 9px;font-size:8px}
+ .channel-tile{min-height:104px}
+ .cz-app-nav{left:7px;right:7px;min-height:59px}
+}
+@media(prefers-reduced-motion:reduce){.cz-app-nav-item,.channel-tile,.card{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -370,9 +439,15 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
  </div>
  <p class="cz-refresh-note" id="czRefreshNote" aria-live="polite">Match and channel information updates from available feeds.</p>
 </section>
-<section class="channels-first" aria-labelledby="channelsTitle"><div class="channels-head"><div><div class="channels-kicker">Your front-row seat</div><h2 id="channelsTitle">Live channels</h2></div><span class="channels-total" id="channelTotal">Loading channels…</span></div><nav class="channel-categories" id="channelCategories" aria-label="Channel categories"></nav><div class="channel-grid" id="channelGrid" aria-live="polite"><div class="channels-empty">Loading all available channels…</div></div></section><div class="matches-heading"><h2>Match centre</h2><span>Fixtures, live action and upcoming events</span></div>
+<section class="channels-first" aria-labelledby="channelsTitle"><div class="channels-head"><div><div class="channels-kicker">Your front-row seat</div><h2 id="channelsTitle">Live channels</h2></div><span class="channels-total" id="channelTotal">Loading channels…</span></div><nav class="channel-categories" id="channelCategories" aria-label="Channel categories"></nav><div class="channel-grid" id="channelGrid" aria-live="polite"><div class="channels-empty">Loading all available channels…</div></div></section><div class="matches-heading" id="matchCentre"><h2>Match centre</h2><span>Fixtures, live action and upcoming events</span></div>
 <div class="filters"><div class="filter-row" id="sports" role="tablist" aria-label="Sports"></div><div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div></div>
 <main id="list" class="grid" aria-live="polite"><div class="state"><h3>Loading events…</h3><p>Please wait while the match schedule loads.</p></div></main>
+<nav class="cz-app-nav" id="czAppNav" aria-label="Quick navigation">
+ <a href="#channelsTitle" class="cz-app-nav-item active" data-app-nav="channels"><span class="cz-app-nav-icon">▦</span><span>Channels</span></a>
+ <a href="#matchCentre" class="cz-app-nav-item" data-app-nav="matches"><span class="cz-app-nav-icon">◷</span><span>Matches</span></a>
+ <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" class="cz-app-nav-item"><span class="cz-app-nav-icon">➤</span><span>Community</span></a>
+ <button type="button" class="cz-app-nav-item" id="czNavTop"><span class="cz-app-nav-icon">↑</span><span>Top</span></button>
+</nav>
 <footer class="cz-footer"><div><strong>CRICZONE</strong><span>Live sports • Match centre</span></div><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">Official Telegram <b>↗</b></a><small>© <span id="czYear"></span> CRICZONE. All rights reserved.</small></footer>
 </section>
 
@@ -919,6 +994,30 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("themeToggle").textContent=savedTheme==="dark"?"☀️":"🌙";
 
  $("themeToggle").addEventListener("click",toggleTheme);
+
+
+ const appNav=$("czAppNav");
+ if(appNav){
+  appNav.addEventListener("click",e=>{
+   const item=e.target.closest("[data-app-nav]");
+   if(!item)return;
+   appNav.querySelectorAll("[data-app-nav]").forEach(x=>x.classList.toggle("active",x===item));
+  });
+ }
+ const navTop=$("czNavTop");
+ if(navTop)navTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+ const channelSection=document.querySelector(".channels-first");
+ const matchSection=$("matchCentre");
+ if("IntersectionObserver" in window&&appNav){
+  const navObserver=new IntersectionObserver(entries=>{
+   const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+   if(!visible)return;
+   const key=visible.target===matchSection?"matches":"channels";
+   appNav.querySelectorAll("[data-app-nav]").forEach(x=>x.classList.toggle("active",x.dataset.appNav===key));
+  },{rootMargin:"-20% 0px -65% 0px",threshold:[0,.1,.3]});
+  if(channelSection)navObserver.observe(channelSection);
+  if(matchSection)navObserver.observe(matchSection);
+ }
 
  const refreshBtn=$("czRefreshBtn");
  if(refreshBtn)refreshBtn.addEventListener("click",async()=>{
