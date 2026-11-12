@@ -909,6 +909,8 @@ function renderPlayerStreams(activeStreamId){
 function openEmbed(rawUrl,title){let url;try{url=new URL(rawUrl,location.href)}catch{return showPlayerError("Invalid embed URL.")}if(!["http:","https:"].includes(url.protocol))return showPlayerError("Only HTTP or HTTPS embed URLs are supported.");stopPlayback();const box=$("player-container");box.classList.add("cz-embed-mode");box.innerHTML="";const frame=document.createElement("iframe");frame.id="czEmbedFrame";frame.src=url.href;frame.title=String(title||"CRICZONE embedded stream");frame.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";frame.allowFullscreen=true;frame.referrerPolicy="no-referrer";box.appendChild(frame);if($("pmNameA"))$("pmNameA").textContent=String(title||"Live stream");if($("pmNameB"))$("pmNameB").textContent="";}
 function route(){
  const queryParams=new URLSearchParams(location.search);
+ const embedUrl=queryParams.get("embed_url");
+ if(embedUrl){openEmbed(embedUrl,queryParams.get("title")||"CRICZONE Live");return;}
  if(queryParams.has("id")){openPlayer(queryParams.get("id"),queryParams.get("stream_id")||queryParams.get("stream"));return;}
  const raw=location.hash.replace(/^#\/?/,"");
  const[path,query]=raw.split("?");
