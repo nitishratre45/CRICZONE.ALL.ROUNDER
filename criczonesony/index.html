@@ -927,13 +927,21 @@ body{position:relative!important;inset:auto!important}
   });
   function stopEventPlayer(){
     panel.style.display="none";
+    frame.src="about:blank";
+    status.textContent="CRICZONE Player · Select a live event to start";
   }
   function playEvent(m){
-    var stream=m&&(m.video_url||m.pub_url||m.dai_url);
-    if(!stream){status.textContent="No stream URL is available for this event.";return;}
+    // Prefer the pub_url field from the Sony LIV events JSON for every event.
+    var stream=m&&(m.pub_url||m.video_url||m.dai_url);
+    if(!stream){status.textContent="No public stream URL is available for this event.";return;}
     var eventTitle=m.match_name||m.event_name||"SonyLiv Live Event";
     var target="./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(eventTitle);
-    window.location.href=target;
+    title.textContent=eventTitle;
+    status.textContent="Opening CRICZONE player for "+eventTitle+"…";
+    panel.style.display="block";
+    frame.src=target;
+    frame.setAttribute("loading","eager");
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
   function parseSonyLivText(text){
     try { var full=JSON.parse(text); if(Array.isArray(full.matches)) return full; } catch(e) {}
