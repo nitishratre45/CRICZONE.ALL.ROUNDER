@@ -186,14 +186,17 @@ const DATA_FEEDS = [
 ];
 
 const FOLDER_URLS = {
+  all: "https://criczone.pages.dev/all/",
   criczone: "https://criczone.pages.dev/criczone/",
   criczone1: "https://criczone.pages.dev/criczone1/",
   criczone2: "https://criczone.pages.dev/criczone2/",
   criczonebuzz: "https://criczone.pages.dev/criczonebuzz/",
-  fancodeweb: "https://criczone.pages.dev/fancodeweb/",
   criczonefancode: "https://criczone.pages.dev/criczonefancode/",
-  sony: "https://criczone.pages.dev/criczonesony/",
-  criczonesony: "https://criczone.pages.dev/criczonesony/"
+  criczonelive: "https://criczone.pages.dev/criczonelive/",
+  criczonesony: "https://criczone.pages.dev/criczonesony/",
+  e: "https://criczone.pages.dev/e/",
+  fancodeweb: "https://criczone.pages.dev/fancodeweb/",
+  sony: "https://criczone.pages.dev/sony/"
 };
 
 function parseM3U(text, feed) {
