@@ -1,12 +1,15 @@
 const PAGES = {
+  all:"https://criczone.pages.dev/all/",
   criczone:"https://criczone.pages.dev/criczone/",
   criczone1:"https://criczone.pages.dev/criczone1/",
   criczone2:"https://criczone.pages.dev/criczone2/",
-  e:"https://criczone.pages.dev/e/",
   criczonebuzz:"https://criczone.pages.dev/criczonebuzz/",
   criczonefancode:"https://criczone.pages.dev/criczonefancode/",
-  sony:"https://criczone.pages.dev/sony/",
-  criczonesony:"https://criczone.pages.dev/criczonesony/"
+  criczonelive:"https://criczone.pages.dev/criczonelive/",
+  criczonesony:"https://criczone.pages.dev/criczonesony/",
+  e:"https://criczone.pages.dev/e/",
+  fancodeweb:"https://criczone.pages.dev/fancodeweb/",
+  sony:"https://criczone.pages.dev/sony/"
 };
 const norm = v => String(v ?? "").normalize("NFKD").toLowerCase().replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 const first = (o, keys) => { for (const k of keys) if (typeof o?.[k] === "string" || typeof o?.[k] === "number") { const v=String(o[k]).trim(); if(v) return v; } return ""; };
