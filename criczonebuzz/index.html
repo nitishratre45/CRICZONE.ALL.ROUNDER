@@ -1573,7 +1573,10 @@
                 });
                 const state = document.createElement('span');
                 state.className = 'cz-server-auto-note';
-                state.textContent = 'AUTO SWITCH ON FAILURE';
+                const activeSource = serverList.find(s => s.id === Number(activeSer));
+                state.textContent = activeSource && activeSource.type === 'iframe'
+                    ? 'MANUAL SWITCH FOR EMBED'
+                    : 'AUTO SWITCH ON FAILURE';
                 bar.append(label, select, state);
             }
 
@@ -1675,7 +1678,8 @@
                 // Extract clean direct MPD URL for Shaka Player
                 let directMpd = mpdUrl;
                 if (mpdUrl.includes('?url=')) {
-                    directMpd = decodeURIComponent(mpdUrl.split('?url=')[1]);
+                    try { directMpd = decodeURIComponent(mpdUrl.split('?url=')[1]); }
+                    catch (_) { directMpd = mpdUrl; }
                 }
 
                 $playerTitle.textContent = `${match.event_name} (${targetServer.label})`;
