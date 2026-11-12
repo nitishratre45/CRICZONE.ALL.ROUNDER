@@ -1271,7 +1271,7 @@ function makeChannelShortcut(ch,className){
   var button=document.createElement("button");button.type="button";button.className=className;
   if(ch.logo){var img=document.createElement("img");img.src=ch.logo;img.alt="";img.loading="lazy";img.onerror=function(){img.style.display="none"};button.appendChild(img);}
   var label=document.createElement("span");label.textContent=ch.name;button.appendChild(label);
-  button.addEventListener("click",function(){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});});
+  button.addEventListener("click",function(){var url=new URL(location.href);setChannelQuery(url,ch);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});});
   return button;
 }
 function renderFeatured(){
@@ -1354,7 +1354,7 @@ function renderQuickChannels(current){
     var button=document.createElement("button");button.type="button";button.className="quick-channel";button.textContent=ch.name;
     button.addEventListener("click",function(){
       var url=new URL(location.href);
-      url.searchParams.set("id",ch.id);
+      setChannelQuery(url,ch);
       // Reload the page on channel switch so the previous HLS/Plyr session
       // is fully discarded before the next channel initializes.
       location.assign(url.pathname+url.search+url.hash);
@@ -1371,7 +1371,23 @@ function proxyUrl(url){
   if(url.indexOf(PROXY_BASE)===0)return url;
   return PROXY_BASE+encodeURIComponent(url);
 }
-function getChId(){return new URLSearchParams(location.search).get("id")||"";}
+function channelSlugBase(name){
+  return String(name||"channel").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"channel";
+}
+function getChannelSlug(ch){
+  var base=channelSlugBase(ch.name);
+  var duplicates=allChannels.filter(function(item){return channelSlugBase(item.name)===base;});
+  return duplicates.length>1?base+"-"+channelSlugBase(ch.id):base;
+}
+function setChannelQuery(url,ch){
+  url.searchParams.set("channel",getChannelSlug(ch));
+  url.searchParams.delete("id");
+}
+function getChId(){
+  var params=new URLSearchParams(location.search),slug=params.get("channel");
+  if(slug){var match=allChannels.find(function(ch){return getChannelSlug(ch)===slug;});return match?match.id:"";}
+  return params.get("id")||"";
+}
 function parseM3U(text){
   var channels=[],lines=text.split(/\r?\n/),current=null;
   for(var i=0;i<lines.length;i++){
@@ -1399,7 +1415,7 @@ function renderChannels(channels){
   if(!channels.length){$grid.innerHTML='<div class="empty">No channels match your search.</div>';return;}
   var fragment=document.createDocumentFragment();
   channels.forEach(function(ch){
-    var a=document.createElement("a");a.className="ch-card";a.href="?id="+encodeURIComponent(ch.id);
+    var a=document.createElement("a");a.className="ch-card";var channelUrl=new URL(location.href);setChannelQuery(channelUrl,ch);a.href=channelUrl.pathname+channelUrl.search+channelUrl.hash;
     var logoBox=document.createElement("span");logoBox.className="logo-box";
     if(ch.logo){var img=document.createElement("img");img.className="ch-logo";img.alt=ch.name;img.loading="lazy";img.src=ch.logo;img.onerror=function(){logoBox.innerHTML='<span class="logo-fallback">CZ</span>';};logoBox.appendChild(img);}
     else{var fallback=document.createElement("span");fallback.className="logo-fallback";fallback.textContent="CZ";logoBox.appendChild(fallback);}
@@ -1476,13 +1492,24 @@ $video.addEventListener("error",function(){if(activeChannelId)setPlayerStatus("o
 async function main(){
   try{
     allChannels=await loadData();renderChannelView();renderFeatured();renderRecent();$overlay.style.display="none";updateResumeCard();
-    var id=getChId();if(id){var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}
+    var id=getChId();
+    if(id){
+      var ch=allChannels.find(function(item){return item.id===id;});
+      if(ch){
+        var params=new URLSearchParams(location.search);
+        if(params.get("id")||params.get("channel")!==getChannelSlug(ch)){
+          var canonical=new URL(location.href);setChannelQuery(canonical,ch);
+          history.replaceState({},"",canonical.pathname+canonical.search+canonical.hash);
+        }
+        showPlayer(ch);
+      }
+    }
   }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="none";$count.textContent="OFFLINE";console.warn("CRICZONE Sony playlist:",error);}
 }
 $search.addEventListener("input",renderChannelView);
 $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
 document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
-document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
+document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);setChannelQuery(url,ch);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
 document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
 var audioPrompt=document.getElementById("czAudioPrompt");
 document.getElementById("czEnableAudio").addEventListener("click",function(){
@@ -1528,8 +1555,8 @@ $sonyPipBtn&&$sonyPipBtn.addEventListener("click",async function(){
   }catch(e){setPlayerStatus("offline","PICTURE IN PICTURE UNAVAILABLE",e.message||"Browser blocked PiP")}
 });
 $sonyShareBtn&&$sonyShareBtn.addEventListener("click",async function(){
-  var url=location.origin+location.pathname+"?id="+encodeURIComponent(activeChannelId);
   var ch=allChannels.find(function(item){return item.id===activeChannelId});
+  var shareUrl=new URL(location.href);if(ch)setChannelQuery(shareUrl,ch);var url=shareUrl.origin+shareUrl.pathname+shareUrl.search+shareUrl.hash;
   try{if(navigator.share)await navigator.share({title:(ch?ch.name:"CRICZONE Sony")+" | CRICZONE",url:url});else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);$sonyShareBtn.textContent="✓ Link copied";setTimeout(function(){$sonyShareBtn.textContent="↗ Share channel"},1800)}else{window.prompt("Copy channel link",url)}}catch(e){if(e.name!=="AbortError")console.warn("Share failed",e)}
 });
 $sonyFavBtn&&$sonyFavBtn.addEventListener("click",function(){
@@ -1551,7 +1578,7 @@ $sonyReportBtn&&$sonyReportBtn.addEventListener("click",async function(){
 updateNetworkStatus();
 document.getElementById("sonyResumeBtn")&&document.getElementById("sonyResumeBtn").addEventListener("click",function(){
   var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});
-  if(ch){var url=new URL(location.href);url.searchParams.set("id",ch.id);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch)}
+  if(ch){var url=new URL(location.href);setChannelQuery(url,ch);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch)}
 });
 window.addEventListener("popstate",function(){var id=getChId();if(!id){showList();}else{var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}});
 document.addEventListener("DOMContentLoaded",main);
