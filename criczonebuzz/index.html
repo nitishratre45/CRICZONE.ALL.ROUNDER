@@ -2234,17 +2234,19 @@
   var name=document.getElementById("cz-home-player-name");
   if(!nav&&!hero)return;
   var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  players.forEach(function(p){var preload=new Image();preload.src=p.src;});
+  // Preload portraits once and reuse browser-cached image URLs.
+  players.forEach(function(p){var preload=new Image();preload.decoding="async";preload.src=p.src;});
   var current=0;
   function setPlayer(index){
     var player=players[index];
     [nav,hero].forEach(function(img){
       if(!img)return;
-      img.style.opacity="0";
-      var next=new Image();
-      next.onload=function(){img.src=player.src;img.alt=player.alt;img.style.opacity="1";};
-      next.onerror=function(){img.style.opacity="1";};
-      next.src=player.src;
+      if(img.src!==player.src){
+        img.style.opacity="0";
+        img.onload=function(){img.style.opacity="1";};
+        img.onerror=function(){img.style.opacity="1";};
+        img.src=player.src;img.alt=player.alt;
+      }
     });
     if(name)name.textContent=player.name;
     current=index;
@@ -2252,7 +2254,7 @@
   if(nav){nav.alt=players[0].alt;nav.classList.add("cz-rotating-player");}
   if(hero)hero.classList.add("cz-rotating-player");
   setPlayer(0);
-  if(!reduced)window.setInterval(function(){setPlayer((current+1)%players.length);},4500);
+  if(!reduced)window.setInterval(function(){if(!document.hidden)setPlayer((current+1)%players.length);},15000);
 })();
 </script>
 </body>
