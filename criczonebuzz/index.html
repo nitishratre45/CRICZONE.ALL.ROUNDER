@@ -1039,6 +1039,17 @@
 .shaka-controls-container .shaka-controls-button-panel button{min-width:32px!important}
 @media(max-width:600px){.shaka-overflow-menu,.shaka-settings-menu{width:min(196px,calc(100vw - 18px))!important;max-height:42vh!important}.shaka-overflow-menu button,.shaka-settings-menu button{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:10px!important}}
 </style>
+<style id="cz-match-details-styles">
+.cz-match-details-page{max-width:920px;margin:24px auto 60px;padding:0 14px}.cz-match-details-page[hidden]{display:none!important}
+.cz-detail-back{border:1px solid #ffffff24;background:#151b23;color:#f5f7fa;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer;margin-bottom:18px}
+.cz-detail-panel{position:relative;overflow:hidden;text-align:center;padding:clamp(24px,5vw,48px);border:1px solid #ffffff18;border-radius:22px;background:radial-gradient(ellipse at 50% 0,#ffb80020,transparent 55%),linear-gradient(145deg,#151c25,#090d13);box-shadow:0 18px 55px #0006}
+.cz-detail-status{display:inline-flex;padding:7px 13px;border-radius:30px;font-size:11px;font-weight:900;letter-spacing:1px}.cz-detail-status.is-live{background:#ef444426;color:#ff7777;border:1px solid #ef444455}.cz-detail-status.is-upcoming{background:#ffffff10;color:#c5ced8;border:1px solid #ffffff20}
+.cz-detail-series{margin:18px 0 7px;color:#ffbd24;font-size:11px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}.cz-detail-panel h1{font-size:clamp(22px,4vw,34px);font-weight:900;line-height:1.2}
+.cz-detail-teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:clamp(10px,3vw,30px);max-width:650px;margin:35px auto 24px}
+.cz-detail-team{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}.cz-detail-team img,.cz-detail-team-fallback{width:clamp(76px,15vw,120px);height:clamp(76px,15vw,120px);object-fit:contain;border-radius:50%;background:#ffffff0b;border:1px solid #ffffff20;padding:10px}.cz-detail-team-fallback{display:grid;place-items:center;color:#ffbf2f;font-size:25px;font-weight:900}.cz-detail-team strong{font-size:clamp(14px,2.5vw,20px);overflow-wrap:anywhere}.cz-detail-team small{font-size:10px;letter-spacing:1.5px;color:#8793a2;font-weight:800}.cz-detail-vs{font-size:16px;font-weight:900;color:#ffbd24}
+.cz-detail-time{color:#aeb8c5;font-size:13px;margin:8px 0 22px}.cz-detail-watch{width:min(100%,320px);min-height:50px;border:0;border-radius:12px;background:linear-gradient(120deg,#ffc52e,#ff8b00);color:#111;font-weight:950;font-size:15px;cursor:pointer}.cz-detail-wait{max-width:470px;margin:0 auto;padding:14px 16px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff08;color:#aeb8c5;font-size:13px;line-height:1.5}
+@media(max-width:520px){.cz-match-details-page{margin:14px auto 40px;padding:0 10px}.cz-detail-panel{padding:25px 14px}.cz-detail-teams{gap:8px;margin:27px auto 20px}.cz-detail-team img,.cz-detail-team-fallback{padding:8px}}
+</style>
 </head>
 <body>
 
@@ -1064,6 +1075,7 @@
 
     <!-- Main Content -->
     <main id="main-view">
+        <section id="cz-match-details-page" class="cz-match-details-page" hidden aria-live="polite"></section>
         <section class="hero cz-home-hero">
             <div class="cz-home-copy">
                 <span class="cz-home-kicker"><i></i> THE HOME OF LIVE CRICKET</span>
@@ -1205,6 +1217,8 @@
 
             // DOM elements
             const $container = document.getElementById('matches-container');
+            const $detailsPage = document.getElementById('cz-match-details-page');
+            let selectedDetailsMatchId = '';
             const $playerModal = document.getElementById('player-modal');
             const $video = document.getElementById('player-video');
             const $videoWrapper = document.getElementById('video-wrapper');
@@ -1281,6 +1295,7 @@
                 const status = String(m.status || (isLive ? 'LIVE' : 'UPCOMING')).toUpperCase();
 
                 return {
+                    ...m,
                     id: id,
                     match_id: id,
                     event_name: title,
@@ -1410,6 +1425,72 @@
                 return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
                     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
                 })[ch]);
+            }
+
+
+            // Dedicated match-details route; the same match ID updates from UPCOMING to LIVE.
+            function getTeamInfo(match, side) {
+                const home = side === 1;
+                const nameKeys = home
+                    ? ['home_team','team1','team_a','teamA','team_1','team1_name','homeTeam','localteam','team_home']
+                    : ['away_team','team2','team_b','teamB','team_2','team2_name','awayTeam','visitorteam','team_away'];
+                const logoKeys = home
+                    ? ['home_team_logo','team1_logo','team_a_logo','teamA_logo','team_1_logo','homeLogo','localteam_logo']
+                    : ['away_team_logo','team2_logo','team_b_logo','teamB_logo','team_2_logo','awayLogo','visitorteam_logo'];
+                let name = '', logo = '';
+                for (const key of nameKeys) {
+                    const value = match[key];
+                    if (value && typeof value === 'object') {
+                        name = value.name || value.team_name || value.short_name || value.title || '';
+                        logo = value.logo || value.image || value.flag || value.team_logo || '';
+                    } else if (value) name = String(value);
+                    if (name) break;
+                }
+                for (const key of logoKeys) {
+                    const value = match[key];
+                    if (typeof value === 'string' && /^https?:\/\//i.test(value)) { logo = value; break; }
+                    if (value && typeof value === 'object') logo = value.url || value.src || value.image || logo;
+                }
+                if (!name) {
+                    const parts = String(match.event_name || '').split(/\s+(?:vs\.?|v\.?|versus)\s+/i);
+                    name = parts.length === 2 ? parts[home ? 0 : 1].trim() : (home ? 'TEAM 1' : 'TEAM 2');
+                }
+                return { name: name || (home ? 'TEAM 1' : 'TEAM 2'), logo: /^https?:\/\//i.test(String(logo)) ? String(logo) : '' };
+            }
+
+            function renderMatchDetails(match) {
+                if (!$detailsPage || !match) return;
+                selectedDetailsMatchId = String(match.id || match.match_id || '');
+                const live = isMatchLive(match);
+                const home = getTeamInfo(match, 1), away = getTeamInfo(match, 2);
+                const initials = name => String(name).trim().split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase();
+                const teamCard = (team, side) => `
+                    <div class="cz-detail-team">
+                        ${team.logo ? `<img src="${escapeHtml(team.logo)}" alt="${escapeHtml(team.name)} logo" loading="lazy">` : `<span class="cz-detail-team-fallback">${escapeHtml(initials(team.name) || '🏏')}</span>`}
+                        <strong>${escapeHtml(team.name)}</strong><small>${side}</small>
+                    </div>`;
+                $detailsPage.innerHTML = `
+                    <button class="cz-detail-back" type="button" id="cz-detail-back">← BACK TO MATCHES</button>
+                    <div class="cz-detail-panel">
+                        <span class="cz-detail-status ${live ? 'is-live' : 'is-upcoming'}">${live ? '● LIVE NOW' : '◷ UPCOMING'}</span>
+                        <p class="cz-detail-series">${escapeHtml(match.series || match.sport || 'CRICKET')}</p>
+                        <h1>${escapeHtml(match.event_name || 'Cricket Match')}</h1>
+                        <div class="cz-detail-teams">${teamCard(home, 'HOME')}<span class="cz-detail-vs">VS</span>${teamCard(away, 'AWAY')}</div>
+                        <p class="cz-detail-time">${escapeHtml(match.time || (live ? 'LIVE NOW' : 'Match schedule to be announced'))}</p>
+                        ${live ? '<button class="cz-detail-watch" id="cz-detail-watch" type="button">▶ WATCH LIVE</button>' : '<div class="cz-detail-wait">Match has not started yet. Watch Live will appear here when the match goes live.</div>'}
+                    </div>`;
+                $detailsPage.hidden = false;
+                document.querySelectorAll('#main-view > .hero, #main-view > .controls-bar, #main-view > #matches-container').forEach(el => { el.hidden = true; });
+                document.body.classList.add('cz-details-open');
+                document.getElementById('cz-detail-back')?.addEventListener('click', () => {
+                    window.history.pushState({}, '', window.location.pathname);
+                    selectedDetailsMatchId = '';
+                    $detailsPage.hidden = true;
+                    document.querySelectorAll('#main-view > .hero, #main-view > .controls-bar, #main-view > #matches-container').forEach(el => { el.hidden = false; });
+                    document.body.classList.remove('cz-details-open');
+                    renderMatches();
+                });
+                document.getElementById('cz-detail-watch')?.addEventListener('click', () => playMatch(match.id, 1));
             }
 
             // Render Match Cards
@@ -2169,7 +2250,7 @@
                         match = allMatches.find(m => String(m.id || '').toLowerCase().includes(cleanId) || (m.event_name || '').toLowerCase().includes(cleanId));
                     }
                     if (match) {
-                        playMatch(match.id, ser);
+                        renderMatchDetails(match);
                     }
                 }
             }
@@ -2183,7 +2264,10 @@
                     const updated = await fetchMatches();
                     if (updated.length > 0) {
                         allMatches = updated;
-                        if (forceRender || !$playerModal.classList.contains('active')) renderMatches();
+                        if (selectedDetailsMatchId) {
+                            const detailMatch = allMatches.find(m => String(m.id || m.match_id || '') === selectedDetailsMatchId);
+                            if (detailMatch) renderMatchDetails(detailMatch);
+                        } else if (forceRender || !$playerModal.classList.contains('active')) renderMatches();
                     } else if (allMatches.length === 0 || forceRender) {
                         renderMatches();
                     }
