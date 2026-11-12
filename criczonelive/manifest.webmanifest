@@ -1,0 +1,19 @@
+{
+  "name": "CRICZONE Live Sports",
+  "short_name": "CRICZONE",
+  "description": "Live sports channels and match centre",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07131f",
+  "theme_color": "#07131f",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
