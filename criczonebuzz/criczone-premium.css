@@ -340,3 +340,108 @@ header .btn-header:hover,header .btn-header:focus-visible{
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
  outline:2px solid #d7ff3f!important;outline-offset:3px!important;
 }
+
+
+/* =========================================================
+   CRICZONE BUZZ — premium navigation + poster CTA cleanup
+   ========================================================= */
+:root{--cz-lime:#d7ff3f;--cz-deep:#0b140b;--cz-panel:#101a0e}
+html,body{background:#050705!important}
+header{
+ position:sticky!important;top:0!important;z-index:1000!important;
+ background:linear-gradient(112deg,rgba(24,39,17,.99) 0%,rgba(12,22,11,.99) 52%,rgba(7,15,9,.99) 100%)!important;
+ border-bottom:1px solid rgba(215,255,63,.48)!important;
+ box-shadow:0 9px 30px rgba(0,0,0,.48),0 1px 0 rgba(215,255,63,.08)!important;
+ isolation:isolate!important;
+}
+header:after{
+ content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+ background:linear-gradient(90deg,transparent 0%,rgba(215,255,63,.12) 12%,#d7ff3f 50%,rgba(215,255,63,.12) 88%,transparent 100%);
+ pointer-events:none;
+}
+header .header-inner{position:relative;z-index:1;min-height:72px!important}
+header .brand{gap:12px!important}
+header .brand-badge{
+ border-radius:50%!important;background:#0a1209!important;
+ border:2px solid #d7ff3f!important;
+ box-shadow:0 0 0 4px rgba(215,255,63,.09),0 0 24px rgba(215,255,63,.24)!important;
+}
+header .brand-name{font-size:clamp(1.02rem,2vw,1.25rem)!important;color:#fff!important;text-shadow:0 2px 12px #0008}
+header .brand-tag{color:#d7ff3f!important;font-weight:900!important;letter-spacing:.09em!important}
+header .btn-header{
+ min-height:44px!important;border-radius:999px!important;
+ background:linear-gradient(145deg,#26391a,#142311)!important;
+ border:1px solid rgba(215,255,63,.55)!important;color:#eff8df!important;
+ box-shadow:inset 0 1px 0 #ffffff0c,0 5px 15px #0004!important;
+}
+header .btn-header svg{fill:#d7ff3f!important}
+header .btn-header:hover,header .btn-header:focus-visible{
+ background:linear-gradient(110deg,#d7ff3f,#b9f52b)!important;color:#101507!important;
+ box-shadow:0 0 22px rgba(215,255,63,.24)!important;
+}
+.player-header{
+ background:linear-gradient(110deg,#192815,#0d160d 60%,#101b0f)!important;
+ border-bottom:1px solid rgba(215,255,63,.34)!important;
+ box-shadow:0 7px 22px #0005!important;
+}
+.player-header .btn-header{
+ background:linear-gradient(145deg,#1b2a15,#101a0e)!important;
+ border:1px solid rgba(215,255,63,.42)!important;color:#eff8df!important;
+}
+.player-header .btn-header-primary{background:linear-gradient(110deg,#d7ff3f,#b9f52b)!important;color:#101507!important}
+.poster-play-hint,.match-card .poster-play-hint{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+.card-poster .poster-play-hint{display:none!important}
+#matches-container .card-poster{position:relative!important;display:block!important;overflow:hidden!important;border-radius:16px 16px 0 0!important;background:#10170d!important}
+#matches-container .card-poster img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+#matches-container .card-poster:after{pointer-events:none!important}
+#matches-container .card-body{background:linear-gradient(180deg,#10150d,#0b100a)!important}
+#matches-container .card-title{color:#f4f7eb!important}
+#matches-container .card-meta{color:#aab49c!important}
+#matches-container .open-match-btn{
+ background:linear-gradient(105deg,#d7ff3f,#b8f326)!important;color:#101507!important;
+ border:0!important;border-radius:999px!important;font-weight:950!important;
+ box-shadow:0 5px 18px rgba(215,255,63,.13)!important;
+}
+#matches-container .card-share-btn{
+ background:linear-gradient(145deg,#172313,#10180e)!important;
+ border:1px solid rgba(215,255,63,.28)!important;color:#e7efda!important;border-radius:999px!important;
+}
+#cz-tg-local-bar{
+ border-color:rgba(215,255,63,.42)!important;
+ background:linear-gradient(105deg,#1b2a13,#10190d 60%,#0b1209)!important;
+ box-shadow:0 0 24px rgba(215,255,63,.1),0 10px 28px #0006!important;
+}
+#cz-tg-local-bar .cz-tg-logo{background:linear-gradient(145deg,#d7ff3f,#b9f526)!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-tap{background:linear-gradient(110deg,#d7ff3f,#b9f526)!important;color:#10130b!important;border-radius:999px!important}
+#cz-tg-local-bar strong{color:#f5f8ed!important}
+#cz-tg-local-bar small{color:#b4c0a5!important}
+#cz-tg-local-modal{background:rgba(2,6,2,.84)!important}
+#cz-tg-local-modal .cz-tg-card{
+ border:1px solid rgba(215,255,63,.4)!important;
+ background:radial-gradient(circle at 50% 0,rgba(215,255,63,.16),transparent 48%),linear-gradient(150deg,#1b2b14,#0b1209 78%)!important;
+ box-shadow:0 28px 90px #000b,0 0 32px rgba(215,255,63,.12)!important;color:#f5f8ed!important;
+}
+#cz-tg-local-modal .cz-tg-kicker{color:#d7ff3f!important}
+#cz-tg-local-modal p{color:#c2cdb7!important}
+#cz-tg-local-modal .cz-tg-x{border-color:#d7ff3f55!important;background:#d7ff3f12!important;color:#eff8df!important}
+#cz-tg-local-modal .cz-tg-join{background:linear-gradient(105deg,#d7ff3f,#b9f526)!important;color:#101507!important;box-shadow:0 9px 25px #d7ff3f30!important}
+#cz-tg-local-modal .cz-tg-foot{color:#aebc9e!important}
+@media(max-width:700px){
+ header .header-inner{min-height:68px!important;padding:8px 12px!important}
+ header .brand{gap:10px!important}
+ header .brand-badge{width:44px!important;height:44px!important;flex-basis:44px!important}
+ header .brand-name{font-size:1.03rem!important}
+ header .brand-tag{font-size:.59rem!important}
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ #matches-container .card-poster{aspect-ratio:16/10!important}
+ #matches-container .card-body{padding:10px!important}
+ #matches-container .card-title{font-size:clamp(.78rem,3.2vw,.92rem)!important;line-height:1.3!important;min-height:3.5em!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important;gap:6px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{min-height:39px!important;font-size:clamp(9px,2.5vw,11px)!important;padding:6px 5px!important}
+}
+@media(max-width:360px){
+ header .brand-tag{font-size:.52rem!important}
+ #matches-container .card-title{font-size:.74rem!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)!important}
+}
+@media(prefers-reduced-motion:reduce){header .btn-header,#matches-container .open-match-btn{transition:none!important}}
