@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=11">
+    <link rel="stylesheet" href="criczone-premium.css?v=12">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1119,6 +1119,7 @@
         <div class="player-servers-bar" id="player-servers-bar" style="display: none;"></div>
         <div id="video-wrapper">
             <video id="player-video" playsinline webkit-playsinline preload="auto"></video>
+            <div id="cz-player-live-status" class="cz-player-live-status" role="status" aria-live="polite"></div>
         </div>
         <section id="cz-player-details" aria-live="polite">
             <div class="cz-player-kicker">CRICZONE HD NETWORK</div>
@@ -1222,6 +1223,20 @@
                 if (duration > 0) {
                     toastTimer = setTimeout(() => { $toast.className = ''; }, duration);
                 }
+            }
+
+            function setPlayerLiveStatus(message, state = 'live') {
+                const pill = document.getElementById('cz-player-live-status');
+                if (!pill) return;
+                pill.className = 'cz-player-live-status is-visible is-' + state;
+                pill.innerHTML = '<span class="cz-player-live-dot"></span><span class="cz-player-live-text"></span>';
+                pill.querySelector('.cz-player-live-text').textContent = message;
+                pill.setAttribute('aria-label', message);
+            }
+
+            function hidePlayerLiveStatus() {
+                const pill = document.getElementById('cz-player-live-status');
+                if (pill) pill.className = 'cz-player-live-status';
             }
 
             function normalizeMatch(m) {
@@ -1781,7 +1796,7 @@
                     return;
                 }
 
-                showToast('Connecting to ' + (targetServer.label || 'Server') + '...', 'info', 2000);
+                setPlayerLiveStatus('CONNECTING TO ' + (targetServer.label || 'SERVER'), 'connecting');
 
                 if (!shakaPlayerInstance) {
                     shakaPlayerInstance = new shaka.Player();
@@ -1803,7 +1818,7 @@
                     // Use the browser's normal networking identity. Do not spoof provider headers.
 
                     $video.addEventListener('playing', () => {
-                        showToast('● LIVE STREAM CONNECTED', 'success', 2500);
+                        setPlayerLiveStatus('LIVE', 'live');
                         injectFitButton();
                     });
 
@@ -1821,6 +1836,7 @@
                     });
 
                     $video.addEventListener('waiting', () => {
+                        setPlayerLiveStatus('BUFFERING', 'buffering');
                         clearPlaybackStallTimer();
                         const waitingAttempt = playbackAttemptId;
                         stallTimer = setTimeout(() => {
@@ -1912,6 +1928,7 @@
 
             // Close Player
             function closePlayer() {
+                hidePlayerLiveStatus();
                 ++playbackAttemptId;
                 failoverPending = false;
                 clearPlaybackStallTimer();
@@ -1980,7 +1997,7 @@
                     renderPlayerServerSwitcher(currentActiveMatch, targetSer);
                 }
 
-                showToast('● SERVER ' + targetSer + ' CONNECTED', 'success', 2500);
+                setPlayerLiveStatus('SERVER SELECTED', 'connecting');
             };
 
             $btnClose.addEventListener('click', closePlayer);
