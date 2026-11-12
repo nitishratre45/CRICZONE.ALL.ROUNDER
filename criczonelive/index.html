@@ -619,19 +619,19 @@ const TG_LINK="https://t.me/+pN15_8gc54s2NDU1";
 const $=id=>document.getElementById(id);
 function readFavTeams(){try{const v=JSON.parse(localStorage.getItem("fc_fav_teams")||"[]");return Array.isArray(v)?v.filter(x=>typeof x==="string"):[]}catch{return[]}}
 const state={events:[],sport:"Cricket",tab:"all",searchQuery:"",channelSport:"All",currentEvent:null,currentStreams:[],currentIndex:0,favsTeams:readFavTeams()};
-let player=null,overlay=null,playbackToken=0,toastTimer=null;
+let player=null,overlay=null,playbackToken=0,toastTimer=null,telegramPopupTimer=null;
+function scheduleTelegramPopup(){
+ clearTimeout(telegramPopupTimer);
+ if(sessionStorage.getItem("cz_popup_dismissed"))return;
+ telegramPopupTimer=setTimeout(()=>{
+  if(sessionStorage.getItem("cz_popup_dismissed")||!location.hash.includes("watch"))return;
+  const popup=$("popup");if(!popup)return;
+  popup.classList.add("visible","button-stage");
+  setTimeout(()=>{popup.classList.remove("button-stage");popup.classList.add("revealing");setTimeout(()=>popup.classList.remove("revealing"),500)},100);
+ },60000);
+}
 
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-function isAdmin() {
-    const hash = location.hash;
-    if (hash.includes("admin?key=mayank@45")) {
-        localStorage.setItem("fc_admin_auth", "true");
-        location.hash = "#/";
-        return true;
-    }
-    return localStorage.getItem("fc_admin_auth") === "true";
-}
 
 const initialHash = location.hash;
 if (initialHash.includes("watch?id=")) {
@@ -681,14 +681,6 @@ async function fetchJson(url){
  }catch(err){return null;}
 }
 
-function isCricketEvent(item,info){
- const category=String(item?.Category||item?.sport||info?.category||item?.cat||"").toLowerCase();
- const title=[item?.title,item?.event_name,item?.name,info?.eventName,info?.type,info?.name].join(" ").toLowerCase();
- const cricketTerms=/\b(cricket|ipl|t20|odi|test|ranji|vijay hazare|syed mushtaq|world cup|champions trophy|big bash|bbl|psl|cpl|the hundred|wpl|ashes|county championship|maharaja trophy|legends league|sa20|ilt20|super smash|international league t20)\b/i;
- const knownOther=/\b(football|soccer|basketball|tennis|badminton|hockey|volleyball|kabaddi|rugby|baseball|golf|motorsport|formula 1|f1|wrestling|boxing)\b/i;
- if(knownOther.test(category))return false;
- return /\bcricket\b/i.test(category)||cricketTerms.test(title)||cricketTerms.test(category);
-}
 function collectEventItems(data){
  const found=[],seen=new Set();
  function walk(node,depth){
@@ -738,13 +730,21 @@ async function loadData(){
   let all=[];results.forEach(data=>{if(data)all.push(...parseEventsFromData(data))});
   const merged=new Map();
   all.forEach(event=>{const key=(event.a+"__"+event.b).toLowerCase();if(merged.has(key)){const old=merged.get(key);event.streams.forEach(st=>{if(!old.streams.some(x=>x.link===st.link))old.streams.push(st)});if(event.st<old.st)old.st=event.st;if(event.en>old.en)old.en=event.en}else merged.set(key,event)});
-  state.events=[...merged.values()];renderHub();
+  state.events=[...merged.values()].sort((a,b)=>({live:0,soon:1,done:2}[getStatus(a)]-({live:0,soon:1,done:2}[getStatus(b)])||a.st-b.st));renderHub();
   if(note)note.textContent=state.events.length?"Cricket feeds updated · "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"No cricket fixtures returned by the connected feeds. Tap Refresh data to retry.";
   if(!window.__booted){window.__booted=true;route()}
  }catch(error){console.error("CRICZONE feed loading failed",error);state.events=[];renderHub();if(note)note.textContent="Unable to load cricket feeds. Check your connection and tap Refresh data.";if(!window.__booted){window.__booted=true;route()}}
 }
 
-function renderChannels(){const all=[],seen=new Set();state.events.forEach(ev=>(ev.streams||[]).forEach(stream=>{const key=String(stream.title||"").trim().toLowerCase();if(!key||seen.has(key))return;seen.add(key);all.push({event:ev,stream})}));const sports=["All",...new Set(all.map(x=>x.event.sport).filter(Boolean))];if(!sports.includes(state.channelSport))state.channelSport="All";$("channelCategories").innerHTML=sports.map(s=>`<button type="button" class="channel-category ${state.channelSport===s?"active":""}" data-channel-sport="${esc(s)}">${esc(s)}</button>`).join("");const q=state.searchQuery;const visible=all.filter(x=>{const category=state.channelSport==="All"||x.event.sport===state.channelSport;const text=[x.stream.title,x.event.sport,x.event.comp,x.event.title,x.event.a,x.event.b].join(" ").toLowerCase();return category&&(!q||text.includes(q))});$("channelTotal").textContent=`${visible.length} / ${all.length} channels`;$("channelGrid").innerHTML=visible.length?visible.map(({event,stream})=>{const initials=String(stream.title).replace(/[^A-Za-z0-9]/g,"").slice(0,2).toUpperCase()||"TV";return `<button type="button" class="channel-tile" data-channel-event="${esc(event.id)}" data-channel-stream="${esc(stream.id)}" aria-label="Open ${esc(stream.title)}"><span class="channel-avatar">${initials}</span><strong>${esc(stream.title)}</strong><small>${esc(event.sport||"Live")} · Watch</small></button>`}).join(""):'<div class="channels-empty">No channels match your search or category.</div>'}
+function renderChannels(){
+ const all=[],seen=new Set();
+ const ordered=[...state.events].sort((a,b)=>({live:0,soon:1,done:2}[getStatus(a)]-({live:0,soon:1,done:2}[getStatus(b)])||a.st-b.st));
+ ordered.forEach(ev=>(ev.streams||[]).forEach(stream=>{
+  const key=String(stream.title||"").trim().toLowerCase();
+  if(!key||seen.has(key))return;
+  seen.add(key);all.push({event:ev,stream});
+ }));
+const sports=["All",...new Set(all.map(x=>x.event.sport).filter(Boolean))];if(!sports.includes(state.channelSport))state.channelSport="All";$("channelCategories").innerHTML=sports.map(s=>`<button type="button" class="channel-category ${state.channelSport===s?"active":""}" data-channel-sport="${esc(s)}">${esc(s)}</button>`).join("");const q=state.searchQuery;const visible=all.filter(x=>{const category=state.channelSport==="All"||x.event.sport===state.channelSport;const text=[x.stream.title,x.event.sport,x.event.comp,x.event.title,x.event.a,x.event.b].join(" ").toLowerCase();return category&&(!q||text.includes(q))});$("channelTotal").textContent=`${visible.length} / ${all.length} channels`;$("channelGrid").innerHTML=visible.length?visible.map(({event,stream})=>{const initials=String(stream.title).replace(/[^A-Za-z0-9]/g,"").slice(0,2).toUpperCase()||"TV";return `<button type="button" class="channel-tile" data-channel-event="${esc(event.id)}" data-channel-stream="${esc(stream.id)}" aria-label="Open ${esc(stream.title)}"><span class="channel-avatar">${initials}</span><strong>${esc(stream.title)}</strong><small>${esc(event.sport||"Live")} · Watch</small></button>`}).join(""):'<div class="channels-empty">No channels match your search or category.</div>'}
 function updateOverview(){
  const live=state.events.filter(e=>getStatus(e)==="live").length;
  const upcoming=state.events.filter(e=>getStatus(e)==="soon").length;
@@ -837,14 +837,14 @@ async function destroyPlayer(){
  const c=$("player-container");if(c)c.innerHTML="";
 }
 
-async function stopPlayback(){playbackToken++;await destroyPlayer()}
+async function stopPlayback(){clearTimeout(telegramPopupTimer);telegramPopupTimer=null;playbackToken++;await destroyPlayer()}
 function showPlayerError(message,detail=""){const c=$("player-container");c.innerHTML=`<div class="screen-msg">${esc(message)}${detail?`<small>${esc(detail)}</small>`:""}</div>`}
 
 async function mountShaka(record,token){
  if(!window.shaka)throw Error("Shaka Player library did not load.");
  shaka.polyfill.installAll();if(!shaka.Player.isBrowserSupported())throw Error("This browser does not support Shaka playback.");
  const c=$("player-container");c.innerHTML="";
- const video=document.createElement("video");video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.controls=false;c.appendChild(video);
+ const video=document.createElement("video");video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.controls=false;video.addEventListener("playing",scheduleTelegramPopup,{once:true});c.appendChild(video);
  const instance=new shaka.Player();player=instance;await instance.attach(video);if(token!==playbackToken)throw Error("Playback cancelled.");
  const ui=new shaka.ui.Overlay(instance,c,video);overlay=ui;
  ui.configure({controlPanelElements:["play_pause","mute","volume","time_and_duration","spacer","quality","picture_in_picture","fullscreen","overflow_menu"],overflowMenuButtons:["quality","language","captions","playback_rate","picture_in_picture"],seekBarColors:{base:"#777",buffered:"#D48806",played:"#0088cc",ad:"#fff"}});
@@ -868,7 +868,7 @@ async function mountShaka(record,token){
 }
 
 async function mountNativeHls(record,token){
- const c=$("player-container");c.innerHTML="";const video=document.createElement("video");video.controls=true;video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.src=record.link;c.appendChild(video);
+ const c=$("player-container");c.innerHTML="";const video=document.createElement("video");video.controls=true;video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.addEventListener("playing",scheduleTelegramPopup,{once:true});video.src=record.link;c.appendChild(video);
  video.addEventListener("loadedmetadata",()=>{if(token!==playbackToken)return;video.play().catch(()=>showToast("Tap Play to start the stream","",4000))},{once:true});
  video.addEventListener("error",()=>{if(token!==playbackToken)return;showPlayerError("This HLS stream could not be played on this device.","The stream may be unavailable or blocked by the source server.")},{once:true});
  video.load();
@@ -1134,15 +1134,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
  const popup=$("popup");
- if(!sessionStorage.getItem("cz_popup_dismissed"))setTimeout(()=>{
-  if(sessionStorage.getItem("cz_popup_dismissed"))return;
-  popup.classList.add("visible","button-stage");
-  setTimeout(()=>{
-   popup.classList.remove("button-stage");
-   popup.classList.add("revealing");
-   setTimeout(()=>popup.classList.remove("revealing"),500);
-  },100);
- },60000);
+
 
  $("popupJoinBtn").addEventListener("click",()=>{window.open(TG_LINK,"_blank","noopener,noreferrer");closePopup()});
  $("popupSkipBtn").addEventListener("click",closePopup);
