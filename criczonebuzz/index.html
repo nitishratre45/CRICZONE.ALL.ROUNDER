@@ -2356,7 +2356,11 @@
                         match = allMatches.find(m => String(m.id || '').toLowerCase().includes(cleanId) || (m.event_name || '').toLowerCase().includes(cleanId));
                     }
                     if (match) {
-                        renderMatchDetails(match);
+                        if (isMatchLive(match)) {
+                            playMatch(match.id, ser || 1);
+                        } else {
+                            renderMatchDetails(match);
+                        }
                     }
                 }
             }
