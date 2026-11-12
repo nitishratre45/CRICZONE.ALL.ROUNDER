@@ -452,7 +452,7 @@ async function handleText({ request, env, message }) {
 
   // Willow and Cricbuzz share the CRICZONE Buzz destination.
   // Use one clean CTA button instead of exposing a raw URL in the message body.
-  if (/^(?:willow|willow channels|cricbuzz|cricbuzz channels)$/i.test(value)) {
+  if (/^(?:willow(?:\\s+(?:channels|web))?|cricbuzz(?:\\s+channels)?)$/i.test(value)) {
     await clearState(env.TELEGRAM_DB, chatId, userId);
     const buzzKeyboard = buildChannelKeyboard([
       { name: "🏏 OPEN CRICZONE BUZZ", page_url: "https://criczone.pages.dev/criczonebuzz/" }
