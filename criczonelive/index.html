@@ -301,6 +301,25 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
 @media(max-width:650px){.brand-photo-frame{width:43px;height:43px}.brand{gap:9px}.brand-text h1{font-size:17px}.brand-text p{font-size:7px;letter-spacing:.12em}}
 @media(max-width:390px){.brand-photo-frame{width:39px;height:39px}.brand-text p{display:block;font-size:6.5px}}
 
+
+/* CRICZONE quality-of-life layer */
+.cz-live-overview{margin:0 0 36px;padding:18px 20px 14px;border:1px solid var(--border);border-radius:17px;background:linear-gradient(115deg,var(--white),var(--surface2));box-shadow:var(--shadow)}
+.cz-overview-intro{display:flex;align-items:center;gap:8px;margin-bottom:13px;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.18em}
+.cz-overview-pulse{width:7px;height:7px;border-radius:50%;background:#ef4e5b;box-shadow:0 0 0 4px rgba(239,78,91,.12);animation:pulse 1.5s infinite}
+.cz-overview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:12px;align-items:center}
+.cz-overview-stat{display:flex;align-items:center;gap:11px;min-width:0;padding:5px 12px 5px 0;border-right:1px solid var(--border)}
+.cz-stat-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(54,214,231,.13);color:var(--accent);font-size:17px}
+.cz-overview-stat strong{display:block;color:var(--ink);font:700 21px/1 var(--display);font-variant-numeric:tabular-nums}
+.cz-overview-stat small{display:block;margin-top:4px;color:var(--muted);font-size:9px;font-weight:700}
+.cz-refresh-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:39px;padding:0 13px;border:1px solid var(--border);border-radius:10px;background:var(--white);color:var(--ink);font-size:10px;font-weight:800;cursor:pointer;transition:.2s}
+.cz-refresh-btn:hover{border-color:var(--accent);background:var(--surface2);transform:translateY(-1px)}
+.cz-refresh-btn span:first-child{font-size:17px;color:var(--accent)}.cz-refresh-btn.is-loading span:first-child{animation:cz-spin .8s linear infinite}
+@keyframes cz-spin{to{transform:rotate(360deg)}}
+.cz-refresh-note{margin:10px 0 0;color:var(--muted);font-size:9px}
+.cz-back-top{position:fixed;right:22px;bottom:24px;z-index:45;width:43px;height:43px;border:1px solid var(--border);border-radius:13px;background:var(--white);color:var(--accent);box-shadow:var(--shadow-deep);font-size:20px;font-weight:800;opacity:0;visibility:hidden;transform:translateY(9px);transition:.2s;cursor:pointer}
+.cz-back-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
+@media(max-width:650px){.cz-live-overview{padding:14px;margin-bottom:27px}.cz-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.cz-overview-stat{gap:7px;padding-right:5px}.cz-stat-icon{width:28px;height:28px;font-size:13px;border-radius:8px}.cz-overview-stat strong{font-size:18px}.cz-overview-stat small{font-size:8px}.cz-refresh-btn{grid-column:1/-1;min-height:37px}.cz-refresh-note{font-size:8px}.cz-back-top{right:13px;bottom:15px;width:39px;height:39px}}
+
 </style>
 </head>
 <body>
@@ -341,6 +360,16 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
 </section>
 <div class="cz-trust-strip"><span><b>●</b> Live channel directory</span><span><b>✦</b> Match discovery</span><span><b>↗</b> Official community</span></div>
 <div class="search-container"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" class="search-input" type="search" placeholder="Search matches, teams or sports..." autocomplete="off"></div>
+<section class="cz-live-overview" aria-label="Live sports overview">
+ <div class="cz-overview-intro"><span class="cz-overview-pulse"></span><span>RIGHT NOW ON CRICZONE</span></div>
+ <div class="cz-overview-grid">
+  <div class="cz-overview-stat"><span class="cz-stat-icon">●</span><div><strong id="czLiveCount">—</strong><small>Live events</small></div></div>
+  <div class="cz-overview-stat"><span class="cz-stat-icon">◷</span><div><strong id="czUpcomingCount">—</strong><small>Upcoming</small></div></div>
+  <div class="cz-overview-stat"><span class="cz-stat-icon">▦</span><div><strong id="czChannelCount">—</strong><small>Live channels</small></div></div>
+  <button type="button" class="cz-refresh-btn" id="czRefreshBtn"><span aria-hidden="true">↻</span><span>Refresh data</span></button>
+ </div>
+ <p class="cz-refresh-note" id="czRefreshNote" aria-live="polite">Match and channel information updates from available feeds.</p>
+</section>
 <section class="channels-first" aria-labelledby="channelsTitle"><div class="channels-head"><div><div class="channels-kicker">Your front-row seat</div><h2 id="channelsTitle">Live channels</h2></div><span class="channels-total" id="channelTotal">Loading channels…</span></div><nav class="channel-categories" id="channelCategories" aria-label="Channel categories"></nav><div class="channel-grid" id="channelGrid" aria-live="polite"><div class="channels-empty">Loading all available channels…</div></div></section><div class="matches-heading"><h2>Match centre</h2><span>Fixtures, live action and upcoming events</span></div>
 <div class="filters"><div class="filter-row" id="sports" role="tablist" aria-label="Sports"></div><div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div></div>
 <main id="list" class="grid" aria-live="polite"><div class="state"><h3>Loading events…</h3><p>Please wait while the match schedule loads.</p></div></main>
@@ -577,9 +606,19 @@ async function loadData(){
 }
 
 function renderChannels(){const all=[],seen=new Set();state.events.forEach(ev=>(ev.streams||[]).forEach(stream=>{const key=String(stream.title||"").trim().toLowerCase();if(!key||seen.has(key))return;seen.add(key);all.push({event:ev,stream})}));const sports=["All",...new Set(all.map(x=>x.event.sport).filter(Boolean))];if(!sports.includes(state.channelSport))state.channelSport="All";$("channelCategories").innerHTML=sports.map(s=>`<button type="button" class="channel-category ${state.channelSport===s?"active":""}" data-channel-sport="${esc(s)}">${esc(s)}</button>`).join("");const q=state.searchQuery;const visible=all.filter(x=>{const category=state.channelSport==="All"||x.event.sport===state.channelSport;const text=[x.stream.title,x.event.sport,x.event.comp,x.event.title,x.event.a,x.event.b].join(" ").toLowerCase();return category&&(!q||text.includes(q))});$("channelTotal").textContent=`${visible.length} / ${all.length} channels`;$("channelGrid").innerHTML=visible.length?visible.map(({event,stream})=>{const initials=String(stream.title).replace(/[^A-Za-z0-9]/g,"").slice(0,2).toUpperCase()||"TV";return `<button type="button" class="channel-tile" data-channel-event="${esc(event.id)}" data-channel-stream="${esc(stream.id)}" aria-label="Open ${esc(stream.title)}"><span class="channel-avatar">${initials}</span><strong>${esc(stream.title)}</strong><small>${esc(event.sport||"Live")} · Watch</small></button>`}).join(""):'<div class="channels-empty">No channels match your search or category.</div>'}
+function updateOverview(){
+ const live=state.events.filter(e=>getStatus(e)==="live").length;
+ const upcoming=state.events.filter(e=>getStatus(e)==="soon").length;
+ const channels=new Set();
+ state.events.forEach(e=>(e.streams||[]).forEach(st=>{if(st.title)channels.add(String(st.title).trim().toLowerCase())}));
+ if($("czLiveCount"))$("czLiveCount").textContent=live;
+ if($("czUpcomingCount"))$("czUpcomingCount").textContent=upcoming;
+ if($("czChannelCount"))$("czChannelCount").textContent=channels.size;
+}
 function renderHub(){
  if(!$("hubView").classList.contains("active")) return;
   renderChannels();
+ updateOverview();
  const sportFilteredEvents=state.events.filter(e=>{
   const matchSport=state.sport==="All"||e.sport===state.sport;
   const matchQuery=!state.searchQuery||[e.a,e.b,e.comp,e.sport,e.title].some(x=>String(x||"").toLowerCase().includes(state.searchQuery));
@@ -844,7 +883,7 @@ async function openPlayer(id, targetStreamId){
  else showPlayerError("No playable streams for this match.");
 }
 
-function closePopup(){$("popup").classList.remove("visible")}
+function closePopup(){$("popup").classList.remove("visible");sessionStorage.setItem("cz_popup_dismissed","1")}
 
 // Share App URL with Match ID and active Stream ID
 async function handleShareMatchLink() {
@@ -881,6 +920,25 @@ document.addEventListener("DOMContentLoaded",()=>{
 
  $("themeToggle").addEventListener("click",toggleTheme);
 
+ const refreshBtn=$("czRefreshBtn");
+ if(refreshBtn)refreshBtn.addEventListener("click",async()=>{
+  refreshBtn.classList.add("is-loading");refreshBtn.disabled=true;
+  const note=$("czRefreshNote");if(note)note.textContent="Refreshing match and channel feeds…";
+  try{await loadData();if(note)note.textContent="Updated just now · Feed data loaded successfully."}
+  catch(e){if(note)note.textContent="Refresh failed. Please try again shortly."}
+  finally{refreshBtn.classList.remove("is-loading");refreshBtn.disabled=false}
+ });
+ const backTop=document.createElement("button");
+ backTop.type="button";backTop.className="cz-back-top";backTop.id="czBackTop";backTop.textContent="↑";backTop.setAttribute("aria-label","Back to top");document.body.appendChild(backTop);
+ backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+ const syncBackTop=()=>backTop.classList.toggle("visible",window.scrollY>500);
+ window.addEventListener("scroll",syncBackTop,{passive:true});syncBackTop();
+ document.addEventListener("keydown",e=>{
+  if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();$("searchInput").focus()}
+  if(e.key==="Escape"&&popup.classList.contains("visible"))closePopup();
+ });
+
+
  // Rotate the navbar portrait between Rohit Sharma and Virat Kohli every 4 seconds.
  const navbarPhoto=$("czNavbarPlayerPhoto");
  if(navbarPhoto){
@@ -901,14 +959,15 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
  const popup=$("popup");
- setTimeout(()=>{
+ if(!sessionStorage.getItem("cz_popup_dismissed"))setTimeout(()=>{
+  if(sessionStorage.getItem("cz_popup_dismissed"))return;
   popup.classList.add("visible","button-stage");
   setTimeout(()=>{
    popup.classList.remove("button-stage");
    popup.classList.add("revealing");
    setTimeout(()=>popup.classList.remove("revealing"),500);
   },100);
- },3000);
+ },60000);
 
  $("popupJoinBtn").addEventListener("click",()=>{window.open(TG_LINK,"_blank","noopener,noreferrer");closePopup()});
  $("popupSkipBtn").addEventListener("click",closePopup);
