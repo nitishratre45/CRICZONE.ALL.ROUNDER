@@ -3435,6 +3435,42 @@
       .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
       .skip-link{position:fixed;z-index:100000;top:10px;left:10px;padding:11px 15px;border-radius:10px;background:#ffda7b;color:#17120a;font-weight:900;transform:translateY(-160%);transition:transform .2s}
       .skip-link:focus{transform:translateY(0);outline:3px solid #fff;outline-offset:3px}
+
+      /* Premium broadcast finish */
+      .topbar{isolation:isolate}
+      .topbar:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,210,105,.48),transparent);pointer-events:none}
+      .intro h1{background:linear-gradient(100deg,#fff 15%,#ffe2a0 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+      .welcome-strip{isolation:isolate}
+      .welcome-strip:before{content:"";position:absolute;z-index:-1;right:8%;top:-80%;width:290px;height:290px;border:1px solid rgba(255,210,110,.10);border-radius:50%;box-shadow:0 0 0 25px rgba(255,210,110,.025),0 0 0 55px rgba(255,210,110,.018)}
+      .searchbox:focus-within{filter:drop-shadow(0 8px 16px rgba(245,185,40,.08))}
+      #filters{scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+      #filters .pill{scroll-snap-align:start}
+      #grid{grid-auto-rows:1fr}
+      .card{display:flex;flex-direction:column;min-height:100%;position:relative}
+      .card:before{content:"";position:absolute;z-index:2;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#ffd36b,transparent);opacity:0;transition:opacity .2s}
+      .card:hover:before,.card:focus-visible:before{opacity:1}
+      .poster{isolation:isolate}
+      .poster:before{content:"";position:absolute;z-index:1;inset:0;border:1px solid rgba(255,255,255,.035);pointer-events:none}
+      .channel-brand-logo{position:relative;isolation:isolate}
+      .channel-brand-logo:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.045) 48%,transparent 72%);transform:translateX(-110%);transition:transform .65s ease;pointer-events:none}
+      .card:hover .channel-brand-logo:after{transform:translateX(110%)}
+      .brand-symbol{box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.14)}
+      .cardbody{display:flex;flex-direction:column;align-items:flex-start;flex:1}
+      .channelname{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      #count{font-variant-numeric:tabular-nums}
+      #empty{max-width:700px;margin:20px auto;text-align:center}
+      #loading{background:radial-gradient(ellipse at center,rgba(30,42,58,.55),transparent 48%),#070a10}
+      #loading .spinner{width:48px;height:48px;border-width:3px;border-color:rgba(255,211,109,.13);border-top-color:#ffd36b;box-shadow:0 0 24px rgba(255,190,50,.1)}
+      #loadingText{font-size:12px;font-weight:800;letter-spacing:.35px}
+      footer a{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(255,205,91,.22);border-radius:999px;background:rgba(255,190,50,.06);transition:background .2s,border-color .2s}
+      footer a:hover{border-color:rgba(255,205,91,.5);background:rgba(255,190,50,.12)}
+      @media(min-width:900px){.cz-live-stats{grid-template-columns:repeat(2,minmax(240px,360px));justify-content:start}.welcome-strip{min-height:190px}.cardbody{padding:16px 17px 18px}.channelname{font-size:14px}}
+      @media(max-width:560px){.welcome-strip:before{right:-35%;top:-70%;width:220px;height:220px}.card:before{display:none}.poster:after{font-size:18px}}
+      @media(hover:none){.channel-brand-logo:after{display:none}}
+      @media(prefers-reduced-motion:reduce){.channel-brand-logo:after{display:none}}
+      .search-hint{position:absolute;right:48px;top:50%;transform:translateY(-50%);color:#758297;font-size:9px;pointer-events:none}
+      .search-hint kbd{padding:3px 6px;border:1px solid #3a4658;border-radius:5px;background:#1a2432;color:#cbd4e2;font:800 9px Manrope,sans-serif}
+      @media(max-width:700px){.search-hint{display:none}}
       .browse-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:25px 0 5px}
       .browse-heading h2{margin-top:6px;color:#f5f7fb;font:900 clamp(19px,2.4vw,25px) Archivo,sans-serif;letter-spacing:-.5px}
       .browse-note{padding-bottom:3px;color:#8391a5;font-size:10px;font-weight:700}
@@ -3522,6 +3558,7 @@
           /><button id="clear" type="button" aria-label="Clear search">
             ✕
           </button>
+          <span class="search-hint" aria-hidden="true">Press <kbd>/</kbd> to search</span>
         </div>
         <div class="browse-heading"><div><span class="eyebrow">EXPLORE THE LINEUP</span><h2>Choose your channel</h2></div><span class="browse-note">Tap any card to open</span></div>
         <nav id="filters" aria-label="Channel categories"></nav>
@@ -4124,6 +4161,23 @@
             }
           });
         }
+        document.addEventListener("keydown", (e) => {
+          const target = e.target;
+          const typing = target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+          if (e.key === "/" && !typing && $("player").style.display === "none") {
+            e.preventDefault();
+            $("search").focus();
+          }
+          if (e.key === "Escape" && document.activeElement === $("search")) {
+            if ($("search").value) {
+              $("search").value = "";
+              query = "";
+              $("clear").style.display = "none";
+              render();
+            }
+            $("search").blur();
+          }
+        });
         $("search").addEventListener("input", (e) => {
           query = e.target.value;
           $("clear").style.display = query ? "block" : "none";
