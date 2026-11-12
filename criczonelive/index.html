@@ -617,7 +617,8 @@ const DATA_URLS = [
 ];
 const TG_LINK="https://t.me/+pN15_8gc54s2NDU1";
 const $=id=>document.getElementById(id);
-const state={events:[],sport:"All",tab:"all",searchQuery:"",channelSport:"All",currentEvent:null,currentStreams:[],currentIndex:0,favsTeams:JSON.parse(localStorage.getItem("fc_fav_teams")||"[]")};
+function readFavTeams(){try{const v=JSON.parse(localStorage.getItem("fc_fav_teams")||"[]");return Array.isArray(v)?v.filter(x=>typeof x==="string"):[]}catch{return[]}}
+const state={events:[],sport:"Cricket",tab:"all",searchQuery:"",channelSport:"All",currentEvent:null,currentStreams:[],currentIndex:0,favsTeams:readFavTeams()};
 let player=null,overlay=null,playbackToken=0,toastTimer=null;
 
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -688,92 +689,59 @@ function isCricketEvent(item,info){
  if(knownOther.test(category))return false;
  return /\bcricket\b/i.test(category)||cricketTerms.test(title)||cricketTerms.test(category);
 }
+function collectEventItems(data){
+ const found=[],seen=new Set();
+ function walk(node,depth){
+  if(!node||typeof node!=="object"||depth>7)return;
+  if(Array.isArray(node)){node.forEach(v=>walk(v,depth+1));return}
+  const hasStreams=Array.isArray(node.streams)||Array.isArray(node.channels);
+  const hasEvent=!!(node.event||node.eventInfo||node.matchInfo);
+  const hasStart=!!(node.startTimeIST||node.startTime||node.start_time||node.start||node.time||node.date);
+  const hasTeams=!!(node.teamA||node.teamB||node.homeTeam||node.awayTeam||node.home||node.away);
+  const hasTitle=!!(node.title||node.event_name||node.name||node.eventName);
+  if((hasStreams||hasEvent||(hasStart&&(hasTeams||hasTitle)))&&!seen.has(node)){seen.add(node);found.push(node);return}
+  Object.values(node).forEach(v=>walk(v,depth+1));
+ }
+ walk(data,0);return found;
+}
+function isCricketEvent(item,info){
+ const category=[item?.Category,item?.category,item?.sport,item?.cat,info?.Category,info?.category,info?.sport,info?.cat].filter(Boolean).join(" ").toLowerCase();
+ const title=[item?.title,item?.event_name,item?.name,item?.tournament,item?.competition,info?.title,info?.eventName,info?.type,info?.name,info?.tournament].filter(Boolean).join(" ").toLowerCase();
+ const nonCricket=/\b(football|soccer|basketball|tennis|badminton|hockey|volleyball|kabaddi|rugby|baseball|golf|motorsport|formula 1|f1|wrestling|boxing)\b/i;
+ const cricketTerms=/\b(cricket|ipl|t20|odi|test|ranji|vijay hazare|syed mushtaq|world cup|champions trophy|big bash|bbl|psl|cpl|the hundred|wpl|ashes|county championship|maharaja trophy|legends league|sa20|ilt20|super smash|international league t20)\b/i;
+ if(nonCricket.test(category))return false;
+ return cricketTerms.test(category)||cricketTerms.test(title);
+}
 function parseEventsFromData(data){
- const list=Array.isArray(data)?data:(Array.isArray(data?.events)?data.events:(Array.isArray(data?.matches)?data.matches:Object.values(data||{})));
- if(!list||!Array.isArray(list))return[];
  const events=[];
- list.forEach((item)=>{
-  try{
-   if(!item)return;
-   const info=item.event||item.eventInfo||item.matchInfo||item;
-   if(!isCricketEvent(item,info))return;
-   const st=parseDate(info.startTimeIST||info.startTime||item.startTime||item.time);
-   const rawEnd=info.endTimeIST||info.endTime||item.endTime;
-   let en=rawEnd?parseDate(rawEnd):new Date(st.getTime()+3*3600000);
-   if(!en||en<=st)en=new Date(st.getTime()+3*3600000);
-
-   const seen=new Set(),streams=[];
-   const rawStreams=Array.isArray(item.streams)?item.streams:(Array.isArray(info.streams)?info.streams:[]);
-   rawStreams.forEach((s,i)=>{
-    if(!s)return;
-    const link=String(s.stream_url||s.link||s.url||s.src||"").split("|")[0].trim();
-    if(!/^https?:\/\//i.test(link)||seen.has(link))return;
-    const t=String(s.type||"").toLowerCase();
-    const dash=t==="dash"||/\.mpd(?:\?|$)/i.test(link);
-    seen.add(link);
-
-    const channelName=String(s.channel_name||s.title||s.name||`Stream ${i+1}`).trim();
-
-    streams.push({
-     id:channelName.toLowerCase().replace(/[^a-z0-9]/g,"_"),
-     title:channelName,
-     link,
-     type:dash?"android":"ios",
-     key:String(s.key||s.api||"").trim(),
-     kid:String(s.kid||"").trim()
-    });
-   });
-
-   const teamA=String(info.teamA||info.home||item.homeTeam||item.title||"Match");
-   const teamB=String(info.teamB||info.away||item.awayTeam||"");
-   const matchTitle=String(item.title||item.event_name||(teamA&&teamB?`${teamA} vs ${teamB}`:info.eventName||item.name||"Match")).trim();
-
-   events.push({
-    id:String(item.id||matchTitle.toLowerCase().replace(/[^a-z0-9]/g,"")),
-    title:matchTitle,
-    sport:"Cricket",
-    comp:String(info.type||info.eventName||item.title||item.tournament||"").trim(),
-    a:teamA,
-    b:teamB,
-    fa:String(info.teamAFlag||info.homeFlag||item.homeFlag||""),
-    fb:String(info.teamBFlag||info.awayFlag||item.awayFlag||""),
-    status:String(item.status||"").toUpperCase(),
-    st,en,streams
-   });
-  }catch(e){}
- });
+ collectEventItems(data).forEach(item=>{try{
+  const info=item.event&&typeof item.event==="object"?item.event:item.eventInfo&&typeof item.eventInfo==="object"?item.eventInfo:item.matchInfo&&typeof item.matchInfo==="object"?item.matchInfo:item;
+  if(!isCricketEvent(item,info))return;
+  const startValue=info.startTimeIST||info.startTime||info.start_time||info.start||info.date||item.startTimeIST||item.startTime||item.start_time||item.start||item.time||item.date;
+  if(!startValue)return;
+  const st=parseDate(startValue),endValue=info.endTimeIST||info.endTime||info.end_time||item.endTimeIST||item.endTime||item.end_time;
+  let en=endValue?parseDate(endValue):new Date(st.getTime()+10800000);if(!en||en<=st)en=new Date(st.getTime()+10800000);
+  const raw=Array.isArray(item.streams)?item.streams:Array.isArray(info.streams)?info.streams:Array.isArray(item.channels)?item.channels:Array.isArray(info.channels)?info.channels:[];
+  const streams=[],seen=new Set();
+  raw.forEach((v,i)=>{if(!v)return;const link=String(v.stream_url||v.link||v.url||v.src||v.file||"").split("|")[0].trim();if(!/^https?:\/\//i.test(link)||seen.has(link))return;seen.add(link);const title=String(v.channel_name||v.title||v.name||v.label||"Stream "+(i+1)).trim();const type=String(v.type||"").toLowerCase();streams.push({id:String(v.id||title.toLowerCase().replace(/[^a-z0-9]/g,"_")),title,link,type:type==="dash"||/\.mpd(?:\?|$)/i.test(link)?"android":"ios",key:String(v.key||v.api||"").trim(),kid:String(v.kid||"").trim()})});
+  const a=String(info.teamA||info.home||info.homeTeam||item.homeTeam||item.teamA||item.title||item.name||"Cricket match"),b=String(info.teamB||info.away||info.awayTeam||item.awayTeam||item.teamB||"");
+  const title=String(item.title||item.event_name||info.title||(b?a+" vs "+b:info.eventName||item.name||"Cricket match")).trim();
+  events.push({id:String(item.id||info.id||title.toLowerCase().replace(/[^a-z0-9]+/g,"-")),title,sport:"Cricket",comp:String(info.tournament||info.type||info.eventName||item.tournament||item.competition||"Cricket").trim(),a,b,fa:String(info.teamAFlag||info.homeFlag||item.homeFlag||""),fb:String(info.teamBFlag||info.awayFlag||item.awayFlag||""),status:String(item.status||info.status||"").toUpperCase(),st,en,streams});
+ }catch(error){console.warn("Skipping invalid cricket event",error)}});
  return events;
 }
 
 async function loadData(){
+ const note=$("czRefreshNote");if(note)note.textContent="Connecting to cricket feeds…";
  try{
   const results=await Promise.all(DATA_URLS.map(url=>fetchJson(url)));
-  let allEvents=[];
-  results.forEach(res=>{if(res)allEvents=allEvents.concat(parseEventsFromData(res));});
-
-  // No synthetic matches or demo streams: show a truthful empty state when feeds have no cricket fixtures.
-
-  const mergedMap=new Map();
-  allEvents.forEach(ev=>{
-   const key=(ev.a&&ev.b)?`${ev.a.toLowerCase()}_vs_${ev.b.toLowerCase()}`:ev.title.toLowerCase();
-   if(mergedMap.has(key)){
-    const existing=mergedMap.get(key);
-    ev.streams.forEach(st=>{
-     if(!existing.streams.some(x=>x.link===st.link)){existing.streams.push(st);}
-    });
-   }else{
-    mergedMap.set(key,ev);
-   }
-  });
-
-  state.events=Array.from(mergedMap.values());
-  renderHub();
-  if(!window.__booted){window.__booted=true;route();}
- }catch(e){
-  state.events=[];
-  renderHub();
-  if(!window.__booted){window.__booted=true;route();}
- }
+  let all=[];results.forEach(data=>{if(data)all.push(...parseEventsFromData(data))});
+  const merged=new Map();
+  all.forEach(event=>{const key=(event.a+"__"+event.b).toLowerCase();if(merged.has(key)){const old=merged.get(key);event.streams.forEach(st=>{if(!old.streams.some(x=>x.link===st.link))old.streams.push(st)});if(event.st<old.st)old.st=event.st;if(event.en>old.en)old.en=event.en}else merged.set(key,event)});
+  state.events=[...merged.values()];renderHub();
+  if(note)note.textContent=state.events.length?"Cricket feeds updated · "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"No cricket fixtures returned by the connected feeds. Tap Refresh data to retry.";
+  if(!window.__booted){window.__booted=true;route()}
+ }catch(error){console.error("CRICZONE feed loading failed",error);state.events=[];renderHub();if(note)note.textContent="Unable to load cricket feeds. Check your connection and tap Refresh data.";if(!window.__booted){window.__booted=true;route()}}
 }
 
 function renderChannels(){const all=[],seen=new Set();state.events.forEach(ev=>(ev.streams||[]).forEach(stream=>{const key=String(stream.title||"").trim().toLowerCase();if(!key||seen.has(key))return;seen.add(key);all.push({event:ev,stream})}));const sports=["All",...new Set(all.map(x=>x.event.sport).filter(Boolean))];if(!sports.includes(state.channelSport))state.channelSport="All";$("channelCategories").innerHTML=sports.map(s=>`<button type="button" class="channel-category ${state.channelSport===s?"active":""}" data-channel-sport="${esc(s)}">${esc(s)}</button>`).join("");const q=state.searchQuery;const visible=all.filter(x=>{const category=state.channelSport==="All"||x.event.sport===state.channelSport;const text=[x.stream.title,x.event.sport,x.event.comp,x.event.title,x.event.a,x.event.b].join(" ").toLowerCase();return category&&(!q||text.includes(q))});$("channelTotal").textContent=`${visible.length} / ${all.length} channels`;$("channelGrid").innerHTML=visible.length?visible.map(({event,stream})=>{const initials=String(stream.title).replace(/[^A-Za-z0-9]/g,"").slice(0,2).toUpperCase()||"TV";return `<button type="button" class="channel-tile" data-channel-event="${esc(event.id)}" data-channel-stream="${esc(stream.id)}" aria-label="Open ${esc(stream.title)}"><span class="channel-avatar">${initials}</span><strong>${esc(stream.title)}</strong><small>${esc(event.sport||"Live")} · Watch</small></button>`}).join(""):'<div class="channels-empty">No channels match your search or category.</div>'}
