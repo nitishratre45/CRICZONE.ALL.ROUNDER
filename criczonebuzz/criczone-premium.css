@@ -525,3 +525,42 @@ header .btn-header:hover,header .btn-header:focus-visible{
  .cz-player-live-dot{width:6px!important;height:6px!important;flex-basis:6px!important}
 }
 @media(prefers-reduced-motion:reduce){.cz-player-live-status.is-live .cz-player-live-dot{animation:none!important}}
+
+
+/* Player view: reclaim header space and compact the server strip */
+body.cz-player-open>header{display:none!important}
+body.cz-player-open{overflow:hidden!important}
+#player-modal{inset:0!important;top:0!important;padding-top:0!important;gap:0!important}
+#player-modal .player-header{
+ position:relative!important;top:auto!important;flex:0 0 48px!important;height:48px!important;min-height:48px!important;
+ padding:0 10px!important;margin:0!important;background:linear-gradient(100deg,#10190d,#070b06)!important;
+ border-bottom:1px solid rgba(215,255,63,.2)!important;
+}
+#player-modal .player-title{font-size:clamp(10px,2.7vw,13px)!important;max-width:42vw!important}
+#player-modal .player-nav{gap:5px!important}
+#player-modal .player-nav .btn-header{min-height:34px!important;padding:5px 9px!important;font-size:10px!important}
+#player-modal .player-nav .btn-header svg{width:13px!important;height:13px!important}
+#player-modal .player-servers-bar{
+ position:relative!important;top:auto!important;flex:0 0 40px!important;height:40px!important;min-height:40px!important;
+ padding:3px 9px!important;margin:0!important;gap:6px!important;overflow:visible!important;
+ background:linear-gradient(100deg,#0c1209,#080b07)!important;border-bottom:1px solid rgba(215,255,63,.16)!important;
+}
+#player-modal .player-servers-bar::before{font-size:9px!important;letter-spacing:.09em!important;margin-right:0!important}
+#player-modal .cz-server-change-label{font-size:9px!important;letter-spacing:.05em!important;white-space:nowrap!important}
+#player-modal .cz-server-picker{flex:0 1 138px!important;min-width:105px!important;max-width:38vw!important}
+#player-modal .cz-player-server-select{height:32px!important;min-height:32px!important;padding:0 9px!important;border-radius:9px!important;font-size:11px!important;gap:7px!important}
+#player-modal .cz-player-server-select svg{width:14px!important;height:14px!important;flex-basis:14px!important}
+#player-modal .cz-server-auto-note{font-size:8px!important;letter-spacing:0!important;white-space:nowrap!important}
+#video-wrapper{margin-top:5px!important}
+@media(max-width:600px){
+ #player-modal .player-header{flex-basis:46px!important;height:46px!important;min-height:46px!important;padding:0 8px!important}
+ #player-modal .player-title{max-width:36vw!important;font-size:10px!important}
+ #player-modal .player-nav .btn-header{min-height:31px!important;padding:4px 7px!important;font-size:9px!important}
+ #player-modal .player-servers-bar{flex-basis:38px!important;height:38px!important;min-height:38px!important;padding:3px 7px!important;gap:5px!important}
+ #player-modal .player-servers-bar::before{font-size:8px!important}
+ #player-modal .cz-server-change-label{font-size:8px!important}
+ #player-modal .cz-server-picker{flex-basis:118px!important;min-width:94px!important;max-width:36vw!important}
+ #player-modal .cz-player-server-select{height:30px!important;min-height:30px!important;font-size:10px!important;padding-inline:8px!important}
+ #player-modal .cz-server-auto-note{font-size:7px!important}
+ #video-wrapper{width:calc(100% - 12px)!important;margin:4px auto 0!important;border-radius:11px!important}
+}
