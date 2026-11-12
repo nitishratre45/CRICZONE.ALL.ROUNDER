@@ -1182,8 +1182,8 @@
             function isMatchLive(m) {
                 if (!m) return false;
                 const status = String(m.status || '').toUpperCase();
-                if (/LIVE|IN.?PLAY|STARTED/.test(status)) return true;
-                if (/UPCOMING|SCHEDULED|NOT.?STARTED|FINISHED|COMPLETED|RESULT/.test(status)) return false;
+                if (/UPCOMING|SCHEDULED|NOT[\s_-]*STARTED|FINISHED|COMPLETED|RESULT/.test(status)) return false;
+                if (/LIVE|IN.?PLAY|IN.?PROGRESS|STARTED/.test(status)) return true;
                 const cnp = m.CnpTV || {};
                 const hasStreams = Object.keys(cnp).some(k => typeof cnp[k] === 'string' && /^https?:\/\//i.test(cnp[k]));
                 const hasDirect = Array.isArray(m.streams) && m.streams.some(st => st && typeof st.url === 'string' && /^https?:\/\//i.test(st.url));
@@ -1380,6 +1380,12 @@
                 return list;
             }
 
+            function escapeHtml(value) {
+                return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                })[ch]);
+            }
+
             // Render Match Cards
             const FAVORITES_KEY = 'criczone_favorite_matches_v1';
             let favoriteMatchIds = new Set();
@@ -1453,29 +1459,42 @@
                 filtered.forEach(m => {
                     const id = m.id || '';
                     const isLive = isMatchLive(m);
-                    const cnp = m.CnpTV || {};
-
                     const card = document.createElement('div');
                     card.className = 'match-card';
+                    const safeId = encodeURIComponent(String(id || ''));
+                    const safeTitle = escapeHtml(m.event_name || 'Live Cricket Event');
+                    const safeSport = escapeHtml(m.sport || 'Cricket');
+                    const safeTime = escapeHtml(m.time || (isLive ? 'Live Now' : 'Upcoming'));
+                    const candidateImage = String(m.image || '');
+                    const posterImage = /^https?:\/\//i.test(candidateImage)
+                        ? candidateImage
+                        : 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&auto=format&fit=crop';
+                    const safeImage = escapeHtml(posterImage);
 
                     card.innerHTML = `
-                        <a class="card-poster match-open-link" href="index.html?id=${encodeURIComponent(id)}" aria-label="Watch live: ${m.event_name || 'match'}">
-                            <img src="${m.image || 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&auto=format&fit=crop'}" alt="${m.event_name || 'Match'}" loading="lazy">
+                        <a class="card-poster match-open-link" href="index.html?id=${safeId}" aria-label="Watch live: ${safeTitle}">
+                            <img src="${safeImage}" alt="${safeTitle}" loading="lazy" decoding="async">
                             <div class="status-badge ${isLive ? 'live' : 'upcoming'}">${isLive ? 'LIVE' : 'UPCOMING'}</div>
                             <span class="poster-play-hint">▶ <span>WATCH LIVE</span></span>
                         </a>
                         <div class="card-body">
-                            <h3 class="card-title">${m.event_name || 'Live Cricket Event'}</h3>
+                            <h3 class="card-title">${safeTitle}</h3>
                             <div class="card-meta" style="margin-top:.55rem">
-                                <span>🏏 ${m.sport || 'Cricket'}</span>
-                                <span>◷ ${m.time || (isLive ? 'Live Now' : 'Upcoming')}</span>
+                                <span>🏏 ${safeSport}</span>
+                                <span>◷ ${safeTime}</span>
                             </div>
                             <div class="card-actions">
-                                <a class="open-match-btn" href="index.html?id=${encodeURIComponent(id)}">▶ WATCH LIVE</a>
-                                <button class="card-share-btn" type="button" onclick="event.stopPropagation(); window.copyMatchLink('${id}', 1)">↗ Share</button>
+                                <a class="open-match-btn" href="index.html?id=${safeId}">▶ WATCH LIVE</a>
+                                <button class="card-share-btn" type="button">↗ Share</button>
                             </div>
                         </div>
                     `;
+                    const shareButton = card.querySelector('.card-share-btn');
+                    shareButton.addEventListener('click', event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        copyShareLink(id, 1);
+                    });
                     const favoriteBtn = document.createElement('button');
                     favoriteBtn.type = 'button';
                     favoriteBtn.className = 'favorite-toggle' + (favoriteMatchIds.has(String(id)) ? ' is-saved' : '');
@@ -1563,8 +1582,7 @@
             }
 
             async function autoSwitchToNextServer(reason, expectedAttempt) {
-                if (failoverPending || !currentActiveMatch || expectedAttempt !== playbackAttemptId ||
-                    Date.now() < ignorePlayerErrorsUntil) return false;
+                if (failoverPending || !currentActiveMatch || expectedAttempt !== playbackAttemptId) return false;
                 const match = currentActiveMatch;
                 const serverList = getMatchStreamList(match);
                 const nextServer = serverList.find(s => !autoFailoverTried.has(s.id));
@@ -1707,7 +1725,7 @@
                         const critical = severity === 2 ||
                             (shaka.util && shaka.util.Error && shaka.util.Error.Severity &&
                              severity === shaka.util.Error.Severity.CRITICAL);
-                        if (critical) {
+                        if (critical && Date.now() >= ignorePlayerErrorsUntil) {
                             autoSwitchToNextServer('Playback error', playbackAttemptId);
                         } else {
                             showToast('Stream buffering / reconnecting…', 'info', 2200);
@@ -1794,7 +1812,7 @@
                         err && err.message && err.message.includes('timed out') ? 'Connection timed out' : 'Server unavailable',
                         attemptId
                     );
-                    if (!switched) {
+                    if (!switched && !failoverPending) {
                         const detail = err && err.message ? err.message : 'Unknown playback error';
                         showToast('All available servers failed. Select another server to retry.', 'error', 6000);
                         console.error('[CRICZONE] No untried server remains:', detail);
@@ -1810,6 +1828,7 @@
                 failoverPending = false;
                 clearPlaybackStallTimer();
                 ignorePlayerErrorsUntil = Date.now() + 2000;
+                $video.pause();
                 if (shakaPlayerInstance) {
                     shakaPlayerInstance.unload().catch(() => {});
                 }
