@@ -20,11 +20,14 @@ html,body{
   font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none
 }
+#overlay{
   position:fixed;inset:0;background:#0a0a0a;z-index:9999;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:16px
 }
+#overlay svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+#overlay p{
   color:#505050;font-size:12px;letter-spacing:.5px;
   text-align:center;padding:0 24px;font-weight:500
 }
@@ -194,6 +197,8 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 .ch-card span{width:100%;color:var(--cz-text);font-size:12px;font-weight:800;line-height:1.4;letter-spacing:.1px}
 #ch-empty{margin:12px 0;padding:28px;border:1px dashed rgba(210,230,216,.2);border-radius:14px;color:var(--cz-muted);text-align:center;font-size:13px}
 #cz-home-footer{display:flex;justify-content:space-between;gap:12px;width:min(100% - 32px,1220px);margin:18px auto 0;padding:17px 0 0;border-top:1px solid var(--cz-line);color:#728178;font-size:9px;font-weight:800;letter-spacing:1.2px}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#14251a 0%,#08100d 55%,#050a07 100%)}
+#overlay p{color:var(--cz-muted);font-family:Manrope,sans-serif}
 @media(max-width:620px){#ch-header{padding:11px 14px}.cz-brand-mark{width:38px;height:38px}.cz-brand-copy strong{font-size:16px}.cz-live-pill{padding:7px 9px;font-size:9px}#home-main{width:calc(100% - 24px);padding-top:24px}.cz-hero{margin-bottom:24px;padding:23px 19px;border-radius:17px}.cz-hero p{max-width:85%;font-size:12px}.cz-library-head{align-items:start;flex-direction:column;gap:7px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ch-card{min-height:126px;padding:14px 9px;border-radius:13px}.ch-logo{max-width:78px;height:46px}.ch-logo-fallback{width:70px;height:44px;font-size:15px}.ch-card span{font-size:11px}#cz-home-footer{width:calc(100% - 24px);font-size:8px}}
 @media(max-width:360px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ch-card{min-height:116px;padding:11px 7px}.cz-brand-copy small{font-size:8px}.cz-live-pill{gap:5px;padding:6px 7px}}
 @media(prefers-reduced-motion:reduce){#channel-list *{animation:none!important;transition:none!important}}
@@ -402,7 +407,13 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 </head>
 <body>
 
-
+<div id="overlay" style="display:none!important">
+  <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+    <circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/>
+    <path d="M20 4a16 16 0 0 1 16 16" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <p id="loadMsg">Loading.....</p>
+</div>
 
 <div id="status"></div>
 
@@ -537,8 +548,8 @@ function toast(msg, type, dur){
   }
 }
 
-function setMsg(m)    { /* loading overlay removed */ }
-function hideOverlay(){ /* loading overlay removed */ }
+function setMsg(m)    { if($loadMsg) $loadMsg.textContent = m; }
+function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
 function getChId()    { return new URLSearchParams(location.search).get("id") || ""; }
 
 function rawCookie(c){
@@ -772,7 +783,7 @@ function renderList(channels){
 
 function errMsg(msg){
   setMsg(msg);
-  /* loading overlay removed; player opens directly */
+  if($overlay) $overlay.style.display = "none";
   toast(msg, "err", 0);
 }
 
