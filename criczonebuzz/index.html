@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=3">
+    <link rel="stylesheet" href="criczone-premium.css?v=4">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1171,6 +1171,8 @@
             let shakaUiOverlay = null;
             let currentActiveMatch = null;
             let currentActiveServerId = 1;
+            let autoFailoverMatchId = '';
+            const autoFailoverTried = new Set();
 
             // Helper to determine if a match has live streams
             function isMatchLive(m) {
@@ -1450,10 +1452,10 @@
                     card.className = 'match-card';
 
                     card.innerHTML = `
-                        <a class="card-poster match-open-link" href="play.html?match=${encodeURIComponent(id)}" aria-label="Choose server for ${m.event_name || 'match'}">
+                        <a class="card-poster match-open-link" href="index.html?id=${encodeURIComponent(id)}" aria-label="Watch live: ${m.event_name || 'match'}">
                             <img src="${m.image || 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&auto=format&fit=crop'}" alt="${m.event_name || 'Match'}" loading="lazy">
                             <div class="status-badge ${isLive ? 'live' : 'upcoming'}">${isLive ? 'LIVE' : 'UPCOMING'}</div>
-                            <span class="poster-play-hint">▶ <span>Choose Server</span></span>
+                            <span class="poster-play-hint">▶ <span>WATCH LIVE</span></span>
                         </a>
                         <div class="card-body">
                             <h3 class="card-title">${m.event_name || 'Live Cricket Event'}</h3>
@@ -1462,7 +1464,7 @@
                                 <span>◷ ${m.time || (isLive ? 'Live Now' : 'Upcoming')}</span>
                             </div>
                             <div class="card-actions">
-                                <a class="open-match-btn" href="play.html?match=${encodeURIComponent(id)}">▶ Choose Server</a>
+                                <a class="open-match-btn" href="index.html?id=${encodeURIComponent(id)}">▶ WATCH LIVE</a>
                                 <button class="card-share-btn" type="button" onclick="event.stopPropagation(); window.copyMatchLink('${id}', 1)">↗ Share</button>
                             </div>
                         </div>
@@ -1512,31 +1514,40 @@
                 });
             }
 
-            // Render in-player server switcher
+            // Compact in-player server selector. No separate server wall/page.
             function renderPlayerServerSwitcher(match, activeSer) {
                 const bar = document.getElementById('player-servers-bar');
                 if (!bar) return;
-                bar.innerHTML = '';
-
+                bar.replaceChildren();
                 const serverList = getMatchStreamList(match);
                 if (!serverList || serverList.length <= 1) {
                     bar.style.display = 'none';
                     return;
                 }
-
                 bar.style.display = 'flex';
+                const label = document.createElement('label');
+                label.className = 'cz-server-change-label';
+                label.textContent = 'CHANGE SERVER';
+                label.htmlFor = 'cz-player-server-select';
+                const select = document.createElement('select');
+                select.id = 'cz-player-server-select';
+                select.className = 'cz-player-server-select';
+                select.setAttribute('aria-label', 'Change live stream server');
                 serverList.forEach(s => {
-                    const btn = document.createElement('button');
-                    btn.className = 'player-server-pill' + (s.id === activeSer ? ' active' : '');
-                    btn.setAttribute('aria-label', 'Switch to ' + s.label);
-                    btn.setAttribute('aria-pressed', s.id === activeSer ? 'true' : 'false');
-                    btn.innerHTML = `<svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>${s.label}</span>`;
-                    btn.onclick = (e) => {
-                        e.stopPropagation();
-                        playMatch(match.id, s.id);
-                    };
-                    bar.appendChild(btn);
+                    const option = document.createElement('option');
+                    option.value = String(s.id);
+                    option.textContent = s.label;
+                    select.appendChild(option);
                 });
+                select.value = String(activeSer);
+                select.addEventListener('change', () => {
+                    const nextId = parseInt(select.value, 10);
+                    if (Number.isFinite(nextId)) playMatch(match.id, nextId);
+                });
+                const state = document.createElement('span');
+                state.className = 'cz-server-auto-note';
+                state.textContent = 'Auto-switch on failure';
+                bar.append(label, select, state);
             }
 
             function updatePlayerDetails(match, serverLabel) {
@@ -1552,7 +1563,7 @@
             }
 
             // Start Player (Shaka DASH or Direct Stream)
-            async function playMatch(matchId, serverId = 1) {
+            async function playMatch(matchId, serverId = 1, options = {}) {
                 const cleanId = String(matchId || '').trim();
                 const match = allMatches.find(m => String(m.id || '').trim().toLowerCase() === cleanId.toLowerCase() || String(m.match_id || '').trim().toLowerCase() === cleanId.toLowerCase());
                 if (!match) {
@@ -1566,6 +1577,11 @@
                     return;
                 }
 
+                const isAutoRetry = !!(options && options.auto);
+                if (!isAutoRetry || autoFailoverMatchId !== cleanId) {
+                    autoFailoverMatchId = cleanId;
+                    autoFailoverTried.clear();
+                }
                 let requestedSer = parseInt(serverId || 1, 10) || 1;
                 let targetServer = serverList.find(s => s.id === requestedSer);
                 if (!targetServer) {
@@ -1576,6 +1592,7 @@
 
                 currentActiveMatch = match;
                 currentActiveServerId = requestedSer;
+                autoFailoverTried.add(requestedSer);
 
                 // Update URL search query immediately with unique match link
                 const newUrl = window.location.pathname + '?id=' + encodeURIComponent(match.id) + '&ser=' + requestedSer;
@@ -1702,9 +1719,17 @@
                     $video.muted = true;
                     $video.play().catch(() => {});
                 } catch (err) {
-                    console.error('[CRICZONE] Authorized stream failed to load:', err);
+                    console.error('[CRICZONE] Stream failed; checking the next available server:', err);
+                    const nextServer = serverList.find(s => !autoFailoverTried.has(s.id));
+                    if (nextServer && currentActiveMatch && String(currentActiveMatch.id) === cleanId) {
+                        showToast('Server unavailable. Switching to ' + nextServer.label + '…', 'info', 3500);
+                        try { await shakaPlayerInstance.unload(); } catch (_) {}
+                        await playMatch(match.id, nextServer.id, { auto: true });
+                        return;
+                    }
                     const detail = err && err.message ? err.message : 'Unknown playback error';
-                    showToast('Playback failed: ' + detail.slice(0, 110), 'error', 6000);
+                    showToast('All available servers failed. Please choose another server or retry.', 'error', 6000);
+                    console.error('[CRICZONE] No untried server remains:', detail);
                 }
             }
 
