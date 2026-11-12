@@ -739,6 +739,32 @@ button,a{-webkit-tap-highlight-color:transparent}
 @media(max-width:760px){.hub-tools{margin:-3px 0 16px}.search-wrap{min-height:48px;border-radius:14px;padding:0 12px}.search-wrap input{font-size:13px;padding:12px 0}.hub-tools-meta{font-size:10px;padding-top:7px}.refresh-btn{padding:7px 10px;min-height:34px}}
 @media(prefers-reduced-motion:reduce){.refresh-icon{animation:none!important}.search-wrap,.refresh-btn{transition:none}}
 
+
+/* PHONE HEADER + MATCH CARD READABILITY FIX */
+@media(max-width:600px){
+  .header{align-items:center;gap:10px}
+  .header-actions{width:100%;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px}
+  .header-social{margin-left:auto;padding:0;background:transparent;border:0}
+  .header-site-link{display:none!important}
+  .social-icon.telegram{width:40px;height:40px}
+  .clock{white-space:nowrap;font-size:11px}
+  .grid{grid-template-columns:minmax(0,1fr)!important;gap:12px}
+  .card{min-height:0;padding:15px;gap:12px}
+  .card-body{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px}
+  .crest{width:52px;height:52px}
+  .team-name{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+  .sport-chip{font-size:11px}
+  .status{font-size:10px}
+  .kickoff-time{font-size:18px}
+  .card-foot{padding-top:11px}
+}
+@media(max-width:390px){
+  .header-actions{gap:7px}
+  .live-pill{padding:6px 9px}
+  .clock{font-size:10px}
+  .social-icon.telegram{width:37px;height:37px}
+}
+
 </style>
 </head>
 
@@ -777,7 +803,7 @@ button,a{-webkit-tap-highlight-color:transparent}
         <div class="live-pill"><span class="dot"></span> Live</div>
         <div class="clock" id="clock">—</div>
         <nav class="header-social" aria-label="CRICZONE links">
-          <a class="header-site-link" href="https://criczone.pages.dev/" target="_blank" rel="noopener">CRICZONE Website</a>
+          
           <a class="social-icon telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="CRICZONE Telegram">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
           </a>
