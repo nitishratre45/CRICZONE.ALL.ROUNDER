@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="CRICZONE">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
-<meta name="description" content="CRICZONE — your live sports destination. Browse channels, discover matches and join the official CRICZONE Telegram community.">
+<meta name="description" content="CRICZONE — your cricket destination. Browse live cricket channels, fixtures and results.">
 <meta name="referrer" content="no-referrer">
-<title>CRICZONE — Live Sports & Channel Hub</title>
+<title>CRICZONE — Cricket Live & Match Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
@@ -524,7 +524,7 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
 </header>
 <aside class="cz-desktop-rail" aria-label="CRICZONE app navigation">
  <div class="cz-rail-label">WORKSPACE</div>
- <a class="cz-rail-link active" href="#channelsTitle" data-rail-nav="channels"><span>▦</span><b>Live channels</b></a>
+ <a class="cz-rail-link active" href="#channelsTitle" data-rail-nav="channels"><span>▦</span><b>Cricket channels</b></a>
  <a class="cz-rail-link" href="./match-center/" data-rail-nav="matches"><span>◷</span><b>Match centre</b></a>
  <a class="cz-rail-link" href="#searchInput" data-rail-nav="search"><span>⌕</span><b>Search</b></a>
  <div class="cz-rail-divider"></div>
@@ -536,18 +536,18 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
 <section class="cz-hero" aria-label="CRICZONE introduction">
  <div class="cz-hero-copy"><span class="cz-eyebrow"><i></i> THE LIVE SPORTS NETWORK</span>
  <h2>Feel every<br><em>live moment.</em></h2>
- <p>Your live sports hub for channels, match discovery and the moments that matter. All in one place.</p>
+ <p>Your cricket home for live channels, match schedules and every big moment. All in one place.</p>
  <div class="cz-hero-actions"><a class="cz-primary-cta" href="#channelsTitle">Explore live channels <span>↘</span></a><a class="cz-secondary-cta" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">Join the community <span>↗</span></a></div></div>
  <div class="cz-hero-art" aria-hidden="true"><div class="cz-orbit cz-orbit-one"></div><div class="cz-orbit cz-orbit-two"></div><div class="cz-ball">LIVE</div><span class="cz-art-label">CRICZONE • ON AIR</span></div>
  <div class="cz-hero-watermark" aria-hidden="true">CRICZONE</div>
 </section>
-<div class="cz-trust-strip"><span><b>●</b> Live channel directory</span><span><b>✦</b> Match discovery</span><span><b>↗</b> Official community</span></div>
-<div class="search-container"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" class="search-input" type="search" placeholder="Search matches, teams or sports..." autocomplete="off"></div>
+<div class="cz-trust-strip"><span><b>●</b> Cricket channel directory</span><span><b>✦</b> Cricket match centre</span><span><b>↗</b> Official community</span></div>
+<div class="search-container"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" class="search-input" type="search" placeholder="Search cricket teams, tournaments or channels..." autocomplete="off"></div>
 <section class="cz-live-overview" aria-label="Live sports overview">
  <div class="cz-overview-intro"><span class="cz-overview-pulse"></span><span>RIGHT NOW ON CRICZONE</span></div>
  <div class="cz-overview-grid">
-  <div class="cz-overview-stat"><span class="cz-stat-icon">●</span><div><strong id="czLiveCount">—</strong><small>Live events</small></div></div>
-  <div class="cz-overview-stat"><span class="cz-stat-icon">◷</span><div><strong id="czUpcomingCount">—</strong><small>Upcoming</small></div></div>
+  <div class="cz-overview-stat"><span class="cz-stat-icon">●</span><div><strong id="czLiveCount">—</strong><small>Live cricket</small></div></div>
+  <div class="cz-overview-stat"><span class="cz-stat-icon">◷</span><div><strong id="czUpcoming cricketCount">—</strong><small>Upcoming</small></div></div>
   <div class="cz-overview-stat"><span class="cz-stat-icon">▦</span><div><strong id="czChannelCount">—</strong><small>Live channels</small></div></div>
   <button type="button" class="cz-refresh-btn" id="czRefreshBtn"><span aria-hidden="true">↻</span><span>Refresh data</span></button>
  </div>
@@ -680,6 +680,14 @@ async function fetchJson(url){
  }catch(err){return null;}
 }
 
+function isCricketEvent(item,info){
+ const category=String(item?.Category||item?.sport||info?.category||item?.cat||"").toLowerCase();
+ const title=[item?.title,item?.event_name,item?.name,info?.eventName,info?.type,info?.name].join(" ").toLowerCase();
+ const cricketTerms=/\b(cricket|ipl|t20|odi|test|ranji|vijay hazare|syed mushtaq|world cup|champions trophy|big bash|bbl|psl|cpl|the hundred|wpl|ashes|county championship|maharaja trophy|legends league|sa20|ilt20|super smash|international league t20)\b/i;
+ const knownOther=/\b(football|soccer|basketball|tennis|badminton|hockey|volleyball|kabaddi|rugby|baseball|golf|motorsport|formula 1|f1|wrestling|boxing)\b/i;
+ if(knownOther.test(category))return false;
+ return /\bcricket\b/i.test(category)||cricketTerms.test(title)||cricketTerms.test(category);
+}
 function parseEventsFromData(data){
  const list=Array.isArray(data)?data:(Array.isArray(data?.events)?data.events:(Array.isArray(data?.matches)?data.matches:Object.values(data||{})));
  if(!list||!Array.isArray(list))return[];
@@ -688,6 +696,7 @@ function parseEventsFromData(data){
   try{
    if(!item)return;
    const info=item.event||item.eventInfo||item.matchInfo||item;
+   if(!isCricketEvent(item,info))return;
    const st=parseDate(info.startTimeIST||info.startTime||item.startTime||item.time);
    let en=parseDate(info.endTimeIST||info.endTime||item.endTime);
    if(!en||en<=st)en=new Date(st.getTime()+3*3600000);
@@ -741,22 +750,7 @@ async function loadData(){
   let allEvents=[];
   results.forEach(res=>{if(res)allEvents=allEvents.concat(parseEventsFromData(res));});
 
-  if(allEvents.length === 0) {
-   allEvents.push({
-    id:"fallback_match",
-    title:"Live Stream Hub Active",
-    sport:"Cricket",
-    comp:"CRICZONE Hub",
-    a:"CRICZONE",
-    b:"Server Live",
-    fa:"",
-    fb:"",
-    status:"LIVE",
-    st:new Date(),
-    en:new Date(Date.now()+7200000),
-    streams:[{id:"stream_1",title:"Default Live Stream",link:"https://test-streams.mux.dev/x36hls/x36hls.m3u8",type:"ios"}]
-   });
-  }
+  // No synthetic matches or demo streams: show a truthful empty state when feeds have no cricket fixtures.
 
   const mergedMap=new Map();
   allEvents.forEach(ev=>{
@@ -775,20 +769,7 @@ async function loadData(){
   renderHub();
   if(!window.__booted){window.__booted=true;route();}
  }catch(e){
-  state.events=[{
-   id:"fallback_match",
-   title:"Live Stream Hub Active",
-   sport:"Cricket",
-   comp:"CRICZONE Hub",
-   a:"CRICZONE",
-   b:"Server Live",
-   fa:"",
-   fb:"",
-   status:"LIVE",
-   st:new Date(),
-   en:new Date(Date.now()+7200000),
-   streams:[{id:"stream_1",title:"Default Live Stream",link:"https://test-streams.mux.dev/x36hls/x36hls.m3u8",type:"ios"}]
-  }];
+  state.events=[];
   renderHub();
   if(!window.__booted){window.__booted=true;route();}
  }
@@ -820,12 +801,8 @@ function renderHub(){
   if(state.favsTeams.includes(e.a)||state.favsTeams.includes(e.b)) counts.favs++;
  });
 
- const sports=["All",...new Set(state.events.map(e=>e.sport).filter(Boolean))];
-
- $("sports").innerHTML=sports.map(s=>{
-  const n=s==="All"?state.events.length:state.events.filter(e=>e.sport===s).length;
-  return `<button class="pill ${state.sport===s?"active":""}" data-sport="${esc(s)}" role="tab">${esc(s)}<span class="count">${n}</span></button>`;
- }).join("");
+ $("sports").innerHTML='<button class="pill active" data-sport="Cricket" role="tab">🏏 Cricket <span class="count">'+state.events.length+'</span></button>';
+ state.sport="Cricket";
 
  $("tabs").innerHTML=[
   ["all","All",sportFilteredEvents.length],
@@ -993,22 +970,7 @@ async function openPlayer(id, targetStreamId){
   let allEvents=[];
   results.forEach(res=>{if(res)allEvents=allEvents.concat(parseEventsFromData(res));});
 
-  if(allEvents.length === 0) {
-   allEvents.push({
-    id:"fallback_match",
-    title:"Live Stream Hub Active",
-    sport:"Cricket",
-    comp:"CRICZONE Lɪᴠᴇ",
-    a:"CRICZONE",
-    b:"Server Live",
-    fa:"",
-    fb:"",
-    status:"Lɪᴠᴇ",
-    st:new Date(),
-    en:new Date(Date.now()+7200000),
-    streams:[{id:"stream_1",title:"Default Live Stream",link:"https://test-streams.mux.dev/x36hls/x36hls.m3u8",type:"ios"}]
-   });
-  }
+  // Do not replace a missing cricket event with a synthetic demo stream.
 
   const mergedMap=new Map();
   allEvents.forEach(ev=>{
