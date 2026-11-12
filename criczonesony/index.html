@@ -94,7 +94,77 @@
     }
     @media(max-width:360px){.telegram-copy small{display:none}.telegram-cta{padding:8px 7px}}
     @media(prefers-reduced-motion:reduce){.player-telegram,.telegram-cta{transition:none}}
-  </style>
+  
+/* Sony event iframe: responsive player layout for desktop and mobile */
+#event-player-panel{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding:clamp(10px,1.5vw,18px);
+  scroll-margin-top:84px;
+}
+#event-player-panel .event-player-top{
+  align-items:center;
+  flex-wrap:wrap;
+  min-width:0;
+}
+#event-player-panel .event-player-title{
+  flex:1 1 220px;
+  min-width:0;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+}
+#event-player-panel .event-player-close{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+#event-player-panel .event-video-wrap{
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  min-height:260px;
+  max-height:min(76vh,820px);
+  border-radius:14px;
+  background:#000;
+  overflow:hidden;
+}
+#event-stream-frame{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:100%;
+  min-height:100%;
+  border:0;
+  margin:0;
+  padding:0;
+  background:#000;
+}
+#event-player-status{
+  overflow-wrap:anywhere;
+  line-height:1.45;
+}
+@media(max-width:760px){
+  #event-player-panel{padding:12px;border-radius:15px}
+  #event-player-panel .event-video-wrap{
+    min-height:230px;
+    max-height:58vh;
+    aspect-ratio:16/9;
+  }
+}
+@media(max-width:480px){
+  #event-player-panel{padding:10px;margin-inline:0}
+  #event-player-panel .event-player-top{gap:8px;margin-bottom:10px}
+  #event-player-panel .event-player-title{flex-basis:100%;font-size:14px}
+  #event-player-panel .event-player-close{width:100%;min-height:42px}
+  #event-player-panel .event-video-wrap{
+    min-height:210px;
+    max-height:52vh;
+    aspect-ratio:16/9;
+    border-radius:10px;
+  }
+  #event-player-status{font-size:10px}
+}
+</style>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
   <style>
