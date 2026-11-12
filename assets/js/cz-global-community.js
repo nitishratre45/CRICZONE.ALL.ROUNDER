@@ -143,11 +143,11 @@
   var popupPhotoIndex=0;
   function setPopupPhoto(index){popupPhotoIndex=index%photos.length;popupImg.src=photos[popupPhotoIndex].src;popupImg.alt=photos[popupPhotoIndex].name;}
   setPopupPhoto(0);
-  // Community portrait rotates slowly and pauses while the tab is hidden.
+  // Keep the community popup portrait rotation at 3 seconds; do not change popup timing.
   var popupRotate=window.setInterval(function(){
     if(document.hidden)return;
     setPopupPhoto(popupPhotoIndex+1);
-  },15000);
+  },3000);
 
   function closePopup(){popup.classList.remove("cz-show");}
   /* Navigate directly to the invite in the same tab so desktop Telegram/browser handoff is not blocked as a popup. */
