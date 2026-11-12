@@ -278,8 +278,6 @@ const initialHash = location.hash;
 if (initialHash.includes("watch?id=")) {
     $("playerView").classList.add("active");
     $("hubView").classList.remove("active");
-} else if (!isAdmin()) {
-    window.location.replace(TG_LINK);
 } else {
     $("hubView").classList.add("active");
 }
@@ -604,27 +602,17 @@ function route(){
  const raw=location.hash.replace(/^#\/?/,"");
  const[path,query]=raw.split("?");
  const p=new URLSearchParams(query||"");
-
- if(!isAdmin() && (path !== "watch" || !p.get("id"))) {
-  window.location.replace(TG_LINK);
-  return;
- }
-
  if(path==="watch") {
   const matchId = p.get("id");
   const streamId = p.get("stream_id") || p.get("stream");
-  openPlayer(matchId, streamId);
+  if(matchId) openPlayer(matchId, streamId);
  } else {
   showHub();
  }
 }
 
 function showHub(){
- if(!isAdmin()) {
-  window.location.replace(TG_LINK);
-  return;
- }
- stopPlayback();state.currentEvent=null;state.currentStreams=[];$("playerView").classList.remove("active");$("hubView").classList.add("active");window.scrollTo(0,0);
+ stopPlayback();state.currentEvent=null;state.currentStreams=[];$("playerView").classList.remove("active");$("hubView").classList.add("active");renderHub();window.scrollTo(0,0);
 }
 
 async function openPlayer(id, targetStreamId){
