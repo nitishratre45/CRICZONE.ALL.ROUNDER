@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="criczone-premium.css?v=1">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1109,6 +1110,16 @@
         <div id="video-wrapper">
             <video id="player-video" playsinline webkit-playsinline preload="auto"></video>
         </div>
+        <section id="cz-player-details" aria-live="polite">
+            <div class="cz-player-kicker">CRICZONE HD NETWORK</div>
+            <h2 id="cz-player-details-title">Live Cricket Match</h2>
+            <div class="cz-player-meta" id="cz-player-details-meta">LIVE MATCH • CRICZONE</div>
+            <div class="cz-player-actions">
+                <a href="#" id="cz-player-share" class="cz-primary">↗ SHARE MATCH</a>
+                <a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+            </div>
+            <div class="cz-community"><div><strong>Stay connected. Never miss a match.</strong><span>Live match updates • Cricket news • CRICZONE community</span></div><a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a></div>
+        </section>
     </div>
 
     <!-- Toast Notification -->
@@ -1518,6 +1529,18 @@
                 });
             }
 
+            function updatePlayerDetails(match, serverLabel) {
+                const title = document.getElementById('cz-player-details-title');
+                const meta = document.getElementById('cz-player-details-meta');
+                const share = document.getElementById('cz-player-share');
+                if (title) title.textContent = match?.event_name || 'Live Cricket Match';
+                if (meta) meta.textContent = [match?.series || match?.sport || 'CRICKET', 'CRICZONE HD NETWORK', serverLabel || 'LIVE STREAM'].filter(Boolean).join(' • ');
+                if (share) {
+                    const url = new URL(window.location.href);
+                    share.href = 'https://wa.me/?text=' + encodeURIComponent((match?.event_name || 'Live Cricket Match') + ' — Watch on CRICZONE: ' + url.href);
+                }
+            }
+
             // Start Player (Shaka DASH or Direct Stream)
             async function playMatch(matchId, serverId = 1) {
                 const cleanId = String(matchId || '').trim();
@@ -1573,6 +1596,7 @@
                 }
 
                 $playerTitle.textContent = `${match.event_name} (${targetServer.label})`;
+                updatePlayerDetails(match, targetServer.label);
                 $playerModal.classList.add('active');
                 document.body.style.overflow = 'hidden';
 
@@ -1728,6 +1752,7 @@
                 iframe.style.display = 'block';
                 iframe.src = url;
                 $playerTitle.textContent = title || 'Live Cricket Stream';
+                updatePlayerDetails(currentActiveMatch, targetSer ? ('Server ' + targetSer) : 'Live Stream');
                 $playerModal.classList.add('active');
                 document.body.style.overflow = 'hidden';
 
