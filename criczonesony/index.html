@@ -1130,17 +1130,32 @@ body{position:relative!important;inset:auto!important}
   var grid=document.getElementById("event-grid"),updated=document.getElementById("events-updated"),filter="all",matches=[];
   var panel=document.getElementById("event-player-panel"),frame=document.getElementById("event-stream-frame"),title=document.getElementById("event-player-title"),status=document.getElementById("event-player-status");
   var channelsContent=document.getElementById("channels-content"),eventsSection=document.getElementById("sony-events");
+  function applySonyView(showEvents,scroll){
+    channelsContent.style.display=showEvents?"none":"block";
+    eventsSection.style.display=showEvents?"block":"none";
+    document.querySelectorAll("[data-sony-view]").forEach(function(b){
+      var active=b.getAttribute("data-sony-view")===(showEvents?"events":"channels");
+      b.classList.toggle("active",active);
+      b.setAttribute("aria-pressed",active?"true":"false");
+    });
+    if(showEvents&&scroll)eventsSection.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function setSonyView(showEvents){
+    var url=new URL(location.href);
+    if(showEvents)url.searchParams.set("view","events");
+    else url.searchParams.delete("view");
+    history.pushState({sonyView:showEvents?"events":"channels"},"",url.pathname+url.search+url.hash);
+    applySonyView(showEvents,true);
+  }
   document.querySelectorAll("[data-sony-view]").forEach(function(btn){
     btn.addEventListener("click",function(){
-      var showEvents=btn.getAttribute("data-sony-view")==="events";
-      channelsContent.style.display=showEvents?"none":"block";
-      eventsSection.style.display=showEvents?"block":"none";
-      document.querySelectorAll("[data-sony-view]").forEach(function(b){
-        var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",active?"true":"false");
-      });
-      if(showEvents)eventsSection.scrollIntoView({behavior:"smooth",block:"start"});
+      setSonyView(btn.getAttribute("data-sony-view")==="events");
     });
   });
+  window.addEventListener("popstate",function(){
+    applySonyView(new URLSearchParams(location.search).get("view")==="events",false);
+  });
+  applySonyView(new URLSearchParams(location.search).get("view")==="events",false);
   function stopEventPlayer(){
     panel.style.display="none";
     frame.src="about:blank";
