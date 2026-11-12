@@ -1126,9 +1126,9 @@
             <div class="cz-player-meta" id="cz-player-details-meta">LIVE MATCH • CRICZONE</div>
             <div class="cz-player-actions">
                 <a href="#" id="cz-player-share" class="cz-primary">↗ SHARE MATCH</a>
-                <a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+                <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
             </div>
-            <div class="cz-community"><div><strong>Stay connected. Never miss a match.</strong><span>Live match updates • Cricket news • CRICZONE community</span></div><a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a></div>
+            <div class="cz-community"><div><strong>Stay connected. Never miss a match.</strong><span>Live match updates • Cricket news • CRICZONE community</span></div><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">JOIN COMMUNITY ↗</a></div>
         </section>
     </div>
 
@@ -1173,15 +1173,21 @@
             let currentActiveServerId = 1;
             let autoFailoverMatchId = '';
             const autoFailoverTried = new Set();
+            let playbackAttemptId = 0;
+            let failoverPending = false;
+            let stallTimer = null;
+            let ignorePlayerErrorsUntil = 0;
 
             // Helper to determine if a match has live streams
             function isMatchLive(m) {
                 if (!m) return false;
                 const status = String(m.status || '').toUpperCase();
+                if (/LIVE|IN.?PLAY|STARTED/.test(status)) return true;
+                if (/UPCOMING|SCHEDULED|NOT.?STARTED|FINISHED|COMPLETED|RESULT/.test(status)) return false;
                 const cnp = m.CnpTV || {};
                 const hasStreams = Object.keys(cnp).some(k => typeof cnp[k] === 'string' && /^https?:\/\//i.test(cnp[k]));
                 const hasDirect = Array.isArray(m.streams) && m.streams.some(st => st && typeof st.url === 'string' && /^https?:\/\//i.test(st.url));
-                return status === 'LIVE' || hasStreams || hasDirect;
+                return hasStreams || hasDirect;
             }
 
             // Sort matches so live matches always stay on top
@@ -1253,6 +1259,7 @@
                     match_id: id,
                     event_name: title,
                     title: title,
+                    series: m.series || m.tournament || m.league || m.competition || '',
                     image: image,
                     cover_image: image,
                     status: status,
@@ -1536,7 +1543,8 @@
                 serverList.forEach(s => {
                     const option = document.createElement('option');
                     option.value = String(s.id);
-                    option.textContent = s.label;
+                    option.textContent = 'Server ' + s.id;
+                    option.title = s.label;
                     select.appendChild(option);
                 });
                 select.value = String(activeSer);
@@ -1546,8 +1554,33 @@
                 });
                 const state = document.createElement('span');
                 state.className = 'cz-server-auto-note';
-                state.textContent = 'Auto-switch on failure';
+                state.textContent = 'AUTO SWITCH ON FAILURE';
                 bar.append(label, select, state);
+            }
+
+            function clearPlaybackStallTimer() {
+                if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
+            }
+
+            async function autoSwitchToNextServer(reason, expectedAttempt) {
+                if (failoverPending || !currentActiveMatch || expectedAttempt !== playbackAttemptId ||
+                    Date.now() < ignorePlayerErrorsUntil) return false;
+                const match = currentActiveMatch;
+                const serverList = getMatchStreamList(match);
+                const nextServer = serverList.find(s => !autoFailoverTried.has(s.id));
+                if (!nextServer) {
+                    showToast('All available servers were tried. Please select a server manually.', 'error', 6000);
+                    return false;
+                }
+                failoverPending = true;
+                clearPlaybackStallTimer();
+                ignorePlayerErrorsUntil = Date.now() + 1800;
+                showToast((reason || 'Stream unavailable') + '. Switching to Server ' + nextServer.id + '…', 'info', 3500);
+                try { if (shakaPlayerInstance) await shakaPlayerInstance.unload(); } catch (_) {}
+                if (expectedAttempt !== playbackAttemptId) { failoverPending = false; return false; }
+                failoverPending = false;
+                await playMatch(match.id, nextServer.id, { auto: true });
+                return true;
             }
 
             function updatePlayerDetails(match, serverLabel) {
@@ -1564,6 +1597,10 @@
 
             // Start Player (Shaka DASH or Direct Stream)
             async function playMatch(matchId, serverId = 1, options = {}) {
+                const attemptId = ++playbackAttemptId;
+                clearPlaybackStallTimer();
+                failoverPending = false;
+                ignorePlayerErrorsUntil = Date.now() + 1200;
                 const cleanId = String(matchId || '').trim();
                 const match = allMatches.find(m => String(m.id || '').trim().toLowerCase() === cleanId.toLowerCase() || String(m.match_id || '').trim().toLowerCase() === cleanId.toLowerCase());
                 if (!match) {
@@ -1607,7 +1644,8 @@
 
                 let mpdUrl = targetServer.mpdUrl;
                 if (!mpdUrl) {
-                    showToast('This server is not currently online. Try another server.', 'info', 3000);
+                    const switched = await autoSwitchToNextServer('Server URL unavailable', attemptId);
+                    if (!switched) showToast('This server has no playable feed. Choose another server.', 'error', 4000);
                     return;
                 }
 
@@ -1665,7 +1703,28 @@
 
                     shakaPlayerInstance.addEventListener('error', (ev) => {
                         console.error('Shaka player error:', ev.detail);
-                        showToast('Stream buffering / reconnecting...', 'info', 2000);
+                        const severity = ev && ev.detail ? ev.detail.severity : null;
+                        const critical = severity === 2 ||
+                            (shaka.util && shaka.util.Error && shaka.util.Error.Severity &&
+                             severity === shaka.util.Error.Severity.CRITICAL);
+                        if (critical) {
+                            autoSwitchToNextServer('Playback error', playbackAttemptId);
+                        } else {
+                            showToast('Stream buffering / reconnecting…', 'info', 2200);
+                        }
+                    });
+
+                    $video.addEventListener('waiting', () => {
+                        clearPlaybackStallTimer();
+                        const waitingAttempt = playbackAttemptId;
+                        stallTimer = setTimeout(() => {
+                            if (waitingAttempt === playbackAttemptId && $playerModal.classList.contains('active')) {
+                                autoSwitchToNextServer('Stream stalled for 18 seconds', waitingAttempt);
+                            }
+                        }, 18000);
+                    });
+                    ['playing', 'canplay', 'timeupdate'].forEach(eventName => {
+                        $video.addEventListener(eventName, clearPlaybackStallTimer);
                     });
                 }
 
@@ -1712,24 +1771,34 @@
                     config.drm.clearKeys[drm.kid] = drm.key;
                 }
 
-                shakaPlayerInstance.configure(config);
-
                 try {
-                    await shakaPlayerInstance.load(directMpd);
+                    try { await shakaPlayerInstance.unload(); } catch (_) {}
+                    if (attemptId !== playbackAttemptId) return;
+                    shakaPlayerInstance.configure(config);
+                    let loadTimer;
+                    try {
+                        await Promise.race([
+                            shakaPlayerInstance.load(directMpd),
+                            new Promise((_, reject) => {
+                                loadTimer = setTimeout(() => reject(new Error('Stream connection timed out after 18 seconds')), 18000);
+                            })
+                        ]);
+                    } finally { clearTimeout(loadTimer); }
+                    if (attemptId !== playbackAttemptId) return;
                     $video.muted = true;
                     $video.play().catch(() => {});
                 } catch (err) {
-                    console.error('[CRICZONE] Stream failed; checking the next available server:', err);
-                    const nextServer = serverList.find(s => !autoFailoverTried.has(s.id));
-                    if (nextServer && currentActiveMatch && String(currentActiveMatch.id) === cleanId) {
-                        showToast('Server unavailable. Switching to ' + nextServer.label + '…', 'info', 3500);
-                        try { await shakaPlayerInstance.unload(); } catch (_) {}
-                        await playMatch(match.id, nextServer.id, { auto: true });
-                        return;
+                    if (attemptId !== playbackAttemptId) return;
+                    console.error('[CRICZONE] Stream failed; trying the next available server:', err);
+                    const switched = await autoSwitchToNextServer(
+                        err && err.message && err.message.includes('timed out') ? 'Connection timed out' : 'Server unavailable',
+                        attemptId
+                    );
+                    if (!switched) {
+                        const detail = err && err.message ? err.message : 'Unknown playback error';
+                        showToast('All available servers failed. Select another server to retry.', 'error', 6000);
+                        console.error('[CRICZONE] No untried server remains:', detail);
                     }
-                    const detail = err && err.message ? err.message : 'Unknown playback error';
-                    showToast('All available servers failed. Please choose another server or retry.', 'error', 6000);
-                    console.error('[CRICZONE] No untried server remains:', detail);
                 }
             }
 
@@ -1737,6 +1806,10 @@
 
             // Close Player
             function closePlayer() {
+                ++playbackAttemptId;
+                failoverPending = false;
+                clearPlaybackStallTimer();
+                ignorePlayerErrorsUntil = Date.now() + 2000;
                 if (shakaPlayerInstance) {
                     shakaPlayerInstance.unload().catch(() => {});
                 }
@@ -1759,6 +1832,10 @@
             }
 
             window.playIframeStream = function(url, title, matchId, streamIdx = 1) {
+                ++playbackAttemptId;
+                failoverPending = false;
+                clearPlaybackStallTimer();
+                ignorePlayerErrorsUntil = Date.now() + 2000;
                 if (shakaPlayerInstance) {
                     shakaPlayerInstance.unload().catch(() => {});
                 }
@@ -1771,6 +1848,7 @@
                     const newUrl = window.location.pathname + '?id=' + encodeURIComponent(matchId) + '&ser=' + targetSer;
                     window.history.pushState({ id: matchId, ser: targetSer }, '', newUrl);
                 }
+                $video.pause();
                 $video.style.display = 'none';
                 let iframe = document.getElementById('player-iframe');
                 if (!iframe) {
@@ -1971,7 +2049,7 @@
 </style>
 <script>(function(){if(window.__CZ_TG_LOCAL__)return;window.__CZ_TG_LOCAL__=true;var link="https://t.me/+pN15_8gc54s2NDU1";var logo='<svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="120" fill="#d7ff3f"/><path d="M49 116.5 183.8 64.6c6.3-2.3 11.8 1.5 9.8 11l-23 108.4c-1.7 7.7-6.3 9.6-12.8 6l-35.4-26.1-17.1 16.5c-1.9 1.9-3.5 3.5-7.2 3.5l2.5-36 65.5-59.2c2.9-2.5-.6-3.9-4.4-1.4l-81 51-34.9-10.9c-7.6-2.4-7.8-7.6 1.2-10.9Z" fill="#10130b"/></svg>';function init(){if(document.getElementById("cz-tg-local-bar"))return;var bar=document.createElement("aside");bar.id="cz-tg-local-bar";bar.innerHTML='<a class="cz-tg-left" href="'+link+'" target="_blank" rel="noopener noreferrer"><span class="cz-tg-logo">'+logo+'</span><span class="cz-tg-label"><strong>JOIN OFFICIAL TELEGRAM</strong><small>🏏 Live match updates • Cricket news • CRICZONE community</small></span></a><a class="cz-tg-tap" href="'+link+'" target="_blank" rel="noopener noreferrer">TAP HERE 👉</a>';var target=document.querySelector(".hero,.hero-box,.intro,#ch-header");if(target){target.insertAdjacentElement("afterend",bar);}else{document.body.appendChild(bar);}var modal=document.createElement("div");modal.id="cz-tg-local-modal";modal.innerHTML='<section class="cz-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz-tg-local-title"><button class="cz-tg-x" type="button" aria-label="Close">×</button><div class="cz-tg-modal-logo">'+logo+'</div><div class="cz-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz-tg-local-title">Never Miss a Match Update! 🏏</h2><p>Join CRICZONE on Telegram for live cricket alerts, match updates and breaking sports news.</p><a class="cz-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM →</a><div class="cz-tg-foot">💙 Free to join · Stay connected with CRICZONE</div></section>';document.body.appendChild(modal);function close(){modal.classList.remove("cz-open")}modal.querySelector(".cz-tg-x").addEventListener("click",close);window.setTimeout(function(){modal.classList.add("cz-open")},5000)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init()})();</script>
 
-<script src="/assets/js/cz-global-community.js" defer></script>
+<!-- Local CRICZONE Telegram banner below is the only community popup on this page. -->
 
 <script>
 /* CRICZONE BUZZ — rotating player spotlight and navbar portrait */
