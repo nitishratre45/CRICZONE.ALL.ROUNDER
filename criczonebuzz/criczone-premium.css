@@ -152,3 +152,77 @@ header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215
  .player-server-pill{border-radius:999px!important}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   CRICZONE BUZZ HOME UPGRADE — rotating player hero + 2x2
+   ========================================================= */
+.cz-home-hero{
+ display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(210px,.75fr)!important;
+ align-items:center!important;gap:18px!important;text-align:left!important;
+ min-height:280px!important;padding:clamp(22px,4vw,42px)!important;
+ border:1px solid rgba(215,255,63,.26)!important;border-radius:26px!important;
+ background:radial-gradient(ellipse at 82% 48%,rgba(215,255,63,.13),transparent 35%),linear-gradient(115deg,#11170d 0%,#080c07 65%,#10170b 100%)!important;
+ box-shadow:0 22px 60px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+.cz-home-hero:before{content:"CRICZONE";right:1%;bottom:-30%;font-size:clamp(5rem,14vw,12rem);color:rgba(215,255,63,.025)!important}
+.cz-home-copy{position:relative;z-index:3;min-width:0}
+.cz-home-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:15px;color:#d7ff3f;font-size:10px;font-weight:900;letter-spacing:1.8px}
+.cz-home-kicker i{width:8px;height:8px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 12px #d7ff3f;animation:cz-home-pulse 1.8s infinite}
+@keyframes cz-home-pulse{50%{opacity:.35;transform:scale(.72)}}
+.cz-home-copy h1{margin:0 0 12px!important;font-size:clamp(2rem,5vw,3.7rem)!important;line-height:1.02!important;letter-spacing:-.055em!important;text-align:left!important}
+.cz-home-copy h1 em{font-style:normal;color:#d7ff3f}
+.cz-home-copy p{max-width:560px!important;margin:0!important;color:#a2a797!important;font-size:clamp(.82rem,1.3vw,.98rem)!important;line-height:1.7!important;text-align:left!important}
+.cz-home-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.cz-home-pills span{padding:8px 11px;border:1px solid rgba(215,255,63,.2);border-radius:999px;background:rgba(215,255,63,.055);color:#dce8c0;font-size:9px;font-weight:850;letter-spacing:.55px}
+.cz-home-spotlight{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;min-width:0;height:236px;isolation:isolate}
+.cz-home-photo-glow{position:absolute;z-index:-1;left:50%;bottom:5px;width:min(88%,260px);height:190px;transform:translateX(-50%);border:1px solid rgba(215,255,63,.22);border-radius:48% 48% 25px 25px;background:radial-gradient(ellipse at 50% 30%,rgba(215,255,63,.18),rgba(215,255,63,.025) 58%,transparent 72%);box-shadow:0 0 50px rgba(215,255,63,.08)}
+.cz-home-spotlight>img{position:relative;z-index:1;display:block;width:100%;height:220px;max-width:250px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));transition:opacity .35s ease}
+.cz-home-player-caption{position:absolute;z-index:3;right:0;bottom:0;display:flex;flex-direction:column;gap:4px;min-width:155px;padding:10px 14px;border:1px solid rgba(215,255,63,.26);border-radius:13px;background:rgba(7,10,5,.88);backdrop-filter:blur(12px);box-shadow:0 8px 22px #0007}
+.cz-home-player-caption span{color:#a2a797;font-size:8px;font-weight:900;letter-spacing:1.4px}
+.cz-home-player-caption strong{color:#d7ff3f;font-size:13px;font-weight:950;letter-spacing:.5px}
+.cz-home-hero-orbit{position:absolute;right:23%;top:10%;width:160px;height:160px;border:1px solid rgba(215,255,63,.08);border-radius:50%;pointer-events:none}
+.brand-badge{width:48px!important;height:48px!important;flex:0 0 48px!important;padding:0!important;overflow:hidden!important;border-radius:50%!important;background:#11160d!important;border:2px solid rgba(215,255,63,.72)!important;box-shadow:0 0 0 3px rgba(215,255,63,.09),0 5px 20px rgba(0,0,0,.45)!important}
+.brand-badge .brand-logo{width:100%!important;height:100%!important;padding:0!important;border-radius:50%!important;object-fit:cover!important;object-position:center 18%!important;background:#10150c!important;transition:opacity .35s ease!important}
+.brand-badge .brand-logo.cz-rotating-player{display:block!important}
+#matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:clamp(10px,1.4vw,18px)!important}
+#matches-container .match-card{min-width:0!important}
+#matches-container .card-poster{aspect-ratio:16/10!important}
+#matches-container .card-body{min-width:0!important}
+#matches-container .card-title{overflow-wrap:anywhere}
+@media(max-width:700px){
+ .cz-home-hero{grid-template-columns:minmax(0,1fr) 125px!important;gap:5px!important;min-height:220px!important;padding:19px 13px!important;border-radius:19px!important}
+ .cz-home-kicker{font-size:8px!important;letter-spacing:1px!important;margin-bottom:11px!important}
+ .cz-home-copy h1{font-size:clamp(1.45rem,6.2vw,2.15rem)!important;line-height:1.05!important}
+ .cz-home-copy p{font-size:.73rem!important;line-height:1.5!important}
+ .cz-home-pills{gap:5px!important;margin-top:13px!important}
+ .cz-home-pills span{padding:6px 7px!important;font-size:7px!important;letter-spacing:.25px!important}
+ .cz-home-spotlight{height:190px!important;align-self:end!important}
+ .cz-home-spotlight>img{height:178px!important;max-width:145px!important}
+ .cz-home-photo-glow{width:100%!important;height:145px!important}
+ .cz-home-player-caption{right:-2px!important;bottom:0!important;min-width:0!important;padding:7px 8px!important;border-radius:9px!important}
+ .cz-home-player-caption span{font-size:6px!important;letter-spacing:.8px!important}
+ .cz-home-player-caption strong{font-size:9px!important}
+ .cz-home-hero-orbit{right:6%!important;top:4%!important;width:90px!important;height:90px!important}
+ .brand-badge{width:42px!important;height:42px!important;flex-basis:42px!important}
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #matches-container .card-poster{aspect-ratio:4/3!important}
+ #matches-container .card-body{padding:10px!important;gap:8px!important}
+ #matches-container .card-title{font-size:.82rem!important;line-height:1.28!important;min-height:2.5em}
+ #matches-container .card-meta{font-size:.65rem!important;gap:5px!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:1fr!important;gap:6px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{width:100%!important;min-height:35px!important;font-size:.68rem!important}
+ #matches-container .favorite-toggle{top:7px!important;right:7px!important;padding:5px 7px!important;font-size:.62rem!important}
+}
+@media(max-width:380px){
+ .cz-home-hero{grid-template-columns:minmax(0,1fr) 105px!important;padding:16px 10px!important}
+ .cz-home-spotlight{height:170px!important}
+ .cz-home-spotlight>img{height:160px!important}
+ .cz-home-copy h1{font-size:1.38rem!important}
+ .cz-home-copy p{font-size:.68rem!important}
+ .cz-home-pills span{font-size:6px!important;padding:5px 6px!important}
+ #matches-container .card-title{font-size:.76rem!important}
+ #matches-container .card-body{padding:8px!important}
+}
+@media(prefers-reduced-motion:reduce){.cz-home-kicker i{animation:none!important}.cz-home-spotlight>img,.brand-badge .brand-logo{transition:none!important}}
+/* ===== END CRICZONE BUZZ HOME UPGRADE ===== */
