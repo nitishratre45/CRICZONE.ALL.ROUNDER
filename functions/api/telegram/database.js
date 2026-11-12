@@ -2,7 +2,6 @@ const PAGES = {
   criczone:"https://criczone.pages.dev/criczone/",
   criczone1:"https://criczone.pages.dev/criczone1/",
   criczone2:"https://criczone.pages.dev/criczone2/",
-  criczone3:"https://criczone.pages.dev/criczone3/",
   e:"https://criczone.pages.dev/e/",
   criczonebuzz:"https://criczone.pages.dev/criczonebuzz/",
   criczonefancode:"https://criczone.pages.dev/criczonefancode/",
