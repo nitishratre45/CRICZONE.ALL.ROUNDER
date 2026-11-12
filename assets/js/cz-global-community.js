@@ -35,13 +35,20 @@
   updateBrandPhotos(document);
   var brandObserver = new MutationObserver(function(){ updateBrandPhotos(document); });
   brandObserver.observe(document.documentElement,{childList:true,subtree:true});
-  window.setInterval(function(){
+  // Navbar portraits rotate every 15s, and background tabs do no image work.
+  var brandPhotoTimer=window.setInterval(function(){
+    if(document.hidden)return;
     logoPhotoIndex = (logoPhotoIndex + 1) % photos.length;
     document.querySelectorAll(".cz-player-brand-img").forEach(function(img){
-      img.style.opacity = "0.35";
-      window.setTimeout(function(){img.src=photos[logoPhotoIndex].src;img.alt=photos[logoPhotoIndex].name;img.style.opacity="1";},140);
+      var next=photos[logoPhotoIndex];
+      if(img.src===next.src)return;
+      img.style.opacity="0.35";
+      window.setTimeout(function(){
+        if(!document.hidden){img.src=next.src;img.alt=next.name;}
+        img.style.opacity="1";
+      },140);
     });
-  },1000);
+  },15000);
   var style = document.createElement("style");
   style.textContent = `
     #cz-global-loader{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 48%,#17112c 0%,#090910 42%,#050509 100%);color:#f7f5ff;font-family:Inter,system-ui,sans-serif;opacity:1;visibility:visible;transition:opacity .45s,visibility .45s}
@@ -125,7 +132,8 @@
     window.setTimeout(function(){loadImg.src=photos[photoIndex].src;loadImg.alt=photos[photoIndex].name;loadImg.style.opacity="1";},180);
   }
   setPhoto(0);
-  var rotateTimer=window.setInterval(function(){setPhoto(photoIndex+1);},1000);
+  // Loader is brief: use one portrait instead of rotating external images every second.
+  var rotateTimer=null;
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
@@ -135,7 +143,11 @@
   var popupPhotoIndex=0;
   function setPopupPhoto(index){popupPhotoIndex=index%photos.length;popupImg.src=photos[popupPhotoIndex].src;popupImg.alt=photos[popupPhotoIndex].name;}
   setPopupPhoto(0);
-  var popupRotate=window.setInterval(function(){setPopupPhoto(popupPhotoIndex+1);},3000);
+  // Community portrait rotates slowly and pauses while the tab is hidden.
+  var popupRotate=window.setInterval(function(){
+    if(document.hidden)return;
+    setPopupPhoto(popupPhotoIndex+1);
+  },15000);
 
   function closePopup(){popup.classList.remove("cz-show");}
   /* Navigate directly to the invite in the same tab so desktop Telegram/browser handoff is not blocked as a popup. */
@@ -157,5 +169,5 @@
     popup.classList.add("cz-show");
     popup.querySelector(".cz-community-close").focus({preventScroll:true});
   },5000);
-  window.addEventListener("pagehide",function(){window.clearInterval(rotateTimer);window.clearInterval(popupRotate);legacyObserver.disconnect();});
+  window.addEventListener("pagehide",function(){if(rotateTimer)window.clearInterval(rotateTimer);window.clearInterval(popupRotate);window.clearInterval(brandPhotoTimer);legacyObserver.disconnect();});
 })();
