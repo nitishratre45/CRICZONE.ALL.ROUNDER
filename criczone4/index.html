@@ -1286,7 +1286,7 @@ window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=
       img.className="cz-player-brand-img";img.alt=photos[0].name;img.src=photos[0].src;
       img.onerror=function(){this.style.display="none";logo.textContent="🏏";};
       logo.replaceChildren(img);
-      var i=0;window.setInterval(function(){i=(i+1)%photos.length;img.alt=photos[i].name;img.src=photos[i].src;},3000);
+      var i=0;window.setInterval(function(){if(document.hidden)return;i=(i+1)%photos.length;if(img.src!==photos[i].src){img.alt=photos[i].name;img.src=photos[i].src;}},15000);
     }
     if(!document.getElementById("cz-global-community")){
       var style=document.createElement("style");
