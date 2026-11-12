@@ -751,7 +751,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   },100);
  },3000);
 
- $("popupJoinBtn").addEventListener("click",()=>{const w=window.open(TG_LINK,"_blank","noopener");if(!w)location.href=TG_LINK;closePopup()});
+ $("popupJoinBtn").addEventListener("click",()=>{window.open(TG_LINK,"_blank","noopener,noreferrer");closePopup()});
  $("popupSkipBtn").addEventListener("click",closePopup);
  $("searchInput").addEventListener("input",e=>{state.searchQuery=e.target.value.toLowerCase().trim();renderHub()});
 
