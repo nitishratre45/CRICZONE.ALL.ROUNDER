@@ -402,6 +402,59 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(54,214,231,.65);outl
 .cz-install-btn span{font-size:17px;color:var(--accent)}
 @media(max-width:700px){.cz-install-btn:not([hidden]){display:none}}
 
+
+/* CRICZONE APP SHELL — real dashboard layout, not just an install prompt */
+@media(min-width:1000px){
+ .container{width:min(100%,1580px);padding-inline:clamp(22px,2.6vw,42px)}
+ #hubView{display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:26px;align-items:start}
+ #hubView>.header{grid-column:1/-1;grid-row:1;margin-inline:calc(clamp(22px,2.6vw,42px)*-1);padding-inline:clamp(22px,2.6vw,42px)}
+ #hubView>.cz-desktop-rail{grid-column:1;grid-row:2 / span 12;position:sticky;top:92px;align-self:start;min-height:calc(100vh - 116px);display:flex;flex-direction:column;gap:7px;padding:18px 12px;border:1px solid var(--border);border-radius:19px;background:var(--white);box-shadow:var(--shadow)}
+ #hubView>.cz-hero,#hubView>.cz-trust-strip,#hubView>.search-container,#hubView>.cz-live-overview,#hubView>.channels-first,#hubView>.matches-heading,#hubView>.filters,#hubView>#list,#hubView>.cz-app-nav,#hubView>.cz-footer{grid-column:2;min-width:0}
+ #hubView>.cz-hero{min-height:265px;margin-top:0;padding:36px 42px;border-radius:22px}
+ #hubView>.cz-hero h2{font-size:clamp(43px,4vw,60px);margin:13px 0 10px}
+ #hubView>.cz-hero-art{min-height:190px}
+ #hubView>.cz-ball{width:155px}
+ #hubView>.cz-trust-strip{padding:13px 3px 20px}
+ #hubView>.search-container{margin-bottom:19px}
+ #hubView>.cz-live-overview{margin-bottom:25px}
+ #hubView>.channels-first{padding-bottom:28px}
+ #hubView>.matches-heading{padding-top:20px}
+ #hubView>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .cz-desktop-rail .cz-rail-label{padding:5px 9px 7px;color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.17em}
+ .cz-desktop-rail .cz-rail-link{display:flex;align-items:center;gap:11px;min-height:43px;padding:0 10px;border:1px solid transparent;border-radius:11px;color:var(--muted);text-decoration:none;font-size:11px;transition:background .18s,color .18s,border-color .18s}
+ .cz-desktop-rail .cz-rail-link>span{width:22px;text-align:center;color:var(--accent);font-size:17px}
+ .cz-desktop-rail .cz-rail-link b{font-weight:750}
+ .cz-desktop-rail .cz-rail-link i{margin-left:auto;font-style:normal;opacity:.6}
+ .cz-desktop-rail .cz-rail-link:hover,.cz-desktop-rail .cz-rail-link.active{background:rgba(54,214,231,.11);border-color:rgba(54,214,231,.15);color:var(--ink)}
+ .cz-rail-divider{height:1px;background:var(--border);margin:10px 5px}
+ .cz-rail-spacer{flex:1;min-height:35px}
+ .cz-rail-status{display:flex;align-items:center;gap:9px;padding:12px 9px;border:1px solid var(--border);border-radius:12px;background:var(--surface2)}
+ .cz-rail-status>span{width:7px;height:7px;border-radius:50%;background:#32c98a;box-shadow:0 0 0 4px rgba(50,201,138,.12)}
+ .cz-rail-status b,.cz-rail-status small{display:block}
+ .cz-rail-status b{font-size:9px;color:var(--ink)}
+ .cz-rail-status small{font-size:8px;color:var(--muted);margin-top:2px}
+}
+@media(max-width:999px){.cz-desktop-rail{display:none!important}}
+/* Native app-like surfaces and tighter hierarchy */
+.channels-first,.cz-live-overview,.matches-heading,.filters,.grid{scroll-margin-top:88px}
+.channel-tile,.card,.stream-card,.cz-live-overview{box-shadow:0 5px 18px rgba(0,0,0,.08)}
+.channel-tile{border-radius:16px}
+.channel-tile:active,.watch-cta:active,.cz-refresh-btn:active{transform:scale(.985)}
+.search-input{font-size:13px}
+.channels-head h2,.matches-heading h2{letter-spacing:-.055em}
+@media(max-width:700px){
+ .cz-hero{min-height:275px;padding:25px 19px;border-radius:20px}
+ .cz-hero h2{font-size:clamp(39px,10.5vw,54px)}
+ .cz-live-overview{margin-top:4px}
+ .cz-overview-stat{border-right:0}
+ .channels-head{margin-bottom:13px}
+ .channel-tile{min-height:116px}
+ .matches-heading{padding-bottom:12px}
+ .card{border:1px solid var(--border);background:var(--white)}
+ .cz-app-nav{padding:7px 8px}
+ .cz-app-nav-item{font-size:9px;min-height:49px}
+}
+
 </style>
 </head>
 <body>
@@ -433,6 +486,17 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(54,214,231,.65);outl
     </a>
   </div>
 </header>
+<aside class="cz-desktop-rail" aria-label="CRICZONE app navigation">
+ <div class="cz-rail-label">WORKSPACE</div>
+ <a class="cz-rail-link active" href="#channelsTitle" data-rail-nav="channels"><span>▦</span><b>Live channels</b></a>
+ <a class="cz-rail-link" href="#matchCentre" data-rail-nav="matches"><span>◷</span><b>Match centre</b></a>
+ <a class="cz-rail-link" href="#searchInput" data-rail-nav="search"><span>⌕</span><b>Search</b></a>
+ <div class="cz-rail-divider"></div>
+ <div class="cz-rail-label">CONNECT</div>
+ <a class="cz-rail-link" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer"><span>➤</span><b>Community</b><i>↗</i></a>
+ <div class="cz-rail-spacer"></div>
+ <div class="cz-rail-status"><span></span><div><b>Systems online</b><small>CRICZONE Live</small></div></div>
+</aside>
 <section class="cz-hero" aria-label="CRICZONE introduction">
  <div class="cz-hero-copy"><span class="cz-eyebrow"><i></i> THE LIVE SPORTS NETWORK</span>
  <h2>Feel every<br><em>live moment.</em></h2>
@@ -1010,6 +1074,14 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("themeToggle").addEventListener("click",toggleTheme);
 
 
+ const rail=document.querySelector(".cz-desktop-rail");
+ if(rail){
+  rail.addEventListener("click",e=>{
+   const link=e.target.closest("[data-rail-nav]");
+   if(!link)return;
+   rail.querySelectorAll("[data-rail-nav]").forEach(x=>x.classList.toggle("active",x===link));
+  });
+ }
  const appNav=$("czAppNav");
  if(appNav){
   appNav.addEventListener("click",e=>{
