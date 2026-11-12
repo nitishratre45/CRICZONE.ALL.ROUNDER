@@ -1506,7 +1506,11 @@ async function main(){
     }
   }catch(error){$loadMsg.textContent="Could not load playlist. "+error.message;$overlay.style.display="none";$count.textContent="OFFLINE";console.warn("CRICZONE Sony playlist:",error);}
 }
-$search.addEventListener("input",renderChannelView);
+var searchRenderTimer=null;
+$search.addEventListener("input",function(){
+  clearTimeout(searchRenderTimer);
+  searchRenderTimer=setTimeout(renderChannelView,120);
+});
 $sonyFavFilter&&$sonyFavFilter.addEventListener("click",function(){favoritesOnly=!favoritesOnly;renderChannelView();});
 document.querySelectorAll("[data-category]").forEach(function(btn){btn.addEventListener("click",function(){activeCategory=btn.dataset.category;document.querySelectorAll("[data-category]").forEach(function(b){var active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active));});favoritesOnly=false;renderChannelView();});});
 document.getElementById("sonyResumeBtn").addEventListener("click",function(){var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});if(ch){var url=new URL(location.href);setChannelQuery(url,ch);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch);window.scrollTo({top:0,behavior:"smooth"});}});
@@ -1576,10 +1580,7 @@ $sonyReportBtn&&$sonyReportBtn.addEventListener("click",async function(){
   try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(report);$sonyReportBtn.textContent="✓ Copied report";setTimeout(function(){$sonyReportBtn.textContent="⚑ Report issue"},2000)}else window.prompt("Copy this diagnostic report",report)}catch(e){window.prompt("Copy this diagnostic report",report)}
 });
 updateNetworkStatus();
-document.getElementById("sonyResumeBtn")&&document.getElementById("sonyResumeBtn").addEventListener("click",function(){
-  var last=safeStoreGet("czSonyLastChannel",null),ch=last&&allChannels.find(function(item){return item.id===last.id;});
-  if(ch){var url=new URL(location.href);setChannelQuery(url,ch);history.pushState({},"",url.pathname+url.search+url.hash);showPlayer(ch)}
-});
+
 window.addEventListener("popstate",function(){var id=getChId();if(!id){showList();}else{var ch=allChannels.find(function(item){return item.id===id;});if(ch)showPlayer(ch);}});
 document.addEventListener("DOMContentLoaded",main);
 })();
