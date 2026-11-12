@@ -498,7 +498,7 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
 #playerView .screen{width:100%;max-width:1100px;margin:0 auto;aspect-ratio:16/9}
 #playerView .player-home-link{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--border);border-radius:11px;color:var(--ink);font-size:12px;font-weight:800;background:var(--white)}
 @media(max-width:650px){#playerView .player-top-header{padding:10px 0}#playerView .screen{border-radius:12px}#playerView .player-home-link{font-size:10px;padding:8px 10px}}
-</style>
+#czEmbedFrame{display:block;width:100%;height:100%;min-height:360px;border:0;background:#000;border-radius:inherit}#player-container.cz-embed-mode{aspect-ratio:16/9;min-height:360px;background:#000;overflow:hidden}</style>
 </head>
 <body>
 <div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
@@ -529,17 +529,7 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
     </a>
   </div>
 </header>
-<aside class="cz-desktop-rail" aria-label="CRICZONE app navigation">
- <div class="cz-rail-label">WORKSPACE</div>
- <a class="cz-rail-link active" href="#channelsTitle" data-rail-nav="channels"><span>▦</span><b>Cricket channels</b></a>
- <a class="cz-rail-link" href="./match-center/" data-rail-nav="matches"><span>◷</span><b>Cricket matches</b></a>
- <a class="cz-rail-link" href="#searchInput" data-rail-nav="search"><span>⌕</span><b>Search</b></a>
- <div class="cz-rail-divider"></div>
- <div class="cz-rail-label">CONNECT</div>
- <a class="cz-rail-link" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer"><span>➤</span><b>Community</b><i>↗</i></a>
- <div class="cz-rail-spacer"></div>
- <div class="cz-rail-status"><span></span><div><b>Systems online</b><small>CRICZONE Live</small></div></div>
-</aside>
+<aside class="cz-desktop-rail" aria-label="CRICZONE app navigation"><div class="cz-rail-label">WORKSPACE</div><a class="cz-rail-link " href="../channels/" data-rail-nav="channels"><span>▦</span><b>Channels</b></a><a class="cz-rail-link " href="../match-center/" data-rail-nav="matches"><span>◷</span><b>Match Centre</b></a><a class="cz-rail-link active" href="../play/" data-rail-nav="play"><span>▶</span><b>Play</b></a><a class="cz-rail-link" href="../channels/#searchInput" data-rail-nav="search"><span>⌕</span><b>Search</b></a><div class="cz-rail-divider"></div><div class="cz-rail-label">CONNECT</div><a class="cz-rail-link" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer"><span>➤</span><b>Community</b><i>↗</i></a><div class="cz-rail-spacer"></div><div class="cz-rail-status"><span></span><div><b>Systems online</b><small>CRICZONE Live</small></div></div></aside>
 <section class="cz-hero" aria-label="CRICZONE introduction">
  <div class="cz-hero-copy"><span class="cz-eyebrow"><i></i> THE CRICKET LIVE NETWORK</span>
  <h2>Every ball.<br><em>Every moment.</em></h2>
@@ -563,12 +553,7 @@ body:before{background:radial-gradient(ellipse at 76% 12%,rgba(29,174,199,.14),t
 <section class="channels-first" aria-labelledby="channelsTitle"><div class="channels-head"><div><div class="channels-kicker">The cricket channel directory</div><h2 id="channelsTitle">Live cricket channels</h2></div><span class="channels-total" id="channelTotal">Loading channels…</span></div><nav class="channel-categories" id="channelCategories" aria-label="Channel categories"></nav><div class="channel-grid" id="channelGrid" aria-live="polite"><div class="channels-empty">Loading all available channels…</div></div></section><div class="matches-heading" id="matchCentre"><h2>Cricket match centre</h2><span>Cricket fixtures, live action and upcoming matches</span></div>
 <div class="filters"><div class="filter-row" id="sports" role="tablist" aria-label="Sports"></div><div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div></div>
 <main id="list" class="grid" aria-live="polite"><div class="state"><h3>Loading events…</h3><p>Please wait while the match schedule loads.</p></div></main>
-<nav class="cz-app-nav" id="czAppNav" aria-label="Quick navigation">
- <a href="#channelsTitle" class="cz-app-nav-item active" data-app-nav="channels"><span class="cz-app-nav-icon">▦</span><span>Channels</span></a>
- <a href="./match-center/" class="cz-app-nav-item" data-app-nav="matches"><span class="cz-app-nav-icon">◷</span><span>Cricket</span></a>
- <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" class="cz-app-nav-item"><span class="cz-app-nav-icon">➤</span><span>Community</span></a>
- <button type="button" class="cz-app-nav-item" id="czNavTop"><span class="cz-app-nav-icon">↑</span><span>Top</span></button>
-</nav>
+<nav class="cz-app-nav" id="czAppNav" aria-label="Quick navigation"><a href="../channels/" class="cz-app-nav-item " data-app-nav="channels"><span class="cz-app-nav-icon">▦</span><span>Channels</span></a><a href="../match-center/" class="cz-app-nav-item " data-app-nav="matches"><span class="cz-app-nav-icon">◷</span><span>Matches</span></a><a href="../play/" class="cz-app-nav-item active" data-app-nav="play"><span class="cz-app-nav-icon">▶</span><span>Play</span></a><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" class="cz-app-nav-item"><span class="cz-app-nav-icon">➤</span><span>Telegram</span></a></nav>
 <footer class="cz-footer"><div><strong>CRICZONE</strong><span>Cricket live • Match centre</span></div><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">Official Telegram <b>↗</b></a><small>© <span id="czYear"></span> CRICZONE. All rights reserved.</small></footer>
 </section>
 
@@ -847,7 +832,7 @@ async function destroyPlayer(){
 }
 
 async function stopPlayback(){clearTimeout(telegramPopupTimer);telegramPopupTimer=null;playbackToken++;await destroyPlayer()}
-function showPlayerError(message,detail=""){const c=$("player-container");c.innerHTML=`<div class="screen-msg">${esc(message)}${detail?`<small>${esc(detail)}</small>`:""}</div>`}
+function showPlayerError(message,detail=""){const c=$("player-container");c.classList.remove("cz-embed-mode");c.innerHTML=`<div class="screen-msg">${esc(message)}${detail?`<small>${esc(detail)}</small>`:""}</div>`}
 
 async function mountShaka(record,token){
  if(!window.shaka)throw Error("Shaka Player library did not load.");
@@ -877,7 +862,7 @@ async function mountShaka(record,token){
 }
 
 async function mountNativeHls(record,token){
- const c=$("player-container");c.innerHTML="";const video=document.createElement("video");video.controls=true;video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.addEventListener("playing",scheduleTelegramPopup,{once:true});video.src=record.link;c.appendChild(video);
+ const c=$("player-container");c.classList.remove("cz-embed-mode");c.innerHTML="";const video=document.createElement("video");video.controls=true;video.playsInline=true;video.setAttribute("playsinline","");video.setAttribute("webkit-playsinline","");video.autoplay=true;video.preload="auto";video.addEventListener("playing",scheduleTelegramPopup,{once:true});video.src=record.link;c.appendChild(video);
  video.addEventListener("loadedmetadata",()=>{if(token!==playbackToken)return;video.play().catch(()=>showToast("Tap Play to start the stream","",4000))},{once:true});
  video.addEventListener("error",()=>{if(token!==playbackToken)return;showPlayerError("This HLS stream could not be played on this device.","The stream may be unavailable or blocked by the source server.")},{once:true});
  video.load();
@@ -921,6 +906,7 @@ function renderPlayerStreams(activeStreamId){
  }).join("");
 }
 
+function openEmbed(rawUrl,title){let url;try{url=new URL(rawUrl,location.href)}catch{return showPlayerError("Invalid embed URL.")}if(!["http:","https:"].includes(url.protocol))return showPlayerError("Only HTTP or HTTPS embed URLs are supported.");stopPlayback();const box=$("player-container");box.classList.add("cz-embed-mode");box.innerHTML="";const frame=document.createElement("iframe");frame.id="czEmbedFrame";frame.src=url.href;frame.title=String(title||"CRICZONE embedded stream");frame.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";frame.allowFullscreen=true;frame.referrerPolicy="no-referrer";box.appendChild(frame);if($("pmNameA"))$("pmNameA").textContent=String(title||"Live stream");if($("pmNameB"))$("pmNameB").textContent="";}
 function route(){
  const queryParams=new URLSearchParams(location.search);
  if(queryParams.has("id")){openPlayer(queryParams.get("id"),queryParams.get("stream_id")||queryParams.get("stream"));return;}
