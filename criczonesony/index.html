@@ -935,11 +935,11 @@ body{position:relative!important;inset:auto!important}
     var stream=m&&(m.pub_url||m.video_url||m.dai_url);
     if(!stream){status.textContent="No public stream URL is available for this event.";return;}
     var eventTitle=m.match_name||m.event_name||"SonyLiv Live Event";
-    var target="./player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(eventTitle);
+    // Load the JSON pub_url directly in the event iframe, without the CRICZONE player wrapper.
     title.textContent=eventTitle;
-    status.textContent="Opening CRICZONE player for "+eventTitle+"…";
+    status.textContent="Opening Sony LIV public stream URL…";
     panel.style.display="block";
-    frame.src=target;
+    frame.src=stream;
     frame.setAttribute("loading","eager");
     panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
