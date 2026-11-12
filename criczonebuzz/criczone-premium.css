@@ -226,3 +226,35 @@ header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215
 }
 @media(prefers-reduced-motion:reduce){.cz-home-kicker i{animation:none!important}.cz-home-spotlight>img,.brand-badge .brand-logo{transition:none!important}}
 /* ===== END CRICZONE BUZZ HOME UPGRADE ===== */
+
+
+/* CRICZONE BUZZ — compact in-player server selector and Watch Live CTA */
+#player-servers-bar{
+ display:flex!important;align-items:center!important;gap:10px!important;
+ min-height:52px!important;height:auto!important;padding:8px 14px!important;
+ overflow:visible!important;white-space:normal!important;
+ background:linear-gradient(90deg,#10170c,#0a0d08)!important;
+ border-bottom:1px solid rgba(215,255,63,.2)!important;
+}
+#player-servers-bar[style*="display: none"]{display:none!important}
+.cz-server-change-label{flex:0 0 auto;color:#d7ff3f;font:900 9px/1 Inter,system-ui,sans-serif;letter-spacing:1.1px}
+.cz-player-server-select{
+ min-width:0;max-width:min(65vw,340px);height:36px;padding:0 34px 0 12px;
+ border:1px solid rgba(215,255,63,.42);border-radius:10px;
+ background:#151d0d;color:#f5ffd9;font:800 12px Inter,system-ui,sans-serif;
+ outline:none;appearance:auto;cursor:pointer;
+}
+.cz-player-server-select:focus-visible{outline:2px solid #d7ff3f;outline-offset:2px}
+.cz-player-server-select option{background:#10170b;color:#f5ffd9}
+.cz-server-auto-note{margin-left:auto;color:#a7b38c;font:600 10px Inter,system-ui,sans-serif;white-space:nowrap}
+.poster-play-hint{opacity:1!important;background:linear-gradient(110deg,#d7ff3f,#baf51f)!important;border:0!important;color:#101507!important;box-shadow:0 8px 26px #0009,0 0 22px #d7ff3f35!important;font-size:12px!important;letter-spacing:.5px!important}
+.open-match-btn{background:linear-gradient(110deg,#d7ff3f,#baf51f)!important;color:#111707!important;border:1px solid rgba(215,255,63,.8)!important;border-radius:999px!important;box-shadow:0 6px 18px rgba(180,240,25,.13)!important;font-size:.82rem!important;letter-spacing:.35px!important}
+@media(max-width:600px){
+ #player-servers-bar{gap:7px!important;padding:8px 10px!important;min-height:48px!important}
+ .cz-server-change-label{font-size:8px!important;letter-spacing:.6px!important}
+ .cz-player-server-select{height:34px;max-width:52vw;font-size:11px;padding-left:8px}
+ .cz-server-auto-note{font-size:8px}
+ .poster-play-hint{opacity:1!important;font-size:10px!important;padding:8px 12px!important}
+}
+@media(max-width:360px){.cz-server-auto-note{display:none}}
+/* ===== END PLAYER SERVER UX ===== */
