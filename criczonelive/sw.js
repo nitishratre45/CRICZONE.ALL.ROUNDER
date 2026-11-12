@@ -1,4 +1,4 @@
-const CACHE_NAME="criczone-cricket-shell-v3";
+const CACHE_NAME="criczone-cricket-shell-v4";
 const SHELL_URLS=["./","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL_URLS)).then(()=>self.skipWaiting()));
