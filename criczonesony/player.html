@@ -45,8 +45,13 @@ async function start(){
  stop();
  if(!url||!/^https?:\/\//i.test(url)){status.textContent="Invalid or missing stream URL.";return;}
  status.textContent="Connecting to stream…";
- var playbackUrl=url;
  var type=url.split("?")[0].toLowerCase();
+ // Route HLS/DASH manifests through the repository's same-origin proxy.
+ // The proxy rewrites relative playlist/segment URLs so the browser does not
+ // request cross-origin media resources directly.
+ var isHls=/\\.m3u8?($|[?#])/i.test(url);
+ var isDash=/\\.mpd($|[?#])/i.test(url);
+ var playbackUrl=(isHls||isDash)?STREAM_PROXY+encodeURIComponent(url):url;
  if(type.endsWith(".mpd")&&window.shaka){
   shaka.polyfill.installAll();
   if(shaka.Player.isBrowserSupported()){
