@@ -1147,17 +1147,15 @@ body{position:relative!important;inset:auto!important}
     status.textContent="CRICZONE Player · Select a live event to start";
   }
   function playEvent(m){
-    // Prefer the pub_url field from the Sony LIV events JSON for every event.
+    // Prefer pub_url from the Sony events JSON and open it in a separate player page.
     var stream=m&&(m.pub_url||m.video_url||m.dai_url);
     if(!stream){status.textContent="No public stream URL is available for this event.";return;}
     var eventTitle=m.match_name||m.event_name||"SonyLiv Live Event";
-    // Load the JSON pub_url directly in the event iframe, without the CRICZONE player wrapper.
-    title.textContent=eventTitle;
-    status.textContent="Opening Sony LIV public stream URL…";
-    panel.style.display="block";
-    frame.src=stream;
-    frame.setAttribute("loading","eager");
-    panel.scrollIntoView({behavior:"smooth",block:"start"});
+    var target="./event-player.html?url="+encodeURIComponent(stream)+"&title="+encodeURIComponent(eventTitle);
+    panel.style.display="none";
+    frame.src="about:blank";
+    var opened=window.open(target,"_blank");
+    if(!opened) window.location.href=target;
   }
   function parseSonyLivText(text){
     try { var full=JSON.parse(text); if(Array.isArray(full.matches)) return full; } catch(e) {}
