@@ -1,5 +1,5 @@
-const CACHE_NAME="criczone-live-shell-v1";
-const SHELL_URLS=["./","./manifest.webmanifest","./icon.svg"];
+const CACHE_NAME="criczone-cricket-shell-v2";
+const SHELL_URLS=["./","./manifest.webmanifest","./icon.svg","./match-center/"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL_URLS)).then(()=>self.skipWaiting()));
 });
