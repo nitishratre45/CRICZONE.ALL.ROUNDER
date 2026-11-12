@@ -1912,6 +1912,8 @@
 
                 const shareUrl = new URL('play.html', window.location.href);
                 shareUrl.searchParams.set('match', String(targetId));
+                const selectedServer = parseInt(serverId || currentActiveServerId || 1, 10) || 1;
+                shareUrl.searchParams.set('ser', String(selectedServer));
                 const shareData = {
                     title: 'CRICZONE - ' + (currentActiveMatch?.event_name || 'Live Cricket Match'),
                     text: 'Watch this match on CRICZONE',
@@ -2014,7 +2016,7 @@
 
                 const { id, ser } = parseUrlParams();
                 if (id) {
-                    const cleanId = decodeURIComponent(id).trim().toLowerCase();
+                    const cleanId = String(id).trim().toLowerCase();
                     // Match by full id, match_id, or title keywords
                     let match = allMatches.find(m => String(m.id || '').toLowerCase() === cleanId || String(m.match_id || '').toLowerCase() === cleanId);
                     if (!match) {
