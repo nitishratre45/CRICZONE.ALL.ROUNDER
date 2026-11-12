@@ -177,7 +177,7 @@
     #event-player-status{padding:9px 2px 0;color:var(--muted);font-size:11px}
     .event-watch{border:0}
     .event-watch:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.event-body{padding:15px}.event-badge{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--red);color:#fff;font-size:9px;font-weight:950;letter-spacing:.7px}.event-badge.up{background:#64748b}.event-title{font-size:14px;font-weight:900;line-height:1.4;margin:10px 0 6px}.event-meta{font-size:10px;line-height:1.5;color:var(--muted)}.event-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}.event-watch{display:inline-flex;align-items:center;text-decoration:none;background:var(--gold);color:#111;padding:9px 15px;border-radius:999px;font-size:11px;font-weight:950;cursor:pointer;position:relative;z-index:2}.event-empty{grid-column:1/-1;padding:28px 12px;text-align:center;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:12px}
+.event-body{padding:15px}.event-badge{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--red);color:#fff;font-size:9px;font-weight:950;letter-spacing:.7px}.event-badge.up{background:#64748b}.event-title{font-size:14px;font-weight:900;line-height:1.4;margin:10px 0 6px}.event-meta{font-size:10px;line-height:1.5;color:var(--muted)}.event-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}.event-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.event-watch{display:inline-flex;align-items:center;text-decoration:none;background:var(--gold);color:#111;padding:9px 15px;border-radius:999px;font-size:11px;font-weight:950;cursor:pointer;position:relative;z-index:2}.event-share{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:8px 11px;border:1px solid #52647c;border-radius:999px;background:#18243a;color:#f5f7fb;font-size:10px;font-weight:900;cursor:pointer}.event-card.shared-event{border-color:var(--gold);box-shadow:0 0 0 2px #f5c54233,0 10px 28px rgba(0,0,0,.2)}.event-empty{grid-column:1/-1;padding:28px 12px;text-align:center;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:12px}
 
     .toolbar{display:flex;gap:11px;margin-bottom:19px}
     .search-wrap{position:relative;flex:1;min-width:0}
@@ -424,8 +424,8 @@
       .event-body{padding:9px}
       .event-title{font-size:10.5px}
       .event-meta{font-size:9px}
-      .event-footer{align-items:flex-end}
-      .event-watch{padding:7px 8px;font-size:9px}
+      .event-footer{align-items:stretch;flex-direction:column;gap:8px}.event-actions{width:100%;flex-direction:column;align-items:stretch}.event-watch,.event-share{width:100%;justify-content:center;text-align:center}
+      .event-watch{padding:8px;font-size:9px}.event-share{min-height:32px;padding:7px 8px;font-size:9px}
     }
     @media(max-width:360px){
       .brand{font-size:15px}.brand-mark{width:36px;height:36px;flex-basis:36px}
@@ -958,17 +958,32 @@ body{position:relative!important;inset:auto!important}
     return {"last update time":tm?tm[1]:"Live",matches:rows,recovered:true};
   }
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function eventKey(m){return String(m.video_url||m.pub_url||m.dai_url||((m.match_name||m.event_name||"Live Event")+"|"+(m.broadcast_channel||"")));}
+  var requestedEvent=new URLSearchParams(location.search).get("event");
   function draw(){
     var rows=matches.filter(function(m){return filter==="all"||(filter==="live"?m.isLive===true:m.isLive!==true);});
     if(!rows.length){grid.innerHTML='<div class="event-empty">No '+(filter==="live"?"live ":"")+'events available right now.</div>';return;}
-    grid.innerHTML=rows.map(function(m,i){
+    grid.innerHTML=rows.map(function(m){
       var live=m.isLive===true,titleText=m.match_name||m.event_name||"Live Event";
       var stream=m.video_url||m.pub_url||m.dai_url||"";
-      var watch=live&&stream?'<button type="button" class="event-watch" data-event-index="'+matches.indexOf(m)+'">▶ WATCH LIVE</button>':'';
-      return '<article class="event-card"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(titleText)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(titleText)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span>'+watch+'</div></div></article>';
+      var idx=matches.indexOf(m),key=eventKey(m),selected=requestedEvent===key;
+      var watch=live&&stream?'<button type="button" class="event-watch" data-event-index="'+idx+'">▶ WATCH LIVE</button>':'';
+      var share='<button type="button" class="event-share" data-share-index="'+idx+'">↗ SHARE</button>';
+      return '<article class="event-card'+(selected?' shared-event':'')+'" data-event-key="'+esc(key)+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+esc(m.src||"")+'" alt="'+esc(titleText)+'"><div class="event-body"><span class="event-badge '+(live?"":"up")+'">'+(live?"● LIVE NOW":"UPCOMING")+'</span><div class="event-title">'+esc(titleText)+'</div><div class="event-meta">'+esc(m.broadcast_channel||"")+(m.audioLanguageName?" · "+esc(m.audioLanguageName):"")+'</div><div class="event-footer"><span class="event-meta">'+esc(m.event_category||"")+'</span><span class="event-actions">'+watch+share+'</span></div></div></article>';
     }).join("");
+    if(requestedEvent){var selectedCard=grid.querySelector(".shared-event");if(selectedCard)requestAnimationFrame(function(){selectedCard.scrollIntoView({behavior:"smooth",block:"center"});});}
+  }
+  async function shareEvent(m){
+    var key=eventKey(m),url=location.origin+location.pathname+"?event="+encodeURIComponent(key);
+    var name=m.match_name||m.event_name||"SonyLiv Live Event";
+    try{if(navigator.share){await navigator.share({title:"Sony LIV · "+name,text:"Sony LIV event on CRICZONE",url:url});return;}
+      if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);alert("Sony event link copied!");return;}
+      window.prompt("Copy Sony event link:",url);
+    }catch(error){if(error&&error.name==="AbortError")return;try{await navigator.clipboard.writeText(url);alert("Sony event link copied!");}catch(copyError){window.prompt("Copy Sony event link:",url);}}
   }
   grid.addEventListener("click",function(event){
+    var shareButton=event.target.closest("[data-share-index]");
+    if(shareButton){event.preventDefault();event.stopPropagation();var shared=matches[Number(shareButton.getAttribute("data-share-index"))];if(shared)shareEvent(shared);return;}
     var button=event.target.closest("[data-event-index]");
     if(!button)return;
     var item=matches[Number(button.getAttribute("data-event-index"))];
@@ -976,7 +991,7 @@ body{position:relative!important;inset:auto!important}
   });
   document.getElementById("event-player-close").addEventListener("click",stopEventPlayer);
   document.querySelectorAll("[data-event-filter]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-event-filter]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");filter=btn.dataset.eventFilter;draw();});});
-  fetch(endpoint,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();}).then(function(t){var j=parseSonyLivText(t);matches=Array.isArray(j.matches)?j.matches:[];updated.textContent="Last updated: "+(j["last update time"]||"Live")+" · "+matches.length+" events"+(j.recovered?" · recovered":"");draw();}).catch(function(e){updated.textContent="Live event feed unavailable: "+e.message;grid.innerHTML='<div class="event-empty">Could not load SonyLiv events. Please refresh the page.</div>';});
+  fetch(endpoint,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();}).then(function(t){var j=parseSonyLivText(t);matches=Array.isArray(j.matches)?j.matches:[];updated.textContent="Last updated: "+(j["last update time"]||"Live")+" · "+matches.length+" events"+(j.recovered?" · recovered":"");if(requestedEvent){var eventTab=document.querySelector('[data-sony-view="events"]');if(eventTab)eventTab.click();}draw();}).catch(function(e){updated.textContent="Live event feed unavailable: "+e.message;grid.innerHTML='<div class="event-empty">Could not load SonyLiv events. Please refresh the page.</div>';});
 })();
 
 (function(){
