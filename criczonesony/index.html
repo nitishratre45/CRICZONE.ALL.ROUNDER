@@ -850,6 +850,152 @@ body{position:relative!important;inset:auto!important}
 @media(max-width:600px){
   #czRecentGrid .cz-history-item{flex-basis:174px;width:174px;min-width:174px}
 }
+
+/* CRICZONE Sony Events — polished responsive player */
+#sony-events{
+  min-width:0;
+}
+#sony-events #event-player-panel{
+  position:relative;
+  display:none;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:26px auto 8px;
+  padding:clamp(12px,1.8vw,22px);
+  box-sizing:border-box;
+  overflow:hidden;
+  border:1px solid rgba(246,201,79,.38);
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(246,201,79,.10),transparent 38%),
+    linear-gradient(145deg,#111e31 0%,#08111e 72%);
+  box-shadow:0 22px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.035);
+  scroll-margin-top:90px;
+}
+#sony-events #event-player-panel::before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:3px;
+  background:linear-gradient(90deg,#e7ad27,#ffe58a,#e7ad27);
+}
+#sony-events .event-player-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 0 15px;
+  min-width:0;
+}
+#sony-events .event-player-title{
+  min-width:0;
+  flex:1 1 auto;
+  color:#ffe18a;
+  font-size:clamp(15px,1.35vw,21px);
+  font-weight:950;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+#sony-events .event-player-close{
+  flex:0 0 auto;
+  min-height:42px;
+  padding:10px 16px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  background:linear-gradient(180deg,#25364d,#17263a);
+  color:#fff;
+  font-size:13px;
+  font-weight:850;
+  box-shadow:0 5px 16px rgba(0,0,0,.2);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease;
+}
+#sony-events .event-player-close:hover{
+  transform:translateY(-1px);
+  border-color:rgba(246,201,79,.55);
+  background:linear-gradient(180deg,#30435d,#1b2b41);
+}
+#sony-events .event-video-wrap{
+  position:relative;
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  min-height:0;
+  max-height:78vh;
+  margin:0;
+  overflow:hidden;
+  border:1px solid rgba(246,201,79,.24);
+  border-radius:16px;
+  background:#000;
+  box-shadow:0 12px 34px rgba(0,0,0,.38);
+}
+#sony-events #event-stream-frame{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  border:0;
+  margin:0;
+  padding:0;
+  background:#000;
+}
+#sony-events #event-player-status{
+  min-height:18px;
+  margin-top:10px;
+  padding:0 2px;
+  color:#9eacc0;
+  font-size:11px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+@media(min-width:1200px){
+  #sony-events #event-player-panel{padding:22px}
+  #sony-events .event-video-wrap{max-height:76vh}
+}
+@media(max-width:760px){
+  #sony-events #event-player-panel{
+    margin-top:18px;
+    padding:13px;
+    border-radius:17px;
+  }
+  #sony-events .event-player-top{gap:10px;margin-bottom:11px}
+  #sony-events .event-video-wrap{border-radius:12px;max-height:62vh}
+}
+@media(max-width:480px){
+  #sony-events #event-player-panel{
+    margin:15px 0 5px;
+    padding:11px;
+    border-radius:15px;
+  }
+  #sony-events .event-player-top{
+    align-items:stretch;
+    flex-direction:column;
+    gap:9px;
+    margin-bottom:10px;
+  }
+  #sony-events .event-player-title{font-size:14px;line-height:1.4}
+  #sony-events .event-player-close{
+    width:100%;
+    min-height:40px;
+    padding:9px 12px;
+    font-size:12px;
+  }
+  #sony-events .event-video-wrap{
+    width:100%;
+    aspect-ratio:16/9;
+    min-height:0;
+    max-height:56vh;
+    border-radius:10px;
+  }
+  #sony-events #event-player-status{font-size:10px;margin-top:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  #sony-events .event-player-close{transition:none}
+}
 </style>
 </head>
 <body>
