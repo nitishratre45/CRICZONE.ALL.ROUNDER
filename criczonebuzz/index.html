@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=13">
+    <link rel="stylesheet" href="criczone-premium.css?v=14">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1225,16 +1225,27 @@
                 }
             }
 
+            let liveStatusTimer = null;
             function setPlayerLiveStatus(message, state = 'live') {
                 const pill = document.getElementById('cz-player-live-status');
                 if (!pill) return;
+                clearTimeout(liveStatusTimer);
                 pill.className = 'cz-player-live-status is-visible is-' + state;
                 pill.innerHTML = '<span class="cz-player-live-dot"></span><span class="cz-player-live-text"></span>';
                 pill.querySelector('.cz-player-live-text').textContent = message;
                 pill.setAttribute('aria-label', message);
+                // Brief confirmation only: remove the LIVE badge after five seconds.
+                if (state === 'live') {
+                    liveStatusTimer = setTimeout(() => {
+                        if (pill.isConnected && pill.classList.contains('is-live')) {
+                            pill.className = 'cz-player-live-status';
+                        }
+                    }, 5000);
+                }
             }
 
             function hidePlayerLiveStatus() {
+                clearTimeout(liveStatusTimer);
                 const pill = document.getElementById('cz-player-live-status');
                 if (pill) pill.className = 'cz-player-live-status';
             }
