@@ -1563,7 +1563,7 @@
                 selectedDetailsMatchId = String(match.id || match.match_id || '');
                 const live = isMatchLive(match);
                 const home = getTeamInfo(match, 1), away = getTeamInfo(match, 2);
-                const poster = /^https?:\\/\\//i.test(String(match.image || match.cover_image || match.poster || match.thumbnail || ''))
+                const poster = /^https?:\/\//i.test(String(match.image || match.cover_image || match.poster || match.thumbnail || ''))
                     ? String(match.image || match.cover_image || match.poster || match.thumbnail) : '';
                 const startTimestamp = getMatchStartTimestamp(match);
                 const initials = name => String(name).trim().split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase();
