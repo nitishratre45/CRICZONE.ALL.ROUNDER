@@ -1,7 +1,7 @@
 {
-  "name": "CRICZONE Live Sports",
+  "name": "CRICZONE Cricket",
   "short_name": "CRICZONE",
-  "description": "Live sports channels and match centre",
+  "description": "Live cricket channels, fixtures, results and match centre",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
