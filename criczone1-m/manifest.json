@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "CRICZONE-M · Live Cricket",
+  "short_name": "CRICZONE-M",
+  "description": "CricZone live sports channels",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080d16",
+  "theme_color": "#080d16",
+  "icons": [
+    {
+      "src": "../photos/photo_2026-10-28_14-52-23.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
