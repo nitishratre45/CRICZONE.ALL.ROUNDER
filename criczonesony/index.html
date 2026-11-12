@@ -1437,7 +1437,7 @@ function showList(){
   var miniButton=document.getElementById("czMiniBtn");if(miniButton){miniButton.setAttribute("aria-pressed","false");miniButton.textContent="▣ Mini player";}
   if(window.stopSonyPlayerStats)window.stopSonyPlayerStats();
   destroyPlayer();$playerContainer.style.display="none";$list.style.display="block";
-  var url=new URL(location.href);url.searchParams.delete("id");history.pushState({}, "",url.pathname+url.search+url.hash);
+  var url=new URL(location.href);url.searchParams.delete("id");url.searchParams.delete("channel");history.replaceState({}, "",url.pathname+url.search+url.hash);
 }
 function showPlayer(ch){
   activeChannelId=ch.id;
