@@ -629,6 +629,9 @@ body::after{bottom:-45%;right:-12%;width:850px;height:850px;background:radial-gr
 .brand{gap:14px;min-width:0}.brand-photo-frame{width:62px;height:62px;flex:none;position:relative;border-radius:18px;padding:2px;background:linear-gradient(145deg,#f6d66b,#a94dff 55%,#37c9ff);box-shadow:0 0 0 1px rgba(255,255,255,.18),0 8px 28px rgba(143,75,255,.35)}.brand-photo{width:100%;height:100%;object-fit:cover;object-position:center 22%;border-radius:16px;background:#111a32}.brand-photo-live{position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border:3px solid #080b19;border-radius:50%;background:#ff3858;box-shadow:0 0 12px #ff3858}.header-social{gap:10px}.header-site-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:999px;border:1px solid rgba(180,125,255,.5);background:rgba(20,25,52,.8);color:#f4edff;font-size:13px;font-weight:700;transition:transform .2s,border-color .2s,background .2s}.header-site-link:hover{transform:translateY(-2px);border-color:#d9a2ff;background:rgba(113,48,194,.3)}.header-site-link span{font-size:17px}.social-icon.telegram{width:43px;height:43px;box-shadow:0 0 18px rgba(25,166,255,.4)}.hub-footer{backdrop-filter:blur(12px)}
 @media(max-width:700px){.brand-photo-frame{width:52px;height:52px;border-radius:15px}.brand-photo{border-radius:13px}.header-actions{align-items:center}.header-social{margin-left:auto}.header-site-link{padding:8px 12px;font-size:12px}.social-icon.telegram{width:38px;height:38px}}
 @media(max-width:390px){.brand-photo-frame{width:46px;height:46px}.header-site-link{padding:7px 9px;font-size:11px}}
+
+/* Shared CRICZONE navbar portrait — gold circular frame */
+.brand{gap:13px;flex:1;min-width:0}.brand-photo-frame{position:relative;width:52px;height:52px;flex:none;padding:3px;border-radius:50%;background:linear-gradient(145deg,#fff0b0 0%,#d5a43d 28%,#fff0b0 48%,#9b6a17 72%,#f5d77b 100%);box-shadow:0 0 0 1px rgba(255,220,132,.42),0 5px 18px rgba(218,166,57,.22);overflow:visible}.brand-photo-frame:before{content:"";position:absolute;inset:-3px;border:1px solid rgba(245,215,123,.38);border-radius:50%;pointer-events:none}.brand-photo-frame img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center;background:#102534;border:2px solid #102534;transition:opacity .25s ease,transform .4s ease}.brand-photo-frame img.is-changing{opacity:.25;transform:scale(.94)}.brand-photo-live{position:absolute;right:0;bottom:1px;width:11px;height:11px;border:2px solid #10172b;border-radius:50%;background:#36d6e7;box-shadow:0 0 0 2px rgba(54,214,231,.18)}.brand-text h1{font-size:21px;letter-spacing:-.9px}.brand-text p{font-size:9px;letter-spacing:.16em;font-weight:800;color:var(--muted)}.header-site-link{display:inline-flex;align-items:center;padding:9px 14px;border-radius:999px;border:1px solid rgba(189,85,255,.5);background:rgba(20,25,52,.8);color:#f4edff;font-size:12px;font-weight:700;white-space:nowrap}.header-site-link:hover{border-color:#d9a2ff;background:rgba(113,48,194,.3)}.header-social{display:flex;align-items:center;gap:10px}.social-icon.telegram{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:#fff;background:linear-gradient(145deg,#23c8ff,#087bd2);box-shadow:0 0 14px rgba(25,166,255,.45)}.social-icon.telegram svg{width:23px;height:23px;fill:currentColor}@media(max-width:650px){.brand-photo-frame{width:43px;height:43px}.brand{gap:9px}.brand-text h1{font-size:17px}.brand-text p{font-size:7px;letter-spacing:.12em}.header-site-link{font-size:10px;padding:8px 10px}.social-icon.telegram{width:37px;height:37px}}@media(max-width:390px){.brand-photo-frame{width:39px;height:39px}.brand-text p{display:block;font-size:6.5px}}
 </style>
 </head>
 
@@ -657,7 +660,7 @@ body::after{bottom:-45%;right:-12%;width:850px;height:850px;background:radial-gr
   <section id="hubView" class="view active">
     <header class="header">
       <a class="brand" href="#/" aria-label="CRICZONE home">
-        <div class="brand-photo-frame"><img class="brand-photo" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="CRICZONE cricket" loading="eager" decoding="async" onerror="this.style.display='none'"><span class="brand-photo-live" aria-hidden="true"></span></div>
+        <div class="brand-photo-frame"><img id="czNavbarPlayerPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
         <div class="brand-text">
           <h1>CRIC<span>ZONE</span></h1>
           <p>LIVE CRICKET STREAMING</p>
@@ -666,8 +669,8 @@ body::after{bottom:-45%;right:-12%;width:850px;height:850px;background:radial-gr
       <div class="header-actions">
         <div class="live-pill"><span class="dot"></span> Live</div>
         <div class="clock" id="clock">—</div>
-        <nav class="header-social" aria-label="CRICZONE navigation">
-          <a class="header-site-link" href="https://criczone.pages.dev/" target="_blank" rel="noopener"><span aria-hidden="true">⌂</span> Website</a>
+        <nav class="header-social" aria-label="CRICZONE links">
+          <a class="header-site-link" href="https://criczone.pages.dev/" target="_blank" rel="noopener">CRICZONE Website</a>
           <a class="social-icon telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="CRICZONE Telegram">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
           </a>
@@ -1643,6 +1646,25 @@ $("streams").addEventListener("click", e => {
 
 $("backHub").onclick = () => { location.hash = "#/"; };
 window.addEventListener("hashchange", route);
+
+/* ============================================================
+   NAVBAR PLAYER PORTRAIT ROTATION
+   ============================================================ */
+(function rotateNavbarPortrait(){
+ const photo=$("czNavbarPlayerPhoto");
+ if(!photo)return;
+ const players=[
+  {name:"Rohit Sharma",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
+  {name:"Virat Kohli",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
+ ];
+ let index=0;
+ setInterval(()=>{
+  const nextIndex=(index+1)%players.length,next=players[nextIndex],preload=new Image();
+  preload.onload=()=>{photo.classList.add("is-changing");setTimeout(()=>{photo.src=next.src;photo.alt=next.name;photo.classList.remove("is-changing");index=nextIndex},160)};
+  preload.onerror=()=>photo.classList.remove("is-changing");
+  preload.src=next.src;
+ },4000);
+})();
 
 /* ============================================================
    BOOT
