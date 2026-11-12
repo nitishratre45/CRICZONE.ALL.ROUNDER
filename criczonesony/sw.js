@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME = "cz-sony-shell-v5";
+const CACHE_NAME = "cz-sony-shell-v6";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./offline.html"];
 
 self.addEventListener("install", event => {
