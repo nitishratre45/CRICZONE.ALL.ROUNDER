@@ -1594,11 +1594,15 @@ document.addEventListener("DOMContentLoaded",main);
   var photo=document.getElementById("cz-brand-photo"),index=0;
   if(!photo)return;
   photo.addEventListener("error",function(){photo.style.display="none";photo.parentElement.textContent="CZ";});
+  // Rotate navbar photo every 15s and pause while this tab is in the background.
   window.setInterval(function(){
+    if(document.hidden)return;
     index=(index+1)%photos.length;
+    var next=photos[index];
+    if(photo.src===next)return;
     photo.style.opacity="0";
-    window.setTimeout(function(){photo.src=photos[index];photo.style.opacity="1";},180);
-  },4000);
+    window.setTimeout(function(){if(!document.hidden)photo.src=next;photo.style.opacity="1";},180);
+  },15000);
 })();
 </script>
 
