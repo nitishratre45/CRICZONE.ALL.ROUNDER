@@ -288,6 +288,19 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
 @media(max-width:390px){.brand-text p{display:none}.header-actions{gap:4px}.live-pill{padding:5px 6px}.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.channel-tile{min-height:100px}.cz-primary-cta,.cz-secondary-cta{padding:0 12px;font-size:9px}.streams{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
+
+/* Navbar player portrait — gold framed rotating spotlight */
+.brand{gap:13px;flex:1}
+.brand-photo-frame{position:relative;width:52px;height:52px;flex:none;padding:3px;border-radius:50%;background:linear-gradient(145deg,#fff0b0 0%,#d5a43d 28%,#fff0b0 48%,#9b6a17 72%,#f5d77b 100%);box-shadow:0 0 0 1px rgba(255,220,132,.42),0 5px 18px rgba(218,166,57,.22);overflow:visible}
+.brand-photo-frame:before{content:"";position:absolute;inset:-3px;border:1px solid rgba(245,215,123,.38);border-radius:50%;pointer-events:none}
+.brand-photo-frame img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center;background:#102534;border:2px solid #102534;transition:opacity .25s ease,transform .4s ease}
+.brand-photo-frame img.is-changing{opacity:.25;transform:scale(.94)}
+.brand-photo-live{position:absolute;right:0;bottom:1px;width:11px;height:11px;border:2px solid var(--cream);border-radius:50%;background:#36d6e7;box-shadow:0 0 0 2px rgba(54,214,231,.18)}
+.brand-text h1{font-size:21px;letter-spacing:-.9px}
+.brand-text p{font-size:9px;letter-spacing:.16em;font-weight:800;color:var(--muted)}
+@media(max-width:650px){.brand-photo-frame{width:43px;height:43px}.brand{gap:9px}.brand-text h1{font-size:17px}.brand-text p{font-size:7px;letter-spacing:.12em}}
+@media(max-width:390px){.brand-photo-frame{width:39px;height:39px}.brand-text p{display:block;font-size:6.5px}}
+
 </style>
 </head>
 <body>
@@ -305,8 +318,8 @@ body:before{inset:0;width:100%;height:100%;background:radial-gradient(ellipse at
 <section id="hubView" class="view">
 <header class="header">
   <div class="brand">
-    <div class="brand-mark">CZ</div>
-    <div class="brand-text"><h1>CRICZONE</h1><p>LIVE SPORTS • MATCH CENTRE</p></div>
+    <div class="brand-photo-frame"><img id="czNavbarPlayerPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
+    <div class="brand-text"><h1>CRICZONE</h1><p>LIVE SPORTS NETWORK</p></div>
   </div>
   <div class="header-actions">
     <button class="icon-action-btn" id="themeToggle" aria-label="Toggle Theme">☀️</button>
@@ -867,6 +880,25 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("themeToggle").textContent=savedTheme==="dark"?"☀️":"🌙";
 
  $("themeToggle").addEventListener("click",toggleTheme);
+
+ // Rotate the navbar portrait between Rohit Sharma and Virat Kohli every 4 seconds.
+ const navbarPhoto=$("czNavbarPlayerPhoto");
+ if(navbarPhoto){
+  const navbarPlayers=[
+   {name:"Rohit Sharma",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
+   {name:"Virat Kohli",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
+  ];
+  let navbarPlayerIndex=0;
+  setInterval(()=>{
+   navbarPlayerIndex=(navbarPlayerIndex+1)%navbarPlayers.length;
+   const next=navbarPlayers[navbarPlayerIndex];
+   const preload=new Image();
+   preload.onload=()=>{navbarPhoto.classList.add("is-changing");setTimeout(()=>{navbarPhoto.src=next.src;navbarPhoto.alt=next.name;navbarPhoto.classList.remove("is-changing")},160)};
+   preload.onerror=()=>{navbarPhoto.classList.remove("is-changing")};
+   preload.src=next.src;
+  },4000);
+ }
+
 
  const popup=$("popup");
  setTimeout(()=>{
