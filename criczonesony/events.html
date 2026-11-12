@@ -29,7 +29,7 @@ header{padding:34px 18px 24px;text-align:center}h1{margin:0;font-size:clamp(28px
 .tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 16px 24px}.tabs button{border:1px solid var(--line);border-radius:999px;padding:10px 20px;background:#18243a;color:#fff;font-weight:750;cursor:pointer}.tabs button.active{background:var(--accent);border-color:var(--accent)}
 #updated{color:var(--muted);font-size:12px;text-align:center;margin:0 0 22px}
 #list{width:min(1200px,100%);margin:auto;padding:0 16px 50px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{background:linear-gradient(145deg,#17243a,#101827);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 12px 32px #0005;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#f5c54288}.card img{width:100%;height:165px;object-fit:cover;background:#0b1220}.body{padding:16px}.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--accent);font-size:10px;font-weight:900;letter-spacing:.7px}.badge.up{background:#596579}.title{font-size:16px;font-weight:850;margin:12px 0 6px}.meta{color:var(--muted);font-size:12px;line-height:1.5}.footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px}.watch{display:inline-block;text-decoration:none;color:#111;background:var(--gold);padding:9px 17px;border-radius:999px;font-size:12px;font-weight:900}.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:50px 12px}
+.card{background:linear-gradient(145deg,#17243a,#101827);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 12px 32px #0005;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#f5c54288}.card img{width:100%;height:165px;object-fit:cover;background:#0b1220}.body{padding:16px}.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--accent);font-size:10px;font-weight:900;letter-spacing:.7px}.badge.up{background:#596579}.title{font-size:16px;font-weight:850;margin:12px 0 6px}.meta{color:var(--muted);font-size:12px;line-height:1.5}.footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px}.watch{display:inline-block;text-decoration:none;color:#111;background:var(--gold);padding:9px 17px;border-radius:999px;font-size:12px;font-weight:900}.share-event{display:inline-flex;align-items:center;gap:5px;border:1px solid #52647c;border-radius:999px;padding:8px 12px;background:#18243a;color:#f5f7fb;font-size:11px;font-weight:850;cursor:pointer}.share-event:active{transform:scale(.97)}.card.shared-event{border-color:var(--gold);box-shadow:0 0 0 2px #f5c54233,0 12px 32px #0005}.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:50px 12px}
 @media(max-width:560px){#list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-inline:10px}.card img{height:112px}.body{padding:11px}.title{font-size:13px}.meta{font-size:11px}.watch{padding:8px 12px;font-size:10px}}
 </style>
 </head>
@@ -72,16 +72,41 @@ function parseSonyLivText(text){
   return {"last update time":tm?tm[1]:"Live",matches:rows,recovered:true};
 }
 function escapeHTML(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function eventKey(m){
+ return String(m.video_url||m.pub_url||m.dai_url||((m.match_name||m.event_name||"Live Event")+"|"+(m.broadcast_channel||"")));
+}
+var sharedEvent=new URLSearchParams(window.location.search).get("event");
 function render(){
  var rows=data.filter(function(m){return activeFilter==="all"||(activeFilter==="live"?m.isLive===true:m.isLive!==true);});
  if(!rows.length){list.innerHTML='<div class="empty">No events available in this category.</div>';return;}
  list.innerHTML=rows.map(function(m){
   var live=m.isLive===true, title=m.match_name||m.event_name||"Live Event";
   var stream=m.video_url||m.pub_url||m.dai_url||"";
+  var key=eventKey(m), selected=sharedEvent===key;
   var watch=live&&stream?'<a class="watch" href="'+PLAYER_URL+encodeURIComponent(stream)+'&title='+encodeURIComponent(title)+'">▶ WATCH LIVE</a>':'';
-  return '<article class="card"><img loading="lazy" referrerpolicy="no-referrer" src="'+escapeHTML(m.src||"")+'" alt="'+escapeHTML(title)+'"><div class="body"><span class="badge '+(live?"":"up")+'">'+(live?"LIVE NOW":"UPCOMING")+'</span><div class="title">'+escapeHTML(title)+'</div><div class="meta">'+escapeHTML(m.broadcast_channel||"")+(m.audioLanguageName?" · "+escapeHTML(m.audioLanguageName):"")+'</div><div class="footer"><span class="meta">'+escapeHTML(m.event_category||"")+'</span>'+watch+'</div></div></article>';
+  var share='<button class="share-event" type="button" data-share-key="'+escapeHTML(key)+'" data-share-title="'+escapeHTML(title)+'">↗ SHARE</button>';
+  return '<article class="card'+(selected?' shared-event':'')+'" data-event-key="'+escapeHTML(key)+'"><img loading="lazy" referrerpolicy="no-referrer" src="'+escapeHTML(m.src||"")+'" alt="'+escapeHTML(title)+'"><div class="body"><span class="badge '+(live?"":"up")+'">'+(live?"LIVE NOW":"UPCOMING")+'</span><div class="title">'+escapeHTML(title)+'</div><div class="meta">'+escapeHTML(m.broadcast_channel||"")+(m.audioLanguageName?" · "+escapeHTML(m.audioLanguageName):"")+'</div><div class="footer"><span class="meta">'+escapeHTML(m.event_category||"")+'</span><span style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">'+watch+share+'</span></div></div></article>';
  }).join("");
+ if(sharedEvent){var target=list.querySelector(".shared-event");if(target)requestAnimationFrame(function(){target.scrollIntoView({behavior:"smooth",block:"center"});});}
 }
+async function shareSonyEvent(key,title){
+ var shareURL=window.location.origin+window.location.pathname+"?event="+encodeURIComponent(key);
+ var shareData={title:"Sony LIV · "+title,text:"Sony LIV event on CRICZONE Sony Events",url:shareURL};
+ try{
+  if(navigator.share){await navigator.share(shareData);return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(shareURL);alert("Sony event link copied!");return;}
+  window.prompt("Copy Sony event link:",shareURL);
+ }catch(error){
+  if(error&&error.name==="AbortError")return;
+  try{await navigator.clipboard.writeText(shareURL);alert("Sony event link copied!");}
+  catch(copyError){window.prompt("Copy Sony event link:",shareURL);}
+ }
+}
+list.addEventListener("click",function(event){
+ var button=event.target.closest(".share-event");if(!button)return;
+ event.preventDefault();event.stopPropagation();
+ shareSonyEvent(button.getAttribute("data-share-key")||"",button.getAttribute("data-share-title")||"Live Event");
+});
 document.querySelectorAll(".tabs button").forEach(function(button){
  button.addEventListener("click",function(){
   document.querySelectorAll(".tabs button").forEach(function(b){b.classList.remove("active");});
