@@ -698,7 +698,8 @@ function parseEventsFromData(data){
    const info=item.event||item.eventInfo||item.matchInfo||item;
    if(!isCricketEvent(item,info))return;
    const st=parseDate(info.startTimeIST||info.startTime||item.startTime||item.time);
-   let en=parseDate(info.endTimeIST||info.endTime||item.endTime);
+   const rawEnd=info.endTimeIST||info.endTime||item.endTime;
+   let en=rawEnd?parseDate(rawEnd):new Date(st.getTime()+3*3600000);
    if(!en||en<=st)en=new Date(st.getTime()+3*3600000);
 
    const seen=new Set(),streams=[];
