@@ -258,3 +258,30 @@ header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215
 }
 @media(max-width:360px){.cz-server-auto-note{display:none}}
 /* ===== END PLAYER SERVER UX ===== */
+
+
+/* CRICZONE BUZZ final polish: 2-column match grid and single Telegram popup */
+#matches-container .matches-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:clamp(9px,1.5vw,18px)!important}
+#matches-container .match-card{min-width:0!important}
+#matches-container .card-actions{align-items:stretch!important}
+#cz-tg-local-bar{
+ border:1px solid rgba(215,255,63,.38)!important;
+ background:linear-gradient(105deg,#18230c,#10180b 58%,#0b1108)!important;
+ box-shadow:0 0 22px rgba(215,255,63,.08),0 10px 28px #0006!important
+}
+#cz-tg-local-bar .cz-tg-logo{background:linear-gradient(145deg,#d7ff3f,#b9f526)!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-tap{background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;border-radius:999px!important}
+#cz-tg-local-bar strong{color:#f5f6ed!important}
+#cz-tg-local-bar small{color:#aeb99a!important}
+@media(max-width:700px){
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #matches-container .card-poster{aspect-ratio:4/3!important}
+ #matches-container .card-body{padding:10px!important;gap:8px!important}
+ #matches-container .card-title{font-size:.82rem!important;line-height:1.28!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:1fr!important}
+}
+@media(max-width:360px){
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ #matches-container .card-body{padding:8px!important}
+ #matches-container .card-title{font-size:.75rem!important}
+}
