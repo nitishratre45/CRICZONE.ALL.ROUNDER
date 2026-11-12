@@ -25,15 +25,81 @@
 @media(max-width:650px){.wrap{width:min(100% - 26px,1420px)}.topbar{height:66px}.brand strong{font-size:16px}.actions .optional{display:none}.hero{margin:17px 0;padding:24px 20px;min-height:230px}.hero h1{font-size:42px}.hero p{font-size:11px;max-width:90%}.hero-orb{position:absolute;right:-28px;top:12px;width:130px;height:90px;font-size:20px;opacity:.4}.toolbar{margin-top:14px}.stats{gap:7px}.stat{padding:11px 9px;gap:7px}.stat i{width:28px;height:28px}.stat b{font-size:19px}.stat small{font-size:8px}.section-head h2{font-size:22px}.matches{grid-template-columns:1fr}.channels{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.channel{padding:12px 7px}.footer{flex-direction:column}}
 @media(max-width:380px){.channels{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Shared CRICZONE app navigation: keep Match Centre visually consistent with the home page. */
+:root{--cream:var(--bg);--white:var(--panel);--ink:var(--text);--accent:var(--cyan)}
+.mc-shell{width:min(1580px,100% - 44px);display:grid;grid-template-columns:204px minmax(0,1fr);column-gap:28px;align-items:start}
+.mc-shell>.header{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:100;margin:0 calc(clamp(22px,2.6vw,42px)*-1) 26px;padding:13px clamp(22px,2.6vw,42px);min-height:78px;border:1px solid rgba(127,190,210,.13);border-top:0;border-radius:0 0 20px 20px;background:rgba(7,22,33,.92);backdrop-filter:blur(22px);box-shadow:0 14px 36px rgba(0,0,0,.18)}
+.mc-shell>.cz-desktop-rail{grid-column:1;grid-row:2;position:sticky;top:92px;align-self:start;min-height:calc(100vh - 116px);display:flex;flex-direction:column;gap:7px;padding:18px 12px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(180deg,rgba(15,34,48,.98),rgba(10,26,39,.98));box-shadow:var(--shadow)}
+.mc-shell .cz-rail-label{padding:5px 9px 7px;color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.17em}
+.mc-shell .cz-rail-link{display:flex;align-items:center;gap:11px;min-height:43px;padding:0 10px;border:1px solid transparent;border-radius:11px;color:var(--muted);text-decoration:none;font-size:11px;font-weight:700}
+.mc-shell .cz-rail-link>span{width:22px;text-align:center;color:var(--cyan);font-size:17px}
+.mc-shell .cz-rail-link b{font-weight:750}.mc-shell .cz-rail-link i{margin-left:auto;font-style:normal;opacity:.6}
+.mc-shell .cz-rail-link:hover,.mc-shell .cz-rail-link.active{background:rgba(43,203,221,.12);border-color:rgba(43,203,221,.19);color:#eafaff}
+.mc-shell .cz-rail-divider{height:1px;background:var(--line);margin:12px 5px}
+.mc-shell .cz-rail-spacer{flex:1;min-height:30px}
+.mc-shell .cz-rail-status{display:flex;align-items:center;gap:9px;padding:12px 9px;border:1px solid var(--line);border-radius:12px;background:rgba(43,203,221,.06)}
+.mc-shell .cz-rail-status>span{width:7px;height:7px;border-radius:50%;background:#32c98a;box-shadow:0 0 0 4px rgba(50,201,138,.12)}
+.mc-shell .cz-rail-status b,.mc-shell .cz-rail-status small{display:block}.mc-shell .cz-rail-status b{font-size:9px;color:var(--text)}.mc-shell .cz-rail-status small{font-size:8px;color:var(--muted);margin-top:2px}
+.mc-content{grid-column:2;min-width:0;width:100%}
+.mc-shell .brand-photo-frame{position:relative;width:52px;height:52px;flex:none;padding:3px;border-radius:50%;background:linear-gradient(145deg,#fff0b0 0%,#d5a43d 28%,#fff0b0 48%,#9b6a17 72%,#f5d77b 100%);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 0 0 4px rgba(48,213,230,.08),0 8px 25px rgba(0,0,0,.32);overflow:visible}
+.mc-shell .brand-photo-frame img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center;background:#102534;border:2px solid #102534}
+.mc-shell .brand-photo-live{position:absolute;right:0;bottom:1px;width:11px;height:11px;border-radius:50%;background:#36d6e7;border:2px solid #071723}
+.mc-shell .brand-text h1{font:700 19px/1.1 var(--display);letter-spacing:-.3px;color:var(--text);background:none;-webkit-text-fill-color:currentColor}
+.mc-shell .brand-text p{font-size:9px;color:var(--muted);margin-top:3px;font-weight:800;letter-spacing:.16em}
+.mc-shell .header-actions{display:flex;align-items:center;gap:8px;flex:none}
+.mc-shell .icon-action-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);display:grid;place-items:center;font-size:16px}
+.mc-shell .live-pill{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.22);color:#48d7a0;font-size:11px;font-weight:800}
+.mc-shell .live-pill .dot{width:7px;height:7px;border-radius:50%;background:#32c98a}
+.mc-shell .join-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:12px;background:linear-gradient(135deg,#36d6e7,#80e8ec);color:#05232d;font-size:11px;font-weight:800;box-shadow:0 6px 18px rgba(0,136,204,.2)}
+.mc-shell .join-btn svg{width:14px;height:14px}
+.mc-shell .cz-app-nav{display:none}
+@media(max-width:999px){.mc-shell{display:block;width:calc(100% - 28px)}.mc-shell>.cz-desktop-rail{display:none}.mc-shell>.header{margin:0 -14px 18px;padding:11px 14px;min-height:66px;position:sticky;top:0;z-index:100;border-radius:0 0 16px 16px}.mc-content{width:100%}.mc-shell .brand-photo-frame{width:43px;height:43px}.mc-shell .brand-text h1{font-size:17px}.mc-shell .brand-text p{font-size:7px}.mc-shell .header-actions{gap:6px}.mc-shell .icon-action-btn{width:34px;height:34px}.mc-shell .join-btn{padding:8px 10px;font-size:9px}.mc-shell .live-pill{font-size:8px;padding:6px 8px}.mc-shell .cz-app-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:80;min-height:62px;padding:6px;border:1px solid var(--line);border-radius:19px;background:rgba(7,22,33,.94);backdrop-filter:blur(22px);box-shadow:0 12px 38px rgba(0,0,0,.3)}.mc-shell .cz-app-nav-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:13px;background:transparent;color:var(--muted);font:700 9px var(--body)}.mc-shell .cz-app-nav-item.active{background:rgba(54,214,231,.12);color:#54dce8}.mc-shell .cz-app-nav-icon{font-size:18px;line-height:1;color:inherit}.mc-shell .footer{padding-bottom:95px}}
+@media(max-width:420px){.mc-shell .brand-text p{font-size:6px}.mc-shell .header-actions{gap:4px}.mc-shell .join-btn{padding:7px 8px}.mc-shell .live-pill{display:none}}
+
 </style></head>
-<body><div class="wrap">
-<header class="topbar"><a class="brand" href="../"><span class="logo">CZ</span><span><strong>CRICZONE</strong><small>CRICKET MATCH CENTRE</small></span></a><div class="actions"><a class="btn optional" href="../">← Main hub</a><button class="btn" id="theme" aria-label="Toggle theme">☀</button><a class="btn primary" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Telegram ↗</a></div></header>
+<body><div class="wrap mc-shell">
+<header class="header">
+  <div class="brand">
+    <div class="brand-photo-frame"><img id="czNavbarPlayerPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
+    <div class="brand-text"><h1>CRICZONE</h1><p>CRICKET LIVE NETWORK</p></div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-action-btn" id="theme" aria-label="Toggle Theme">☀️</button>
+    <button class="cz-install-btn" id="czInstallBtn" type="button" hidden><span aria-hidden="true">＋</span> Install App</button>
+    <div class="live-pill"><span class="dot"></span> Live</div>
+    <div class="clock" id="clock"></div>
+    <a class="join-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+      <span>Telegram</span>
+    </a>
+  </div>
+</header>
+<aside class="cz-desktop-rail" aria-label="CRICZONE app navigation">
+ <div class="cz-rail-label">WORKSPACE</div>
+ <a class="cz-rail-link" href="../#channelsTitle" data-rail-nav="channels"><span>▦</span><b>Cricket channels</b></a>
+ <a class="cz-rail-link active" href="./" data-rail-nav="matches"><span>◷</span><b>Cricket matches</b></a>
+ <a class="cz-rail-link" href="../#searchInput" data-rail-nav="search"><span>⌕</span><b>Search</b></a>
+ <div class="cz-rail-divider"></div>
+ <div class="cz-rail-label">CONNECT</div>
+ <a class="cz-rail-link" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer"><span>➤</span><b>Community</b><i>↗</i></a>
+ <div class="cz-rail-spacer"></div>
+ <div class="cz-rail-status"><span></span><div><b>Systems online</b><small>CRICZONE Live</small></div></div>
+</aside>
+<main class="mc-content">
 <section class="hero"><div><span class="eyebrow">THE HOME OF CRICKET · CRICZONE</span><h1>Every match.<br><em>Every moment.</em></h1><p>Cricket-only live match centre with upcoming fixtures, results and a dedicated cricket channel directory — all in one place.</p></div><div class="hero-orb">LIVE</div></section>
 <div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search teams, tournaments or channels…"></label><button class="btn" id="refresh">↻ Refresh</button></div>
 <div class="stats"><div class="stat"><i>●</i><div><b id="liveCount">—</b><small>LIVE MATCHES</small></div></div><div class="stat"><i>◷</i><div><b id="upcomingCount">—</b><small>UPCOMING</small></div></div><div class="stat"><i>▦</i><div><b id="channelCount">—</b><small>CRICKET CHANNELS</small></div></div></div>
 <section id="matchSection"><div class="section-head"><div><h2>Cricket matches</h2><p>Live action, upcoming fixtures and completed matches</p></div><span class="count" id="matchTotal">Loading…</span></div><div class="filters" id="filters"><button class="filter active" data-filter="all">All matches</button><button class="filter" data-filter="live">● Live now</button><button class="filter" data-filter="soon">Upcoming</button><button class="filter" data-filter="done">Results</button></div><div class="matches" id="matches"><div class="empty">Loading cricket fixtures…</div></div></section>
 <section id="channelSection"><div class="section-head"><div><h2>Cricket channels</h2><p>Available streams linked to cricket events</p></div><span class="count" id="channelTotal">Loading…</span></div><div class="filters" id="channelFilters"><button class="filter active" data-channel="all">All channels</button></div><div class="channels" id="channels"><div class="empty">Loading channel directory…</div></div></section>
+<nav class="cz-app-nav" aria-label="Quick navigation">
+ <a href="../#channelsTitle" class="cz-app-nav-item"><span class="cz-app-nav-icon">▦</span><span>Channels</span></a>
+ <a href="./" class="cz-app-nav-item active"><span class="cz-app-nav-icon">◷</span><span>Cricket</span></a>
+ <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" class="cz-app-nav-item"><span class="cz-app-nav-icon">➤</span><span>Community</span></a>
+ <a href="../#searchInput" class="cz-app-nav-item"><span class="cz-app-nav-icon">⌕</span><span>Search</span></a>
+</nav>
 <footer class="footer"><span>© <span id="year"></span> CRICZONE · Cricket Match Centre</span><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Official community ↗</a></footer>
+</main>
 </div>
 <script>
 "use strict";
