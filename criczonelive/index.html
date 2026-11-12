@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#071b16">
+<meta name="theme-color" content="#07131f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CRICZONE">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
 <meta name="description" content="CRICZONE — your live sports destination. Browse channels, discover matches and join the official CRICZONE Telegram community.">
 <meta name="referrer" content="no-referrer">
 <title>CRICZONE — Live Sports & Channel Hub</title>
@@ -389,6 +394,14 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(54,214,231,.65);outl
 }
 @media(prefers-reduced-motion:reduce){.cz-app-nav-item,.channel-tile,.card{transition:none!important}}
 
+
+/* Installable CRICZONE app controls */
+.cz-install-btn{display:none;align-items:center;gap:7px;min-height:38px;padding:0 13px;border:1px solid rgba(54,214,231,.35);border-radius:11px;background:rgba(54,214,231,.1);color:var(--ink);font:800 10px var(--body);cursor:pointer}
+.cz-install-btn[hidden]{display:none!important}
+.cz-install-btn:not([hidden]){display:inline-flex}
+.cz-install-btn span{font-size:17px;color:var(--accent)}
+@media(max-width:700px){.cz-install-btn:not([hidden]){display:none}}
+
 </style>
 </head>
 <body>
@@ -411,6 +424,7 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(54,214,231,.65);outl
   </div>
   <div class="header-actions">
     <button class="icon-action-btn" id="themeToggle" aria-label="Toggle Theme">☀️</button>
+    <button class="cz-install-btn" id="czInstallBtn" type="button" hidden><span aria-hidden="true">＋</span> Install App</button>
     <div class="live-pill"><span class="dot"></span> Live</div>
     <div class="clock" id="clock"></div>
     <a class="join-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
@@ -1017,6 +1031,29 @@ document.addEventListener("DOMContentLoaded",()=>{
   },{rootMargin:"-20% 0px -65% 0px",threshold:[0,.1,.3]});
   if(channelSection)navObserver.observe(channelSection);
   if(matchSection)navObserver.observe(matchSection);
+ }
+
+
+ // Installable PWA: install prompt is shown only when the browser supports it.
+ let deferredInstallPrompt=null;
+ const installBtn=$("czInstallBtn");
+ const setInstallVisible=visible=>{if(installBtn)installBtn.hidden=!visible};
+ window.addEventListener("beforeinstallprompt",event=>{
+  event.preventDefault();deferredInstallPrompt=event;setInstallVisible(true);
+ });
+ window.addEventListener("appinstalled",()=>{
+  deferredInstallPrompt=null;setInstallVisible(false);
+  const note=$("czRefreshNote");if(note)note.textContent="CRICZONE has been installed on this device.";
+ });
+ if(installBtn)installBtn.addEventListener("click",async()=>{
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  const choice=await deferredInstallPrompt.userChoice;
+  if(choice&&choice.outcome==="accepted")setInstallVisible(false);
+  deferredInstallPrompt=null;
+ });
+ if("serviceWorker" in navigator&&location.protocol==="https:"){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}),{once:true});
  }
 
  const refreshBtn=$("czRefreshBtn");
