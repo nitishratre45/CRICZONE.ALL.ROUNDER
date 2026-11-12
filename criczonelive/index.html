@@ -1164,7 +1164,9 @@ function eventCard(e){
   const sideA = `<div class="team">${crest(e.fa, e.a || e.comp)}<div class="team-name">${esc(e.a || e.comp || "TBD")}</div></div>`;
   const sideB = sameTeam ? `<div class="team"></div>` : `<div class="team">${crest(e.fb, e.b)}<div class="team-name">${esc(e.b)}</div></div>`;
   const matchLabel = [e.a, e.b].filter(Boolean).join(" vs ") || e.comp || "Match";
-  const actionLabel = n ? "Watch match" : "View match details";
+  // Stream URLs can be listed before kickoff; an upcoming fixture is not live yet.
+  const actionLabel = status === "soon" ? "Upcoming match details" : n ? "Watch match" : "View match details";
+  const ctaLabel = status === "soon" ? "Upcoming" : n ? "Watch" : "Details";
   return `
     <button class="card ${isLive ? "is-live" : ""}" data-watch-event="${esc(e.id)}" type="button" aria-label="${esc(matchLabel)} · ${esc(statusText)} · ${n} streams · ${actionLabel}">
       <div class="card-top">
@@ -1176,7 +1178,7 @@ function eventCard(e){
         <div class="versus"><div class="kickoff-time">${timeString(e.st)}</div><div class="kickoff-date">${dateString(e.st)} · IST</div></div>
         ${sideB}
       </div>
-      <div class="card-foot">${streamInfo}<span class="watch-cta">${n ? "Watch" : "Details"} <span class="arrow">→</span></span></div>
+      <div class="card-foot">${streamInfo}<span class="watch-cta">${ctaLabel} <span class="arrow">→</span></span></div>
     </button>
   `;}
 
