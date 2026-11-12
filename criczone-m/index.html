@@ -20,14 +20,11 @@ html,body{
   font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none
 }
-#overlay{
   position:fixed;inset:0;background:#0a0a0a;z-index:9999;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:16px
 }
-#overlay svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#overlay p{
   color:#505050;font-size:12px;letter-spacing:.5px;
   text-align:center;padding:0 24px;font-weight:500
 }
@@ -197,8 +194,6 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 .ch-card span{width:100%;color:var(--cz-text);font-size:12px;font-weight:800;line-height:1.4;letter-spacing:.1px}
 #ch-empty{margin:12px 0;padding:28px;border:1px dashed rgba(210,230,216,.2);border-radius:14px;color:var(--cz-muted);text-align:center;font-size:13px}
 #cz-home-footer{display:flex;justify-content:space-between;gap:12px;width:min(100% - 32px,1220px);margin:18px auto 0;padding:17px 0 0;border-top:1px solid var(--cz-line);color:#728178;font-size:9px;font-weight:800;letter-spacing:1.2px}
-#overlay{background:radial-gradient(ellipse at 50% 42%,#14251a 0%,#08100d 55%,#050a07 100%)}
-#overlay p{color:var(--cz-muted);font-family:Manrope,sans-serif}
 @media(max-width:620px){#ch-header{padding:11px 14px}.cz-brand-mark{width:38px;height:38px}.cz-brand-copy strong{font-size:16px}.cz-live-pill{padding:7px 9px;font-size:9px}#home-main{width:calc(100% - 24px);padding-top:24px}.cz-hero{margin-bottom:24px;padding:23px 19px;border-radius:17px}.cz-hero p{max-width:85%;font-size:12px}.cz-library-head{align-items:start;flex-direction:column;gap:7px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ch-card{min-height:126px;padding:14px 9px;border-radius:13px}.ch-logo{max-width:78px;height:46px}.ch-logo-fallback{width:70px;height:44px;font-size:15px}.ch-card span{font-size:11px}#cz-home-footer{width:calc(100% - 24px);font-size:8px}}
 @media(max-width:360px){#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ch-card{min-height:116px;padding:11px 7px}.cz-brand-copy small{font-size:8px}.cz-live-pill{gap:5px;padding:6px 7px}}
 @media(prefers-reduced-motion:reduce){#channel-list *{animation:none!important;transition:none!important}}
@@ -375,27 +370,7 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 
 
 
-/* CRICZONE5 TELEGRAM JOIN UI */
-#cz5-telegram-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px;padding:13px 16px;border:1px solid rgba(34,158,217,.48);border-radius:16px;background:linear-gradient(105deg,#075be9,#0645d8 58%,#063fc4);box-shadow:0 10px 28px rgba(0,75,210,.2);font-family:Manrope,system-ui,sans-serif}
-#cz5-telegram-bar .cz5-tg-copy{display:flex;align-items:center;gap:11px;min-width:0;color:#fff;text-decoration:none}
-#cz5-telegram-bar .cz5-tg-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#ffffff25;font-size:22px}
-#cz5-telegram-bar strong{display:block;font-size:13px;font-weight:900;line-height:1.3}
-#cz5-telegram-bar small{display:block;margin-top:3px;color:#ffffffdf;font-size:10px}
-#cz5-telegram-bar .cz5-tg-join{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border-radius:10px;background:#fff;color:#0754dc;text-decoration:none;font-size:11px;font-weight:900;white-space:nowrap}
-#cz5-tg-modal{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:18px;background:rgba(2,8,18,.86);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;font-family:Manrope,system-ui,sans-serif}
-#cz5-tg-modal.cz5-open{opacity:1;visibility:visible}
-#cz5-tg-modal .cz5-tg-card{position:relative;width:min(100%,380px);padding:30px 23px 24px;border:1px solid rgba(34,158,217,.45);border-radius:23px;background:radial-gradient(circle at 50% 0,rgba(34,158,217,.2),transparent 48%),linear-gradient(150deg,#13283c,#081522 78%);box-shadow:0 28px 90px #000a;color:#f8fbff;text-align:center;transform:translateY(12px) scale(.98);transition:transform .22s}
-#cz5-tg-modal.cz5-open .cz5-tg-card{transform:none}
-#cz5-tg-modal .cz5-tg-close{position:absolute;right:11px;top:11px;width:33px;height:33px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}
-#cz5-tg-modal .cz5-tg-logo{display:grid;place-items:center;width:68px;height:68px;margin:2px auto 15px;border-radius:20px;background:#229ed9;font-size:34px}
-#cz5-tg-modal .cz5-tg-kicker{margin:0 0 8px;color:#69caff;font-size:10px;font-weight:900;letter-spacing:1.5px}
-#cz5-tg-modal h2{margin:0;font-size:23px;line-height:1.2;font-weight:900}
-#cz5-tg-modal p{margin:11px auto 18px;color:#c1d2e1;font-size:12px;line-height:1.6}
-#cz5-tg-modal .cz5-tg-action{display:flex;align-items:center;justify-content:center;min-height:49px;border-radius:13px;background:linear-gradient(100deg,#229ed9,#1686c2);color:#fff;text-decoration:none;font-size:13px;font-weight:900;box-shadow:0 9px 25px #229ed94d}
-#cz5-tg-modal .cz5-tg-foot{margin:12px 0 0;color:#9eb4c8;font-size:10px}
-@media(max-width:520px){#cz5-telegram-bar{padding:10px;gap:8px}#cz5-telegram-bar .cz5-tg-icon{flex-basis:36px;width:36px;height:36px;font-size:19px}#cz5-telegram-bar strong{font-size:11px}#cz5-telegram-bar small{font-size:9px}#cz5-telegram-bar .cz5-tg-join{min-height:34px;padding:0 10px;font-size:10px}#cz5-tg-modal .cz5-tg-card{padding:28px 18px 21px}#cz5-tg-modal h2{font-size:21px}}
-@media(prefers-reduced-motion:reduce){#cz5-tg-modal,#cz5-tg-modal .cz5-tg-card{transition:none}}
-/* END CRICZONE5 TELEGRAM UI */
+
 
 
 /* CRICZONE original compact LIVE WATCHING badge */
@@ -427,13 +402,7 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 </head>
 <body>
 
-<div id="overlay">
-  <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-    <circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/>
-    <path d="M20 4a16 16 0 0 1 16 16" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
-  </svg>
-  <p id="loadMsg">Loading.....</p>
-</div>
+
 
 <div id="status"></div>
 
@@ -568,8 +537,8 @@ function toast(msg, type, dur){
   }
 }
 
-function setMsg(m)    { if($loadMsg) $loadMsg.textContent = m; }
-function hideOverlay(){ if($overlay) $overlay.style.display = "none"; }
+function setMsg(m)    { /* loading overlay removed */ }
+function hideOverlay(){ /* loading overlay removed */ }
 function getChId()    { return new URLSearchParams(location.search).get("id") || ""; }
 
 function rawCookie(c){
@@ -1178,50 +1147,7 @@ document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
 
-<!-- CRICZONE Telegram popup: show 5 seconds after player panel opens -->
-<script>
-(function(){
- "use strict";
- if(window.CZ_TG_CRICZONE5) return;
- window.CZ_TG_CRICZONE5=true;
- var link="https://t.me/+pN15_8gc54s2NDU1",timer=null,shown=false,wasActive=false;
- function makeBar(){
-  if(document.getElementById("cz5-telegram-bar"))return;
-  var hero=document.querySelector("#home-main .cz-hero");if(!hero)return;
-  var bar=document.createElement("aside");bar.id="cz5-telegram-bar";
-  bar.innerHTML='<div class="cz5-tg-copy"><span class="cz5-tg-icon">➤</span><span><strong>JOIN OFFICIAL CRICZONE TELEGRAM</strong><small>🏏 Live match updates • Cricket news • Community</small></span></div><a class="cz5-tg-join" href="'+link+'" target="_blank" rel="noopener noreferrer">JOIN NOW →</a>';
-  hero.insertAdjacentElement("afterend",bar);
- }
- function makeModal(){
-  var modal=document.getElementById("cz5-tg-modal");if(modal)return modal;
-  modal=document.createElement("div");modal.id="cz5-tg-modal";
-  modal.innerHTML='<section class="cz5-tg-card" role="dialog" aria-modal="true" aria-labelledby="cz5-tg-title"><button class="cz5-tg-close" type="button" aria-label="Close">×</button><div class="cz5-tg-logo">➤</div><div class="cz5-tg-kicker">CRICZONE OFFICIAL TELEGRAM</div><h2 id="cz5-tg-title">Never Miss a Match Update! 🏏</h2><p>Join the CRICZONE Telegram community for live match updates, cricket news and important announcements.</p><a class="cz5-tg-action" href="'+link+'" target="_blank" rel="noopener noreferrer">🚀 JOIN TELEGRAM CHANNEL</a><div class="cz5-tg-foot">Free to join · Stay connected with CRICZONE</div></section>';
-  document.body.appendChild(modal);
-  modal.addEventListener("click",function(e){if(e.target===modal)e.preventDefault();});
-  modal.querySelector(".cz5-tg-close").addEventListener("click",function(){modal.classList.remove("cz5-open");});
-  return modal;
- }
- function isFull(){return !!(document.fullscreenElement||document.webkitFullscreenElement||(document.getElementById("v")&&document.getElementById("v").webkitDisplayingFullscreen));}
- function playerOpen(){var pc=document.getElementById("pc");return !!(pc&&getComputedStyle(pc).display!=="none"&&pc.getBoundingClientRect().width>0);}
- function displayPopup(){
-  if(shown)return;
-  if(!playerOpen()){timer=null;wasActive=false;return;}
-  if(isFull()){timer=window.setTimeout(displayPopup,1000);return;}
-  shown=true;makeModal().classList.add("cz5-open");
- }
- function watch(){
-  makeBar();
-  if(!new URLSearchParams(location.search).get("id"))return;
-  window.setInterval(function(){
-   var active=playerOpen();
-   if(active&&!wasActive&&!shown&&!timer){wasActive=true;timer=window.setTimeout(displayPopup,5000);}
-   if(!active){wasActive=false;if(timer){clearTimeout(timer);timer=null;}}
-  },200);
- }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
-})();
-</script>
-<!-- END CRICZONE5 Telegram UI -->
+
 
 
 <script type="module">
@@ -1268,42 +1194,8 @@ display(countEl,BASE);display(totalEl,BASE);startTotal();
 window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(countOff)countOff();if(totalOff)totalOff()});
 </script>
 
-<script src="/assets/js/cz-global-community.js" defer></script>
 
-<!-- CRICZONE desktop-safe fallback for shared navbar photo and Telegram popup -->
-<script>
-(function(){
-  "use strict";
-  var photos=[
-    {name:"ROHIT SHARMA",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
-    {name:"VIRAT KOHLI",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
-  ];
-  var telegram="https://t.me/+pN15_8gc54s2NDU1";
-  function startFallback(){
-    var logo=document.querySelector(".cz-brand-mark");
-    if(logo&&!logo.querySelector(".cz-player-brand-img")){
-      logo.classList.add("cz-player-brand-photo");
-      var img=document.createElement("img");
-      img.className="cz-player-brand-img";img.alt=photos[0].name;img.src=photos[0].src;
-      img.onerror=function(){this.style.display="none";logo.textContent="🏏";};
-      logo.replaceChildren(img);
-      var i=0;window.setInterval(function(){if(document.hidden)return;i=(i+1)%photos.length;if(img.src!==photos[i].src){img.alt=photos[i].name;img.src=photos[i].src;}},15000);
-    }
-    if(!document.getElementById("cz-global-community")){
-      var style=document.createElement("style");
-      style.textContent="#cz-global-community{position:fixed;inset:0;z-index:2147483645;display:grid;place-items:center;padding:18px;background:#05050bdc;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s;font-family:Inter,system-ui,sans-serif;color:#f8f7ff}#cz-global-community.cz-show{opacity:1;visibility:visible}#cz-global-community .cz-community-card{position:relative;width:min(100%,440px);padding:30px 22px 25px;text-align:center;border:1px solid #ffffff20;border-radius:26px;background:linear-gradient(145deg,#171323,#090a12 78%);box-shadow:0 25px 90px #000a}#cz-global-community .cz-community-close{position:absolute;right:13px;top:13px;width:36px;height:36px;border:1px solid #ffffff25;border-radius:50%;background:#ffffff0b;color:#fff;font-size:23px;cursor:pointer}#cz-global-community .cz-community-photo{width:86px;height:86px;margin:4px auto 16px;border-radius:22px;overflow:hidden}#cz-global-community .cz-community-photo img{width:100%;height:100%;object-fit:cover;object-position:center 20%}#cz-global-community .cz-community-tag{color:#c8b2ff;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:12px}#cz-global-community h2{font-size:27px;line-height:1.2;margin:0;color:#fff}#cz-global-community .cz-community-copy{color:#c3bfd0;font-size:14px;line-height:1.55;margin:12px auto 20px}#cz-global-community .cz-community-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:20px}#cz-global-community .cz-community-cat{padding:13px 5px;border:1px solid #ffffff18;border-radius:14px;color:#ddd;background:#ffffff08;font-size:12px}#cz-global-community .cz-community-cat b{display:block;font-size:23px;margin-bottom:5px}#cz-global-community .cz-community-join{min-height:54px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;background:linear-gradient(105deg,#7838e8,#285fe9 58%,#168bd4);color:#fff;text-decoration:none;font-size:14px;font-weight:900}#cz-global-community .cz-community-foot{margin:14px 0 0;color:#aaa;font-size:10px}@media(max-width:420px){#cz-global-community .cz-community-card{padding:27px 16px 21px}#cz-global-community h2{font-size:23px}}";
-      document.head.appendChild(style);
-      var popup=document.createElement("div");popup.id="cz-global-community";
-      popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community"></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2>Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_blank" rel="noopener noreferrer">✈ &nbsp; JOIN TELEGRAM &nbsp; ➜</a><div class="cz-community-foot">Free to join · Stay connected with CRICZONE</div></section>';
-      document.body.appendChild(popup);
-      var pimg=popup.querySelector("img");pimg.src=photos[0].src;
-      popup.querySelector(".cz-community-close").addEventListener("click",function(){popup.classList.remove("cz-show");});
-      window.setInterval(function(){var p=photos[Math.floor(Date.now()/3000)%photos.length];pimg.src=p.src;pimg.alt=p.name;},3000);
-      window.setTimeout(function(){popup.classList.add("cz-show");},5000);
-    }
-  }
-  window.setTimeout(startFallback,1200);
-})();
-</script>
+
+
 </body>
 </html>
