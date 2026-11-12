@@ -445,3 +445,55 @@ header .btn-header:hover,header .btn-header:focus-visible{
  #matches-container .card-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)!important}
 }
 @media(prefers-reduced-motion:reduce){header .btn-header,#matches-container .open-match-btn{transition:none!important}}
+
+
+/* Native Android select replacement: fully themed custom server picker */
+#player-servers-bar{position:relative!important;z-index:80!important;overflow:visible!important}
+.cz-server-picker{position:relative;flex:0 1 270px;min-width:145px;max-width:min(52vw,320px);z-index:100}
+.cz-player-server-select{
+ width:100%!important;min-width:0!important;max-width:none!important;height:42px!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
+ padding:0 13px!important;border:1px solid rgba(215,255,63,.58)!important;border-radius:12px!important;
+ background:linear-gradient(145deg,#1c2a14,#10190d)!important;color:#f4f8e9!important;
+ font:800 13px/1 Inter,system-ui,sans-serif!important;text-align:left!important;
+ box-shadow:inset 0 1px 0 #ffffff0c,0 4px 14px #0004!important;
+ appearance:none!important;-webkit-appearance:none!important;cursor:pointer!important;
+}
+.cz-player-server-select:focus-visible{outline:2px solid #d7ff3f!important;outline-offset:3px!important}
+.cz-player-server-select svg{width:17px;height:17px;flex:0 0 auto;color:#d7ff3f;transition:transform .18s ease}
+.cz-player-server-select[aria-expanded="true"] svg{transform:rotate(180deg)}
+.cz-server-current{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cz-server-menu{
+ position:absolute!important;top:calc(100% + 9px)!important;left:0!important;right:0!important;
+ z-index:2147482000!important;max-height:min(56vh,390px)!important;overflow-y:auto!important;
+ padding:6px!important;border:1px solid rgba(215,255,63,.42)!important;border-radius:15px!important;
+ background:linear-gradient(160deg,#1a2714 0%,#0d150b 100%)!important;
+ box-shadow:0 18px 48px rgba(0,0,0,.78),0 0 22px rgba(215,255,63,.12)!important;
+ overscroll-behavior:contain!important;scrollbar-width:thin;scrollbar-color:#718b36 #11190e;
+}
+.cz-server-menu[hidden]{display:none!important}
+.cz-server-option{
+ width:100%!important;min-height:53px!important;display:flex!important;align-items:center!important;gap:11px!important;
+ padding:8px 10px!important;border:1px solid transparent!important;border-radius:10px!important;
+ background:transparent!important;color:#eaf1df!important;text-align:left!important;cursor:pointer!important;
+}
+.cz-server-option+.cz-server-option{margin-top:3px!important}
+.cz-server-option:hover,.cz-server-option:focus-visible{background:rgba(215,255,63,.09)!important;border-color:rgba(215,255,63,.22)!important;outline:none!important}
+.cz-server-option.is-active{background:linear-gradient(100deg,rgba(215,255,63,.16),rgba(215,255,63,.055))!important;border-color:rgba(215,255,63,.35)!important}
+.cz-server-option-dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#78836b;box-shadow:0 0 0 3px #ffffff0b}
+.cz-server-option.is-active .cz-server-option-dot{background:#d7ff3f;box-shadow:0 0 0 4px rgba(215,255,63,.13),0 0 12px #d7ff3f88}
+.cz-server-option-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cz-server-option-copy strong{font:800 12px/1.2 Inter,system-ui,sans-serif;color:#f5f8ee}
+.cz-server-option-copy small{font:600 10px/1.25 Inter,system-ui,sans-serif;color:#a8b59a;white-space:normal}
+.cz-server-option-check{margin-left:auto;color:#d7ff3f;font-weight:950;font-size:17px}
+@media(max-width:600px){
+ #player-servers-bar{gap:7px!important;padding:8px 10px!important;min-height:52px!important}
+ .cz-server-picker{flex:0 1 180px;min-width:116px;max-width:46vw}
+ .cz-player-server-select{height:40px!important;padding-inline:10px!important;font-size:12px!important}
+ .cz-server-menu{max-height:52vh!important;min-width:174px;left:0!important;right:auto!important;width:max(100%,174px)!important}
+ .cz-server-option{min-height:49px!important}
+}
+@media(max-width:360px){
+ .cz-server-picker{max-width:43vw;min-width:108px}
+ .cz-server-auto-note{display:none!important}
+}
