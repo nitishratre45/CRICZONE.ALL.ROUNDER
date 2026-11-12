@@ -1050,6 +1050,12 @@
 .cz-detail-time{color:#aeb8c5;font-size:13px;margin:8px 0 22px}.cz-detail-watch{width:min(100%,320px);min-height:50px;border:0;border-radius:12px;background:linear-gradient(120deg,#ffc52e,#ff8b00);color:#111;font-weight:950;font-size:15px;cursor:pointer}.cz-detail-wait{max-width:470px;margin:0 auto;padding:14px 16px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff08;color:#aeb8c5;font-size:13px;line-height:1.5}
 @media(max-width:520px){.cz-match-details-page{margin:14px auto 40px;padding:0 10px}.cz-detail-panel{padding:25px 14px}.cz-detail-teams{gap:8px;margin:27px auto 20px}.cz-detail-team img,.cz-detail-team-fallback{padding:8px}}
 </style>
+<style id="cz-match-details-cleanup">
+#main-view > .hero[hidden],#main-view > .controls-bar[hidden],#main-view > #matches-container[hidden]{display:none!important}
+#main-view > #cz-match-details-page:not([hidden]){display:block!important}
+.cz-detail-team img{display:block;object-fit:contain;background:#fff;border:1px solid #ffffff30;box-shadow:0 8px 24px #0005}
+.cz-detail-team-fallback{background:linear-gradient(145deg,#202a36,#101720);border:1px solid #ffffff2a}
+</style>
 </head>
 <body>
 
@@ -1431,33 +1437,49 @@
             // Dedicated match-details route; the same match ID updates from UPCOMING to LIVE.
             function getTeamInfo(match, side) {
                 const home = side === 1;
+                const objectKeys = home
+                    ? ['home_team','team1','team_a','teamA','team_1','homeTeam','localteam','team_home','team1_data','home']
+                    : ['away_team','team2','team_b','teamB','team_2','awayTeam','visitorteam','team_away','team2_data','away'];
                 const nameKeys = home
-                    ? ['home_team','team1','team_a','teamA','team_1','team1_name','homeTeam','localteam','team_home']
-                    : ['away_team','team2','team_b','teamB','team_2','team2_name','awayTeam','visitorteam','team_away'];
+                    ? ['home_team_name','team1_name','team_a_name','teamA_name','team_1_name','homeTeamName','localteam_name']
+                    : ['away_team_name','team2_name','team_b_name','teamB_name','team_2_name','awayTeamName','visitorteam_name'];
                 const logoKeys = home
-                    ? ['home_team_logo','team1_logo','team_a_logo','teamA_logo','team_1_logo','homeLogo','localteam_logo']
-                    : ['away_team_logo','team2_logo','team_b_logo','teamB_logo','team_2_logo','awayLogo','visitorteam_logo'];
+                    ? ['home_team_logo','team1_logo','team_a_logo','teamA_logo','team_1_logo','homeTeamLogo','home_logo','localteam_logo','team1_image','home_flag']
+                    : ['away_team_logo','team2_logo','team_b_logo','teamB_logo','team_2_logo','awayTeamLogo','away_logo','visitorteam_logo','team2_image','away_flag'];
                 let name = '', logo = '';
-                for (const key of nameKeys) {
+                const pickUrl = value => {
+                    if (typeof value === 'string' && /^https?:\/\//i.test(value)) return value;
+                    if (value && typeof value === 'object') return value.url || value.src || value.logo || value.image || value.flag || value.team_logo || '';
+                    return '';
+                };
+                for (const key of objectKeys) {
                     const value = match[key];
                     if (value && typeof value === 'object') {
-                        name = value.name || value.team_name || value.short_name || value.title || '';
-                        logo = value.logo || value.image || value.flag || value.team_logo || '';
-                    } else if (value) name = String(value);
-                    if (name) break;
+                        name = value.name || value.team_name || value.short_name || value.title || value.full_name || '';
+                        logo = pickUrl(value.logo || value.image || value.flag || value.team_logo || value.team_image);
+                    } else if (value && typeof value === 'string' && !/^https?:\/\//i.test(value)) name = value;
+                    else if (value) logo = pickUrl(value);
+                    if (name || logo) break;
                 }
-                for (const key of logoKeys) {
-                    const value = match[key];
-                    if (typeof value === 'string' && /^https?:\/\//i.test(value)) { logo = value; break; }
-                    if (value && typeof value === 'object') logo = value.url || value.src || value.image || logo;
+                for (const key of nameKeys) if (!name && match[key]) name = String(match[key]);
+                for (const key of logoKeys) if (!logo && match[key]) logo = pickUrl(match[key]);
+                const teams = Array.isArray(match.teams) ? match.teams : (Array.isArray(match.team_info) ? match.team_info : []);
+                const entry = teams[home ? 0 : 1];
+                if (entry && typeof entry === 'object') {
+                    name = name || entry.name || entry.team_name || entry.short_name || '';
+                    logo = logo || pickUrl(entry.logo || entry.image || entry.flag || entry.team_logo);
                 }
                 if (!name) {
-                    const parts = String(match.event_name || '').split(/\s+(?:vs\.?|v\.?|versus)\s+/i);
-                    name = parts.length === 2 ? parts[home ? 0 : 1].trim() : (home ? 'TEAM 1' : 'TEAM 2');
+                    const title = String(match.event_name || '');
+                    const matchup = title.match(/([^|–—]+?)\s+(?:vs\.?|v\.?|versus)\s+([^|–—]+)$/i);
+                    if (matchup) {
+                        const left = matchup[1].trim().split(/\s+-\s+/).pop();
+                        const right = matchup[2].trim().split(/\s+-\s+/)[0];
+                        name = home ? left : right;
+                    }
                 }
                 return { name: name || (home ? 'TEAM 1' : 'TEAM 2'), logo: /^https?:\/\//i.test(String(logo)) ? String(logo) : '' };
             }
-
             function renderMatchDetails(match) {
                 if (!$detailsPage || !match) return;
                 selectedDetailsMatchId = String(match.id || match.match_id || '');
