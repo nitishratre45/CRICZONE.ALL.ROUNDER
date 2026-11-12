@@ -765,6 +765,33 @@ button,a{-webkit-tap-highlight-color:transparent}
   .social-icon.telegram{width:37px;height:37px}
 }
 
+
+/* FINAL ACCESSIBILITY + INTERACTION POLISH */
+.refresh-btn:disabled{opacity:.65;cursor:wait}
+.pill[aria-selected="true"]{box-shadow:0 0 0 1px currentColor inset}
+.search-wrap:has(input:focus-visible){outline:2px solid transparent}
+@media(min-width:761px){
+  .card{min-height:220px}
+  .grid{align-items:stretch}
+}
+@media(max-width:600px){
+  .card{min-height:154px}
+  .card-top{min-width:0}
+  .sport-chip{max-width:72%}
+  .sport-chip .name{max-width:100%}
+  .card-foot{min-height:42px}
+  .watch-cta{min-height:38px;padding:0 3px}
+}
+@media(max-width:360px){
+  .container{padding-left:10px;padding-right:10px}
+  .card{padding:12px}
+  .card-body{gap:6px}
+  .crest{width:46px;height:46px}
+  .kickoff-time{font-size:16px}
+  .team-name{font-size:11px}
+  .hub-tools-meta{gap:6px}
+}
+
 </style>
 </head>
 
@@ -1084,7 +1111,11 @@ async function loadData(){
   if(dataLoading) return;
   dataLoading = true;
   const refreshButton = $("refreshMatches");
-  if(refreshButton) refreshButton.classList.add("is-loading");
+  if(refreshButton){
+    refreshButton.classList.add("is-loading");
+    refreshButton.disabled = true;
+    refreshButton.setAttribute("aria-busy","true");
+  }
   try{
     const raw = await fetchJson(DATA_URL);
     const nextEvents = normalize(raw);
@@ -1108,7 +1139,11 @@ async function loadData(){
     }
   }finally{
     dataLoading = false;
-    if(refreshButton) refreshButton.classList.remove("is-loading");
+    if(refreshButton){
+      refreshButton.classList.remove("is-loading");
+      refreshButton.disabled = false;
+      refreshButton.removeAttribute("aria-busy");
+    }
   }
 }
 
@@ -1128,8 +1163,10 @@ function eventCard(e){
   const sameTeam = !e.b || e.a === e.b;
   const sideA = `<div class="team">${crest(e.fa, e.a || e.comp)}<div class="team-name">${esc(e.a || e.comp || "TBD")}</div></div>`;
   const sideB = sameTeam ? `<div class="team"></div>` : `<div class="team">${crest(e.fb, e.b)}<div class="team-name">${esc(e.b)}</div></div>`;
+  const matchLabel = [e.a, e.b].filter(Boolean).join(" vs ") || e.comp || "Match";
+  const actionLabel = n ? "Watch match" : "View match details";
   return `
-    <button class="card ${isLive ? "is-live" : ""}" data-watch-event="${esc(e.id)}" type="button" aria-label="${esc(e.a)} vs ${esc(e.b || "TBD")}">
+    <button class="card ${isLive ? "is-live" : ""}" data-watch-event="${esc(e.id)}" type="button" aria-label="${esc(matchLabel)} · ${esc(statusText)} · ${n} streams · ${actionLabel}">
       <div class="card-top">
         <span class="sport-chip"><span class="icon">${sportIcon(e.sport)}</span><span class="name">${esc(e.sport)}${e.comp ? " · " + esc(e.comp) : ""}</span></span>
         <span class="status ${statusClass}">${statusText}</span>
@@ -1139,7 +1176,7 @@ function eventCard(e){
         <div class="versus"><div class="kickoff-time">${timeString(e.st)}</div><div class="kickoff-date">${dateString(e.st)} · IST</div></div>
         ${sideB}
       </div>
-      <div class="card-foot">${streamInfo}<span class="watch-cta">Watch <span class="arrow">→</span></span></div>
+      <div class="card-foot">${streamInfo}<span class="watch-cta">${n ? "Watch" : "Details"} <span class="arrow">→</span></span></div>
     </button>
   `;}
 
@@ -1149,11 +1186,11 @@ function renderHub(){
   const sports = ["All", ...new Set(state.events.map(e => e.sport).filter(Boolean))];
   $("sports").innerHTML = sports.map(s => {
     const n = s === "All" ? state.events.length : state.events.filter(e => e.sport === s).length;
-    return `<button class="pill ${state.sport === s ? "active" : ""}" data-sport="${esc(s)}" role="tab">${s === "All" ? "🏆" : sportIcon(s)} ${esc(s)}<span class="count">${n}</span></button>`;
+    return `<button class="pill ${state.sport === s ? "active" : ""}" data-sport="${esc(s)}" role="tab" aria-selected="${state.sport === s}">${s === "All" ? "🏆" : sportIcon(s)} ${esc(s)}<span class="count">${n}</span></button>`;
   }).join("");
   const tabs = [["all","All",state.events.length],["live","Live",counts.live],["soon","Upcoming",counts.soon]];
   $("tabs").innerHTML = tabs.map(([key,label,n]) =>
-    `<button class="pill ${state.tab === key ? "active" : ""}" data-tab="${key}" role="tab">${key === "live" ? "🔴" : key === "soon" ? "📅" : "✅"} ${label}<span class="count">${n}</span></button>`
+    `<button class="pill ${state.tab === key ? "active" : ""}" data-tab="${key}" role="tab" aria-selected="${state.tab === key}">${key === "live" ? "🔴" : key === "soon" ? "📅" : "✅"} ${label}<span class="count">${n}</span></button>`
   ).join("");
   const q = state.search.trim().toLowerCase();
   const rows = state.events
@@ -1787,6 +1824,20 @@ function clearMatchFilters(){
 $("matchSearch").addEventListener("input", e => { state.search = e.target.value || ""; renderHub(); });
 $("clearSearch").addEventListener("click", () => { state.search = ""; $("matchSearch").value = ""; $("matchSearch").focus(); renderHub(); });
 $("refreshMatches").addEventListener("click", loadData);
+document.addEventListener("keydown", e => {
+  if(e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey){
+    const tag = document.activeElement && document.activeElement.tagName;
+    if(tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT" && !document.activeElement.isContentEditable){
+      e.preventDefault();
+      $("matchSearch").focus();
+    }
+  }
+  if(e.key === "Escape" && document.activeElement === $("matchSearch") && state.search){
+    state.search = "";
+    $("matchSearch").value = "";
+    renderHub();
+  }
+});
 
 $("list").addEventListener("click", e => {
   const card = e.target.closest("[data-watch-event]");
