@@ -1060,6 +1060,19 @@
 .cz-detail-team img{width:clamp(82px,15vw,122px);height:clamp(82px,15vw,122px);padding:12px;object-fit:contain;border-radius:50%;background:linear-gradient(145deg,#fff,#e8edf3);border:2px solid #ffffff55;box-shadow:0 9px 25px #0007}
 .cz-detail-team img[src*="flagcdn.com"]{padding:15px}
 </style>
+<style id="cz-match-poster-countdown">
+.cz-detail-panel{isolation:isolate}
+.cz-detail-poster{position:relative;overflow:hidden;margin:-48px -48px 28px;height:clamp(170px,31vw,330px);border-radius:18px 18px 10px 10px;background:#070b12}
+.cz-detail-poster img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
+.cz-detail-poster-shade{position:absolute;inset:0;background:linear-gradient(0deg,#0b1018 0%,transparent 55%),linear-gradient(90deg,#080d15aa,transparent 28%,transparent 72%,#080d15aa)}
+.cz-match-countdown{max-width:440px;margin:0 auto 18px;padding:13px 16px;border:1px solid #ffbf2f45;border-radius:14px;background:linear-gradient(135deg,#ffbd2418,#ffffff06)}
+.cz-countdown-label{display:block;margin-bottom:9px;color:#ffc52e;font-size:10px;font-weight:950;letter-spacing:1.7px}
+.cz-countdown-units{display:flex;justify-content:center;gap:clamp(12px,4vw,28px)}
+.cz-countdown-units span{display:flex;flex-direction:column;min-width:44px;gap:3px}
+.cz-countdown-units b{font-size:clamp(21px,4vw,30px);line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.cz-countdown-units small{font-size:9px;letter-spacing:1.2px;color:#aeb8c5;font-weight:800}
+@media(max-width:520px){.cz-detail-poster{margin:-25px -14px 22px;height:190px}}
+</style>
 </head>
 <body>
 
@@ -1501,11 +1514,58 @@
                 }
                 return { name, logo: /^https?:\/\//i.test(String(logo)) ? String(logo) : '' };
             }
+            let czMatchCountdownInterval = null;
+            function getMatchStartTimestamp(match) {
+                const candidates = [
+                    match.start_time, match.startTime, match.match_start_time, match.matchStartTime,
+                    match.match_date_time, match.match_datetime, match.datetime, match.event_date,
+                    match.match_date, match.date, match.start_at, match.startAt, match.timestamp
+                ];
+                for (const value of candidates) {
+                    if (value == null || value === '') continue;
+                    let stamp = typeof value === 'number' ? (value < 100000000000 ? value * 1000 : value) : Date.parse(String(value));
+                    if (Number.isFinite(stamp) && stamp > 0) return stamp;
+                }
+                const textTime = String(match.time || '');
+                const iso = textTime.match(/\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(?::\\d{2})?(?:Z|[+-]\\d{2}:?\\d{2})?/);
+                if (iso) {
+                    const stamp = Date.parse(iso[0]);
+                    if (Number.isFinite(stamp)) return stamp;
+                }
+                return null;
+            }
+
+            function startMatchCountdown(target, isLive) {
+                clearInterval(czMatchCountdownInterval);
+                const node = document.getElementById('cz-match-countdown');
+                if (!node || !target || isLive) return;
+                const update = () => {
+                    const remaining = target - Date.now();
+                    if (remaining <= 0) {
+                        node.innerHTML = '<span class="cz-countdown-label">START TIME REACHED</span><strong>Waiting for live status…</strong>';
+                        clearInterval(czMatchCountdownInterval);
+                        return;
+                    }
+                    const total = Math.floor(remaining / 1000);
+                    const days = Math.floor(total / 86400);
+                    const hours = Math.floor((total % 86400) / 3600);
+                    const minutes = Math.floor((total % 3600) / 60);
+                    const seconds = total % 60;
+                    const parts = days > 0 ? [['DAYS',days],['HRS',hours],['MIN',minutes],['SEC',seconds]] : [['HRS',hours],['MIN',minutes],['SEC',seconds]];
+                    node.innerHTML = '<span class="cz-countdown-label">MATCH STARTS IN</span><div class="cz-countdown-units">' + parts.map(([label,value]) => '<span><b>' + String(value).padStart(2,'0') + '</b><small>' + label + '</small></span>').join('') + '</div>';
+                };
+                update();
+                if (target > Date.now()) czMatchCountdownInterval = setInterval(update, 1000);
+            }
+
             function renderMatchDetails(match) {
                 if (!$detailsPage || !match) return;
                 selectedDetailsMatchId = String(match.id || match.match_id || '');
                 const live = isMatchLive(match);
                 const home = getTeamInfo(match, 1), away = getTeamInfo(match, 2);
+                const poster = /^https?:\\/\\//i.test(String(match.image || match.cover_image || match.poster || match.thumbnail || ''))
+                    ? String(match.image || match.cover_image || match.poster || match.thumbnail) : '';
+                const startTimestamp = getMatchStartTimestamp(match);
                 const initials = name => String(name).trim().split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase();
                 const teamCard = (team, side) => `
                     <div class="cz-detail-team">
@@ -1515,11 +1575,13 @@
                 $detailsPage.innerHTML = `
                     <button class="cz-detail-back" type="button" id="cz-detail-back">← BACK TO MATCHES</button>
                     <div class="cz-detail-panel">
+                        ${poster ? `<div class="cz-detail-poster"><img src="${escapeHtml(poster)}" alt="${escapeHtml(match.event_name || 'Match poster')}" loading="eager"><div class="cz-detail-poster-shade"></div></div>` : ''}
                         <span class="cz-detail-status ${live ? 'is-live' : 'is-upcoming'}">${live ? '● LIVE NOW' : '◷ UPCOMING'}</span>
                         <p class="cz-detail-series">${escapeHtml(match.series || match.sport || 'CRICKET')}</p>
                         <h1>${escapeHtml(match.event_name || 'Cricket Match')}</h1>
                         <div class="cz-detail-teams">${teamCard(home, 'HOME')}<span class="cz-detail-vs">VS</span>${teamCard(away, 'AWAY')}</div>
                         <p class="cz-detail-time">${escapeHtml(match.time || (live ? 'LIVE NOW' : 'Match schedule to be announced'))}</p>
+                        ${!live && startTimestamp ? '<div class="cz-match-countdown" id="cz-match-countdown" aria-live="off"></div>' : ''}
                         ${live ? '<button class="cz-detail-watch" id="cz-detail-watch" type="button">▶ WATCH LIVE</button>' : '<div class="cz-detail-wait">Match has not started yet. Watch Live will appear here when the match goes live.</div>'}
                     </div>`;
                 $detailsPage.hidden = false;
@@ -1533,6 +1595,7 @@
                     document.body.classList.remove('cz-details-open');
                     renderMatches();
                 });
+                startMatchCountdown(startTimestamp, live);
                 document.getElementById('cz-detail-watch')?.addEventListener('click', () => playMatch(match.id, 1));
             }
 
