@@ -497,3 +497,31 @@ header .btn-header:hover,header .btn-header:focus-visible{
  .cz-server-picker{max-width:43vw;min-width:108px}
  .cz-server-auto-note{display:none!important}
 }
+
+
+/* Compact live connection indicator inside the video viewport */
+#video-wrapper{position:relative!important}
+.cz-player-live-status{
+ position:absolute!important;top:12px!important;right:12px!important;z-index:60!important;
+ display:none!important;align-items:center!important;gap:7px!important;
+ min-height:25px!important;padding:5px 9px!important;border-radius:999px!important;
+ background:rgba(5,12,7,.82)!important;border:1px solid rgba(215,255,63,.34)!important;
+ color:#eff8e6!important;box-shadow:0 4px 14px rgba(0,0,0,.32)!important;
+ backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;
+ font:800 9px/1 Inter,system-ui,sans-serif!important;letter-spacing:.09em!important;
+ pointer-events:none!important;white-space:nowrap!important;
+}
+.cz-player-live-status.is-visible{display:inline-flex!important}
+.cz-player-live-dot{width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;background:#d7ff3f!important;box-shadow:0 0 9px rgba(215,255,63,.9)!important}
+.cz-player-live-status.is-live{border-color:rgba(215,255,63,.48)!important;color:#e8ff9b!important}
+.cz-player-live-status.is-live .cz-player-live-dot{animation:czLivePulse 1.5s ease-in-out infinite}
+.cz-player-live-status.is-connecting{color:#f1e5a6!important;border-color:rgba(244,196,77,.4)!important}
+.cz-player-live-status.is-connecting .cz-player-live-dot{background:#f4c44d!important;box-shadow:0 0 8px #f4c44d88!important}
+.cz-player-live-status.is-buffering{color:#d5e1ff!important;border-color:rgba(113,157,255,.4)!important}
+.cz-player-live-status.is-buffering .cz-player-live-dot{background:#83aaff!important;box-shadow:0 0 8px #83aaff88!important}
+@keyframes czLivePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.78)}}
+@media(max-width:600px){
+ .cz-player-live-status{top:9px!important;right:9px!important;min-height:23px!important;padding:4px 8px!important;font-size:8px!important}
+ .cz-player-live-dot{width:6px!important;height:6px!important;flex-basis:6px!important}
+}
+@media(prefers-reduced-motion:reduce){.cz-player-live-status.is-live .cz-player-live-dot{animation:none!important}}
