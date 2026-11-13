@@ -5767,7 +5767,7 @@
             function renderChannel(ch) {
                 if (!ch) return;
                 var streamUrl = String(ch.url || '').toLowerCase();
-                if (ch.type === 'dash' || /\\.mpd(?:[?#]|$)/i.test(streamUrl) || /[?&](?:key|kid|license|drm)=/i.test(streamUrl) || ch.key || ch.kid || ch.clearKeys) {
+                if (ch.type === 'dash' || /\.mpd(?:[?#]|$)/i.test(streamUrl) || /[?&](?:key|kid|license|drm)=/i.test(streamUrl) || ch.key || ch.kid || ch.clearKeys) {
                     document.getElementById('stream-view').classList.add('hidden');
                     document.getElementById('error-view').classList.remove('hidden');
                     return;
