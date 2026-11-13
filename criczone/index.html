@@ -398,21 +398,10 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
 /* END CRICZONE5 TELEGRAM UI */
 
 
-/* CRICZONE original compact LIVE WATCHING badge */
-#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#eafffb;font-size:12px;font-weight:800;box-shadow:0 8px 28px rgba(0,0,0,.48);backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
-#viewerBadge .viewer-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#00f0a8;box-shadow:0 0 0 4px rgba(0,240,168,.12),0 0 13px rgba(0,240,168,.9);animation:czPulse 1.8s infinite}
-#watchingCount{color:#72ffe5;font-variant-numeric:tabular-nums;font-weight:900}
-#viewerBadge .watching-total-label{display:inline-flex;align-items:center;gap:5px;margin-left:3px;padding-left:10px;border-left:1px solid rgba(130,220,215,.24);color:#a8c9ce;font-size:9px;font-weight:850}
-#totalVisits{color:#fff;font-size:12px;font-weight:950;font-variant-numeric:tabular-nums}
-#viewerBadge .watching-live-label{display:inline-flex;align-items:center;gap:5px}
-#viewerBadge .watching-live-label:before{content:"LIVE";font-size:9px;letter-spacing:1px;color:#06140f;background:#45f0b5;padding:3px 5px;border-radius:4px;font-weight:950}
-@keyframes czPulse{50%{opacity:.45;transform:scale(.75)}}
-#viewerBadge,#viewerBadge.is-fullscreen{display:inline-flex!important;flex-direction:row!important;align-items:center!important;width:max-content!important;height:auto!important;min-width:0!important;min-height:0!important;max-width:calc(100vw - 24px)!important;box-sizing:border-box!important;white-space:nowrap!important;gap:5px!important;padding:6px 9px!important;border-radius:999px!important;font-size:9px!important;line-height:1!important}
-#viewerBadge .viewer-dot{width:6px!important;height:6px!important;flex-basis:6px!important}
-#viewerBadge .watching-live-label:before{font-size:7px!important;padding:2px 4px!important}
-#watchingCount,#totalVisits{font-size:10px!important}
-#viewerBadge .watching-total-label{gap:3px!important;margin-left:2px!important;padding-left:6px!important;font-size:7px!important}
-@media(max-width:699px){#viewerBadge{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;padding:5px 8px!important;gap:4px!important}#watchingCount,#totalVisits{font-size:9px!important}}
+/* CRICZONE TOTAL VISITS badge only */
+#viewerBadge{position:fixed;z-index:999999;right:18px;top:max(18px,calc(env(safe-area-inset-top) + 12px));display:flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(0,229,192,.34);border-radius:999px;background:linear-gradient(135deg,rgba(4,22,29,.96),rgba(5,13,22,.92));color:#a8c9ce;font-size:10px;font-weight:850;box-shadow:0 8px 28px rgba(0,0,0,.48);backdrop-filter:blur(16px);pointer-events:none;white-space:nowrap}
+#totalVisits{color:#fff;font-size:11px;font-weight:950;font-variant-numeric:tabular-nums}
+@media(max-width:699px){#viewerBadge{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;padding:5px 8px!important;gap:4px!important}#totalVisits{font-size:9px!important}}
 </style>
 
 <style id="cz-shaka-compact-quality">
@@ -474,7 +463,7 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
   </video>
   <iframe id="stream-frame" title="Live stream" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
-  <div id="viewerBadge" aria-live="polite"><span class="viewer-dot"></span><span class="watching-live-label"><strong id="watchingCount">330</strong> watching</span><span class="watching-total-label">TOTAL <strong id="totalVisits">330</strong></span></div>
+  <div id="viewerBadge" aria-live="polite"><span class="watching-total-label">TOTAL <strong id="totalVisits">0</strong></span></div>
 </div>
 
 <script src="stream.js"></script>
@@ -1171,7 +1160,6 @@ async function main(){
   document.title = ch.name;
 
   await startPlayer(ch);
-  if (window.startRealtimeWatching) window.startRealtimeWatching(ch.id || id);
 }
 
 document.addEventListener("DOMContentLoaded", main);
@@ -1226,7 +1214,7 @@ document.addEventListener("DOMContentLoaded", main);
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
@@ -1242,66 +1230,22 @@ const firebaseConfig={
 const appName="criczone-audience";
 const app=getApps().find(x=>x.name===appName)||initializeApp(firebaseConfig,appName);
 const db=getDatabase(app);
-const countEl=document.getElementById("watchingCount");
 const totalEl=document.getElementById("totalVisits");
-let activeRef=null,countOff=null,activeChannel=null;
 
-function display(el,n){
- if(el) el.textContent=Math.max(0,Number(n)||0).toLocaleString("en-IN");
-}
-
-// Count one visit when this page is opened. Keep the existing totalVisits
-// value intact; no reset and no continuous totalVisits listener.
+// Preserve the existing total and increment once when this page loads.
 async function countVisit(){
  const totalRef=ref(db,"siteStats/totalVisits");
  try{
   const result=await runTransaction(totalRef,v=>(Number(v)||0)+1);
-  if(result.committed) display(totalEl,result.snapshot.val());
+  if(result.committed && totalEl){
+   totalEl.textContent=Number(result.snapshot.val()||0).toLocaleString("en-IN");
+  }
  }catch(e){
   console.warn("Total visit update failed",e);
  }
 }
-
-async function stopRealtimeWatching(){
- if(countOff){countOff();countOff=null;}
- if(activeRef){
-  const old=activeRef;
-  activeRef=null;
-  await remove(old).catch(()=>{});
- }
- activeChannel=null;
- display(countEl,0);
-}
-
-async function startRealtimeWatching(id){
- const safe=String(id||"all").replace(/[^a-zA-Z0-9_-]/g,"_");
- if(activeChannel===safe&&activeRef) return;
- await stopRealtimeWatching();
- activeChannel=safe;
- const uid=globalThis.crypto?.randomUUID?.()||(Date.now()+"_"+Math.random().toString(36).slice(2));
- const channel=ref(db,"liveViewers/"+safe);
- activeRef=ref(db,"liveViewers/"+safe+"/"+uid);
- try{
-  await onDisconnect(activeRef).remove();
-  await set(activeRef,{joinedAt:Date.now(),online:true});
-  countOff=onValue(channel,s=>display(countEl,s.numChildren()),e=>{
-   console.warn("Live watching count read failed",e);
-  });
- }catch(e){
-  console.error("Live watching Firebase error",e);
-  display(countEl,0);
- }
-}
-
-window.startRealtimeWatching=startRealtimeWatching;
-window.stopRealtimeWatching=stopRealtimeWatching;
-display(countEl,0);
+if(totalEl) totalEl.textContent="…";
 countVisit();
-
-window.addEventListener("pagehide",()=>{
- if(activeRef) remove(activeRef).catch(()=>{});
- if(countOff){countOff();countOff=null;}
-});
 </script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
