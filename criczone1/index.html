@@ -5587,5 +5587,254 @@
       }
     </style>
 
+  
+    <style id="criczone1-telegram-premium-refresh">
+      /* Visual-only refresh: Telegram banners + player chrome. No playback logic changes. */
+      #player .playerbar {
+        min-height: 53px;
+        padding: 6px 8px;
+        border: 1px solid rgba(255, 211, 125, .3);
+        border-radius: 16px;
+        background:
+          radial-gradient(ellipse at 0% 0%, rgba(255, 202, 104, .12), transparent 42%),
+          linear-gradient(112deg, rgba(19, 36, 57, .97), rgba(6, 14, 25, .97));
+        box-shadow: 0 12px 34px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.09);
+      }
+      #player .playerbar button {
+        min-height: 39px;
+        border-radius: 11px;
+        border-color: rgba(255, 211, 125, .52);
+        background: linear-gradient(145deg, #2b4564, #14263d);
+        color: #ffe4a9;
+        letter-spacing: .1px;
+        transition: transform .18s ease, filter .18s ease;
+      }
+      #player .playerbar button:active { transform: scale(.97); filter: brightness(1.12); }
+      #player .playertitle {
+        min-height: 39px;
+        border-radius: 11px;
+        border-color: rgba(255,255,255,.16);
+        background: linear-gradient(145deg, rgba(8,19,33,.96), rgba(5,11,20,.96));
+        box-shadow: inset 0 1px rgba(255,255,255,.05);
+        letter-spacing: .35px;
+      }
+
+      /* In-player Telegram banner */
+      #player .cz-tg-player-banner {
+        isolation: isolate;
+        overflow: hidden;
+        min-height: 64px;
+        padding: 8px 11px;
+        gap: 11px;
+        border: 1px solid rgba(143, 211, 255, .78);
+        border-radius: 16px;
+        background:
+          radial-gradient(circle at 7% 50%, rgba(255,255,255,.22), transparent 22%),
+          linear-gradient(112deg, #087cf5 0%, #075be4 48%, #123fba 100%);
+        box-shadow: 0 10px 30px rgba(0,91,255,.28), inset 0 1px rgba(255,255,255,.32);
+        transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+      }
+      #player .cz-tg-player-banner::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: -70%;
+        left: -35%;
+        width: 28%;
+        height: 240%;
+        transform: rotate(22deg);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+        pointer-events: none;
+        animation: czTgSheen 6s ease-in-out infinite;
+      }
+      @keyframes czTgSheen {
+        0%, 55% { left: -38%; opacity: 0; }
+        68% { opacity: .9; }
+        100% { left: 125%; opacity: 0; }
+      }
+      #player .cz-tg-player-icon {
+        width: 43px;
+        height: 43px;
+        flex-basis: 43px;
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(255,255,255,.28), rgba(255,255,255,.1));
+        box-shadow: inset 0 1px rgba(255,255,255,.22), 0 5px 13px rgba(0,30,100,.16);
+        font-size: 23px;
+      }
+      #player .cz-tg-player-copy { gap: 4px; }
+      #player .cz-tg-player-copy strong {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        letter-spacing: .55px;
+        line-height: 1.2;
+      }
+      #player .cz-tg-player-copy strong::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        border-radius: 50%;
+        background: #8fffd0;
+        box-shadow: 0 0 9px rgba(143,255,208,.9);
+      }
+      #player .cz-tg-player-copy small {
+        color: rgba(239,247,255,.94);
+        font-size: 9px;
+        line-height: 1.35;
+        letter-spacing: .08px;
+      }
+      #player .cz-tg-player-cta {
+        min-height: 38px;
+        padding: 0 12px;
+        border: 1px solid rgba(255,255,255,.78);
+        border-radius: 11px;
+        background: linear-gradient(180deg, #fff, #eaf4ff);
+        color: #0752c8;
+        box-shadow: 0 5px 14px rgba(0,24,85,.2), inset 0 1px #fff;
+        font-size: 9px;
+        letter-spacing: .35px;
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+      #player .cz-tg-player-cta b {
+        font-size: 15px;
+        line-height: 1;
+      }
+      #player .cz-tg-player-banner:active .cz-tg-player-cta {
+        transform: translateX(2px);
+      }
+
+      /* Telegram strip on the channel page */
+      #cz-tg-local-bar {
+        isolation: isolate;
+        overflow: hidden;
+        min-height: 72px;
+        padding: 10px 13px;
+        border: 1px solid rgba(143, 211, 255, .72);
+        border-radius: 17px;
+        background:
+          radial-gradient(circle at 8% 50%, rgba(255,255,255,.2), transparent 23%),
+          linear-gradient(112deg, #087cf5 0%, #075be4 48%, #123fba 100%);
+        box-shadow: 0 10px 28px rgba(0,91,255,.22), inset 0 1px rgba(255,255,255,.3);
+        transition: transform .2s ease, box-shadow .2s ease;
+      }
+      #cz-tg-local-bar::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: -70%;
+        left: -35%;
+        width: 28%;
+        height: 240%;
+        transform: rotate(22deg);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+        pointer-events: none;
+        animation: czTgSheen 7s ease-in-out infinite;
+      }
+      #cz-tg-local-bar .cz-tg-left { flex: 1 1 auto; gap: 11px; }
+      #cz-tg-local-bar .cz-tg-logo {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(255,255,255,.28), rgba(255,255,255,.1));
+        box-shadow: inset 0 1px rgba(255,255,255,.2), 0 5px 13px rgba(0,30,100,.15);
+      }
+      #cz-tg-local-bar .cz-tg-label { gap: 4px; }
+      #cz-tg-local-bar strong {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: clamp(11px, 1.5vw, 14px);
+        letter-spacing: .5px;
+      }
+      #cz-tg-local-bar strong::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        border-radius: 50%;
+        background: #8fffd0;
+        box-shadow: 0 0 9px rgba(143,255,208,.9);
+      }
+      #cz-tg-local-bar small {
+        color: rgba(239,247,255,.94);
+        font-size: 10px;
+        line-height: 1.35;
+      }
+      #cz-tg-local-bar .cz-tg-tap {
+        min-height: 39px;
+        padding: 0 14px;
+        border: 1px solid rgba(255,255,255,.8);
+        border-radius: 11px;
+        background: linear-gradient(180deg, #fff, #eaf4ff);
+        color: #0752c8;
+        box-shadow: 0 5px 14px rgba(0,24,85,.2), inset 0 1px #fff;
+        font-size: 10px;
+        letter-spacing: .25px;
+        transition: transform .18s ease, filter .18s ease;
+      }
+      #cz-tg-local-bar .cz-tg-tap:active { transform: scale(.96); filter: brightness(1.05); }
+
+      /* Sharper, calmer audience counters */
+      #player .cz-player-stats > div {
+        border-color: rgba(255,211,125,.28);
+        background: linear-gradient(135deg, rgba(18,34,53,.96), rgba(5,13,24,.96));
+        box-shadow: 0 8px 22px rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.07);
+      }
+      #player .cz-player-stats strong { color: #ffe3a2; }
+
+      @media (max-width: 599px) {
+        #player .playerbar { min-height: 49px; padding: 5px 6px; gap: 7px; }
+        #player .playerbar button, #player .playertitle { min-height: 37px; }
+        #player .cz-tg-player-banner {
+          min-height: 56px;
+          padding: 6px 8px;
+          gap: 8px;
+          border-radius: 14px;
+        }
+        #player .cz-tg-player-icon { width: 36px; height: 36px; flex-basis: 36px; border-radius: 12px; }
+        #player .cz-tg-player-copy strong { font-size: 9px; letter-spacing: .4px; }
+        #player .cz-tg-player-copy small { font-size: 8px; }
+        #player .cz-tg-player-cta { min-height: 34px; padding: 0 9px; font-size: 8px; }
+        #cz-tg-local-bar {
+          min-height: 62px;
+          padding: 8px 9px;
+          gap: 7px;
+          border-radius: 15px;
+        }
+        #cz-tg-local-bar .cz-tg-left { gap: 8px; }
+        #cz-tg-local-bar .cz-tg-logo {
+          width: 36px; height: 36px; flex-basis: 36px; border-radius: 11px;
+        }
+        #cz-tg-local-bar .cz-tg-logo svg { width: 22px; height: 22px; }
+        #cz-tg-local-bar strong { font-size: 9px; letter-spacing: .25px; }
+        #cz-tg-local-bar small { font-size: 8px; }
+        #cz-tg-local-bar .cz-tg-tap {
+          min-height: 33px;
+          padding: 0 9px;
+          border-radius: 10px;
+          font-size: 8px;
+        }
+      }
+      @media (max-width: 360px) {
+        #cz-tg-local-bar small { max-width: 180px; }
+        #player .cz-tg-player-copy small { display: none; }
+        #player .cz-tg-player-cta { padding: 0 7px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #cz-tg-local-bar::after, #player .cz-tg-player-banner::after {
+          animation: none;
+        }
+        #cz-tg-local-bar, #player .cz-tg-player-banner,
+        #cz-tg-local-bar .cz-tg-tap, #player .cz-tg-player-cta {
+          transition: none;
+        }
+      }
+    </style>
+
   </body>
 </html>
