@@ -140,7 +140,13 @@
     try {
       var stored = window.localStorage.getItem(cacheKey(key));
       var parsed = stored ? JSON.parse(stored) : null;
-      return parsed && Array.isArray(parsed.events) ? prepareEvents(parsed.events) : [];
+      if (!parsed || !Array.isArray(parsed.events)) return [];
+      var savedAt = Number(parsed.savedAt) || 0;
+      if (!savedAt || Date.now() - savedAt > 6 * 60 * 60 * 1000) {
+        window.localStorage.removeItem(cacheKey(key));
+        return [];
+      }
+      return prepareEvents(parsed.events);
     } catch (error) { return []; }
   }
 
