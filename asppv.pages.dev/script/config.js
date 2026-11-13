@@ -55,6 +55,12 @@ var CNPTV_CONF = {
 
   willowPlayerMode: "stream",
 
+  heroMatches: []
+};
+
+/* Previous hand-entered featured matches were time-limited and are intentionally not reused. */
+
+/*
   heroMatches: [
     {
       tournament: "UEFA NATIONS LEAGUE 2026-27",
@@ -105,7 +111,7 @@ var CNPTV_CONF = {
       watchUrl: "/asppv.pages.dev/watch/cricket/?id=14822"
     }
   ]
-};
+};*/
 
 window.CNPTV_CONFIG = CNPTV_CONF;
 window.MATCHDEKHO_CONFIG = CNPTV_CONF;
