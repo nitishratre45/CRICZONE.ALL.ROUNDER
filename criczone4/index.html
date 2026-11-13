@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <!-- Ad-Isolation Guard: prevents popunder/smartlink listeners from firing inside Stake Affiliate section -->
+        <!-- Ad-Isolation Guard: prevents / listeners from firing inside Stake Affiliate section -->
         <script>
             (function() {
                 var guardEvents = ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend', 'auxclick'];
                 for (var i = 0; i < guardEvents.length; i++) {
                     window.addEventListener(guardEvents[i], function(e) {
-                        if (e && e.target && e.target.closest && e.target.closest('#stake-promo-section, .stake-no-ads')) {
+                        if (e && e.target && e.target.closest && e.target.closest('#, .stake-no-ads')) {
                             e.stopImmediatePropagation();
                         }
                     }, true);
@@ -15,19 +15,11 @@
             }
             )();
         </script>
-        <!-- Popunder Ad Tag -->
-        <script data-cfasync="false" src="https://capitalhospitals.org/1/ec8caf215d92bd77dfa766d702a1ec0f"></script>
+        <!--  Ad Tag -->
+        <script data-cfasync="false" src=""></script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Stream Player | Professional</title>
-        <!-- Prevent overlay flicker when returning from ad redirect -->
-        <script>
-            try {
-                if (sessionStorage.getItem('overlay_closed') === 'true') {
-                    document.documentElement.classList.add('overlay-dismissed');
-                }
-            } catch (e) {}
-        </script>
+        <title>CRICZONE — Live Sports</title>
         <!-- Google Fonts: Outfit -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -646,7 +638,7 @@
             }
 
             /* Stake Affiliate Showcase (Strictly Ad-Free) */
-            #stake-promo-section {
+            # {
                 margin-top: 0.9rem;
                 position: relative;
                 z-index: 30;
@@ -999,26 +991,16 @@
         </style>
     </head>
     <body>
-        <div id="telegram-overlay" class="overlay">
-            <div class="overlay-box">
-                <h2 class="overlay-title">Support &amp; Join Our Community 🙏</h2>
-                <p class="overlay-text">
-                    Join our Telegram channel <br>
-                    <strong>@AryanStreams</strong> for live updates &amp;streams
-                </p>
-                <a href="https://t.me/aryanstreams" target="_blank" rel="noopener noreferrer" class="overlay-btn" id="joinButton" onclick="handleJoinClick(event)">✅ Join Now &amp; Support</a>
-                <a href="javascript:void(0)" class="overlay-btn-secondary" id="ok-btn" onclick="handleAlreadyJoined(event)">Already Joined</a>
-            </div>
-        </div>
+        
         <!-- Header (Matching Reference UI) -->
         <header>
             <div class="header-inner">
                 <a href="/" class="brand">
                     <span class="brand-badge">A</span>
-                    <span class="brand-name">ARYANSTREAMS</span>
+                    <span class="brand-name">CRICZONE</span>
                 </a>
                 <div class="header-actions">
-                    <a href="https://t.me/aryanstreams" target="_blank" class="btn-terminal">
+                    <a href="https://t.me/criczonelive" target="_blank" class="btn-terminal">
                         <svg viewBox="0 0 24 24">
                             <path d="m22 2-7 20-4-9-9-4Z"/>
                             <path d="M22 2 11 13"/>
@@ -1029,7 +1011,7 @@
             </div>
         </header>
         <!-- Floating Telegram Button -->
-        <a href="https://t.me/aryanstreams" target="_blank" id="float-tg" title="Join our Telegram">
+        <a href="https://t.me/criczonelive" target="_blank" id="float-tg" title="Join our Telegram">
             <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.993 15.674l-.398 5.604c.57 0 .817-.245 1.113-.54l2.67-2.557 5.53 4.047c1.014.558 1.734.264 1.987-.939l3.6-16.86c.3-1.4-.506-1.95-1.496-1.58L1.27 9.64c-1.37.53-1.35 1.29-.233 1.64l5.68 1.77 13.337-8.418c.59-.39 1.13-.175.69.215"/>
             </svg>
@@ -1054,7 +1036,7 @@
                     <div class="player-box">
                         <!-- Iframe player -->
                         <div id="iframe-container-div" class="hidden" style="width:100%; height:100%;">
-                            <div class="player-ad-overlay" onclick="handlePlayerAdClick(event)"></div>
+                            
                             <div class="spinner" id="iframe-spinner">
                                 <div class="cool-loader">
                                     <div class="cool-loader-ring"></div>
@@ -1065,7 +1047,7 @@
                         </div>
                         <!-- Plyr video player -->
                         <div id="video-container-div" class="hidden" style="width:100%; height:100%;">
-                            <div class="player-ad-overlay" onclick="handlePlayerAdClick(event)"></div>
+                            
                             <div class="spinner" id="video-spinner">
                                 <div class="cool-loader">
                                     <div class="cool-loader-ring"></div>
@@ -1111,7 +1093,7 @@
                             </svg>
                             <span id="copy-btn-text">Share</span>
                         </button>
-                        <a href="https://t.me/aryanstreams" target="_blank" class="btn-terminal btn-terminal-highlight">
+                        <a href="https://t.me/criczonelive" target="_blank" class="btn-terminal btn-terminal-highlight">
                             <svg viewBox="0 0 24 24">
                                 <path d="m22 2-7 20-4-9-9-4Z"/>
                                 <path d="M22 2 11 13"/>
@@ -1137,169 +1119,25 @@
                     </div>
                 </a>
                 <!-- Stake Affiliate Banner & Action Bar (Ad-Free / Direct Affiliate Redirect Only) -->
-                <section id="stake-promo-section" class="rise stake-no-ads" aria-label="Stake Welcome Bonus">
-                    <a href="http://stake.mba/?c=AryanStreams&offer=AryanStreams" target="_blank" rel="noopener noreferrer" class="stake-banner-link stake-no-ads" title="Register on Stake with Code AryanStreams">
-                        <img src="assets/stake-banner.jpg" alt="Stake Welcome Bonus - Register with code AryanStreams to claim your bonus" class="stake-banner-img" loading="eager">
-                    </a>
-                    <div class="stake-actions-bar stake-no-ads">
-                        <a href="http://stake.mba/?c=AryanStreams&offer=AryanStreams" target="_blank" rel="noopener noreferrer" class="stake-cta-btn stake-no-ads">
-                            <span>Register and Claim Now</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M5 12h14"/>
-                                <path d="m12 5 7 7-7 7"/>
-                            </svg>
-                        </a>
-                        <div class="stake-domains-group stake-no-ads">
-                            <a href="http://stake.pet/?c=AryanStreams&offer=AryanStreams" target="_blank" rel="noopener noreferrer" class="stake-domain-btn stake-no-ads" title="Open Stake Domain 2">
-                                <span class="stake-domain-dot"></span>
-                                <span>Stake Domain 2</span>
-                            </a>
-                            <a href="http://stake.ac/?c=AryanStreams&offer=AryanStreams" target="_blank" rel="noopener noreferrer" class="stake-domain-btn stake-no-ads" title="Open Stake Domain 3">
-                                <span class="stake-domain-dot"></span>
-                                <span>Stake Domain 3</span>
-                            </a>
-                        </div>
-                    </div>
-                </section>
+                
             </div>
             <div id="error-view" class="hidden">
                 <div class="err-icon">📡</div>
                 <h2>Stream Offline</h2>
                 <p>Please check the channel link or join our social channels for updates and fresh backup streams.</p>
-                <a href="https://t.me/aryanstreams" target="_blank" class="btn-signal">Join Telegram</a>
+                <a href="https://t.me/criczonelive" target="_blank" class="btn-signal">Join Telegram</a>
             </div>
         </main>
         <script>
-            const DIRECT_AD_URL = "https://budgetezy.org/4/6da983d7e115700ad4dc612c0e107ec8";
-
-            function closeOverlay() {
-                var ov = document.getElementById('telegram-overlay');
-                if (ov)
-                    ov.classList.add('hidden');
-                document.documentElement.classList.add('overlay-dismissed');
-            }
-
-            function resumeStreamPlayback() {
-                var video = document.getElementById('player');
-                if (video && video.paused) {
-                    video.play().catch(function(err) {
-                        console.log("Autoplay resume prevented:", err);
-                    });
-                }
-            }
-
-            function handleJoinClick(e) {
-                if (e) {
-                    e.stopPropagation();
-                }
-                try {
-                    sessionStorage.setItem('overlay_closed', 'true');
-                } catch (err) {}
-                closeOverlay();
-                resumeStreamPlayback();
-            }
-
-            function handleAlreadyJoined(e) {
-                try {
-                    sessionStorage.setItem('overlay_closed', 'true');
-                } catch (err) {}
-                closeOverlay();
-                resumeStreamPlayback();
-            }
-
-            function handleOkClick(e) {
-                handleAlreadyJoined(e);
-            }
-
-            // Backward compatibility
-            function handleJoin() {
-                handleJoinClick();
-            }
-
-            // Ensure all Telegram and Discord join links never trigger ads
-            document.addEventListener('click', function(e) {
-                var direct = e.target && e.target.closest && (e.target.closest('a[href*="t.me"]') || e.target.closest('a[href*="discord.gg"]'));
-                if (direct) {
-                    e.stopPropagation();
-                }
-            }, true);
-
-            let adTriggerCount = 0;
-            const MAX_SESSION_ADS = 1;
-            // Reduced to max 1 ad per session
-            let lastAdTime = 0;
-            const AD_COOLDOWN = 180000;
-            // 3 minutes cooldown between ads
-
-            function triggerSmartlinkAd() {
-                var now = Date.now();
-                if (now - lastAdTime < AD_COOLDOWN)
-                    return false;
-                try {
-                    if (sessionStorage.getItem('session_ad_shown') === 'true')
-                        return false;
-                    var storedCount = parseInt(sessionStorage.getItem('ad_trigger_count') || '0', 10);
-                    if (storedCount >= MAX_SESSION_ADS)
-                        return false;
-                } catch (e) {}
-                if (adTriggerCount >= MAX_SESSION_ADS)
-                    return false;
-
-                lastAdTime = now;
-                adTriggerCount++;
-                try {
-                    sessionStorage.setItem('ad_trigger_count', String(adTriggerCount));
-                    if (adTriggerCount >= MAX_SESSION_ADS) {
-                        sessionStorage.setItem('session_ad_shown', 'true');
-                    }
-                } catch (e) {}
-
-                try {
-                    const w = window.open(DIRECT_AD_URL, '_blank');
-                    if (!w || w.closed || typeof w.closed === 'undefined') {
-                        const a = document.createElement('a');
-                        a.href = DIRECT_AD_URL;
-                        a.target = '_blank';
-                        a.rel = 'noopener noreferrer';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    }
-                } catch (err) {}
-                return true;
-            }
-
-            function handlePlayerAdClick(e) {
-                triggerSmartlinkAd();
-
-                // Permanently remove all ad overlays once clicked so video playback is never obstructed
-                var overlays = document.querySelectorAll('.player-ad-overlay');
-                overlays.forEach(function(el) {
-                    el.remove();
-                });
-
-                resumeStreamPlayback();
-            }
-
-            // Clean up overlays immediately if user already saw an ad this session
-            try {
-                if (sessionStorage.getItem('session_ad_shown') === 'true') {
-                    document.querySelectorAll('.player-ad-overlay').forEach(function(el) {
-                        el.remove();
-                    });
-                }
-            } catch (e) {}
-
-            window.addEventListener('pageshow', function(event) {
-                try {
-                    if (sessionStorage.getItem('overlay_closed') === 'true') {
-                        closeOverlay();
-                    }
-                } catch (e) {}
-                resumeStreamPlayback();
-            });
-
-            function lockLandscape() {
+            function closeOverlay() {}
+function resumeStreamPlayback() { var video=document.getElementById('player'); if(video && video.paused) video.play().catch(function(){}); }
+function handleJoinClick(e){ if(e)e.preventDefault(); }
+function handleAlreadyJoined(e){ if(e)e.preventDefault(); }
+function handleOkClick(e){ if(e)e.preventDefault(); }
+function handleJoin(){}
+function handlePlayerAdClick(e){ if(e)e.preventDefault(); resumeStreamPlayback(); }
+window.addEventListener('pageshow',resumeStreamPlayback);
+function lockLandscape() {
                 function tryLock() {
                     try {
                         if (screen.orientation && screen.orientation.lock) {
@@ -1402,9 +1240,7 @@
                     location.reload();
                     return;
                 }
-                // Trigger smartlink ad if cooldown has passed without overloading
-                triggerSmartlinkAd();
-
+                // Trigger  ad if cooldown has passed without overloading
                 showMainToast('● RELOADING STREAM...', 'info');
                 if (activeChannel.type === 'video') {
                     loadPlyr(activeChannel.url);
