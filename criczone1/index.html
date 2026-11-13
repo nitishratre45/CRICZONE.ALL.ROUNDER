@@ -5339,5 +5339,237 @@
     </style>
 
     <script src="/assets/js/cz-global-community.js" defer></script>
+  
+    <style id="criczone1-player-premium-ui">
+      /* Premium compact player chrome — CRICZONE1 */
+      #player {
+        isolation: isolate;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse at 50% 0%, rgba(20, 48, 78, .34), transparent 48%),
+          #000;
+      }
+      #frame {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+      #player .playerbar {
+        z-index: 12;
+        top: max(9px, env(safe-area-inset-top));
+        left: 12px;
+        right: 12px;
+        min-height: 54px;
+        padding: 6px 8px;
+        gap: 10px;
+        border: 1px solid rgba(255, 211, 125, .25);
+        border-radius: 17px;
+        background: linear-gradient(110deg, rgba(17, 34, 55, .96), rgba(7, 15, 27, .96));
+        box-shadow: 0 9px 28px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.08);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+      #player .playerbar button {
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 211, 125, .42);
+        border-radius: 12px;
+        background: linear-gradient(145deg, #263d59, #14253a);
+        color: #ffe2a1;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .1px;
+        box-shadow: inset 0 1px rgba(255,255,255,.12);
+      }
+      #player .playerbar button:active {
+        transform: scale(.97);
+      }
+      #player .playertitle {
+        min-width: 0;
+        min-height: 40px;
+        max-width: 56%;
+        padding: 0 13px;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 12px;
+        background: rgba(5, 13, 24, .86);
+        color: #f8fafc;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .25px;
+      }
+      #player .cz-tg-player-banner {
+        z-index: 11;
+        top: calc(max(9px, env(safe-area-inset-top)) + 64px);
+        left: 12px;
+        right: 12px;
+        min-height: 62px;
+        gap: 11px;
+        padding: 8px 11px;
+        border: 1px solid rgba(116, 194, 255, .72);
+        border-radius: 16px;
+        background: linear-gradient(105deg, #0875f5 0%, #0754d9 56%, #123eae 100%);
+        box-shadow: 0 9px 26px rgba(0, 91, 255, .25), inset 0 1px rgba(255,255,255,.28);
+        transition: filter .18s ease, transform .18s ease;
+      }
+      #player .cz-tg-player-banner:active {
+        filter: brightness(1.08);
+        transform: scale(.992);
+      }
+      #player .cz-tg-player-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 13px;
+        background: rgba(255,255,255,.17);
+        box-shadow: inset 0 1px rgba(255,255,255,.2);
+      }
+      #player .cz-tg-player-copy strong {
+        font-size: 12px;
+        letter-spacing: .35px;
+      }
+      #player .cz-tg-player-copy small {
+        color: rgba(239,247,255,.9);
+        font-size: 9px;
+      }
+      #player .cz-tg-player-cta {
+        min-height: 38px;
+        padding: 0 12px;
+        border-radius: 11px;
+        font-size: 10px;
+        font-weight: 1000;
+      }
+      #player .cz-player-stats {
+        z-index: 10;
+        top: calc(max(9px, env(safe-area-inset-top)) + 137px);
+        left: 12px;
+        right: 12px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      #player .cz-player-stats > div {
+        min-height: 39px;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 211, 125, .24);
+        border-radius: 13px;
+        background: linear-gradient(135deg, rgba(17, 31, 49, .94), rgba(7, 14, 25, .94));
+        box-shadow: 0 7px 20px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.06);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        color: #b9c7d9;
+        font-size: 9px;
+        letter-spacing: .7px;
+      }
+      #player .cz-player-stats i {
+        width: 7px;
+        height: 7px;
+        background: #32e6a4;
+        box-shadow: 0 0 10px rgba(50,230,164,.8);
+      }
+      #player .cz-player-stats strong {
+        color: #ffe09a;
+        font-size: 15px;
+      }
+      #player .cz-player-total-icon {
+        color: #ffd16b;
+      }
+      #player .cz-iframe-controls {
+        z-index: 13;
+      }
+      @media (max-width: 599px) {
+        #player .playerbar {
+          top: max(7px, env(safe-area-inset-top));
+          left: 8px;
+          right: 8px;
+          min-height: 49px;
+          padding: 5px 6px;
+          gap: 7px;
+          border-radius: 15px;
+        }
+        #player .playerbar button {
+          min-height: 37px;
+          padding: 0 10px;
+          border-radius: 11px;
+          font-size: 10px;
+        }
+        #player .playertitle {
+          min-height: 37px;
+          max-width: 55%;
+          padding: 0 10px;
+          font-size: 10px;
+        }
+        #player .cz-tg-player-banner {
+          top: calc(max(7px, env(safe-area-inset-top)) + 57px);
+          left: 8px;
+          right: 8px;
+          min-height: 56px;
+          gap: 8px;
+          padding: 6px 8px;
+          border-radius: 14px;
+        }
+        #player .cz-tg-player-icon {
+          width: 36px;
+          height: 36px;
+          flex-basis: 36px;
+          border-radius: 11px;
+          font-size: 20px;
+        }
+        #player .cz-tg-player-copy {
+          gap: 3px;
+        }
+        #player .cz-tg-player-copy strong {
+          font-size: 10px;
+        }
+        #player .cz-tg-player-copy small {
+          font-size: 8px;
+        }
+        #player .cz-tg-player-cta {
+          min-height: 34px;
+          padding: 0 9px;
+          border-radius: 10px;
+          font-size: 9px;
+        }
+        #player .cz-player-stats {
+          top: calc(max(7px, env(safe-area-inset-top)) + 122px);
+          left: 8px;
+          right: 8px;
+          gap: 6px;
+        }
+        #player .cz-player-stats > div {
+          min-height: 35px;
+          gap: 6px;
+          padding: 6px 9px;
+          border-radius: 11px;
+          font-size: 8px;
+          letter-spacing: .5px;
+        }
+        #player .cz-player-stats strong {
+          font-size: 13px;
+        }
+      }
+      @media (max-width: 360px) {
+        #player .cz-tg-player-copy small { display: none; }
+        #player .cz-tg-player-cta { padding: 0 7px; }
+        #player .cz-player-stats > div { gap: 5px; padding: 6px 7px; }
+      }
+      @media (orientation: landscape) and (max-height: 520px) {
+        #player .playerbar { min-height: 43px; }
+        #player .cz-tg-player-banner {
+          top: calc(max(6px, env(safe-area-inset-top)) + 49px);
+          min-height: 43px;
+          padding: 4px 8px;
+        }
+        #player .cz-tg-player-icon { width: 31px; height: 31px; flex-basis: 31px; }
+        #player .cz-player-stats { top: 102px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #player .cz-tg-player-banner,
+        #player .playerbar button { transition: none; }
+      }
+    </style>
+
   </body>
 </html>
