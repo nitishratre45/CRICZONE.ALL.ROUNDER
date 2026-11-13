@@ -1,0 +1,32 @@
+{
+  "name": "Aryan Streams — Live Sports & Streams",
+  "short_name": "Aryan Streams",
+  "description": "Live cricket, football and sports streaming hub.",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/assets/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/assets/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#05070c",
+  "background_color": "#05070c",
+  "display": "standalone",
+  "orientation": "any"
+}

@@ -1,0 +1,471 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sony LIV Events — Aryan Streams</title>
+    
+    <link href="../../_ext/fonts.googleapis.com/css2/index_167jhny.html" rel="stylesheet">
+    <link rel="stylesheet" href="../../_ext/cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.1);
+            --primary: #f97316;
+            --accent: #3b82f6;
+            --live: #ef4444;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --popup-bg: #0f172a;
+            --popup-accent: #0088cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 40px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body.locked { overflow: hidden; }
+
+        .backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            z-index: 9998; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .backdrop.active { opacity: 1; pointer-events: all; }
+
+        .modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+            width: 90%; max-width: 400px; background: var(--popup-bg);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px;
+            text-align: center; z-index: 9999; opacity: 0; pointer-events: none;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transition: var(--transition);
+        }
+        .modal.active { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1); }
+
+        .modal-icon { font-size: 3rem; color: var(--popup-accent); margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(0,136,204,0.4)); }
+        .modal h2 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 700; }
+        .modal p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6; }
+
+        .btn-join {
+            background: linear-gradient(135deg, #0088cc 0%, #005f8f 100%); color: white; border: none;
+            padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none; transition: var(--transition); box-shadow: 0 4px 15px rgba(0,136,204,0.3);
+        }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,136,204,0.5); }
+        
+        .btn-close {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted);
+            padding: 12px; width: 100%; border-radius: 12px; margin-top: 10px; font-weight: 500;
+            cursor: pointer; transition: var(--transition);
+        }
+        .btn-close:hover { background: rgba(255,255,255,0.05); color: white; border-color: white; }
+
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #22c55e; color: white; padding: 12px 24px; border-radius: 50px;
+            font-weight: 600; font-size: 0.9rem; z-index: 10000; opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .container { max-width: 1440px; margin: 0 auto; padding: 0 20px; }
+
+        header { padding: 40px 0 20px; text-align: center; }
+        .logo-area h1 {
+            font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-area h1 span {
+            background: linear-gradient(135deg, var(--primary), #ff9100); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+        .filter-container { display: flex; justify-content: center; gap: 12px; margin: 30px 0 40px; flex-wrap: wrap; }
+        .filter-btn {
+            background: var(--bg-card); border: var(--glass-border); color: var(--text-muted);
+            padding: 10px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 8px;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--text-main); color: black; transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.3); border-color: transparent;
+        }
+        .filter-btn.active i { color: var(--primary); }
+
+        .matches-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; min-height: 300px;
+        }
+
+        .card {
+            background: var(--bg-card); border: var(--glass-border); border-radius: var(--radius);
+            overflow: hidden; position: relative; transition: var(--transition);
+            display: flex; flex-direction: column; animation: fadeIn 0.5s ease forwards; opacity: 0;
+        }
+        .card:hover {
+            transform: translateY(-8px); background: var(--bg-card-hover);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2);
+        }
+
+        .card-poster { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; }
+        .card-poster img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .card:hover .card-poster img { transform: scale(1.1); }
+
+        .live-tag, .upcoming-tag {
+            position: absolute; top: 12px; left: 12px; padding: 4px 10px;
+            border-radius: 4px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; z-index: 2;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .live-tag {
+            background: var(--live); color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); animation: pulse 2s infinite;
+        }
+        .live-tag::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
+        .upcoming-tag { background: #3b82f6; color: white; }
+
+        .copy-btn {
+            position: absolute; top: 12px; right: 12px; z-index: 5;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600;
+        }
+        .copy-btn:hover { background: var(--primary); transform: scale(1.05); }
+
+        .card-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .meta-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.75rem; flex-wrap: wrap; }
+        .badge {
+            background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px;
+            color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .match-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; line-height: 1.3; color: #fff; }
+        .event-name { font-size: 0.85rem; color: var(--primary); font-weight: 500; margin-bottom: 12px; }
+        .channel-info {
+            display: flex; align-items: center; gap: 8px; color: var(--text-muted);
+            font-size: 0.85rem; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;
+        }
+
+        .action-area { margin-top: 15px; }
+        .action-title { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 600; text-align: center; }
+        
+        .player-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        
+        .player-btn {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+            color: white; padding: 10px 5px; border-radius: 8px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            transition: var(--transition); font-size: 0.7rem; font-weight: 600;
+        }
+        .player-btn:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
+        .player-btn i { font-size: 1.2rem; }
+
+        .btn-upcoming {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+            cursor: not-allowed; text-align: center;
+        }
+
+        .loading-state { grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-muted); }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--primary); border-radius: 50%; margin: 0 auto 15px; animation: spin 1s linear infinite;
+        }
+
+        footer { text-align: center; padding: 40px 0; color: rgba(255,255,255,0.4); font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) {
+            .logo-area h1 { font-size: 1.8rem; }
+            .matches-grid { grid-template-columns: 1fr; }
+            .modal { width: 95%; padding: 25px 20px; }
+        }
+    </style>
+  <link rel="stylesheet" href="../../css/community-buttons_19b6v49.css">
+  <script defer="" src="../../js/ads_3lvwfr.js"></script>
+</head>
+<body class="locked">
+
+    <div class="backdrop active" id="backdrop"></div>
+    <div class="modal active" id="telegramPopup">
+        <div class="modal-icon">
+            <i class="fa-brands fa-telegram"></i>
+        </div>
+        <h2>Support Our Channel</h2>
+        <p>Join <strong>Aryan Streams</strong> on WhatsApp/Telegram for instant match links and updates.</p>
+        
+        <a href="https://t.me/AryanStreams" target="_blank" id="joinBtn" class="btn-join">
+            <i class="fa-brands fa-telegram"></i> Join Telegram
+        </a>
+        <button id="closeBtn" class="btn-close">I've Already Joined</button>
+    </div>
+
+    <div id="toast">
+        <i class="fa-solid fa-circle-check"></i> <span>Link Copied Successfully!</span>
+    </div>
+
+    <header>
+        <div class="container logo-area">
+            <h1>SONYLIV <span>EVENTS</span></h1>
+            <p class="subtitle">Stream Exclusive Sports &amp; Live Matches in HD</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterData('all', this)">
+                <i class="fa-solid fa-border-all"></i> All
+            </button>
+            <button class="filter-btn" onclick="filterData('live', this)">
+                <i class="fa-solid fa-satellite-dish"></i> Live Now
+            </button>
+            <button class="filter-btn" onclick="filterData('upcoming', this)">
+                <i class="fa-regular fa-calendar"></i> Upcoming
+            </button>
+        </div>
+
+        <div class="as-sponsor-slot" data-variant="compact" aria-label="Featured Partner"></div>
+
+        <div id="matches-grid" class="matches-grid">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading events...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 SonyLiv Events | Developed by Cricket News Point</p>
+    </footer>
+
+    <script>
+        const API_URL = "https://raw.githubusercontent.com/kajju027/SonyLiv-Events-Json/refs/heads/main/sonyliv.json";
+        let allMatches = [];
+        const grid = document.getElementById('matches-grid');
+        const toast = document.getElementById('toast');
+
+        const popup = document.getElementById('telegramPopup');
+        const backdrop = document.getElementById('backdrop');
+        const joinBtn = document.getElementById('joinBtn');
+        const closeBtn = document.getElementById('closeBtn');
+
+        function hidePopup() {
+            popup.classList.remove('active');
+            backdrop.classList.remove('active');
+            document.body.classList.remove('locked');
+            setTimeout(() => {
+                popup.style.display = 'none';
+                backdrop.style.display = 'none';
+                if (window.AryanAds) window.AryanAds.initPopunder();
+            }, 400); 
+        }
+
+        joinBtn.addEventListener('click', hidePopup);
+        closeBtn.addEventListener('click', hidePopup);
+
+        function showToast(message) {
+            toast.querySelector('span').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        window.copyUrl = function(url) {
+            if(!url) return;
+            const tempInput = document.createElement("input");
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            showToast("Video Link Copied Successfully!");
+        }
+
+        window.openInPlayer = function(appId, videoUrl) {
+            if (!videoUrl) return;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                if(appId === 'org.videolan.vlc') {
+                    window.location.href = 'vlc://' + videoUrl;
+                    setTimeout(() => { window.location.href = 'https://apps.apple.com/app/vlc-media-player/id650377962'; }, 1500);
+                } else {
+                    copyUrl(videoUrl);
+                    setTimeout(() => { alert("Link copied! Open in your preferred player manually on iOS."); }, 500);
+                }
+            } else {
+                let urlWithoutScheme = videoUrl.replace(/^https?:\/\//, '');
+                let intentUrl = `intent://${urlWithoutScheme}#Intent;scheme=https;package=${appId};S.browser_fallback_url=https://play.google.com/store/apps/details?id=${appId};end;`;
+                window.location.href = intentUrl;
+            }
+        }
+
+        async function fetchMatches() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Network Error");
+                const data = await response.json();
+                
+                if (data.matches && Array.isArray(data.matches)) {
+                    allMatches = data.matches;
+                    renderMatches(allMatches);
+                } else {
+                    throw new Error("Invalid Data");
+                }
+            } catch (error) {
+                grid.innerHTML = `
+                    <div class="loading-state">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; color: var(--live); margin-bottom: 10px;"></i>
+                        <p>Failed to load matches. Please check your connection.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderMatches(data) {
+            grid.innerHTML = '';
+            if (data.length === 0) {
+                grid.innerHTML = `<div class="loading-state"><p>No events found.</p></div>`;
+                return;
+            }
+
+            data.forEach((match, index) => {
+                const isLive = match.status && match.status.toLowerCase() === 'live';
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                const imageSrc = match.poster || 'https://via.placeholder.com/400x225?text=No+Image';
+                const title = match.match_name && match.match_name.trim() !== '' ? match.match_name : match.event_name;
+                const streamUrl = match.video_url || match.dai_url || match.pub_url || '';
+
+                let posterHtml = `
+                    <div class="card-poster">
+                        <img src="${imageSrc}" alt="${title}" loading="lazy">
+                        ${isLive ? '<div class="live-tag">LIVE</div>' : '<div class="upcoming-tag">UPCOMING</div>'}
+                        ${isLive && streamUrl ? `<button class="copy-btn" onclick="copyUrl('${streamUrl}')"><i class="fa-regular fa-copy"></i> Copy Link</button>` : ''}
+                    </div>
+                `;
+
+                let actionHtml = '';
+                if (isLive) {
+                    actionHtml = `
+                        <div class="action-area">
+                            <div class="action-title">Open With External Player</div>
+                            <div class="player-grid">
+                                <button class="player-btn" onclick="openInPlayer('org.videolan.vlc', '${streamUrl}')">
+                                    <i class="fa-solid fa-play"></i> VLC
+                                </button>
+                                <button class="player-btn" onclick="openInPlayer('com.genuine.leone', '${streamUrl}')">
+                                    <i class="fa-solid fa-video"></i> NS Player
+                                </button>
+                                <button class="player-btn" onclick="openInPlayer('com.ottnavigator.iptvnavigator', '${streamUrl}')">
+                                    <i class="fa-solid fa-tv"></i> OTT Nav
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <div class="action-area">
+                            <div class="btn-upcoming"><i class="fa-solid fa-bell"></i> Event Not Started</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${posterHtml}
+                    <div class="card-body">
+                        <div>
+                            <div class="meta-row">
+                                <span class="badge">${match.category || 'Sports'}</span>
+                                <span class="badge">${match.language || 'MULTI'}</span>
+                            </div>
+                            <h3 class="match-title">${title}</h3>
+                            <div class="event-name">${match.event_name}</div>
+                        </div>
+                        <div>
+                            <div class="channel-info">
+                                <i class="fa-solid fa-broadcast-tower"></i> ${match.digital_broadcast || 'Sony Network'}
+                            </div>
+                            ${actionHtml}
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        window.filterData = function(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            let filtered = [];
+            if (type === 'all') {
+                filtered = allMatches;
+            } else if (type === 'live') {
+                filtered = allMatches.filter(m => m.status && m.status.toLowerCase() === 'live');
+            } else if (type === 'upcoming') {
+                filtered = allMatches.filter(m => !m.status || m.status.toLowerCase() !== 'live');
+            }
+            renderMatches(filtered);
+        }
+
+        window.onload = function() {
+            fetchMatches();
+        };
+    </script>
+<!-- Cloudflare Pages Analytics -->
+  <!-- Floating Community Actions (Telegram & Discord) -->
+  <div class="as-floating-actions" aria-label="Community Links">
+    <a href="https://discord.gg/xXYgF8YuP3" target="_blank" rel="noopener noreferrer" class="as-float-btn as-discord-btn" title="Join our Discord Community">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path>
+      </svg>
+      <span class="as-float-label">Discord</span>
+    </a>
+    <a href="https://t.me/AryanStreams" target="_blank" rel="noopener noreferrer" class="as-float-btn as-telegram-btn" title="Join @AryanStreams on Telegram">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"></path>
+      </svg>
+      <span class="as-float-label">Telegram</span>
+      <span class="as-ping-badge" aria-hidden="true">
+        <span class="ping-outer"></span>
+        <span class="ping-inner"></span>
+      </span>
+    </a>
+  </div>
+
+  <script data-cfasync="false" src="../../_ext/czernik.org/14/dd8f7f9fb5dc56447c13c5fb3c5b01be/index.html"></script>
+<!-- Cloudflare Pages Analytics --><script defer="" src="../../_ext/static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;1d1c96f2f86148ba8f4cfcf1b2aab911&quot;}"></script><!-- Cloudflare Pages Analytics -->
+
+</body></html>
