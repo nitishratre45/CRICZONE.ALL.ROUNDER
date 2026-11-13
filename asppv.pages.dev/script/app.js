@@ -347,7 +347,6 @@
     const MORE = [
       ["World Sports", "#worldSportsSection"],
       ["Sony LIV Events", "#sonyLivSection"],
-      ["Sports News", "#newsSection"]
     ];
     drNav.innerHTML =
       NAV.map(function (item) {
@@ -361,9 +360,7 @@
       }).join("") +
       "</div></div>" +
       '<div class="dr-sep"></div>' +
-      '<a class="dr-item"' + sty() + ' href="/news/">' + drIcon("grid") + "<span>Sports News</span></a>" +
-      '<a class="dr-item"' + sty() + ' href="https://budgetezy.org/4/eb75e05b1adf598a0f912b4f7e62beed" target="_blank" rel="noopener noreferrer sponsored">' + drIcon("tag") + '<span>Partner Offers</span><span class="dr-new">AD</span></a>' +
-      '<a class="dr-item"' + sty() + ' href="/Feedback/">' + drIcon("help") + "<span>Feedback &amp; Support</span></a>";
+      '<a class="dr-item"' + sty() + ' href="/asppv.pages.dev/Feedback/">' + drIcon("help") + "<span>Feedback &amp; Support</span></a>";
   }
 
   let dOpen = false;
