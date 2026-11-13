@@ -45,22 +45,31 @@
     <div class="note"><span class="dot" aria-hidden="true"></span><span>VISITORS TO THIS PAGE</span><strong id="folderVisitTotal">Loading…</strong></div>
   </main>
   <script>
-    (async function(){
+    (function(){
+      const telegramUrl="https://t.me/+MueCDjlpoS8yNmJl";
       const countEl=document.getElementById("folderVisitTotal");
-      try{
-        const response=await fetch("https://criczone-total-counter.pages-1.workers.dev/count?key=criczonetelegram",{
-          method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:"{}"
-        });
-        if(!response.ok) throw new Error("Counter HTTP "+response.status);
-        const data=await response.json();
-        if(Number.isFinite(Number(data.total))) countEl.textContent=Number(data.total).toLocaleString("en-IN");
-        else countEl.textContent="Unavailable";
-      }catch(error){
-        countEl.textContent="Unavailable";
-        console.warn("CRICZONE Telegram visit counter unavailable",error);
-      }
-      // Keep the count visible briefly before automatic Telegram redirect.
-      window.setTimeout(function(){window.location.replace("https://t.me/+MueCDjlpoS8yNmJl");},5000);
+
+      // Start the five-second timer immediately; use a normal HTTPS universal
+      // link so mobile browsers and Instagram's in-app browser can hand off to Telegram.
+      window.setTimeout(function(){
+        window.location.href=telegramUrl;
+      },5000);
+
+      // Count this page visit independently; a slow counter must not delay redirect.
+      (async function(){
+        try{
+          const response=await fetch("https://criczone-total-counter.pages-1.workers.dev/count?key=criczonetelegram",{
+            method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:"{}"
+          });
+          if(!response.ok) throw new Error("Counter HTTP "+response.status);
+          const data=await response.json();
+          if(Number.isFinite(Number(data.total))) countEl.textContent=Number(data.total).toLocaleString("en-IN");
+          else countEl.textContent="Unavailable";
+        }catch(error){
+          countEl.textContent="Unavailable";
+          console.warn("CRICZONE Telegram visit counter unavailable",error);
+        }
+      })();
     })();
   </script>
 </body>
