@@ -981,6 +981,7 @@
   <link rel="stylesheet" href="../../css/community-buttons_19b6v49.css">
   
   
+<style id="criczone-brand-layer">.cz-brand{display:inline-flex;align-items:center;gap:9px;color:#f5f8fc!important;text-decoration:none!important;font-weight:1000!important;letter-spacing:-.6px}.cz-brand-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(145deg,#52e8b7,#2588ed);color:#06131b;font-size:13px;font-weight:1000;box-shadow:0 5px 18px #168bd333}.cz-brand-word{font-size:clamp(17px,2vw,23px);font-weight:1000;letter-spacing:-.8px}.cz-brand-word span{color:#52e8b7}.cz-brand:hover{filter:drop-shadow(0 0 10px #35d8ae44)}</style>
 </head>
 <body>
 
@@ -989,14 +990,12 @@
     <button class="hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
-    <a href="../../_ext/matchdekho.in/index.html" class="logo" aria-label="matchdekho home">
-      <span class="match">match</span><span class="dekho">dekho</span>
-    </a>
+    <a href="../../index.html" class="logo cz-brand" aria-label="CRICZONE home"><span class="cz-brand-mark">CZ</span><span class="cz-brand-word">CRIC<span>ZONE</span></span></a>
     <nav class="header-nav">
-      <a href="../../_ext/matchdekho.in/index.html">Home</a>
-      <a href="https://matchdekho.in/sports">Sports</a>
-      <a href="https://matchdekho.in/cricket">Cricket</a>
-      <a href="https://matchdekho.in/football">Football</a>
+      <a href="../../index.html">Home</a>
+      <a href="../../index.html#sports">Sports</a>
+      <a href="../cricket/index.html">Cricket</a>
+      <a href="../football/index.html">Football</a>
       <a href="index.html" class="sign-in">Sign In</a>
       <a href="index.html" class="subscribe">Watch Free</a>
     </nav>
@@ -1004,10 +1003,10 @@
 
   <!-- ====== MOBILE MENU ====== -->
   <div class="mobile-menu" id="mobileMenu">
-    <a href="../../_ext/matchdekho.in/index.html">Home</a>
-    <a href="https://matchdekho.in/sports">Sports</a>
-    <a href="https://matchdekho.in/cricket">Cricket</a>
-    <a href="https://matchdekho.in/football">Football</a>
+    <a href="../../index.html">Home</a>
+    <a href="../../index.html#sports">Sports</a>
+    <a href="../cricket/index.html">Cricket</a>
+    <a href="../football/index.html">Football</a>
     <a href="index.html" class="subscribe-mobile">Watch Free</a>
   </div>
 
@@ -1027,7 +1026,7 @@
       <div class="icon">🏏</div>
       <h2>Match Completed</h2>
       <p>This match has ended. Watch other live matches now!</p>
-      <a href="../../_ext/matchdekho.in/index.html" class="go-home-btn">Go to Home</a>
+      <a href="../../index.html" class="go-home-btn">Go to Home</a>
     </div>
 
     <div class="player-loader" id="playerLoader"></div>
@@ -1084,9 +1083,9 @@
   <!-- ====== VIDEO INFO ====== -->
   <div class="video-info" id="videoInfo">
     <div class="breadcrumb">
-      <a href="../../_ext/matchdekho.in/index.html">Home</a>
+      <a href="../../index.html">Home</a>
       <span class="separator">›</span>
-      <a href="https://matchdekho.in/sports">Sports</a>
+      <a href="../../index.html#sports">Sports</a>
       <span class="separator">›</span>
       <a href="index.html" id="leagueLink">Cricket</a>
       <span class="separator">›</span>
@@ -1175,7 +1174,7 @@
         }
 
         // Fetch match data from JSON
-        return fetch('world-sports.json')
+        return fetch('https://matchdekho.in/api/world-sports.json')
           .then(response => response.json())
           .then(data => {
             const match = data.matches.find(m => m.match_id === matchId);
