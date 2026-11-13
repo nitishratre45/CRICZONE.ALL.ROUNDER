@@ -828,30 +828,6 @@
       "url": "https://criczone.pages.dev/criczone1/?id=fox507"
     },
     {
-      "id": "tnt1",
-      "name": "TNT 1",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tnt1"
-    },
-    {
-      "id": "tnt2",
-      "name": "TNT 2",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tnt2"
-    },
-    {
-      "id": "tnt3",
-      "name": "TNT 3",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tnt3"
-    },
-    {
-      "id": "tnt4",
-      "name": "TNT 4",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tnt4"
-    },
-    {
       "id": "skysportscricket-uk",
       "name": "Sky Sports Cricket",
       "folder": "criczone1",
@@ -1198,30 +1174,6 @@
       "url": "https://criczone.pages.dev/criczone1/?id=Select2"
     },
     {
-      "id": "tntsports1",
-      "name": "TNT SPORTS 1",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tntsports1"
-    },
-    {
-      "id": "tntsports2",
-      "name": "TNT SPORTS 2",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tntsports2"
-    },
-    {
-      "id": "tntsports3",
-      "name": "TNT SPORTS 3",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tntsports3"
-    },
-    {
-      "id": "tntsports4",
-      "name": "TNT SPORTS 4",
-      "folder": "criczone1",
-      "url": "https://criczone.pages.dev/criczone1/?id=tntsports4"
-    },
-    {
       "id": "SETHD",
       "name": "Sony SET HD -b",
       "folder": "criczone1",
@@ -1447,34 +1399,6 @@
       "category": "SKY SPORTS"
     },
     {
-      "id": "tnt1",
-      "name": "TNT Sports 1 (UK)",
-      "folder": "e",
-      "url": "https://criczone.pages.dev/e/?id=tnt1",
-      "category": "TNT SPORTS"
-    },
-    {
-      "id": "tnt2",
-      "name": "TNT Sports 2 (UK)",
-      "folder": "e",
-      "url": "https://criczone.pages.dev/e/?id=tnt2",
-      "category": "TNT SPORTS"
-    },
-    {
-      "id": "tnt3",
-      "name": "TNT Sports 3 (UK)",
-      "folder": "e",
-      "url": "https://criczone.pages.dev/e/?id=tnt3",
-      "category": "TNT SPORTS"
-    },
-    {
-      "id": "tnt4",
-      "name": "TNT Sports 4 (UK)",
-      "folder": "e",
-      "url": "https://criczone.pages.dev/e/?id=tnt4",
-      "category": "TNT SPORTS"
-    },
-    {
       "id": "willow-2",
       "name": "Willow 2 (USA)",
       "folder": "e",
@@ -1487,6 +1411,30 @@
       "folder": "e",
       "url": "https://criczone.pages.dev/e/?id=willow",
       "category": "WILLOW"
+    },
+    {
+      "id": "tntsports2",
+      "name": "TNT Sports 2",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports2"
+    },
+    {
+      "id": "tntsports1",
+      "name": "TNT Sports 1",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports1"
+    },
+    {
+      "id": "tntsports3",
+      "name": "TNT Sports 3",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports3"
+    },
+    {
+      "id": "tntsports4",
+      "name": "TNT Sports 4",
+      "folder": "criczone1",
+      "url": "https://criczone.pages.dev/criczone1/?id=tntsports4"
     }
   ]
 }
