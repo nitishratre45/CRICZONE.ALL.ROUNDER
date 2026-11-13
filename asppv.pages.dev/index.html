@@ -3,90 +3,84 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07111c">
-<meta name="description" content="CRICZONE — live sports hub for cricket, football and global sports. Fixtures, match centres and live event listings in one place.">
+<meta name="theme-color" content="#050a11">
+<meta name="description" content="CRICZONE — live cricket, football, Willow, FanCode, World Sports and Sony LIV event listings.">
 <meta name="application-name" content="CRICZONE">
 <meta name="robots" content="index,follow">
 <title>CRICZONE — Every Match. One Destination.</title>
 <link rel="icon" type="image/svg+xml" href="assets/criczone-logo.svg">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<style>
-:root{color-scheme:dark;--bg:#050a11;--panel:#0b1522;--panel2:#101f30;--line:rgba(157,184,214,.15);--text:#f4f7fb;--muted:#8fa2b8;--mint:#48e0b0;--blue:#2789ff;--gold:#ffd36b;--red:#ff536b;--shadow:0 18px 50px rgba(0,0,0,.35)}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 15% -10%,rgba(28,112,164,.24),transparent 40%),radial-gradient(ellipse at 95% 10%,rgba(34,196,143,.1),transparent 35%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button,input{font:inherit}button{cursor:pointer}img{max-width:100%}
-.topline{height:3px;background:linear-gradient(90deg,var(--mint),var(--blue),var(--gold))}
-header{position:sticky;top:0;z-index:50;background:rgba(5,10,17,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.nav{width:min(1400px,94%);height:74px;margin:auto;display:flex;align-items:center;gap:24px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:1000;font-size:25px;letter-spacing:-1.2px;white-space:nowrap}
-.brand-logo{display:block;width:clamp(150px,18vw,205px);height:auto;max-height:48px;object-fit:contain}
-.navlinks{display:flex;align-items:center;gap:22px;margin-left:auto}.navlinks a{font-size:13px;color:#bdc9d7;font-weight:750;transition:.2s}.navlinks a:hover{color:var(--mint)}
-.nav-actions{display:flex;align-items:center;gap:10px}.pill-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 15px;border:1px solid var(--line);border-radius:12px;background:#101d2b;color:#eaf2fa;font-size:12px;font-weight:850}.pill-btn.primary{border-color:transparent;background:linear-gradient(110deg,#42e1b0,#2b9bfa);color:#06121b;box-shadow:0 8px 24px rgba(38,164,190,.2)}
-.menu-btn{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:#0d1926;color:white;font-size:20px}
-main{width:min(1400px,94%);margin:auto}
-.hero{position:relative;margin:28px 0 24px;padding:clamp(24px,5vw,62px);min-height:330px;display:flex;align-items:center;overflow:hidden;border:1px solid rgba(91,191,204,.24);border-radius:28px;background:linear-gradient(112deg,rgba(9,27,42,.98),rgba(8,19,31,.82)),radial-gradient(circle at 82% 30%,rgba(41,156,221,.34),transparent 38%);box-shadow:var(--shadow)}
-.hero:before{content:"";position:absolute;width:430px;height:430px;right:-80px;top:-100px;border:1px solid rgba(72,224,176,.18);border-radius:50%;box-shadow:0 0 0 34px rgba(72,224,176,.025),0 0 0 70px rgba(72,224,176,.02)}
-.hero-copy{position:relative;z-index:1;max-width:720px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--mint);font-size:11px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase}.eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px var(--mint)}
-h1{margin:15px 0 12px;font-size:clamp(38px,6.2vw,76px);line-height:.98;letter-spacing:-3.5px;font-weight:1000}h1 span{color:var(--mint)}.hero p{max-width:580px;margin:0;color:#aebed0;font-size:clamp(14px,1.5vw,17px)}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.hero-note{margin-top:20px;color:#8195aa;font-size:11px;font-weight:700}
-.hero-orb{position:absolute;right:10%;top:50%;transform:translateY(-50%);width:245px;height:245px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,rgba(75,227,183,.22),rgba(30,113,174,.08) 55%,transparent 70%);border:1px solid rgba(89,210,191,.22);box-shadow:0 0 80px rgba(24,132,181,.15)}
-.hero-orb strong{font-size:78px;letter-spacing:-8px;color:rgba(218,255,245,.12);text-shadow:0 0 32px rgba(72,224,176,.18)}
-.section{margin:34px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:16px}.section-head h2{margin:0;font-size:clamp(20px,2.5vw,27px);letter-spacing:-.8px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.section-head a{color:var(--mint);font-size:12px;font-weight:850}
-.category-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px}
-.category{position:relative;min-height:145px;overflow:hidden;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(17,34,51,.95),rgba(8,17,28,.98));transition:transform .22s,border-color .22s,box-shadow .22s}
-.category:hover{transform:translateY(-4px);border-color:rgba(72,224,176,.48);box-shadow:0 14px 30px rgba(0,0,0,.25)}
-.category-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:rgba(72,224,176,.1);border:1px solid rgba(72,224,176,.16);font-size:21px}
-.category h3{margin:14px 0 3px;font-size:14px}.category p{margin:0;color:var(--muted);font-size:11px}.category .arrow{position:absolute;right:16px;top:17px;color:#7890a7;font-size:18px}
-.event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.event-card{min-width:0;padding:17px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(14,28,43,.98),rgba(8,16,26,.98));transition:.2s}
-.event-card:hover{border-color:rgba(72,224,176,.45);transform:translateY(-2px)}
-.event-top{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#91a6ba;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.7px}
-.live-tag{color:#fff;background:rgba(255,65,93,.9);border-radius:20px;padding:4px 8px;font-size:9px;letter-spacing:.4px}
-.matchup{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:20px 0 16px}
-.team{display:flex;align-items:center;gap:9px;min-width:0;font-size:13px;font-weight:850}.team:last-child{justify-content:flex-end;text-align:right}
-.team img{width:30px;height:30px;object-fit:contain;border-radius:50%;background:#17283a}.team span{overflow:hidden;text-overflow:ellipsis}
-.vs{color:#647a91;font-size:10px;font-weight:900}
-.event-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--line);color:#92a5b8;font-size:10px}
-.watch-link{color:var(--mint);font-weight:900}
-.empty{padding:24px;text-align:center;color:#92a5b8;border:1px dashed var(--line);border-radius:16px;font-size:13px}
-.status{color:#7f94a9;font-size:11px;font-weight:750}
-.community{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border:1px solid rgba(58,155,255,.35);border-radius:20px;background:linear-gradient(110deg,#075fbd,#1046a3);box-shadow:0 14px 34px rgba(0,76,190,.18)}
-.community-left{display:flex;align-items:center;gap:14px}.tg-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:rgba(255,255,255,.18);font-size:24px}.community strong{display:block;font-size:15px}.community small{display:block;color:#d0e5ff;font-size:11px;margin-top:3px}
-.community .pill-btn{background:#fff;color:#0755bb;border:0}
-footer{margin-top:54px;border-top:1px solid var(--line);background:rgba(4,9,15,.65)}
-.footer-inner{width:min(1400px,94%);margin:auto;padding:28px 0 36px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#8799ac;font-size:11px}
-.footer-brand{color:#f2f7fc;font-size:15px;font-weight:950}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a:hover{color:var(--mint)}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 15px;background:#132538;border:1px solid var(--line);border-radius:12px;color:#dce8f4;font-size:12px;z-index:100;display:none}
-@media(max-width:1000px){.category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero-orb{right:4%;width:190px;height:190px}.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.nav{height:62px;gap:10px}.brand{font-size:21px}.brand-mark{width:37px;height:37px}.navlinks{display:none}.menu-btn{display:block;margin-left:auto}.nav-actions .pill-btn:not(.primary){display:none}.hero{margin-top:16px;min-height:310px;padding:26px 22px;border-radius:21px}.hero-orb{right:-54px;top:76%;width:170px;height:170px;opacity:.55}h1{font-size:clamp(39px,11vw,58px);letter-spacing:-2.3px}.hero p{max-width:92%}.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.category{min-height:128px;padding:14px}.category-icon{width:38px;height:38px}.event-grid{grid-template-columns:1fr}.section{margin:28px 0}.community{padding:16px;align-items:flex-start}.community .pill-btn{padding:0 10px;min-height:36px}.community strong{font-size:12px}.community small{font-size:10px}.tg-icon{width:40px;height:40px;flex:0 0 40px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-</style>
+<link rel="stylesheet" href="css/main_19b6v48.css">
+<link rel="stylesheet" href="css/live-events_19b6v48.css">
+<link rel="stylesheet" href="css/willow-live_19b6v48.css">
+<link rel="stylesheet" href="css/fancode_19b6v48.css">
+<link rel="stylesheet" href="css/world-sports_19b6v48.css">
+<link rel="stylesheet" href="css/sony-liv_19b6v48.css">
+<link rel="stylesheet" href="css/criczone-home.css">
 </head>
 <body>
-<div class="topline"></div>
-<header><div class="nav">
-<a class="brand" href="index.html" aria-label="CRICZONE home"><img class="brand-logo" src="assets/criczone-logo.svg" alt="CRICZONE"></a>
-<nav class="navlinks" aria-label="Main navigation"><a href="#live">Live Matches</a><a href="#sports">Sports</a><a href="#community">Community</a></nav>
-<button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
-<div class="nav-actions"><a class="pill-btn" href="watch/cricket/index.html">Match Centre</a><a class="pill-btn primary" href="#live">Explore Live <span>↗</span></a></div>
-</div></header>
-<main>
-<section class="hero">
-<div class="hero-copy"><span class="eyebrow">CRICZONE SPORTS NETWORK</span><h1>Every Match.<br><span>One Destination.</span></h1><p>Your sports hub for cricket, football and global action. Explore match listings, fixtures and dedicated match centres in one clean experience.</p><div class="hero-actions"><a class="pill-btn primary" href="#live">Explore Matches <span>→</span></a><a class="pill-btn" href="#sports">Browse Sports</a></div><div class="hero-note">FAST • MOBILE FRIENDLY • NO FORCED REDIRECTS</div></div>
-<div class="hero-orb" aria-hidden="true"><strong>CZ</strong></div>
-</section>
-<section class="section" id="sports"><div class="section-head"><div><h2>Explore Sports</h2><p>Choose a competition hub to browse available events.</p></div></div>
-<div class="category-grid">
-<a class="category" href="watch/cricket/index.html"><span class="arrow">↗</span><span class="category-icon">🏏</span><h3>Cricket</h3><p>Live & upcoming matches</p></a>
-<a class="category" href="watch/football/index.html"><span class="arrow">↗</span><span class="category-icon">⚽</span><h3>Football</h3><p>Global football fixtures</p></a>
-<a class="category" href="watch/willow/index.html"><span class="arrow">↗</span><span class="category-icon">📺</span><h3>Willow</h3><p>Cricket event centre</p></a>
-<a class="category" href="watch/fancode/index.html"><span class="arrow">↗</span><span class="category-icon">🎟️</span><h3>FanCode</h3><p>Sports events & fixtures</p></a>
-<a class="category" href="watch/wwsports/index.html"><span class="arrow">↗</span><span class="category-icon">🌍</span><h3>World Sports</h3><p>More sports worldwide</p></a>
-<a class="category" href="watch/sliv/index.html"><span class="arrow">↗</span><span class="category-icon">✨</span><h3>Sony LIV Events</h3><p>Event listing centre</p></a>
-</div></section>
-<section class="section" id="live"><div class="section-head"><div><h2>Live & Upcoming</h2><p>Match cards refresh automatically when a feed is available.</p></div><span class="status" id="feedStatus">Connecting to sports feeds…</span></div><div class="event-grid" id="eventGrid"><div class="empty">Loading cricket and football fixtures…</div></div></section>
-<section class="section" id="community"><div class="community"><div class="community-left"><span class="tg-icon">➤</span><div><strong>Join the CRICZONE Community</strong><small>Match updates · Cricket news · Community announcements</small></div></div><a class="pill-btn" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM →</a></div></section>
+<div class="cz-topline"></div>
+<header class="cz-header">
+  <a class="cz-brand" href="./" aria-label="CRICZONE home"><img src="assets/criczone-logo.svg" alt="CRICZONE"></a>
+  <nav class="cz-nav" aria-label="Main navigation">
+    <a href="#top">Home</a><a href="#footballSection">Football</a><a href="#cricketSection">Cricket</a><a href="#willow-live">Willow</a><a href="#fancodeSection">FanCode</a><a href="#worldSportsSection">World Sports</a><a href="#sonyLivSection">Sony LIV</a>
+  </nav>
+  <div class="cz-actions"><a class="cz-btn cz-btn-primary" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Telegram ↗</a><button class="hamburger" id="hamburger" type="button" aria-label="Open navigation" aria-expanded="false"><i></i><i></i><i></i></button></div>
+</header>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" inert>
+  <div class="cz-drawer-head"><strong>CRICZONE</strong><button id="dclose" type="button" aria-label="Close menu">×</button></div>
+  <label class="cz-search-wrap"><span>⌕</span><input id="drSearch" type="search" placeholder="Search sports..." autocomplete="off"></label>
+  <nav id="drNav" aria-label="Mobile navigation"></nav>
+</aside>
+<main id="top">
+  <section class="cz-intro">
+    <div class="cz-intro-copy"><span class="cz-eyebrow">CRICZONE SPORTS NETWORK</span><h1>Every Match.<br><em>One Destination.</em></h1><p>Cricket, football and global sports events — all match listings in one clean, mobile-friendly hub.</p><div class="cz-hero-actions"><a class="cz-btn cz-btn-primary" href="#sports">Explore live events ↓</a><a class="cz-btn" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Join community</a></div><small>FAST • MOBILE FRIENDLY • DIRECT MATCH CENTRES</small></div>
+    <div class="cz-orb" aria-hidden="true">CZ</div>
+  </section>
+
+  <section class="cz-featured" aria-label="Featured matches">
+    <div class="cz-featured-head"><div><span class="cz-eyebrow">FEATURED MATCHES</span><h2>Today’s Spotlight</h2></div><span class="cz-live-note">● AUTO REFRESH</span></div>
+    <div class="poster-wrapper" id="posterWrapper">
+      <div id="heroSlides" aria-live="polite"></div>
+      <button class="cz-slide-arrow left" id="arrowLeft" type="button" aria-label="Previous featured match">‹</button>
+      <button class="cz-slide-arrow right" id="arrowRight" type="button" aria-label="Next featured match">›</button>
+    </div>
+    <div id="sliderProgress" class="cz-slider-progress" aria-label="Featured match slides"></div>
+  </section>
+
+  <div id="sports">
+    <section class="live-events-section" id="footballSection">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">GLOBAL FOOTBALL</span><h2 class="section-hd-title">Football <em>24×7</em></h2></div><span class="section-hd-status" id="footballStatus">Loading fixtures…</span></div>
+      <div class="live-events-carousel-wrapper"><button class="carousel-arrow left" id="footballPrevious" type="button" aria-label="Scroll football events left">‹</button><div class="live-events-track" id="footballTrack" tabindex="0" aria-label="Football events"></div><button class="carousel-arrow right" id="footballNext" type="button" aria-label="Scroll football events right">›</button></div>
+    </section>
+    <section class="live-events-section" id="cricketSection">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">INDIA & WORLD CRICKET</span><h2 class="section-hd-title">Cricket <em>24×7</em></h2></div><span class="section-hd-status" id="cricketStatus">Loading fixtures…</span></div>
+      <div class="live-events-carousel-wrapper"><button class="carousel-arrow left" id="cricketPrevious" type="button" aria-label="Scroll cricket events left">‹</button><div class="live-events-track" id="cricketTrack" tabindex="0" aria-label="Cricket events"></div><button class="carousel-arrow right" id="cricketNext" type="button" aria-label="Scroll cricket events right">›</button></div>
+    </section>
+    <section class="willow-live-section" id="willow-live">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">CRICKET CHANNEL EVENTS</span><h2 class="section-hd-title">Willow <em>Live</em></h2></div><span class="section-hd-status" id="willowStatus">Loading events…</span></div>
+      <div class="willow-live-carousel-wrapper"><button class="carousel-arrow left" id="willowLiveArrowLeft" type="button" aria-label="Scroll Willow events left">‹</button><div class="willow-live-track" id="willowLiveTrack" tabindex="0" aria-label="Willow events"></div><button class="carousel-arrow right" id="willowLiveArrowRight" type="button" aria-label="Scroll Willow events right">›</button></div>
+    </section>
+    <section class="fancode-section" id="fancodeSection">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">MULTI-SPORT EVENTS</span><h2 class="section-hd-title">FanCode <em>Events</em></h2></div><span class="section-hd-status" id="fancodeStatus">Loading events…</span></div>
+      <div class="fancode-carousel-wrapper"><button class="fancode-arrow left" id="fancodeArrowLeft" type="button" aria-label="Scroll FanCode events left">‹</button><div class="fancode-track" id="fancodeTrack" tabindex="0" aria-label="FanCode events"></div><button class="fancode-arrow right" id="fancodeArrowRight" type="button" aria-label="Scroll FanCode events right">›</button></div>
+    </section>
+    <section class="world-sports-section" id="worldSportsSection">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">BEYOND THE BOUNDARIES</span><h2 class="section-hd-title">World <em>Sports</em></h2></div><span class="section-hd-status" id="worldSportsStatus">Loading events…</span></div>
+      <div class="world-sports-carousel-wrapper"><button class="world-sports-arrow left" id="worldSportsArrowLeft" type="button" aria-label="Scroll world sports left">‹</button><div class="world-sports-track" id="worldSportsTrack" tabindex="0" aria-label="World sports events"></div><button class="world-sports-arrow right" id="worldSportsArrowRight" type="button" aria-label="Scroll world sports right">›</button></div>
+    </section>
+    <section class="sony-liv-section" id="sonyLivSection">
+      <div class="section-hd"><div class="section-hd-copy"><span class="section-hd-kicker">EXCLUSIVE EVENT LISTINGS</span><h2 class="section-hd-title">Sony LIV <em>Events</em></h2></div><span class="section-hd-status" id="sonyLivStatus">Loading events…</span></div>
+      <div class="sony-liv-carousel-wrapper"><button class="sony-liv-arrow left" id="sonyLivArrowLeft" type="button" aria-label="Scroll Sony LIV events left">‹</button><div class="sony-liv-track" id="sonyLivTrack" tabindex="0" aria-label="Sony LIV events"></div><button class="sony-liv-arrow right" id="sonyLivArrowRight" type="button" aria-label="Scroll Sony LIV events right">›</button></div>
+    </section>
+  </div>
+
+  <section class="cz-community"><div><span class="cz-eyebrow">STAY CONNECTED</span><h2>Join the CRICZONE Community</h2><p>Match updates, event announcements and sports content.</p></div><a class="cz-btn cz-btn-primary" href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM ↗</a></section>
 </main>
-<footer><div class="footer-inner"><div><div class="footer-brand">CRICZONE</div><div>Every Match. One Destination.</div></div><nav class="footer-links"><a href="terms/index.html">Terms</a><a href="privacy/index.html">Privacy</a><a href="disclaimer/index.html">Disclaimer</a><a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Telegram</a></nav><div>© <span id="year"></span> CRICZONE. All rights reserved.</div></div></footer>
-<div class="toast" id="toast" role="status"></div>
-<script src="script/criczone-home.js" defer></script>
-</body></html>
+<footer class="cz-footer"><div><strong>CRICZONE</strong><span>Every Match. One Destination.</span></div><nav><a href="terms/index.html">Terms</a><a href="privacy/index.html">Privacy</a><a href="disclaimer/index.html">Disclaimer</a><a href="Feedback/index.html">Feedback</a><a href="https://t.me/criczonelive" target="_blank" rel="noopener noreferrer">Telegram</a></nav><small>© <span id="year"></span> CRICZONE</small></footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script src="script/boot.js"></script>
+</body>
+</html>
