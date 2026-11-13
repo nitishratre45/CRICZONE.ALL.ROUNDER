@@ -1,0 +1,17 @@
+(function(){
+'use strict';
+var feeds=[
+ {name:'Cricket',url:'https://sonujson-v7.pages.dev/Data/events/cricket.json',path:'watch/cricket/index.html',kind:'cricket'},
+ {name:'Football',url:'https://sonujson-v7.pages.dev/Data/events/football.json',path:'watch/football/index.html',kind:'football'}
+];
+var grid=document.getElementById('eventGrid'),status=document.getElementById('feedStatus');
+function text(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function list(d){if(Array.isArray(d))return d;if(!d||typeof d!=='object')return[];return d.events||d.matches||(d.data&&(d.data.events||d.data.matches))||d.fixtures||[]}
+function norm(x){var e=x.event||x.fixture||x,home=e.teamA||e.homeTeam||e.home||e.team1||x.teamA||x.homeTeam||x.team1||'Team A',away=e.teamB||e.awayTeam||e.away||e.team2||x.teamB||x.awayTeam||x.team2||'Team B';if(typeof home==='object')home=home.name||home.shortName||'Team A';if(typeof away==='object')away=away.name||away.shortName||'Team B';var id=x.id||x.matchId||x.match_id||e.id||'',comp=e.league||e.competition||e.tournament||e.type||'SPORTS EVENT',state=String(x.status||e.status||'').toLowerCase(),start=e.startTimeIST||e.startTime||e.start_time||x.startTime||x.start_time||'';var live=/live|progress|in.?play/.test(state);return{home:home,away:away,id:id,comp:comp,live:live,start:start}}
+function card(m,feed){var path=feed.path+(m.id?'?id='+encodeURIComponent(m.id):'');return '<a class="event-card" href="'+path+'"><div class="event-top"><span>'+text(feed.name)+' · '+text(m.comp)+'</span>'+(m.live?'<span class="live-tag">● LIVE</span>':'')+'</div><div class="matchup"><div class="team"><span>'+text(m.home)+'</span></div><span class="vs">VS</span><div class="team"><span>'+text(m.away)+'</span></div></div><div class="event-foot"><span>'+text(m.start|| (m.live?'Live now':'View fixture'))+'</span><span class="watch-link">OPEN CENTRE →</span></div></a>'}
+async function load(feed){try{var res=await fetch(feed.url,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);var rows=list(await res.json()).slice(0,8);return rows.map(norm).filter(function(x){return x.home&&x.away}).map(function(x){return{m:x,f:feed}})}catch(e){return[]}}
+async function init(){var result=await Promise.all(feeds.map(load)),all=result.flat();all.sort(function(a,b){return Number(b.m.live)-Number(a.m.live)});if(all.length){grid.innerHTML=all.slice(0,9).map(function(x){return card(x.m,x.f)}).join('');status.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}else{grid.innerHTML='<div class="empty" style="grid-column:1/-1">Live feeds are temporarily unavailable. Open a sport hub to browse its match centre.</div>';status.textContent='Feeds temporarily unavailable'}}
+document.getElementById('year').textContent=new Date().getFullYear();
+document.getElementById('menuBtn').addEventListener('click',function(){var links=document.querySelector('.navlinks');var open=links.style.display==='flex';links.style.display=open?'none':'flex';if(!open){links.style.position='absolute';links.style.top='62px';links.style.left='3%';links.style.right='3%';links.style.padding='16px';links.style.border='1px solid var(--line)';links.style.borderRadius='14px';links.style.background='#0b1522';links.style.flexDirection='column';links.style.alignItems='flex-start';links.style.zIndex='80'}});
+init();setInterval(init,180000);
+})();
