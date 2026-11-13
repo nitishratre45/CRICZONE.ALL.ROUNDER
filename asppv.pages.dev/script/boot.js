@@ -11,9 +11,7 @@
     "fancode.js",
     "world-sports.js",
     "sony-liv.js",
-    "platform-status.js",
-    "scroll-anim.js",
-    "landing-news.js"
+    "scroll-anim.js"
   ];
 
   var STARTED = false;
