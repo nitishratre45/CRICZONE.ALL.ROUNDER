@@ -1221,11 +1221,11 @@
 
         // Category link
         document.getElementById('categoryLink').textContent = match.league || 'Sports';
-        document.getElementById('categoryLink').href = 'https://matchdekho.in/league/' + (match.league ? match.league.toLowerCase().replace(/\s+/g, '-') : 'sports');
+        document.getElementById('categoryLink').href = '../../index.html#sports';
 
         // League link
         document.getElementById('leagueLink').textContent = match.sport || 'Sports';
-        document.getElementById('leagueLink').href = 'https://matchdekho.in/sport/' + (match.sport || 'sports');
+        document.getElementById('leagueLink').href = '../../index.html#sports';
 
         // ====== RENDER SERVER BUTTONS ======
         const serverGrid = document.getElementById('serverGrid');
