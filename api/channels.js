@@ -5,11 +5,15 @@
 
 const ALLOWED_HOSTS = [
     "criczoneall.vercel.app",
+    "criczonelive.vercel.app",
+    "criczone-black.vercel.app",
     "criczone.pages.dev"
 ];
 
 const ALLOWED_ORIGINS = [
     "https://criczoneall.vercel.app",
+    "https://criczonelive.vercel.app",
+    "https://criczone-black.vercel.app",
     "https://criczone.pages.dev"
 ];
 
