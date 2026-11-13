@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="criczone-premium.css?v=18">
+    <link rel="stylesheet" href="criczone-premium.css?v=19">
     <!-- Shaka Player UI CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.9/dist/controls.css">
 
@@ -1243,11 +1243,9 @@
         (function() {
             "use strict";
 
-            // Use the same published Willow/Prime feeds as the working Willow page.
-            // The old relative /data/willow.json paths do not exist in this repository.
+            // Use the verified live Willow feed. The v4 Willow and Prime
+            // endpoints currently return 404, so do not request them.
             const API_ENDPOINTS = [
-                "https://sonujson-v4.pages.dev/Data/willow.json",
-                "https://sonujson-v4.pages.dev/Data/prime.json",
                 "https://sonujson-v5.pages.dev/Data/willow.json"
             ];
 
