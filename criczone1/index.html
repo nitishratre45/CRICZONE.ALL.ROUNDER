@@ -4852,7 +4852,8 @@
           liveUnsubscribe = onValue(
             ref(db, "liveViewers/criczone1"),
             (snapshot) => {
-              const active = snapshot.numChildren();
+              const viewerData = snapshot && typeof snapshot.val === "function" ? snapshot.val() : null;
+              const active = viewerData && typeof viewerData === "object" ? Object.keys(viewerData).length : 0;
               displayMany(liveEls, BASE_COUNT + active);
             },
             (error) => console.warn("CRICZONE1 live watching listener:", error),
