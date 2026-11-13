@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#111c2b"/><stop offset="1" stop-color="#050a12"/></linearGradient><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe36a"/><stop offset="1" stop-color="#ff9b22"/></linearGradient></defs>
+<rect width="192" height="192" rx="38" fill="url(#g)"/>
+<circle cx="96" cy="74.88" r="44.160000000000004" fill="#142d47" stroke="url(#a)" stroke-width="3"/>
+<path d="M 61.44 92.16 Q 96 44.160000000000004 130.56 92.16 L 130.56 119.03999999999999 Q 96 138.24 61.44 119.03999999999999 Z" fill="#e8eef5"/>
+<path d="M 74.88 80.64 Q 96 57.599999999999994 117.12 80.64 L 113.28 105.60000000000001 L 78.72 105.60000000000001 Z" fill="#0b6bba"/>
+<path d="M 48 144 H 144" stroke="url(#a)" stroke-width="3" stroke-linecap="round"/>
+<text x="50%" y="87%" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="19" font-weight="800">CZ</text>
+</svg>
