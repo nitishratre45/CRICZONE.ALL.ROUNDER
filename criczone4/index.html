@@ -5021,7 +5021,7 @@
                     // Keep original channel-key routing, but omit DRM-protected DASH/key entries.
                     if(ch.type==='dash'||/\.mpd(?:[?#]|$)/i.test(low)||/(?:[?&](?:key|kid|license|drm)=)/i.test(low)||ch.key||ch.kid||ch.clearKeys) return;
                     if(ch.type==='video'&&!/\.m3u8(?:[?#]|$)/i.test(low)) return;
-                    if(ch.type==='iframe'&&/^shaka_player\.html/i.test(url)&&!/[?&]chid=/i.test(url)) return;
+                    if(ch.type==='iframe'&&/^shaka_player\.html/i.test(url)) return;
                     if(ch.type!=='video'&&ch.type!=='iframe') return;
                     var sig=String(ch.name).toLowerCase()+'|'+url.toLowerCase(); if(seen.has(sig)) return; seen.add(sig);
                     list.push({key:key,name:ch.name,type:ch.type,url:url});
