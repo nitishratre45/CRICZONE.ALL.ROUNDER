@@ -1039,6 +1039,36 @@
 .shaka-controls-container .shaka-controls-button-panel button{min-width:32px!important}
 @media(max-width:600px){.shaka-overflow-menu,.shaka-settings-menu{width:min(196px,calc(100vw - 18px))!important;max-height:42vh!important}.shaka-overflow-menu button,.shaka-settings-menu button{min-height:30px!important;padding:6px 8px!important;font-size:10px!important}.shaka-overflow-menu button span,.shaka-settings-menu button span{font-size:10px!important}}
 </style>
+<style id="cz-shaka-phone-quality-tune">
+/* Smaller quality/settings controls on phones only */
+@media (max-width:600px){
+ .shaka-overflow-menu,.shaka-settings-menu{
+  width: min(168px,calc(100vw - 16px)) !important;
+  max-width:calc(100vw - 16px)!important;
+  max-height:36vh!important;
+  border-radius:8px!important;
+ }
+ .shaka-overflow-menu button,.shaka-settings-menu button{
+  min-height:26px!important;
+  padding:4px 7px!important;
+  font-size:9px!important;
+  line-height:1.15!important;
+ }
+ .shaka-overflow-menu button span,.shaka-settings-menu button span{
+  font-size:9px!important;
+ }
+ .shaka-overflow-menu .shaka-current-selection-span,
+ .shaka-settings-menu .shaka-current-selection-span{
+  max-width:64px!important;font-size:8px!important;
+ }
+ .shaka-controls-container .shaka-controls-button-panel button{
+  min-width:27px!important;min-height:27px!important;
+ }
+ .shaka-controls-container .shaka-controls-button-panel button svg{
+  width:18px!important;height:18px!important;
+ }
+}
+</style>
 <style id="cz-match-details-styles">
 .cz-match-details-page{max-width:920px;margin:24px auto 60px;padding:0 14px}.cz-match-details-page[hidden]{display:none!important}
 .cz-detail-back{border:1px solid #ffffff24;background:#151b23;color:#f5f7fa;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer;margin-bottom:18px}
