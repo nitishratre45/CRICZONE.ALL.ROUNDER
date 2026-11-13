@@ -5013,23 +5013,41 @@
                    ;
 
             function buildChannelHome() {
-                var grid=document.getElementById('home-grid'); if(!grid) return;
-                var seen=new Set(), list=[];
-                Object.keys(channels).forEach(function(key){
-                    var ch=channels[key]; if(!ch||!ch.name||!ch.url) return;
-                    var url=String(ch.url), low=url.toLowerCase();
-                    // Keep original channel-key routing, but omit DRM-protected DASH/key entries.
-                    if(ch.type==='dash'||/\.mpd(?:[?#]|$)/i.test(low)||/(?:[?&](?:key|kid|license|drm)=)/i.test(low)||ch.key||ch.kid||ch.clearKeys) return;
-                    if(ch.type==='video'&&!/\.m3u8(?:[?#]|$)/i.test(low)) return;
-                    if(ch.type==='iframe'&&/^shaka_player\.html/i.test(url)) return;
-                    if(ch.type!=='video'&&ch.type!=='iframe') return;
-                    var sig=String(ch.name).toLowerCase()+'|'+url.toLowerCase(); if(seen.has(sig)) return; seen.add(sig);
-                    list.push({key:key,name:ch.name,type:ch.type,url:url});
+                var grid = document.getElementById('home-grid');
+                if (!grid) return;
+                var seen = new Set(), list = [];
+                Object.keys(channels).forEach(function(key) {
+                    var ch = channels[key];
+                    if (!ch || !ch.name || !ch.url) return;
+                    var url = String(ch.url), low = url.toLowerCase();
+                    // Preserve the original resolver for regular HLS and embed routes.
+                    // Exclude protected DASH/key-based feeds only.
+                    if (ch.type === 'dash' || /\\.mpd(?:[?#]|$)/i.test(low) ||
+                        /(?:[?&](?:key|kid|license|drm)=)/i.test(low) ||
+                        /(?:^|[&?])(?:mpd|kid|key)=/i.test(low)) return;
+                    if (ch.type !== 'video' && ch.type !== 'iframe') return;
+                    var sig = String(ch.name).toLowerCase() + '|' + url.toLowerCase();
+                    if (seen.has(sig)) return;
+                    seen.add(sig);
+                    list.push({key:key, name:ch.name, type:ch.type, url:url});
                 });
-                list.sort(function(a,b){return a.name.localeCompare(b.name);});
-                grid.innerHTML=list.map(function(ch){var initials=ch.name.split(/\s+/).slice(0,2).map(function(x){return x.charAt(0);}).join('').toUpperCase();return '<a class="home-card" href="?stream='+encodeURIComponent(ch.key)+'"><span class="home-logo">'+initials+'</span><span><b>'+String(ch.name).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];})+'</b><small>Channel · '+ch.key+'</small></span><span class="home-play">▶</span></a>';}).join('');
-                document.getElementById('home-count').textContent=list.length+' channels';
-                var search=document.getElementById('home-search'); search.addEventListener('input',function(){var q=search.value.toLowerCase(),n=0;grid.querySelectorAll('.home-card').forEach(function(card){var ok=card.textContent.toLowerCase().indexOf(q)!==-1;card.style.display=ok?'flex':'none';if(ok)n++;});document.getElementById('home-empty').style.display=n?'none':'block';});
+                list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+                grid.innerHTML = list.map(function(ch) {
+                    var initials = ch.name.split(/\\s+/).slice(0,2).map(function(x){return x.charAt(0);}).join('').toUpperCase();
+                    var safeName = String(ch.name).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+                    return '<a class="home-card" href="?stream='+encodeURIComponent(ch.key)+'"><span class="home-logo">'+initials+'</span><span><b>'+safeName+'</b><small>Channel · '+ch.key+'</small></span><span class="home-play">▶</span></a>';
+                }).join('');
+                document.getElementById('home-count').textContent = list.length + ' channels';
+                var search = document.getElementById('home-search');
+                search.addEventListener('input', function() {
+                    var q = search.value.toLowerCase(), n = 0;
+                    grid.querySelectorAll('.home-card').forEach(function(card) {
+                        var ok = card.textContent.toLowerCase().indexOf(q) !== -1;
+                        card.style.display = ok ? 'flex' : 'none';
+                        if (ok) n++;
+                    });
+                    document.getElementById('home-empty').style.display = n ? 'none' : 'block';
+                });
             }
             buildChannelHome();
                 return c.id === 'ten1-hd' || c.id === 'ten2-hd';
