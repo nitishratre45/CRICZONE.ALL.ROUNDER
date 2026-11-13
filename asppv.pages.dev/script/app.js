@@ -144,6 +144,18 @@
 
   function renderHero() {
     if (!slidesRoot || !progressRoot) return;
+    if (!matches.length) {
+      clearTimeout(settleTimer);
+      if (autoplayTimer) window.clearTimeout(autoplayTimer);
+      slideNodes = [];
+      slidesRoot.innerHTML = '<div class="cz-hero-empty"><strong>No featured match available right now</strong><span>Live events will appear here when the sports feed updates.</span></div>';
+      progressRoot.innerHTML = "";
+      progressRoot.hidden = true;
+      if (arrowLeft) arrowLeft.hidden = true;
+      if (arrowRight) arrowRight.hidden = true;
+      posterWrapper.classList.add("hero-single");
+      return;
+    }
     clearTimeout(settleTimer);
     settling = false;
     const visualMatches = matches.length > 1 ? [matches[matches.length - 1]].concat(matches, [matches[0]]) : matches;
