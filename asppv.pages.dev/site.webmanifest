@@ -5,19 +5,9 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "./assets/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "./assets/favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "./assets/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
+      "src": "./assets/criczone-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ],
   "theme_color": "#05070c",
