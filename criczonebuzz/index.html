@@ -1123,6 +1123,24 @@
  #player-modal .shaka-settings-menu .shaka-current-selection-span{font-size:7px!important;max-width:48px!important}
 }
 </style>
+<style id="cz-shaka-quality-scroll">
+@media(max-width:600px){
+ #player-modal .shaka-overflow-menu,
+ #player-modal .shaka-settings-menu{
+  max-height:112px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:rgba(196,255,39,.9) rgba(255,255,255,.12)!important;
+ }
+ #player-modal .shaka-overflow-menu::-webkit-scrollbar,
+ #player-modal .shaka-settings-menu::-webkit-scrollbar{width:4px!important}
+ #player-modal .shaka-overflow-menu::-webkit-scrollbar-thumb,
+ #player-modal .shaka-settings-menu::-webkit-scrollbar-thumb{background:#c4ff27!important;border-radius:8px!important}
+}
+</style>
 </head>
 <body>
 
