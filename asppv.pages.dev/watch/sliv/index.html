@@ -373,7 +373,7 @@
                     <div class="card-poster">
                         <img src="${imageSrc}" alt="${title}" loading="lazy">
                         ${isLive ? '<div class="live-tag">LIVE</div>' : '<div class="upcoming-tag">UPCOMING</div>'}
-                        ${isLive && streamUrl ? `<button class="copy-btn" onclick="copyUrl('${streamUrl}')"><i class="fa-regular fa-copy"></i> Copy Link</button>` : ''}
+                        ${isLive && streamUrl ? `<button type="button" class="copy-btn" data-action="copy" data-stream-url="${encodeURIComponent(streamUrl)}"><i class="fa-regular fa-copy"></i> Copy Link</button>` : ''}
                     </div>
                 `;
 
@@ -383,13 +383,13 @@
                         <div class="action-area">
                             <div class="action-title">Open With External Player</div>
                             <div class="player-grid">
-                                <button class="player-btn" onclick="openInPlayer('org.videolan.vlc', '${streamUrl}')">
+                                <button type="button" class="player-btn" data-action="player" data-app-id="org.videolan.vlc" data-stream-url="${encodeURIComponent(streamUrl)}">
                                     <i class="fa-solid fa-play"></i> VLC
                                 </button>
-                                <button class="player-btn" onclick="openInPlayer('com.genuine.leone', '${streamUrl}')">
+                                <button type="button" class="player-btn" data-action="player" data-app-id="com.genuine.leone" data-stream-url="${encodeURIComponent(streamUrl)}">
                                     <i class="fa-solid fa-video"></i> NS Player
                                 </button>
-                                <button class="player-btn" onclick="openInPlayer('com.ottnavigator.iptvnavigator', '${streamUrl}')">
+                                <button type="button" class="player-btn" data-action="player" data-app-id="com.ottnavigator.iptvnavigator" data-stream-url="${encodeURIComponent(streamUrl)}">
                                     <i class="fa-solid fa-tv"></i> OTT Nav
                                 </button>
                             </div>
@@ -426,6 +426,26 @@
                 grid.appendChild(card);
             });
         }
+
+        // Delegated click handling keeps dynamically-rendered card buttons reliable on touch devices.
+        grid.addEventListener('click', function(event) {
+            const button = event.target.closest('button[data-action]');
+            if (!button || !grid.contains(button)) return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            const streamUrl = decodeURIComponent(button.getAttribute('data-stream-url') || '');
+            if (!streamUrl) {
+                showToast('Stream link is not available.');
+                return;
+            }
+
+            if (button.dataset.action === 'copy') {
+                copyUrl(streamUrl);
+            } else if (button.dataset.action === 'player') {
+                openInPlayer(button.getAttribute('data-app-id') || '', streamUrl);
+            }
+        });
 
         window.filterData = function(type, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
