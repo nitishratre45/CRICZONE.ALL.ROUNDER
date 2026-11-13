@@ -49,16 +49,23 @@ module.exports = async function handler(req, res) {
   const target = parseTarget(raw);
   if (!target) return res.status(400).json({error:"Invalid or unsupported upstream URL"});
   try {
-    const headers = { "User-Agent": "CRICZONE-Authorized-Proxy/1.0", "Accept": "*/*" };
+    const headers = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+      "Accept": "*/*",
+      "Referer": target.origin + "/",
+      "Origin": target.origin
+    };
     if (req.headers.range) headers.Range = req.headers.range;
     const upstream = await fetch(target.href, {
       method: req.method,
       headers,
-      redirect: "manual",
+      redirect: "follow",
       signal: AbortSignal.timeout(12000)
     });
-    if (upstream.status >= 300 && upstream.status < 400) {
-      return res.status(502).json({error:"Upstream redirects are not followed"});
+    const finalUrl = new URL(upstream.url || target.href);
+    if (finalUrl.protocol !== "https:" || finalUrl.hostname.toLowerCase() !== UPSTREAM_HOST ||
+        finalUrl.username || finalUrl.password || finalUrl.port) {
+      return res.status(502).json({error:"Upstream redirected outside the authorized host"});
     }
     if (!upstream.ok) return res.status(upstream.status).json({error:"Upstream request failed"});
     const type = upstream.headers.get("content-type") || "application/octet-stream";
@@ -69,7 +76,7 @@ module.exports = async function handler(req, res) {
       if (/#EXT-X-(?:KEY|SESSION-KEY)\s*:/i.test(body)) {
         return res.status(415).json({error:"Encrypted/DRM playlists are not supported"});
       }
-      const base = target;
+      const base = finalUrl;
       const rewrite = (value) => {
         const trimmed = value.trim();
         if (!trimmed || trimmed.startsWith("#")) return value;
@@ -94,7 +101,7 @@ module.exports = async function handler(req, res) {
       res.setHeader("X-Content-Type-Options", "nosniff");
       return res.status(200).send(body);
     }
-    if (!SEGMENT_EXT.test(target.pathname)) return res.status(415).json({error:"Unsupported media resource"});
+    if (!SEGMENT_EXT.test(finalUrl.pathname)) return res.status(415).json({error:"Unsupported media resource"});
     res.setHeader("Content-Type", type);
     res.setHeader("Accept-Ranges", upstream.headers.get("accept-ranges") || "bytes");
     const length = upstream.headers.get("content-length");
