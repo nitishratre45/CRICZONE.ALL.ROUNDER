@@ -973,7 +973,7 @@
                 box-shadow: 0 8px 25px rgba(0,0,0,0.6);
             }
 
-            #telegram-overlay, #float-tg, .header-actions, .discord-tab-banner, #stake-promo-section, .player-ad-overlay { display:none !important; }
+            #telegram-overlay, #float-tg, .header-actions, .discord-tab-banner, #stake-promo-section, .player-ad-overlay, .btn-signal { display:none !important; }
             #main-toast.show {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
@@ -1124,7 +1124,7 @@
             <div id="error-view" class="hidden">
                 <div class="err-icon">📡</div>
                 <h2>Stream Offline</h2>
-                <p>Please check the channel link or join our social channels for updates and fresh backup streams.</p>
+                <p>This channel is currently unavailable. Please choose another channel from Channel Home.</p>
                 <a href="https://t.me/aryanstreams" target="_blank" class="btn-signal">Join Telegram</a>
             </div>
         </main>
@@ -5765,8 +5765,13 @@
             ;
 
             function renderChannel(ch) {
-                if (!ch)
+                if (!ch) return;
+                var streamUrl = String(ch.url || '').toLowerCase();
+                if (ch.type === 'dash' || /\\.mpd(?:[?#]|$)/i.test(streamUrl) || /[?&](?:key|kid|license|drm)=/i.test(streamUrl) || ch.key || ch.kid || ch.clearKeys) {
+                    document.getElementById('stream-view').classList.add('hidden');
+                    document.getElementById('error-view').classList.remove('hidden');
                     return;
+                }
                 var home=document.getElementById('channel-home'); if(home) home.classList.add('hidden');
                 activeChannel = ch;
                 document.getElementById('stream-view').classList.remove('hidden');
