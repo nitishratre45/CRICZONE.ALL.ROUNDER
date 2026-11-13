@@ -11,6 +11,7 @@
     "fancode.js",
     "world-sports.js",
     "sony-liv.js",
+    "platform-status.js",
     "scroll-anim.js"
   ];
 
