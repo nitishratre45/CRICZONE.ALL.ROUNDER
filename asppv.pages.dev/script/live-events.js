@@ -7,8 +7,8 @@
   var requestTimeout = 12000;
   var cachePrefix = 'cnptv-home-events-v3:';
   var sections = [
-    { key: 'football', api: apis.football || '', trackId: 'footballTrack', statusId: 'footballStatus', previousId: 'footballPrevious', nextId: 'footballNext', label: 'Football' },
-    { key: 'cricket',  api: apis.cricket  || '', trackId: 'cricketTrack',  statusId: 'cricketStatus',  previousId: 'cricketPrevious',  nextId: 'cricketNext',  label: 'Cricket'  }
+    { key: 'football', api: apis.football || '', fallbackApi: apis.footballFallback || '', trackId: 'footballTrack', statusId: 'footballStatus', previousId: 'footballPrevious', nextId: 'footballNext', label: 'Football' },
+    { key: 'cricket',  api: apis.cricket  || '', fallbackApi: apis.cricketFallback || '', trackId: 'cricketTrack',  statusId: 'cricketStatus',  previousId: 'cricketPrevious',  nextId: 'cricketNext',  label: 'Cricket'  }
   ];
 
   function escapeHtml(value) {
@@ -367,7 +367,11 @@
         if (statusNode && !hasCachedSchedule) statusNode.textContent = 'Schedule Unavailable';
         return;
       }
-      fetchJsonWithTimeout(sectionInfo.api).then(function (payload) {
+      fetchJsonWithTimeout(sectionInfo.api).catch(function (primaryError) {
+        if (!sectionInfo.fallbackApi || sectionInfo.fallbackApi === sectionInfo.api) throw primaryError;
+        if (window.console && console.warn) console.warn('[live-events] ' + sectionInfo.key + ' primary feed failed; trying fallback.', primaryError);
+        return fetchJsonWithTimeout(sectionInfo.fallbackApi);
+      }).then(function (payload) {
         var events = prepareEvents(payload);
         hasCachedSchedule = renderEvents(track, statusNode, sectionInfo, events);
         if (events.length) writeCachedEvents(sectionInfo.key, events);
