@@ -1227,6 +1227,7 @@ document.addEventListener("DOMContentLoaded", main);
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getDatabase, ref, onValue, onDisconnect, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
 const firebaseConfig={
  apiKey:"AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
  authDomain:"criczone-4daa2.firebaseapp.com",
@@ -1237,35 +1238,70 @@ const firebaseConfig={
  appId:"1:113293633217:web:a96d9b3af3045bcd99d640",
  measurementId:"G-Q9RJ0VSSPP"
 };
+
 const appName="criczone-audience";
 const app=getApps().find(x=>x.name===appName)||initializeApp(firebaseConfig,appName);
-const db=getDatabase(app), countEl=document.getElementById("watchingCount"), totalEl=document.getElementById("totalVisits");
-const BASE=330; let activeRef=null,countOff=null,totalOff=null,activeChannel=null;
-function display(el,n){if(el)el.textContent=Math.max(BASE,Number(n)||BASE).toLocaleString("en-IN")}
-async function startTotal(){
- const r=ref(db,"siteStats/totalVisits");
- try{await runTransaction(r,v=>v===null?BASE+1:(Number(v)||BASE)+1)}catch(e){console.warn("Total visits write failed",e)}
- totalOff=onValue(r,s=>display(totalEl,s.val()),e=>console.warn("Total visits read failed",e));
+const db=getDatabase(app);
+const countEl=document.getElementById("watchingCount");
+const totalEl=document.getElementById("totalVisits");
+let activeRef=null,countOff=null,activeChannel=null;
+
+function display(el,n){
+ if(el) el.textContent=Math.max(0,Number(n)||0).toLocaleString("en-IN");
 }
+
+// Count one visit when this page is opened. Keep the existing totalVisits
+// value intact; no reset and no continuous totalVisits listener.
+async function countVisit(){
+ const totalRef=ref(db,"siteStats/totalVisits");
+ try{
+  const result=await runTransaction(totalRef,v=>(Number(v)||0)+1);
+  if(result.committed) display(totalEl,result.snapshot.val());
+ }catch(e){
+  console.warn("Total visit update failed",e);
+ }
+}
+
 async function stopRealtimeWatching(){
- if(countOff){countOff();countOff=null}
- if(activeRef){const old=activeRef;activeRef=null;await remove(old).catch(()=>{})}
- activeChannel=null;display(countEl,BASE);
+ if(countOff){countOff();countOff=null;}
+ if(activeRef){
+  const old=activeRef;
+  activeRef=null;
+  await remove(old).catch(()=>{});
+ }
+ activeChannel=null;
+ display(countEl,0);
 }
+
 async function startRealtimeWatching(id){
  const safe=String(id||"all").replace(/[^a-zA-Z0-9_-]/g,"_");
- if(activeChannel===safe&&activeRef)return;
- await stopRealtimeWatching();activeChannel=safe;
+ if(activeChannel===safe&&activeRef) return;
+ await stopRealtimeWatching();
+ activeChannel=safe;
  const uid=globalThis.crypto?.randomUUID?.()||(Date.now()+"_"+Math.random().toString(36).slice(2));
- const channel=ref(db,"liveViewers/"+safe);activeRef=ref(db,"liveViewers/"+safe+"/"+uid);
+ const channel=ref(db,"liveViewers/"+safe);
+ activeRef=ref(db,"liveViewers/"+safe+"/"+uid);
  try{
-  await onDisconnect(activeRef).remove();await set(activeRef,{joinedAt:Date.now(),online:true});
-  countOff=onValue(channel,s=>display(countEl,BASE+(s.size??s.numChildren())),e=>console.warn("Viewer count read failed",e));
- }catch(e){console.error("Live watching Firebase error",e);display(countEl,BASE)}
+  await onDisconnect(activeRef).remove();
+  await set(activeRef,{joinedAt:Date.now(),online:true});
+  countOff=onValue(channel,s=>display(countEl,s.numChildren()),e=>{
+   console.warn("Live watching count read failed",e);
+  });
+ }catch(e){
+  console.error("Live watching Firebase error",e);
+  display(countEl,0);
+ }
 }
-window.startRealtimeWatching=startRealtimeWatching;window.stopRealtimeWatching=stopRealtimeWatching;
-display(countEl,BASE);display(totalEl,BASE);startTotal();
-window.addEventListener("pagehide",()=>{if(activeRef)remove(activeRef).catch(()=>{});if(countOff)countOff();if(totalOff)totalOff()});
+
+window.startRealtimeWatching=startRealtimeWatching;
+window.stopRealtimeWatching=stopRealtimeWatching;
+display(countEl,0);
+countVisit();
+
+window.addEventListener("pagehide",()=>{
+ if(activeRef) remove(activeRef).catch(()=>{});
+ if(countOff){countOff();countOff=null;}
+});
 </script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
