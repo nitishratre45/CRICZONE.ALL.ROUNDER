@@ -274,7 +274,7 @@
               awayTeam: { name: (parts[1] || 'Team 2').trim(), logo: '' },
               poster: m.poster,
               date: 'LIVE NOW — SONY LIV HD',
-              watchUrl: '/watch/sliv/?id=' + encodeURIComponent(m.match_id || '')
+              watchUrl: '/asppv.pages.dev/watch/sliv/?id=' + encodeURIComponent(m.match_id || '')
             });
           });
 
