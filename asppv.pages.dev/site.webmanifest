@@ -1,26 +1,26 @@
 {
-  "name": "Aryan Streams — Live Sports & Streams",
-  "short_name": "Aryan Streams",
+  "name": "CRICZONE — Live Sports & Streams",
+  "short_name": "CRICZONE",
   "description": "Live cricket, football and sports streaming hub.",
-  "start_url": "/",
+  "start_url": "./",
   "icons": [
     {
-      "src": "/assets/favicon.ico",
+      "src": "./assets/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "/assets/favicon-32x32.png",
+      "src": "./assets/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/assets/apple-touch-icon.png",
+      "src": "./assets/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "/assets/android-chrome-512x512.png",
+      "src": "./assets/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
