@@ -5349,10 +5349,26 @@
           radial-gradient(ellipse at 50% 0%, rgba(20, 48, 78, .34), transparent 48%),
           #000;
       }
+      /* Preserve the original centered 16:9 video viewport */
       #frame {
         position: absolute;
-        inset: 0;
+        left: 50%;
+        top: 50%;
+        width: min(100vw, 177.7778vh);
+        height: min(56.25vw, 100vh);
+        max-width: 100%;
+        max-height: 100%;
+        transform: translate(-50%, -50%);
         z-index: 0;
+        border: 0;
+        background: #000;
+      }
+      @media (max-width: 599px) {
+        #frame {
+          width: 100vw;
+          height: min(56.25vw, calc(100dvh - 64px));
+          max-height: calc(100dvh - 64px);
+        }
       }
       #player .playerbar {
         z-index: 12;
