@@ -1,9 +1,29 @@
 const KEY="matches";
 const headers={"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"};
 const reply=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
+const INDIA_NZ_STREAMS=[
+  {name:"Hindi HD",url:"https://criczone.pages.dev/criczone/?id=892"},
+  {name:"English HD",url:"https://criczone.pages.dev/criczone/?id=162"},
+  {name:"Sony All Channels",url:"https://criczone.pages.dev/criczonesony/"},
+  {name:"Sony LIV — All Languages",url:"https://criczone.pages.dev/criczonesony/?view=events"},
+  {name:"Willow Web",url:"https://criczone.pages.dev/criczonebuzz/?id=B0HNH5B25Z"},
+  {name:"iOS — Hindi HD",url:"https://criczone.pages.dev/criczone1/?id=s3"},
+  {name:"iOS — English HD",url:"https://criczone.pages.dev/criczone1/?id=s1"}
+];
+function withIndiaNzChannels(matches) {
+  return matches.map(m=>{
+    const a=String(m?.teamA?.name||"").trim().toLowerCase();
+    const b=String(m?.teamB?.name||"").trim().toLowerCase();
+    const title=String(m?.title||"").trim().toLowerCase();
+    const teams=[a,b].join(" ");
+    const isIndia=(a==="india"||b==="india"||/\\bind\\b|\\bindia\\b/.test(title));
+    const isNz=(a==="new zealand"||b==="new zealand"||a==="nz"||b==="nz"||/\\bnz\\b|\\bnew zealand\\b/.test(title));
+    return isIndia&&isNz?{...m,streams:INDIA_NZ_STREAMS}:m;
+  });
+}
 export async function onRequestGet({env}) {
   if(!env.MATCHCENTER_KV) return reply({ok:false,storage:"json-fallback",error:"MATCHCENTER_KV binding is not configured"});
-  try { const raw=await env.MATCHCENTER_KV.get(KEY); return reply({ok:true,matches:raw?JSON.parse(raw):[]}); }
+  try { const raw=await env.MATCHCENTER_KV.get(KEY); const matches=raw?JSON.parse(raw):[]; return reply({ok:true,matches:withIndiaNzChannels(matches)}); }
   catch { return reply({ok:false,error:"Could not read match storage"},500); }
 }
 export async function onRequestPost({request,env}) {
