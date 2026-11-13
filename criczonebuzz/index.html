@@ -1745,7 +1745,7 @@
                     const safeImage = escapeHtml(posterImage);
 
                     card.innerHTML = `
-                        <a class="card-poster match-open-link" href="index.html?id=${safeId}" aria-label="Open match: ${safeTitle}">
+                        <a class="card-poster match-open-link" href="/criczonebuzz/?id=${safeId}" aria-label="Open match: ${safeTitle}">
                             <img src="${safeImage}" alt="${safeTitle}" loading="lazy" decoding="async">
                             <div class="status-badge ${isLive ? 'live' : 'upcoming'}">${isLive ? 'LIVE' : 'UPCOMING'}</div>
                         </a>
@@ -1756,7 +1756,7 @@
                                 <span>◷ ${safeTime}</span>
                             </div>
                             <div class="card-actions">
-                                <a class="open-match-btn" href="index.html?id=${safeId}">${isLive ? "▶ WATCH LIVE" : "◷ MATCH DETAILS"}</a>
+                                <a class="open-match-btn" href="/criczonebuzz/?id=${safeId}">${isLive ? "▶ WATCH LIVE" : "◷ MATCH DETAILS"}</a>
                                 <button class="card-share-btn" type="button">↗ Share</button>
                             </div>
                         </div>
