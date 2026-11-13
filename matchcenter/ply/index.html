@@ -31,18 +31,7 @@ function showMessage(title,detail,spinner=false){$('screen').innerHTML='<div cla
 async function init(){let rows=[];try{const r=await fetch('../../api/matchcenter',{cache:'no-store'});if(!r.ok)throw Error();const j=await r.json();if(j.ok&&Array.isArray(j.matches))rows=j.matches;else throw Error()}catch{try{const r=await fetch('../matches.json?'+Date.now());const j=await r.json();rows=Array.isArray(j)?j:(j.matches||[])}catch{}try{const local=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(local))rows=local}catch{}}
 const m=rows.find(x=>String(x.id)===String(id));if(!m){$('title').textContent='Match not found';$('status').textContent='UNAVAILABLE';$('meta').textContent='This match could not be loaded.';showMessage('Match not found','Return to Match Center and open the match again.');return}
 $('title').textContent=(m.teamA?.name||'Team A')+' vs '+(m.teamB?.name||'Team B');$('status').textContent=String(m.status||'upcoming').toUpperCase();if(String(m.status).toLowerCase()==='live')$('status').classList.add('live');$('meta').textContent=[m.tournament,showDate(m.date),showTime(m.time),m.venue].filter(Boolean).join(' • ');
-const matchText=[m.title,m.tournament,m.teamA?.name,m.teamB?.name].filter(Boolean).join(' ').toLowerCase();
-const isIndiaNewZealand=matchText.includes('ind')&&(matchText.includes('nz')||matchText.includes('new zealand'));
-const indiaNzStreams=[
-{name:'Hindi HD',url:'https://criczone.pages.dev/criczone/?id=892'},
-{name:'English HD',url:'https://criczone.pages.dev/criczone/?id=162'},
-{name:'Sony All Channels',url:'https://criczone.pages.dev/criczonesony/'},
-{name:'Sony LIV — All Languages',url:'https://criczone.pages.dev/criczonesony/?view=events'},
-{name:'Willow Web',url:'https://criczone.pages.dev/criczonebuzz/?id=B0HNH5B25Z'},
-{name:'iOS — Hindi HD',url:'https://criczone.pages.dev/criczone1/?id=s3'},
-{name:'iOS — English HD',url:'https://criczone.pages.dev/criczone1/?id=s1'}
-];
-available=(isIndiaNewZealand?indiaNzStreams:(m.streams||[])).filter(s=>safeUrl(s.url));$('count').textContent=available.length+' CHANNEL'+(available.length===1?'':'S');
+available=(m.streams||[]).filter(s=>safeUrl(s.url));$('count').textContent=available.length+' CHANNEL'+(available.length===1?'':'S');
 if(!available.length){$('streams').innerHTML='<div class="empty">No playable channel URLs found. A CRICZONE page URL was detected instead of a stream link. Add the actual provider iframe URL or direct HLS (.m3u8) URL in Admin Panel.</div>';showMessage('No playable stream URL','No channel URL is available. Add a provider iframe URL, a CRICZONE channel URL with a valid ?id= value, or a direct HLS (.m3u8) URL in Admin Panel.');return}
 $('streams').innerHTML=available.map((s,i)=>'<button class="stream" type="button" data-index="'+i+'" title="'+esc(s.name||'Channel '+(i+1))+'"><span class="stream-icon">'+String(i+1).padStart(2,'0')+'</span><span class="stream-name">'+esc(s.name||'Channel '+(i+1))+'</span></button>').join('');
 document.querySelectorAll('[data-index]').forEach(b=>b.addEventListener('click',()=>play(available[Number(b.dataset.index)])));
