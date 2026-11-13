@@ -1212,40 +1212,20 @@ document.addEventListener("DOMContentLoaded", main);
 <!-- END CRICZONE5 Telegram UI -->
 
 
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-
-const firebaseConfig={
- apiKey:"AIzaSyCFusKE9hW7F7O6yux5xLQgafvcr_jCv5aA",
- authDomain:"criczone-4daa2.firebaseapp.com",
- databaseURL:"https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",
- projectId:"criczone-4daa2",
- storageBucket:"criczone-4daa2.firebasestorage.app",
- messagingSenderId:"113293633217",
- appId:"1:113293633217:web:a96d9b3af3045bcd99d640",
- measurementId:"G-Q9RJ0VSSPP"
-};
-
-const appName="criczone-audience";
-const app=getApps().find(x=>x.name===appName)||initializeApp(firebaseConfig,appName);
-const db=getDatabase(app);
-const totalEl=document.getElementById("totalVisits");
-
-// Preserve the existing total and increment once when this page loads.
-async function countVisit(){
- const totalRef=ref(db,"siteStats/totalVisits");
- try{
-  const result=await runTransaction(totalRef,v=>(Number(v)||0)+1);
-  if(result.committed && totalEl){
-   totalEl.textContent=Number(result.snapshot.val()||0).toLocaleString("en-IN");
-  }
- }catch(e){
-  console.warn("Total visit update failed",e);
- }
-}
-if(totalEl) totalEl.textContent="…";
-countVisit();
+<script>
+(function(){
+ const totalEl=document.getElementById("totalVisits");
+ if(!totalEl) return;
+ totalEl.textContent="9,220";
+ fetch("https://criczone-total-counter.pages-1.workers.dev/count",{
+  method:"POST",
+  cache:"no-store",
+  headers:{"Content-Type":"application/json"},
+  body:"{}"
+ }).then(r=>{if(!r.ok) throw new Error("Counter HTTP "+r.status);return r.json();})
+ .then(data=>{if(Number.isFinite(Number(data.total))) totalEl.textContent=Number(data.total).toLocaleString("en-IN");})
+ .catch(err=>console.warn("Cloudflare total counter unavailable; showing saved total",err));
+})();
 </script>
 
 <script src="/assets/js/cz-global-community.js" defer></script>
