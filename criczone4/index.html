@@ -25,7 +25,7 @@ document.getElementById('filters').addEventListener('click',e=>{const b=e.target
 search.addEventListener('input',render);
 grid.addEventListener('click',e=>{const b=e.target.closest('button[data-name]');if(!b)return;selected=b.dataset.name;document.getElementById('modalText').textContent='Paste an authorized, non-DRM HLS playlist URL (.m3u8) for '+selected+'.';document.getElementById('streamUrl').value='';document.getElementById('modal').classList.add('open');document.getElementById('streamUrl').focus()});
 document.getElementById('cancel').onclick=()=>document.getElementById('modal').classList.remove('open');
-document.getElementById('open').onclick=()=>{const raw=document.getElementById('streamUrl').value.trim();let u;try{u=new URL(raw)}catch(e){alert('Please enter a valid HLS URL.');return}if(!['http:','https:'].includes(u.protocol)||!/\.m3u8$/i.test(u.pathname)){alert('Only authorized .m3u8 HLS URLs are supported.');return}location.href='../watch/universal-player/?src='+encodeURIComponent(u.href)+'&name='+encodeURIComponent(selected)};
+document.getElementById('open').onclick=()=>{const raw=document.getElementById('streamUrl').value.trim();let u;try{u=new URL(raw)}catch(e){alert('Please enter a valid HLS URL.');return}if(!['http:','https:'].includes(u.protocol)||!/\.m3u8$/i.test(u.pathname)){alert('Only authorized .m3u8 HLS URLs are supported.');return}location.href='./shaka_player.html?url='+encodeURIComponent(u.href)+'&name='+encodeURIComponent(selected)};
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('open')});
 render();
 </script></body></html>
