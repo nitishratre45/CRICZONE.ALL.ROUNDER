@@ -13,7 +13,7 @@
     "willow_cricbuzz": "For direct Willow or Cricbuzz requests, reply only with https://criczone.pages.dev/criczonebuzz/. Willow provider/channel search may include curated Willow USA entries in folder e when the user asks for Willow channels.",
     "fancode_web": "For FanCode, use the five channel_entries directly from memory, do not query feeds. Return five exact names and URLs, then append FANCODE WEB primary https://criczone.pages.dev/fancodeweb/ and OLD FANCODE WEB backup https://criczone.pages.dev/criczonefancode/. Exact fancode web request returns both links with the new web first.",
     "sky_fox_tnt": "Sky provider must return only the 28 curated Sky Sports records from telegram-channels.json source manual_directory. Preserve each record's exact folder and ID URL. Deduplicate by folder+ID and normalized channel name; do not mix other feeds.",
-    "tnt": "For TNT requests, return only the four curated TNT Sports channels from telegram-channels.json source manual_directory. Use exact /e/?id= URLs. Do not mix unrelated feeds.",
+    "tnt": "For TNT or TNT Sports requests, return only the four current TNT Sports channel_entries listed in this provider. Do not use legacy TNT records from any feed or directory.",
     "star_sports": "Return exactly the 24 primary Star Sports channels listed in provider.channel_keys. Exclude all criczone1 backup/event-specific records. Preserve exact CRICZONE URL and channel name.",
     "sky_sports": "For sky or sky sports, return the exact 28 channel_entries from memory. Do not search feeds or apply generic name matching. Preserve exact URL per item.",
     "fox": "For Fox or Fox HD link requests, return the curated Fox Sports entries in provider.channel_entries only, using their exact /e/?id= URLs. Do not mix legacy criczone1 Fox entries."
@@ -375,7 +375,33 @@
       "sources": [
         "manual_directory"
       ],
-      "name_pattern": "\\btnt\\b"
+      "name_pattern": "^TNT Sports\\\\b",
+      "channel_entries": [
+        {
+          "id": "tntsports2",
+          "name": "TNT Sports 2",
+          "folder": "criczone1",
+          "url": "https://criczone.pages.dev/criczone1/?id=tntsports2"
+        },
+        {
+          "id": "tntsports1",
+          "name": "TNT Sports 1",
+          "folder": "criczone1",
+          "url": "https://criczone.pages.dev/criczone1/?id=tntsports1"
+        },
+        {
+          "id": "tntsports3",
+          "name": "TNT Sports 3",
+          "folder": "criczone1",
+          "url": "https://criczone.pages.dev/criczone1/?id=tntsports3"
+        },
+        {
+          "id": "tntsports4",
+          "name": "TNT Sports 4",
+          "folder": "criczone1",
+          "url": "https://criczone.pages.dev/criczone1/?id=tntsports4"
+        }
+      ]
     }
   ],
   "curated_directory": {
