@@ -118,10 +118,11 @@ function isFirstPartyRequest(request) {
             return ALLOWED_ORIGINS.includes(origin);
         }
 
-        return (
-            fetchSite === "same-origin" ||
-            ALLOWED_ORIGINS.includes(refererOrigin)
-        );
+        // This endpoint only returns public channel catalogue data.
+        // Same-host requests without Origin/Referer are allowed (e.g. server-side
+        // health checks); browser cross-origin requests still require an allowlisted Origin.
+        if (refererOrigin) return ALLOWED_ORIGINS.includes(refererOrigin);
+        return true;
     }
 
 
