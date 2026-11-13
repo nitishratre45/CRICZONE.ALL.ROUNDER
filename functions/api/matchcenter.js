@@ -15,10 +15,13 @@ function withIndiaNzChannels(matches) {
     const a=String(m?.teamA?.name||"").trim().toLowerCase();
     const b=String(m?.teamB?.name||"").trim().toLowerCase();
     const title=String(m?.title||"").trim().toLowerCase();
-    const teams=[a,b].join(" ");
-    const isIndia=(a==="india"||b==="india"||/\\bind\\b|\\bindia\\b/.test(title));
-    const isNz=(a==="new zealand"||b==="new zealand"||a==="nz"||b==="nz"||/\\bnz\\b|\\bnew zealand\\b/.test(title));
-    return isIndia&&isNz?{...m,streams:INDIA_NZ_STREAMS}:m;
+    const isIndia=a==="india"||b==="india"||title.includes("ind")||title.includes("india");
+    const isNz=a==="new zealand"||b==="new zealand"||a==="nz"||b==="nz"||title.includes("nz")||title.includes("new zealand");
+    if(!isIndia||!isNz) return m;
+    const existing=Array.isArray(m.streams)?m.streams:[];
+    const seen=new Set(existing.map(s=>String(s?.url||"").trim()).filter(Boolean));
+    const added=INDIA_NZ_STREAMS.filter(s=>!seen.has(s.url));
+    return {...m,streams:[...existing,...added]};
   });
 }
 export async function onRequestGet({env}) {
