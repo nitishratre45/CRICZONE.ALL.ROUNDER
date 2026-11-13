@@ -29,3 +29,52 @@ html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:rad
 #posterWrapper .hero-card{flex:0 0 100%}
 
 .cz-hero-empty{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:8px;padding:clamp(22px,5vw,58px);background:radial-gradient(circle at 75% 25%,rgba(72,224,176,.16),transparent 38%),linear-gradient(110deg,#0c2030,#091522 75%)}.cz-hero-empty strong{font-size:clamp(19px,3vw,30px);color:#f5f9fc}.cz-hero-empty span{font-size:13px;color:#9fb2c5}
+
+
+/* ---- CRICZONE usability and interaction polish ---- */
+:where(a,button,input,[tabindex]):focus-visible{
+  outline:3px solid var(--cz-mint)!important;
+  outline-offset:3px!important;
+}
+button,a{-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+.cz-orb{pointer-events:none;user-select:none}
+.cz-header{padding-top:max(10px,env(safe-area-inset-top))}
+.cz-nav a,.cz-footer a{transition:color .18s ease}
+.cz-btn{min-height:44px;text-decoration:none;transition:transform .18s ease,filter .18s ease,border-color .18s ease}
+.cz-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.cz-btn:active,.cz-slide-arrow:active{transform:scale(.97)}
+.cz-slide-arrow,.carousel-arrow,.fancode-arrow,.world-sports-arrow,.sony-liv-arrow{
+  min-width:42px;min-height:42px;display:grid;place-items:center;cursor:pointer;
+  touch-action:manipulation;
+}
+#sports .live-events-track,#sports .willow-live-track,#sports .fancode-track,
+#sports .world-sports-track,#sports .sony-liv-track{
+  overscroll-behavior-inline:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(72,224,176,.45) transparent;
+}
+#sports .live-events-track:focus-visible,#sports .willow-live-track:focus-visible,
+#sports .fancode-track:focus-visible,#sports .world-sports-track:focus-visible,
+#sports .sony-liv-track:focus-visible{outline-offset:5px!important}
+.section-hd-status{max-width:48%;text-align:right;line-height:1.4}
+.cz-footer a{padding:6px 0}
+.cz-community .cz-btn{flex-shrink:0}
+.cz-skip-link{
+  position:fixed;left:12px;top:8px;z-index:10000;padding:12px 16px;
+  border-radius:10px;background:#fff;color:#07111b;font-weight:900;
+  transform:translateY(-160%);transition:transform .18s ease;
+}
+.cz-skip-link:focus{transform:translateY(0)}
+@media(max-width:700px){
+  .cz-actions>.cz-btn{min-height:40px;padding:0 12px}
+  .section-hd{align-items:flex-start!important}
+  .section-hd-status{font-size:9px;max-width:42%}
+  .cz-slide-arrow{min-width:38px;min-height:38px}
+  .cz-community .cz-btn{width:100%}
+  .cz-footer nav a{min-height:32px;display:inline-flex;align-items:center}
+}
+@media(hover:none){
+  .cz-btn:hover{transform:none;filter:none}
+  .card:hover{transform:none}
+}
