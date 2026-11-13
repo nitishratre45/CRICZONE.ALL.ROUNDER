@@ -32,7 +32,7 @@ async function init(){let rows=[];try{const r=await fetch('../../api/matchcenter
 const m=rows.find(x=>String(x.id)===String(id));if(!m){$('title').textContent='Match not found';$('status').textContent='UNAVAILABLE';$('meta').textContent='This match could not be loaded.';showMessage('Match not found','Return to Match Center and open the match again.');return}
 $('title').textContent=(m.teamA?.name||'Team A')+' vs '+(m.teamB?.name||'Team B');$('status').textContent=String(m.status||'upcoming').toUpperCase();if(String(m.status).toLowerCase()==='live')$('status').classList.add('live');$('meta').textContent=[m.tournament,showDate(m.date),showTime(m.time),m.venue].filter(Boolean).join(' • ');
 const matchText=[m.title,m.tournament,m.teamA?.name,m.teamB?.name].filter(Boolean).join(' ').toLowerCase();
-const isIndiaNewZealand=/(\\bind\\b|\\bindia\\b)/i.test(matchText)&&/(\\bnz\\b|\\bnew zealand\\b)/i.test(matchText);
+const isIndiaNewZealand=matchText.includes('ind')&&(matchText.includes('nz')||matchText.includes('new zealand'));
 const indiaNzStreams=[
 {name:'Hindi HD',url:'https://criczone.pages.dev/criczone/?id=892'},
 {name:'English HD',url:'https://criczone.pages.dev/criczone/?id=162'},
