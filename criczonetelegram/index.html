@@ -43,12 +43,12 @@
     <h1>Join the CRICZONE<br>Telegram Community</h1>
     <p class="desc">Find live links for all matches here, along with match updates, cricket news and announcements.</p>
     <a class="join" href="https://t.me/+MueCDjlpoS8yNmJl">JOIN TELEGRAM <span aria-hidden="true">↗</span></a>
-    <div class="note"><span class="dot" aria-hidden="true"></span><span>VISITORS TO THIS PAGE</span><strong id="folderVisitTotal">Loading…</strong></div>
+    <div class="note"><span class="dot" aria-hidden="true"></span><span>VISITORS TO THIS PAGE</span><strong id="folderVisitTotal">Loading…</strong></div>\n    <div class="note"><span class="dot" aria-hidden="true"></span><span>TELEGRAM CHANNEL MEMBERS</span><strong id="telegramMemberTotal">Loading…</strong></div>
   </main>
   <script>
     (function(){
       const telegramUrl="https://t.me/+MueCDjlpoS8yNmJl";
-      const countEl=document.getElementById("folderVisitTotal");
+      const countEl=document.getElementById("folderVisitTotal");\n      const memberEl=document.getElementById("telegramMemberTotal");
 
       // Start the five-second timer immediately; use a normal HTTPS universal
       // link so mobile browsers and Instagram's in-app browser can hand off to Telegram.
@@ -56,7 +56,22 @@
         window.location.href=telegramUrl;
       },5000);
 
-      // Count this page visit independently; a slow counter must not delay redirect.
+
+      // Fetch the real member count from the server-side Telegram Bot API proxy.
+      // The bot token stays private in the Cloudflare Pages environment.
+      (async function(){
+        try{
+          const response=await fetch("/api/telegram/member-count",{cache:"no-store"});
+          if(!response.ok) throw new Error("Member count HTTP "+response.status);
+          const data=await response.json();
+          if(!data.ok || !Number.isFinite(Number(data.count))) throw new Error("Invalid member count response");
+          memberEl.textContent=Number(data.count).toLocaleString("en-IN");
+        }catch(error){
+          memberEl.textContent="Unavailable";
+          console.warn("CRICZONE Telegram member count unavailable",error);
+        }
+      })();
+\n      // Count this page visit independently; a slow counter must not delay redirect.
       (async function(){
         try{
           const response=await fetch("https://criczone-total-counter.pages-1.workers.dev/count?key=criczonetelegram",{
