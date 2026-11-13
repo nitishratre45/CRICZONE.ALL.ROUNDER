@@ -23,7 +23,9 @@
     heroFeedUrl: "data/hero.json",
     apis: {
       football: "https://sonujson-v7.pages.dev/Data/events/football.json",
+      footballFallback: "https://sonujson-v5.pages.dev/Data/events/football.json",
       cricket: "https://sonujson-v7.pages.dev/Data/events/cricket.json",
+      cricketFallback: "https://sonujson-v5.pages.dev/Data/events/cricket.json",
       willow: "https://sonujson-v5.pages.dev/Data/willow.json",
       willowLive: "https://sonujson-v5.pages.dev/Data/willow.json",
       willowSnapshot: "",
