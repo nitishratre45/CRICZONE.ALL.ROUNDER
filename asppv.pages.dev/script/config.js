@@ -30,7 +30,7 @@ var CNPTV_CONF = {
     football: { link: "/asppv.pages.dev/watch/football/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/football/" },
     cricket: { link: "/asppv.pages.dev/watch/cricket/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/cricket/" },
     willow: { link: "/asppv.pages.dev/watch/willow/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/willow/" },
-    fancode: { link: "/asppv.pages.dev/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/fancode/" },
+    fancode: { link: "/asppv.pages.dev/watch/fancode/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/fancode/" },
     worldSports: { link: "/asppv.pages.dev/watch/wwsports/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/wwsports/" },
     sonyLiv: { link: "/asppv.pages.dev/watch/sliv/", idMode: "param", idKey: "id", viewAllLink: "/asppv.pages.dev/watch/sliv/" }
   },
@@ -49,7 +49,7 @@ var CNPTV_CONF = {
 
   routes: {
     willowPlayer: "/asppv.pages.dev/watch/willow/",
-    fancodePlayer: "/asppv.pages.dev/watch/fancode/pz/",
+    fancodePlayer: "/asppv.pages.dev/watch/fancode/",
     sonyPlayer: "/asppv.pages.dev/watch/sliv/"
   },
 
