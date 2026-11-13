@@ -7,6 +7,8 @@
     { name: "ROHIT SHARMA", src: "https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" },
     { name: "VIRAT KOHLI", src: "https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png" }
   ];
+  // Preload both portraits so the 1-second swap is immediate and reliable.
+  photos.forEach(function(photo){var preload=new Image();preload.decoding="async";preload.src=photo.src;});
   var telegram = "https://t.me/+pN15_8gc54s2NDU1";
 
   /* Replace cricket emoji in site navbar/brand marks with rotating player portraits. */
@@ -132,8 +134,10 @@
     window.setTimeout(function(){loadImg.src=photos[photoIndex].src;loadImg.alt=photos[photoIndex].name;loadImg.style.opacity="1";},180);
   }
   setPhoto(0);
-  // Loader is brief: use one portrait instead of rotating external images every second.
-  var rotateTimer=null;
+  // Show Rohit for 1 second, then Virat for 1 second; loader still ends at 2 seconds.
+  var rotateTimer=window.setInterval(function(){
+    if(!document.hidden)setPhoto(photoIndex+1);
+  },1000);
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
@@ -141,13 +145,21 @@
   document.documentElement.appendChild(popup);
   var popupImg=popup.querySelector(".cz-community-photo img");
   var popupPhotoIndex=0;
-  function setPopupPhoto(index){popupPhotoIndex=index%photos.length;popupImg.src=photos[popupPhotoIndex].src;popupImg.alt=photos[popupPhotoIndex].name;}
+  function setPopupPhoto(index){
+    popupPhotoIndex=index%photos.length;
+    popupImg.style.opacity="0";
+    window.setTimeout(function(){
+      popupImg.src=photos[popupPhotoIndex].src;
+      popupImg.alt=photos[popupPhotoIndex].name;
+      popupImg.style.opacity="1";
+    },120);
+  }
   setPopupPhoto(0);
-  // Community portrait rotates slowly and pauses while the tab is hidden.
+  // Popup portrait alternates Rohit/Virat every 1 second while visible.
   var popupRotate=window.setInterval(function(){
     if(document.hidden)return;
     setPopupPhoto(popupPhotoIndex+1);
-  },15000);
+  },1000);
 
   function closePopup(){popup.classList.remove("cz-show");}
   /* Navigate directly to the invite in the same tab so desktop Telegram/browser handoff is not blocked as a popup. */
