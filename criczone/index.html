@@ -689,7 +689,7 @@ function extractSonyChannels(data){
 }
 
 async function loadSonyJson(){
-  var response=await fetch("/criczone5/api/sony-channels",{
+  var response=await fetch("/api/sony-channels",{
     cache:"no-store",headers:{Accept:"application/json"}
   });
   if(!response.ok) throw new Error("Sony proxy HTTP "+response.status);
