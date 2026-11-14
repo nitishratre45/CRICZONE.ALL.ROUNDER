@@ -11,28 +11,28 @@
   var API_BACKUP2 = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
   var API_BACKUP3 = "https://criczone-visitor-counter-backup-3.nitish-3.workers.dev";
   var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3];
-  var ROUTE_KEY = "cz_counter_backup_until_v1";
-  var ROUTE_STATE_KEY = "cz_counter_route_v2";
+  var ROUTE_KEY = "cz_counter_backup_until_tab_v1";
+  var ROUTE_STATE_KEY = "cz_counter_route_tab_v1";
   var activeIndex = 0;
   var retryAt = 0;
   var routePromise = null;
 
   try {
-    var routeState = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
+    var routeState = JSON.parse(sessionStorage.getItem(ROUTE_STATE_KEY) || "null");
     if (routeState && Number.isInteger(routeState.level) && routeState.level >= 1 && routeState.level <= 3) {
       activeIndex = routeState.level - 1;
       retryAt = Number(routeState.retryAt) || 0;
     } else {
-      var oldUntil = Number(localStorage.getItem(ROUTE_KEY) || 0);
+      var oldUntil = Number(sessionStorage.getItem(ROUTE_KEY) || 0);
       if (oldUntil > Date.now()) { activeIndex = 1; retryAt = oldUntil; }
     }
   } catch (_) {}
 
   function saveRoute() {
     try {
-      localStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
-      if (activeIndex > 0) localStorage.setItem(ROUTE_KEY, String(retryAt));
-      else localStorage.removeItem(ROUTE_KEY);
+      sessionStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
+      if (activeIndex > 0) sessionStorage.setItem(ROUTE_KEY, String(retryAt));
+      else sessionStorage.removeItem(ROUTE_KEY);
     } catch (_) {}
   }
 
@@ -41,7 +41,7 @@
     retryAt = index === 0 ? 0 : Date.now() + 12 * 60 * 60 * 1000;
     saveRoute();
     try {
-      localStorage.setItem("cz_counter_failover_state_v1", JSON.stringify({
+      sessionStorage.setItem("cz_counter_failover_state_v1", JSON.stringify({
         activeLevel: index + 1,
         activeEndpoint: index === 0 ? "PRIMARY" : (index === 1 ? "BACKUP_2" : "BACKUP_3"),
         updatedAt: new Date().toISOString()
