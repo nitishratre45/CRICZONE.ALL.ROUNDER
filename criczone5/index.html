@@ -647,10 +647,11 @@ body:has(#playerView:not([hidden])) #viewerBadge{
   }catch(error){console.warn("[CRICZONE5] Visitor stats unavailable:",error);}
  }
  heartbeat();
+ refreshStats();
  window.setInterval(heartbeat,30000);
- window.setInterval(refreshStats,15000);
+ window.setInterval(refreshStats,60000);
  document.addEventListener("visibilitychange",function(){
-  if(document.visibilityState==="visible") heartbeat();
+  if(document.visibilityState==="visible"){heartbeat();refreshStats();}
  });
 })();
 </script>
