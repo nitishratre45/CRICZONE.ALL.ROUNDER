@@ -551,6 +551,24 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  body:has(#playerView:not([hidden])) #viewerBadge{right:16px!important;top:195px!important}
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{width:42px;height:42px}
 }
+/* Always keep the floating controls and counters high; do not wait for popup state. */
+.top-actions{
+ top:8px!important;right:14px!important;z-index:2147483648!important;
+}
+#viewerBadge{
+ top:105px!important;right:14px!important;left:auto!important;
+ z-index:2147483648!important;
+}
+body:has(#playerView:not([hidden])) .top-actions{
+ top:8px!important;right:14px!important;
+}
+body:has(#playerView:not([hidden])) #viewerBadge{
+ top:105px!important;right:14px!important;left:auto!important;
+}
+@media(min-width:700px){
+ .top-actions{top:8px!important;right:16px!important}
+ #viewerBadge{top:105px!important;right:16px!important}
+}
 </style>
 <div id="viewerBadge" aria-live="polite">
  <span class="watching-total-label">TOTAL <strong id="totalVisits">13,450</strong></span>
