@@ -119,11 +119,13 @@
     var els = makeBadge();
     if (!els.total || !els.live) return;
     var visitorId = "";
+    // One unique live session per browser tab. sessionStorage is isolated
+    // between tabs, unlike localStorage, so two open pages count as two live viewers.
     try {
-      visitorId = localStorage.getItem("criczone_live_browser_id") || "";
+      visitorId = sessionStorage.getItem("criczone_live_tab_id_v1") || "";
       if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
         visitorId = createId();
-        localStorage.setItem("criczone_live_browser_id", visitorId);
+        sessionStorage.setItem("criczone_live_tab_id_v1", visitorId);
       }
     } catch (_) { visitorId = createId(); }
 
