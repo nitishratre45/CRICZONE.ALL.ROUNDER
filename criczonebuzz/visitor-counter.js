@@ -3,7 +3,7 @@
   if (window.__CZ_VISITOR_COUNTER__) return;
   window.__CZ_VISITOR_COUNTER__ = true;
 
-  var API = "https://criczonebuzz-visitor-stats.pages-1.workers.dev";
+  var API = "https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev";
   var VISITOR_KEY = "czbuzz_visitor_id_v2";
   var visitorId = "";
 
@@ -55,12 +55,12 @@
         cache: "no-store",
         credentials: "omit",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitorId: visitorId })
+        body: JSON.stringify({ visitor_id: visitorId })
       });
       if (!response.ok) throw new Error("visit " + response.status);
       var data = await response.json();
-      stats.totalVisits = data.totalVisits;
-      stats.liveVisitors = data.liveVisitors;
+      stats.totalVisits = data.total_visits ?? data.totalVisits;
+      stats.liveVisitors = data.live_visitors ?? data.liveVisitors;
       paint();
     } catch (error) {
       console.warn("[CRICZONE] Visitor counter unavailable:", error);
