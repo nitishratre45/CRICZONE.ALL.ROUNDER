@@ -441,7 +441,7 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
 <!-- CRICZONE shared Total Visits + Live Watching counter -->
 <style id="cz-shared-visitor-badge">
 #viewerBadge{
- position:fixed;z-index:2147483647;right:6px;top:max(6px,env(safe-area-inset-top));
+ position:fixed;z-index:2147483647;right:6px;top:110px;
  display:inline-flex;align-items:center;justify-content:center;padding:0;
  border:1px solid rgba(70,235,210,.48);border-radius:8px;
  background:linear-gradient(145deg,rgba(8,31,39,.97),rgba(3,12,21,.96));
@@ -466,7 +466,7 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
  text-align:center;
 }
 @media(min-width:700px){
- #viewerBadge{right:10px;top:10px}
+ #viewerBadge{right:10px;top:110px}
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{font-size:8px;padding:4px 5px}
  #totalVisits,#liveWatching{font-size:9px}
 }
