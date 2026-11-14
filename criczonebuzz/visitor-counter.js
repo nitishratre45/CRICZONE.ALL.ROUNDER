@@ -4,13 +4,23 @@
   window.__CZ_VISITOR_COUNTER__ = true;
 
   var API = "https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev";
-  // A fresh ID per page load counts every new visit, without a 30-minute cooldown.
-  var visitorId = createVisitorId();
+  // Count once per tab session: refreshes keep the same ID; closing the tab starts a new visit.
+  var visitorId = "";
 
   function createVisitorId() {
     return (window.crypto && crypto.randomUUID)
       ? crypto.randomUUID().replace(/-/g, "")
       : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  }
+
+  try {
+    visitorId = sessionStorage.getItem("czbuzz_tab_visit_id") || "";
+    if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
+      visitorId = createVisitorId();
+      sessionStorage.setItem("czbuzz_tab_visit_id", visitorId);
+    }
+  } catch (_) {
+    visitorId = createVisitorId();
   }
 
   var stats = { totalVisits: null, liveVisitors: null };
