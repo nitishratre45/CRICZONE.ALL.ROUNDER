@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CʀɪᴄxCʀᴀᴛᴇ Lɪᴠᴇ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#0D0E10;--olive:#7E8F6A;--white:#17191C;--ink:#F4F6F8;--muted:#9FA6AD;--accent:#3399ff;--border:rgba(255,255,255,.1)}
+*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden}
+.iframe-container{width:100%;height:100%;position:relative;z-index:1}
+iframe{width:100%;height:100%;border:0;display:block}
+
+/* Top-Right Floating Overlay Actions with auto-hide on fullscreen/rotation */
+.top-actions{position:fixed;top:18px;right:16px;z-index:2147483646;display:flex;flex-direction:column;align-items:flex-end;gap:10px;transition:opacity .3s ease, visibility .3s ease}
+
+.get-app-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;background:linear-gradient(135deg,#0088cc,var(--olive));color:#fff;font-size:12px;font-weight:700;box-shadow:0 6px 22px rgba(0,136,204,.5);text-decoration:none;transition:transform .2s ease, filter .2s ease;border:1px solid rgba(255,255,255,.2)}
+.get-app-btn:hover{filter:brightness(1.1);transform:scale(1.03)}
+.get-app-btn svg{width:13px;height:13px;fill:currentColor}
+
+.action-icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(20,20,24,.9);border:1px solid rgba(255,255,255,.25);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.6);transition:transform .25s cubic-bezier(0.175,0.885,0.32,1.275), background .2s ease, border-color .2s ease}
+.action-icon-btn:hover{transform:scale(1.15);background:rgba(40,40,48,.95);border-color:var(--accent)}
+.action-icon-btn svg{width:16px;height:16px;fill:currentColor}
+
+/* Smooth attention-grabbing pulse & rotation glow animation for the rotate button */
+#rotateBtn {
+  animation: rotateGlowPulse 2.5s ease-in-out infinite;
+}
+@keyframes rotateGlowPulse {
+  0%, 100% { transform: rotate(0deg) scale(1); border-color: rgba(255,255,255,.25); box-shadow: 0 4px 18px rgba(0,0,0,.6); }
+  50% { transform: rotate(180deg) scale(1.08); border-color: var(--accent); box-shadow: 0 0 20px rgba(51,153,255,.6); }
+}
+
+/* Dedicated Exit Fullscreen Back Icon (Visible only during fullscreen mode) */
+.exit-fullscreen-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 2147483647;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(20, 20, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  display: none;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  transition: transform .2s ease, background .2s ease;
+}
+.exit-fullscreen-btn:hover {
+  transform: scale(1.1);
+  background: rgba(40, 40, 48, 0.95);
+}
+.exit-fullscreen-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Premium Animated Popup Styling */
+.popup-overlay{position:fixed;inset:0;background:rgba(20,20,20,.82);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:20px;z-index:2147483647;opacity:0;visibility:hidden;transition:opacity .35s ease, visibility .35s ease}
+.popup-overlay.visible{display:flex;opacity:1;visibility:visible}
+
+.popup-wrap{width:100%;max-width:440px;padding:3px;background:linear-gradient(145deg,var(--olive),#0088cc,var(--olive));border-radius:28px;box-shadow:0 25px 80px rgba(0,136,204,.35),0 15px 40px rgba(0,0,0,.6);transform:scale(.65) translateY(35px);opacity:0;transition:transform .5s cubic-bezier(0.175,0.885,0.32,1.275),opacity .35s ease}
+.popup-overlay.visible .popup-wrap{transform:scale(1) translateY(0);opacity:1}
+
+/* Adjusted padding-bottom to shift contents and join button slightly upwards */
+.popup-box{background:#0D0E10;border-radius:25px;padding:36px 32px 18px;text-align:center;border:1px solid rgba(95,104,76,.25);box-shadow:inset 0 2px 10px rgba(255,255,255,.08)}
+
+/* Staggered entrance animation states */
+.popup-overlay.button-stage .popup-wrap{max-width:270px;padding:0;background:transparent;border-radius:16px;box-shadow:none;transform:scale(.7);opacity:0;animation:joinFirstPop .38s cubic-bezier(.18,.9,.25,1.25) forwards}
+.popup-overlay.button-stage .popup-box{padding:0;background:transparent;border:0;border-radius:16px}
+.popup-overlay.button-stage .popup-title,.popup-overlay.button-stage .popup-text,.popup-overlay.button-stage .btn-joined-main{display:none}
+.popup-overlay.button-stage .popup-join{animation:joinButtonPulse 1.6s ease-in-out infinite;box-shadow:0 14px 40px rgba(0,136,204,.5)}
+
+@keyframes joinFirstPop{0%{opacity:0;transform:scale(.45) translateY(20px)}70%{opacity:1;transform:scale(1.08) translateY(0)}100%{opacity:1;transform:scale(1)}}
+@keyframes joinButtonPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.15);box-shadow:0 20px 50px rgba(0,136,204,.75)}}
+
+.popup-overlay.revealing .popup-wrap{animation:popupExpand .5s cubic-bezier(.18,.9,.25,1.15) both}
+@keyframes popupExpand{0%{transform:scale(.8) translateY(20px)}60%{transform:scale(1.03) translateY(0)}100%{transform:scale(1) translateY(0)}}
+
+.popup-overlay.revealing .popup-join{animation:joinBtnIn .35s cubic-bezier(.18,.9,.25,1.15) both;animation-delay:0s}
+@keyframes joinBtnIn{from{opacity:0;transform:scale(0.8) translateY(12px)}to{opacity:1;transform:none}}
+
+.popup-overlay.revealing .popup-title,.popup-overlay.revealing .popup-text,.popup-overlay.revealing .btn-joined-main{animation:popupContentIn .35s ease both;animation-delay:.1s}
+@keyframes popupContentIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.popup-title{color:var(--olive);font-family:Acme,sans-serif;font-size:36px;letter-spacing:.4px;margin-bottom:8px}
+.popup-text{color:var(--muted);font-size:15.5px;line-height:1.5;margin-bottom:18px;font-weight:500}
+.popup-text b{color:var(--ink);font-family:Amaranth,sans-serif;font-size:20px;display:block;margin-top:4px;letter-spacing:.2px}
+
+.popup-join{width:100%;padding:28px 20px;border-radius:18px;font:700 21px Amaranth,sans-serif;letter-spacing:.8px;color:#fff;background:linear-gradient(135deg,#0088cc,var(--olive));box-shadow:0 14px 40px rgba(0,136,204,.45);animation:btnPop 1.6s ease-in-out infinite;margin-bottom:10px;cursor:pointer;border:0;transition:transform .2s ease, filter .2s ease}
+.popup-join:hover{filter:brightness(1.1);transform:scale(1.03)}
+.popup-join:active{transform:scale(0.96)}
+
+@keyframes btnPop{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+.btn-joined-main{color:var(--muted);font-size:9px;font-weight:500;width:auto;margin:2px auto 0;padding:2px 6px;background:transparent;border:0;opacity:0.55;cursor:pointer;transition:opacity .2s}
+.btn-joined-main:hover{opacity:0.9}
+
+/* Toast message notification */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,0.9);color:#fff;padding:8px 16px;border-radius:10px;font-size:12.5px;font-weight:600;opacity:0;visibility:hidden;transition:all .3s ease;z-index:2147483647;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+/* Error state styling inside container */
+.error-msg{position:absolute;inset:0;background:#0D0E10;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:'Inter',sans-serif;font-size:15px;padding:20px;text-align:center}
+
+/* Hide actions container when fullscreen/rotated */
+.top-actions.fullscreen-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Exit Fullscreen Back Icon -->
+<button class="exit-fullscreen-btn" id="exitFullscreenBtn" type="button" title="Exit Fullscreen">
+  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+</button>
+
+<!-- Top Right Floating Actions -->
+<div class="top-actions" id="topActions">
+  <a class="get-app-btn" href="https://t.me/+U9ZBNus71QFjNDY1" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+    <span>Get App</span>
+  </a>
+  <button class="action-icon-btn" id="shareBtn" type="button" title="Share Link">
+    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+  </button>
+  <button class="action-icon-btn" id="rotateBtn" type="button" title="Rotate Fullscreen">
+    <svg viewBox="0 0 24 24"><path d="M16.48 2.52c3.27 1.55 5.61 4.72 5.97 8.48h2.02C23.95 4.3 18.52 0 12 0L6.41 3.59c.63.63 1.22 1.3 1.76 2.01L12 3.82c3.15 0 5.8 2.02 6.76 4.85h-2.12c-.82-1.57-2.43-2.65-4.3-2.65-2.67 0-4.84 2.17-4.84 4.84 0 1.87 1.08 3.48 2.65 4.3v-2.12c-2.83-.96-4.85-3.61-4.85-6.76 0-.62.08-1.22.22-1.8L1.76 5.59C.64 7.27 0 9.55 0 12c0 6.63 5.37 12 12 12 2.45 0 4.73-.64 6.41-1.76l-3.89-3.89c-.71.54-1.38 1.13-2.01 1.76l3.59 3.59c-3.76.36-6.93-1.98-8.48-5.97l3.89-3.89c.54.71 1.13 1.38 1.76 2.01l-3.59 3.59c1.55 3.27 4.72 5.61 8.48 5.97v2.02c6.52-.35 11.95-5.78 11.95-12.33 0-2.45-.64-4.73-1.76-6.41l-3.89 3.89c.71-.54 1.38-1.13 2.01-1.76L22.41 1.76C20.64.64 18.36 0 15.91 0h-2.02v2.02c2.75.36 5.2 1.76 6.59 3.9z"/></svg>
+  </button>
+</div>
+
+<div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+  <div class="popup-wrap">
+    <div class="popup-box">
+      <div class="popup-title" id="popupTitle">Follow Us !!</div>
+      <div class="popup-text">Join our Telegram channel<br><b>Telegram Channel ™</b>For Instant Updates &amp; Exclusive Links.</div>
+      <button class="popup-join" id="popupJoinBtn" type="button">JOIN NOW</button>
+      <button class="btn-popup btn-joined-main" id="popupSkipBtn" type="button">No, Thanks</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Link copied to clipboard!</div>
+
+<div class="iframe-container" id="container">
+  <div class="error-msg">Loading channel from id.json…</div>
+</div>
+
+<script>
+"use strict";
+const POPUP_TG_LINK = "https://t.me/+8Bfvj-fZZbw3ODE9";
+const ID_JSON_URL = "https://footxcrate.pages.dev/id.json";
+const $=id=>document.getElementById(id);
+
+function closePopup(){$("popup").classList.remove("visible")}
+
+function showToast(msg){
+ const t=$("toast");
+ t.textContent=msg;
+ t.classList.add("show");
+ setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+async function loadChannelIframe(){
+ const params = new URLSearchParams(window.location.search);
+ const targetId = params.get("id");
+ const container = $("container");
+
+ if(!targetId){
+  container.innerHTML = `<div class="error-msg"><b>Error:</b> No channel ID specified in URL.<br><small>Example: ?id=Eng</small></div>`;
+  return;
+ }
+
+ try {
+  const res = await fetch(ID_JSON_URL, {cache: "no-store"});
+  const list = await res.json();
+  
+  if(!Array.isArray(list)){
+   throw new Error("Invalid format");
+  }
+
+  const match = list.find(item => String(item.id).toLowerCase() === targetId.toLowerCase());
+
+  if(match && match.iframeSrc){
+   container.innerHTML = `<iframe id="streamFrame" src="${match.iframeSrc}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+  } else {
+   container.innerHTML = `<div class="error-msg"><b>Channel not found or empty iframeSrc</b><br><small>ID: ${targetId}</small></div>`;
+  }
+ } catch(e){
+  container.innerHTML = `<div class="error-msg"><b>Failed to load id.json configuration</b></div>`;
+ }
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ const popup=$("popup");
+ setTimeout(()=>{
+  popup.classList.add("visible","button-stage");
+  setTimeout(()=>{
+   popup.classList.remove("button-stage");
+   popup.classList.add("revealing");
+   setTimeout(()=>popup.classList.remove("revealing"),500);
+  },120);
+ },2000);
+
+ $("popupJoinBtn").addEventListener("click",()=>{const w=window.open(POPUP_TG_LINK,"_blank","noopener");if(!w)location.href=POPUP_TG_LINK;closePopup()});
+ $("popupSkipBtn").addEventListener("click",closePopup);
+
+ $("shareBtn").addEventListener("click",async()=>{
+  const url=window.location.href;
+  try{
+   if(navigator.clipboard && navigator.clipboard.writeText){
+    await navigator.clipboard.writeText(url);
+    showToast("Link copied successfully!");
+   } else {
+    const ta=document.createElement("textarea");
+    ta.value=url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast("Link copied successfully!");
+   }
+  }catch(e){
+   showToast("Failed to copy link");
+  }
+ });
+
+ $("rotateBtn").addEventListener("click",()=>{
+  const elem = document.documentElement;
+  if(!document.fullscreenElement){
+   if(elem.requestFullscreen){elem.requestFullscreen().catch(()=>{});}
+   else if(elem.webkitRequestFullscreen){elem.webkitRequestFullscreen();}
+  } else {
+   if(document.exitFullscreen){document.exitFullscreen();}
+  }
+  try{
+   if(screen.orientation && screen.orientation.lock){
+    screen.orientation.lock("landscape").catch(()=>{});
+   }
+  }catch(e){}
+ });
+
+ $("exitFullscreenBtn").addEventListener("click",()=>{
+  if(document.fullscreenElement){
+   if(document.exitFullscreen){document.exitFullscreen();}
+   else if(document.webkitExitFullscreen){document.webkitExitFullscreen();}
+  }
+ });
+
+ document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) {
+   $("topActions").classList.add("fullscreen-hidden");
+   $("exitFullscreenBtn").style.display = "grid";
+  } else {
+   $("topActions").classList.remove("fullscreen-hidden");
+   $("exitFullscreenBtn").style.display = "none";
+  }
+ });
+
+ loadChannelIframe();
+});
+</script>
+</body>
+</html>
