@@ -4,21 +4,31 @@
   window.__CZ_VISITOR_COUNTER__ = true;
 
   var API = "https://criczonebuzz-visitor-stats.pages-1.workers.dev";
+  var VISITOR_KEY = "czbuzz_visitor_id_v2";
   var visitorId = "";
+
+  function createVisitorId() {
+    return (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID().replace(/-/g, "")
+      : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  }
+
+  // localStorage shares one browser identity across tabs, unlike sessionStorage.
   try {
-    visitorId = sessionStorage.getItem("czbuzz_visitor_id") || "";
+    visitorId = localStorage.getItem(VISITOR_KEY) || "";
     if (!visitorId) {
-      visitorId = (window.crypto && crypto.randomUUID)
-        ? crypto.randomUUID().replace(/-/g, "")
-        : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-      sessionStorage.setItem("czbuzz_visitor_id", visitorId);
+      // Migrate an existing tab identity so the upgrade does not create a needless new visit.
+      try { visitorId = sessionStorage.getItem("czbuzz_visitor_id") || ""; } catch (_) {}
+      if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) visitorId = createVisitorId();
+      localStorage.setItem(VISITOR_KEY, visitorId);
     }
   } catch (_) {
-    visitorId = "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    visitorId = createVisitorId();
   }
 
   var stats = { totalVisits: null, liveVisitors: null };
   var busy = false;
+
   function format(value) {
     return Number(value || 0).toLocaleString("en-IN");
   }
@@ -33,8 +43,10 @@
     var matchNode = document.getElementById("czbuzz-live-matches");
     if (matchNode && liveNode) matchNode.textContent = (liveNode.textContent || "0").trim();
   }
+
   async function heartbeat() {
-    if (busy || document.visibilityState === "prerender") return;
+    // Hidden/background tabs are not considered active visitors. They expire naturally.
+    if (busy || document.visibilityState !== "visible") return;
     busy = true;
     try {
       var response = await fetch(API + "/api/visit", {
@@ -56,7 +68,9 @@
       busy = false;
     }
   }
+
   async function refreshStats() {
+    if (document.visibilityState !== "visible") return;
     try {
       var response = await fetch(API + "/api/stats", {
         method: "GET", mode: "cors", cache: "no-store", credentials: "omit"
@@ -108,7 +122,7 @@
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">👥</span><strong class="czbuzz-counter-value" id="czbuzz-total-visits">—</strong><span class="czbuzz-counter-label">Total Visits</span></div>' +
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">🟢</span><strong class="czbuzz-counter-value" id="czbuzz-live-visitors">—</strong><span class="czbuzz-counter-label">Live Visitors</span></div>' +
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">🏏</span><strong class="czbuzz-counter-value" id="czbuzz-live-matches">0</strong><span class="czbuzz-counter-label">Live Matches</span></div>' +
-      '</div><div class="czbuzz-counter-foot">Visitor activity updates automatically · CRICZONE HD NETWORK</div>';
+      '</div><div class="czbuzz-counter-foot">One browser counts once per 30-minute visit · Inactive browsers expire after 75 seconds</div>';
     hero.insertAdjacentElement("afterend", panel);
     paint();
     var liveNode = document.getElementById("count-live");
@@ -124,7 +138,7 @@
     window.setInterval(heartbeat, 30000);
     window.setInterval(refreshStats, 15000);
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) heartbeat();
+      if (document.visibilityState === "visible") heartbeat();
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
