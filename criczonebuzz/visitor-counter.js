@@ -4,7 +4,7 @@
   window.__CZ_VISITOR_COUNTER__ = true;
 
   var API = "https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev";
-  // Count once per tab session: refreshes keep the same ID; closing the tab starts a new visit.
+  // One stable browser ID across refreshes and tabs, so Live Watching counts a browser once.
   var visitorId = "";
 
   function createVisitorId() {
@@ -14,10 +14,10 @@
   }
 
   try {
-    visitorId = sessionStorage.getItem("czbuzz_tab_visit_id") || "";
+    visitorId = localStorage.getItem("czbuzz_live_browser_id") || "";
     if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
       visitorId = createVisitorId();
-      sessionStorage.setItem("czbuzz_tab_visit_id", visitorId);
+      localStorage.setItem("czbuzz_live_browser_id", visitorId);
     }
   } catch (_) {
     visitorId = createVisitorId();
