@@ -2,31 +2,23 @@ import { onRequest as channels } from "./api/channels.js";
 
 const COUNTER_MARKER = "__CRICZONE_TOTAL_COUNTER__";
 const COUNTER_SCRIPT = '<script src="/assets/js/cz-global-counter.js?v=20261114" defer></script>';
-const NAVBAR_SCRIPT = '<script src="/assets/js/cz-counter-navbar.js?v=1" defer></script>';
 
 const apiError=(error,path,method)=>new Response(JSON.stringify({ok:false,source:"criczone-pages-middleware",path,method,error:String(error?.message||error||"Unknown runtime error")}),{status:500,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}});
 
 async function injectGlobalCounter(response) {
   const html = await response.clone().text();
-  const hasLegacyCounter = html.includes(COUNTER_MARKER);
-  const hasGlobalCounter = html.includes("cz-global-counter.js");
-  const hasNavbarScript = html.includes("cz-counter-navbar.js");
-  const scripts = [];
-  if (!hasLegacyCounter && !hasGlobalCounter) scripts.push(COUNTER_SCRIPT);
-  const isBuzzPlayerPage = new URL(response.url || "https://criczone.pages.dev" + "/").pathname.startsWith("/criczonebuzz/");
-  if (!hasNavbarScript && !isBuzzPlayerPage) scripts.push(NAVBAR_SCRIPT);
-  if (!scripts.length) return response;
+  // Existing counter-enabled pages retain their original response and script.
+  if (html.includes(COUNTER_MARKER) || html.includes("cz-global-counter.js")) return response;
 
-  const injection = scripts.join("");
   const injected = html.includes("</body>")
-    ? html.replace(/<\/body>/i, injection + "</body>")
-    : html + injection;
+    ? html.replace(/<\/body>/i, COUNTER_SCRIPT + "</body>")
+    : html + COUNTER_SCRIPT;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   headers.delete("content-encoding");
   headers.delete("content-md5");
   headers.delete("etag");
-  headers.set("x-criczone-counter-injected", "global-navbar-v1");
+  headers.set("x-criczone-counter-injected", "global-v1");
   return new Response(injected, {status:response.status,statusText:response.statusText,headers});
 }
 
