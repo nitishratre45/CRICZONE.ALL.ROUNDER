@@ -404,13 +404,13 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
  display:inline-flex;align-items:center;justify-content:center;
  padding:0;border:1px solid rgba(70,235,210,.48);border-radius:14px;
  background:linear-gradient(145deg,rgba(8,31,39,.97),rgba(3,12,21,.96));
- color:#b8d9dc;font-size:10px;font-weight:800;letter-spacing:1.15px;
+ color:#b8d9dc;font-size:8px;font-weight:800;letter-spacing:.7px;
  box-shadow:0 5px 18px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.09),0 0 16px rgba(0,229,192,.10);
  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
  pointer-events:none;white-space:nowrap;overflow:hidden;
 }
 #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{
-  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  display:flex;align-items:center;gap:5px;padding:5px 7px;
  }
  #viewerBadge .watching-live-label{border-left:1px solid rgba(70,235,210,.22)}
  #viewerBadge .watching-live-label:before{
@@ -425,18 +425,18 @@ html,body{background:var(--cz-bg);color:var(--cz-text);font-family:Manrope,'Sego
  background:#27e6bd;box-shadow:0 0 7px #27e6bd,0 0 14px rgba(39,230,189,.65);
 }
 #totalVisits,#liveWatching{
- display:inline-block;min-width:26px;padding:4px 7px;border-radius:8px;
- color:#071b20;font-size:12px;font-weight:950;letter-spacing:.35px;
+ display:inline-block;min-width:19px;padding:2px 5px;border-radius:6px;
+ color:#071b20;font-size:10px;font-weight:950;letter-spacing:.2px;
  font-variant-numeric:tabular-nums;
  background:linear-gradient(135deg,#8fffea,#2bd9b7);
  box-shadow:0 1px 8px rgba(43,217,183,.24);
  text-align:center;
 }
 @media(max-width:699px){
- #viewerBadge{right:10px!important;top:max(10px,env(safe-area-inset-top))!important;border-radius:11px}
- #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{gap:5px;padding:6px 7px;font-size:9px;letter-spacing:.7px}
- #viewerBadge .watching-total-label:before,#viewerBadge .watching-live-label:before{width:6px;height:6px;flex-basis:6px}
- #totalVisits,#liveWatching{min-width:19px;padding:3px 5px;font-size:11px!important}
+ #viewerBadge{right:7px!important;top:max(7px,env(safe-area-inset-top))!important;border-radius:9px}
+ #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{gap:4px;padding:4px 5px;font-size:8px;letter-spacing:.45px}
+ #viewerBadge .watching-total-label:before,#viewerBadge .watching-live-label:before{width:5px;height:5px;flex-basis:5px}
+ #totalVisits,#liveWatching{min-width:16px;padding:2px 4px;font-size:9px!important;border-radius:5px}
 }
 </style>
 
