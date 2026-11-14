@@ -1969,11 +1969,11 @@
                                 const node = document.querySelector('.cz-live-watching-pill strong');
                                 if (node) node.textContent = count.toLocaleString('en-IN');
                             }).catch(() => {});
-                    }, 15000);
+                    }, 3000);
                 }
             }
 
-            function clearPlaybackStallTimer() {
+            function clearPlaybackStallTimer {
                 if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
             }
 
