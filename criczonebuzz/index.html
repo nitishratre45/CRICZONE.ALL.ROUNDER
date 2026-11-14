@@ -1939,7 +1939,38 @@
                 state.textContent = activeSource && activeSource.type === 'iframe'
                     ? 'MANUAL SWITCH FOR EMBED'
                     : 'AUTO SWITCH ON FAILURE';
-                bar.append(label, wrapper, state);
+                const watching = document.createElement('span');
+                watching.className = 'cz-live-watching-pill';
+                watching.innerHTML = '<i></i><span>LIVE WATCHING</span><strong>—</strong>';
+                watching.style.cssText = 'margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(215,255,63,.28);border-radius:999px;background:rgba(215,255,63,.07);color:#eaff9b;font:800 10px Inter,system-ui,sans-serif;white-space:nowrap';
+                watching.querySelector('i').style.cssText = 'width:6px;height:6px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 8px #d7ff3f';
+                watching.querySelector('strong').style.cssText = 'color:#fff;font-size:12px';
+                bar.append(label, wrapper, state, watching);
+
+                const updateLiveWatching = async () => {
+                    try {
+                        const response = await fetch('https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev/api/stats', { cache: 'no-store', mode: 'cors', credentials: 'omit' });
+                        if (!response.ok) return;
+                        const data = await response.json();
+                        const count = 200 + (Number(data.live_visitors ?? data.liveVisitors) || 0);
+                        watching.querySelector('strong').textContent = count.toLocaleString('en-IN');
+                    } catch (_) {}
+                };
+                updateLiveWatching();
+                if (!window.__czLiveWatchingTimer) {
+                    window.__czLiveWatchingTimer = window.setInterval(() => {
+                        const pill = document.querySelector('.cz-live-watching-pill');
+                        if (!pill) return;
+                        fetch('https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev/api/stats', { cache: 'no-store', mode: 'cors', credentials: 'omit' })
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => {
+                                if (!data) return;
+                                const count = 200 + (Number(data.live_visitors ?? data.liveVisitors) || 0);
+                                const node = document.querySelector('.cz-live-watching-pill strong');
+                                if (node) node.textContent = count.toLocaleString('en-IN');
+                            }).catch(() => {});
+                    }, 15000);
+                }
             }
 
             function clearPlaybackStallTimer() {
