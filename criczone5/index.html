@@ -493,6 +493,21 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{font-size:8px;padding:4px 5px}
  #totalVisits,#liveWatching{font-size:9px}
 }
+/* Home screen: place small circular counters below the floating Share/Rotate controls,
+   in the open right-side gap, clear of channel count and play buttons. */
+body:has(#home:not([hidden])) #viewerBadge{
+ left:auto!important;right:14px!important;top:292px!important;
+ gap:5px!important;
+}
+body:has(#home:not([hidden])) #viewerBadge .watching-total-label,
+body:has(#home:not([hidden])) #viewerBadge .watching-live-label{
+ width:38px!important;height:38px!important;min-width:38px!important;
+ font-size:5.5px!important;
+}
+body:has(#home:not([hidden])) #totalVisits,
+body:has(#home:not([hidden])) #liveWatching{
+ font-size:7.5px!important;
+}
 /* Compact circular counters stacked directly below Share + Rotate. */
 #viewerBadge{
  left:auto!important;right:14px!important;top:105px!important;
