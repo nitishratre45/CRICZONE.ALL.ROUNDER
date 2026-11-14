@@ -305,6 +305,8 @@ body{
   *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+/* CRICZONE5: block third-party iframe popups/top-level ad redirects and hide timed community overlay */
+#cz-global-community{display:none!important;pointer-events:none!important}
 </style>
 </head>
 <body>
@@ -376,6 +378,7 @@ function openChannel(item){
  frame.title=channelName(item);
  frame.src=src;
  frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
+ frame.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-presentation");
  frame.setAttribute("allowfullscreen","");
  frame.referrerPolicy="no-referrer";
  container.appendChild(frame);
@@ -417,7 +420,7 @@ async function loadAllChannels(){
 function openChannelInitial(item){
  const src=safeHttpUrl(item.iframeSrc);if(!src)return;
  $("playingTitle").textContent=channelName(item);container.replaceChildren();
- const frame=document.createElement("iframe");frame.title=channelName(item);frame.src=src;frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");frame.setAttribute("allowfullscreen","");frame.referrerPolicy="no-referrer";container.appendChild(frame);home.hidden=true;playerView.hidden=false;
+ const frame=document.createElement("iframe");frame.title=channelName(item);frame.src=src;frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");frame.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-presentation");frame.setAttribute("allowfullscreen","");frame.referrerPolicy="no-referrer";container.appendChild(frame);home.hidden=true;playerView.hidden=false;
 }
 document.addEventListener("DOMContentLoaded",()=>{
  $("channelSearch").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();renderChannels(allChannels.filter(item=>[channelName(item),item.id,item.category,item.group].join(" ").toLowerCase().includes(q)))});
