@@ -5290,3 +5290,98 @@ footer a{color:#bba4ff!important}footer .footer-inner{max-width:1120px!important
 #grid .poster .brand-astro{--brand-accent:#65d5ff;--brand-bg:#10253c;--brand-glow:rgba(101,213,255,.2)}
 #grid .poster .brand-espn{--brand-accent:#ff5757;--brand-bg:#24151b;--brand-glow:rgba(255,87,87,.2)}
 #grid .poster .brand-cricket{--brand-accent:#ffd36b;--brand-bg:#172338;--brand-glow:rgba(255,211,107,.2)}
+
+
+/* CRICZONE1 SMOOTH MOTION PACK v1 — restrained, GPU-friendly interactions */
+:root{
+  --cz-ease:cubic-bezier(.22,.8,.24,1);
+  --cz-ease-out:cubic-bezier(.16,1,.3,1);
+  --cz-motion-fast:180ms;
+  --cz-motion:280ms;
+  --cz-motion-slow:420ms;
+}
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{-webkit-tap-highlight-color:transparent}
+a,button,[role="button"],input,.pill,.card,.cz-feature-card,
+#player .playerbar button,#player .cz-tg-player-cta{
+  -webkit-tap-highlight-color:transparent;
+}
+#grid .card{
+  transition:
+    transform var(--cz-motion) var(--cz-ease),
+    border-color var(--cz-motion) ease,
+    box-shadow var(--cz-motion) var(--cz-ease),
+    background-color var(--cz-motion) ease!important;
+  will-change:auto;
+}
+#grid .card:active{transform:scale(.985)!important}
+#grid .poster img,#grid .poster video{
+  transition:transform 520ms var(--cz-ease-out),filter 420ms ease;
+}
+#filters .pill{
+  transition:
+    color var(--cz-motion-fast) ease,
+    background-color var(--cz-motion) var(--cz-ease),
+    border-color var(--cz-motion) ease,
+    box-shadow var(--cz-motion) var(--cz-ease),
+    transform var(--cz-motion-fast) var(--cz-ease)!important;
+}
+#filters .pill:active{transform:scale(.965)!important}
+#search{
+  transition:
+    border-color var(--cz-motion) ease,
+    box-shadow var(--cz-motion) var(--cz-ease),
+    background-color var(--cz-motion) ease!important;
+}
+#clear,.search-icon{transition:opacity var(--cz-motion-fast) ease,color var(--cz-motion-fast) ease}
+.topbar,.playerbar,.cz-tg-player-banner,.cz-feature-card{
+  transition:
+    background-color var(--cz-motion) ease,
+    border-color var(--cz-motion) ease,
+    box-shadow var(--cz-motion) var(--cz-ease),
+    opacity var(--cz-motion) ease!important;
+}
+#player .playerbar button,#player .cz-iframe-controls button,
+#player .cz-tg-player-cta{
+  transition:
+    transform var(--cz-motion-fast) var(--cz-ease),
+    filter var(--cz-motion-fast) ease,
+    background-color var(--cz-motion) ease,
+    border-color var(--cz-motion) ease,
+    box-shadow var(--cz-motion) ease!important;
+}
+#player .playerbar button:active,#player .cz-iframe-controls button:active,
+#player .cz-tg-player-cta:active{transform:scale(.96)!important}
+.cz-feature-card{
+  transition:transform var(--cz-motion) var(--cz-ease),border-color var(--cz-motion) ease,box-shadow var(--cz-motion) var(--cz-ease)!important;
+}
+#grid .card:focus-within,.cz-feature-card:focus-within{
+  outline:2px solid rgba(183,155,255,.55);
+  outline-offset:3px;
+}
+a:focus-visible,button:focus-visible,.pill:focus-visible,input:focus-visible{
+  outline:2px solid #bba4ff!important;
+  outline-offset:3px!important;
+}
+@media(hover:hover) and (pointer:fine){
+  #grid .card:hover .poster img,#grid .card:hover .poster video{transform:scale(1.025)}
+  #grid .card:hover .poster img{filter:saturate(1.05)}
+  .cz-feature-card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(183,155,255,.32)!important;
+    box-shadow:0 16px 34px rgba(0,0,0,.23)!important;
+  }
+}
+@media(hover:none){
+  #grid .card:active{transform:scale(.985)!important}
+  .cz-feature-card:active{transform:scale(.992)}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
