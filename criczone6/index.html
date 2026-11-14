@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d16">
+<title>CRICZONE 6 • LIVE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--gold:#f3c66b;--bg:#080d16;--panel:#121c2b;--muted:#9ba8ba}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 12% 0%,#19334a 0,transparent 38%),radial-gradient(ellipse at 90% 5%,#4b3518 0,transparent 30%),var(--bg);color:#f7f8fb;font-family:Inter,Arial,sans-serif}
+.wrap{width:min(1100px,100%);margin:auto;padding:22px clamp(12px,3vw,34px) 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;border:1px solid #ffffff18;border-radius:18px;background:#111b2acc}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#ffe29a,#d99a38);color:#17130d;font-size:21px;font-weight:1000}.brand b{display:block;font-size:18px;letter-spacing:1.5px}.brand small{display:block;margin-top:3px;color:#9eabba;font-size:9px;letter-spacing:2px;font-weight:800}
+.live{display:flex;align-items:center;gap:7px;color:#ff7c86;font-size:10px;font-weight:900;letter-spacing:1.5px}.dot{width:8px;height:8px;border-radius:50%;background:#ff5265;box-shadow:0 0 12px #ff5265}
+.intro{padding:36px 4px 22px}.eyebrow{color:var(--gold);font-size:10px;font-weight:900;letter-spacing:2px}.intro h1{font-size:clamp(28px,5vw,46px);letter-spacing:-1.5px;margin:12px 0 8px}.intro p{color:var(--muted);font-size:13px;line-height:1.6;margin:0}
+.player-shell{overflow:hidden;border:1px solid #ffffff20;border-radius:20px;background:#000;box-shadow:0 22px 65px #0009}
+.player-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;background:linear-gradient(110deg,#1b2839,#101824);border-bottom:1px solid #ffffff18}
+.player-head strong{font-size:12px;letter-spacing:.4px}.status{color:#aab7c8;font-size:10px;font-weight:700}
+.stage{position:relative;aspect-ratio:16/9;max-height:68vh;background:#000;display:grid;place-items:center}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:22px;text-align:center;background:linear-gradient(180deg,#0002,#0008);pointer-events:none}
+.message{max-width:440px}.spinner{width:34px;height:34px;border:3px solid #ffffff30;border-top-color:var(--gold);border-radius:50%;margin:0 auto 15px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}.message h2{font-size:16px;margin:0 0 8px}.message p{font-size:11px;line-height:1.6;color:#c0c8d4;margin:0}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 15px;background:#101824}
+.controls button{border:1px solid #ffffff24;border-radius:10px;background:#1c2a3d;color:#fff;padding:10px 14px;font-size:11px;font-weight:800;cursor:pointer}.controls button.primary{background:linear-gradient(135deg,#f3c66b,#c68a2f);color:#17130d;border:0}
+.note{margin-top:16px;padding:14px 16px;border:1px solid #ffffff16;border-radius:14px;background:#111a27;color:#aeb9c8;font-size:11px;line-height:1.7}.note b{color:#f2c66f}
+@media(max-width:560px){.wrap{padding:12px 10px 28px}.intro{padding:28px 3px 18px}.player-head{padding:11px 12px}.stage{aspect-ratio:16/9;max-height:none}.controls{padding:11px}.controls button{padding:9px 11px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header><div class="brand"><div class="mark">C</div><div><b>CRICZONE 6</b><small>LIVE SPORTS EXPERIENCE</small></div></div><div class="live"><span class="dot"></span> LIVE PLAYER</div></header>
+<section class="intro"><div class="eyebrow">MATCH STREAM</div><h1>Live Cricket</h1><p>Premium player interface • Adaptive playback when the source permits it</p></section>
+<section class="player-shell">
+<div class="player-head"><strong>INDIAN DOMESTIC CRICKET</strong><span class="status" id="status">Initializing player…</span></div>
+<div class="stage">
+<video id="video" controls playsinline preload="metadata"></video>
+<div class="overlay" id="overlay"><div class="message"><div class="spinner" id="spinner"></div><h2 id="messageTitle">Connecting to stream</h2><p id="messageText">Waiting for the streaming source to respond.</p></div></div>
+</div>
+<div class="controls"><button class="primary" id="playBtn">▶ Play stream</button><button id="reloadBtn">↻ Reload</button><button id="muteBtn">Unmute</button></div>
+</section>
+<div class="note"><b>Playback notice:</b> This page does not collect, store, or inject account cookies, session tokens, or DRM keys. If the provider requires a logged-in session, signed authorization, or DRM licence, playback must be authorized through the provider's official player/SDK. A plain HLS player cannot replace that authorization.</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script>
+const STREAM_URL = "https://live13p.hotstar.com/hls/live/2123084/inallow-smat-2026/hin/1540088486/15mindvrm022f39a2c2fff1464c883d3b5b45c4f93d14november2026/master_ap_1080_6.m3u8";
+const video=document.getElementById('video'), overlay=document.getElementById('overlay'), statusEl=document.getElementById('status');
+const titleEl=document.getElementById('messageTitle'), textEl=document.getElementById('messageText'), spinner=document.getElementById('spinner');
+let hls;
+function state(title,text,status,loading=true){titleEl.textContent=title;textEl.textContent=text;statusEl.textContent=status;spinner.style.display=loading?'block':'none';overlay.style.display='grid'}
+function hideOverlay(){overlay.style.display='none'}
+function start(){
+ if(hls){hls.destroy();hls=null}
+ video.pause();video.removeAttribute('src');video.load();
+ state('Connecting to stream','Checking whether this HLS source allows browser playback.','Connecting…',true);
+ if(window.Hls&&Hls.isSupported()){
+  hls=new Hls({enableWorker:true,lowLatencyMode:true});
+  hls.loadSource(STREAM_URL);hls.attachMedia(video);
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{statusEl.textContent='Stream ready';state('Stream ready','Press Play to begin.','Ready',false)});
+  hls.on(Hls.Events.ERROR,(_,data)=>{
+   if(!data.fatal)return;
+   let msg='The source rejected playback or is unavailable.';
+   if(data.type===Hls.ErrorTypes.NETWORK_ERROR)msg='Network or access error. The stream may require provider-authorized session access.';
+   if(data.type===Hls.ErrorTypes.MEDIA_ERROR)msg='Browser media decoding error.';
+   state('Playback unavailable',msg+' If this is subscriber content, use the provider’s official authorized player.','Playback error',false);
+   hls.destroy();hls=null;
+  });
+ }else if(video.canPlayType('application/vnd.apple.mpegurl')){
+  video.src=STREAM_URL;video.addEventListener('loadedmetadata',()=>{statusEl.textContent='Stream ready';state('Stream ready','Press Play to begin.','Ready',false)},{once:true});
+  video.addEventListener('error',()=>state('Playback unavailable','The source may require provider authorization or DRM support.','Playback error',false),{once:true});
+ }else state('Unsupported browser','This browser does not support HLS playback.','Unsupported',false);
+}
+document.getElementById('playBtn').addEventListener('click',async()=>{try{await video.play();hideOverlay();statusEl.textContent='Playing'}catch(e){state('Playback blocked','The browser could not start this stream. Provider authorization may be required.','Blocked',false)}});
+document.getElementById('reloadBtn').addEventListener('click',start);
+document.getElementById('muteBtn').addEventListener('click',()=>{video.muted=!video.muted;document.getElementById('muteBtn').textContent=video.muted?'Unmute':'Mute'});
+video.addEventListener('playing',()=>{statusEl.textContent='Playing';hideOverlay()});
+video.addEventListener('waiting',()=>state('Buffering','Waiting for video data…','Buffering',true));
+video.addEventListener('error',()=>state('Playback unavailable','The stream could not be played. It may require a valid provider session or DRM licence.','Playback error',false));
+start();
+</script>
+</body></html>
