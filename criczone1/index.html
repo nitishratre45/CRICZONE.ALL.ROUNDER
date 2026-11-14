@@ -5834,6 +5834,55 @@ footer a{color:#bba4ff!important}footer .footer-inner{max-width:1120px!important
         }
         #player .cz-player-stats { top: 102px; }
       }
+
+      /* Final player layout correction: header -> video -> small Telegram strip */
+      #player[style*="display: block"]{
+        display:flex!important;flex-direction:column!important;align-items:stretch!important;
+        justify-content:flex-start!important;gap:0!important;
+        min-height:100dvh!important;padding:calc(max(10px,env(safe-area-inset-top)) + 8px) 12px max(18px,env(safe-area-inset-bottom))!important;
+      }
+      #player[style*="display: block"] .playerbar{
+        position:relative!important;inset:auto!important;order:0!important;
+        flex:0 0 auto!important;width:100%!important;max-width:1120px!important;
+        margin:0 auto 12px!important;
+      }
+      #player[style*="display: block"] #frame{
+        order:1!important;position:relative!important;inset:auto!important;
+        display:block!important;flex:0 0 auto!important;
+        width:min(100%,1120px)!important;height:auto!important;
+        aspect-ratio:16/9!important;min-height:0!important;max-height:none!important;
+        margin:0 auto 12px!important;
+      }
+      #player[style*="display: block"] .cz-iframe-controls{
+        position:absolute!important;z-index:15!important;
+        top:calc(max(10px,env(safe-area-inset-top)) + 65px)!important;
+        right:20px!important;left:auto!important;
+      }
+      #player[style*="display: block"] .cz-player-stats{display:none!important}
+      #player[style*="display: block"] .cz-tg-player-banner{
+        position:relative!important;inset:auto!important;order:2!important;
+        flex:0 0 auto!important;align-self:center!important;
+        width:min(100%,1120px)!important;min-height:52px!important;
+        margin:0 auto 18px!important;padding:8px 11px!important;
+        border-radius:13px!important;
+      }
+      #player[style*="display: block"] .cz-tg-player-icon{
+        width:32px!important;height:32px!important;flex-basis:32px!important;
+        border-radius:10px!important;font-size:17px!important;
+      }
+      #player[style*="display: block"] .cz-tg-player-copy strong{font-size:8px!important}
+      #player[style*="display: block"] .cz-tg-player-copy small{font-size:7px!important}
+      #player[style*="display: block"] .cz-tg-player-cta{min-height:30px!important;padding:0 9px!important;font-size:7px!important}
+      @media(max-width:600px){
+        #player[style*="display: block"]{padding-left:9px!important;padding-right:9px!important}
+        #player[style*="display: block"] .playerbar{margin-bottom:10px!important;padding:6px!important}
+        #player[style*="display: block"] #frame{width:100%!important;margin-bottom:9px!important;border-radius:13px!important}
+        #player[style*="display: block"] .cz-iframe-controls{
+          top:calc(max(10px,env(safe-area-inset-top)) + 59px)!important;right:15px!important;
+        }
+        #player[style*="display: block"] .cz-tg-player-banner{min-height:47px!important;margin-bottom:12px!important;padding:7px 9px!important}
+        #player[style*="display: block"] .cz-tg-player-copy small{display:none!important}
+      }
       @media (prefers-reduced-motion: reduce) {
         #cz-tg-local-bar::after,
         #player .cz-tg-player-banner::after { animation: none; }
