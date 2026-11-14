@@ -1031,38 +1031,40 @@
 </style>
 
 <style id="cz-mobile-live-watching">
-/* Keep the live counter fully visible on narrow phones without horizontal clipping. */
-@media (max-width: 600px) {
-  .player-servers-bar {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 8px !important;
-    min-width: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
-    padding: 9px 10px !important;
+/* Live count sits directly above the CRICZONE HD NETWORK kicker, never over the video. */
+#cz-player-details .cz-live-watching-pill {
+  display: flex !important;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 10px auto !important;
+  padding: 6px 11px !important;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(215,255,63,.28);
+  border-radius: 999px;
+  background: rgba(215,255,63,.07);
+  color: #eaff9b;
+  font: 800 10px Inter,system-ui,sans-serif;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+#cz-player-details .cz-live-watching-pill i {
+  width: 6px; height: 6px; flex: 0 0 6px;
+  border-radius: 50%; background: #d7ff3f;
+  box-shadow: 0 0 8px #d7ff3f;
+}
+#cz-player-details .cz-live-watching-pill strong { color:#fff; font-size:12px; }
+@media (orientation: landscape) and (max-height: 600px) {
+  #cz-player-details .cz-live-watching-pill {
+    float: right;
+    margin: -2px 0 6px 10px !important;
+    padding: 4px 8px !important;
+    gap: 5px;
+    font-size: 9px;
   }
-  .player-servers-bar .cz-live-watching-pill {
-    order: 10;
-    flex: 1 1 100% !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 2px 0 0 !important;
-    box-sizing: border-box !important;
-    justify-content: center !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-  }
-  .player-servers-bar .cz-live-watching-pill span {
-    font-size: 10px !important;
-    letter-spacing: .04em;
-  }
-  .player-servers-bar .player-server-pill {
-    min-width: 0;
-    max-width: calc(100vw - 150px);
-  }
+  #cz-player-details .cz-live-watching-pill span { font-size: 9px; }
+  #cz-player-details .cz-live-watching-pill strong { font-size: 11px; }
 }
 </style>
 
@@ -1982,7 +1984,10 @@
                 watching.style.cssText = 'margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(215,255,63,.28);border-radius:999px;background:rgba(215,255,63,.07);color:#eaff9b;font:800 10px Inter,system-ui,sans-serif;white-space:nowrap';
                 watching.querySelector('i').style.cssText = 'width:6px;height:6px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 8px #d7ff3f';
                 watching.querySelector('strong').style.cssText = 'color:#fff;font-size:12px';
-                bar.append(label, wrapper, state, watching);
+                bar.append(label, wrapper, state);
+                const details = document.getElementById('cz-player-details');
+                const kicker = details && details.querySelector('.cz-player-kicker');
+                if (details && kicker) details.insertBefore(watching, kicker);
 
                 const updateLiveWatching = async () => {
                     try {
