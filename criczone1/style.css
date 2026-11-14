@@ -5434,3 +5434,31 @@ a:focus-visible,button:focus-visible,.pill:focus-visible,input:focus-visible{
 @media(min-width:1200px) and (max-width:1499px){
   #grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 }
+
+
+/* CRICZONE1 NAVBAR COLOR REFRESH — premium indigo / violet / midnight blue */
+.topbar{
+  background:
+    radial-gradient(ellipse at 14% 0%,rgba(139,92,246,.24),transparent 48%),
+    radial-gradient(ellipse at 88% 100%,rgba(37,99,235,.18),transparent 44%),
+    linear-gradient(112deg,#211536 0%,#17172f 48%,#101d30 100%)!important;
+  border-bottom:1px solid rgba(185,155,255,.25)!important;
+  box-shadow:0 10px 34px rgba(3,5,18,.38),inset 0 1px rgba(255,255,255,.045)!important;
+}
+.topbar .toprow{position:relative}
+.topbar .brand-mark{
+  border-color:rgba(185,155,255,.46)!important;
+  box-shadow:0 0 0 4px rgba(139,92,246,.09),0 7px 22px rgba(91,55,170,.25)!important;
+}
+.topbar .live{
+  border-color:rgba(251,113,133,.35)!important;
+  background:linear-gradient(120deg,rgba(70,25,55,.82),rgba(31,23,49,.9))!important;
+  box-shadow:0 0 18px rgba(244,63,94,.12),inset 0 1px rgba(255,255,255,.06)!important;
+}
+@media(max-width:700px){
+  .topbar{
+    background:
+      radial-gradient(ellipse at 10% 0%,rgba(139,92,246,.20),transparent 52%),
+      linear-gradient(112deg,#1d1533 0%,#11182b 100%)!important;
+  }
+}
