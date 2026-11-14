@@ -1255,15 +1255,63 @@ document.addEventListener("DOMContentLoaded", main);
  window.__CRICZONE_TOTAL_COUNTER__=true;
  var API_PRIMARY="https://criczone-visitor-counter.criczonebuzz.workers.dev";
  var API_BACKUP="https://criczone-visitor-counter-backup.nitish-2.workers.dev";
- var activeAPI=API_BACKUP,primaryRetryAt=Date.now()+12*60*60*1000;
+ var ROUTE_KEY="cz_counter_backup_until_v1";
+ var activeAPI=API_PRIMARY,primaryRetryAt=0,primaryChecked=false,routePromise=null;
+ try{
+  var savedUntil=Number(localStorage.getItem(ROUTE_KEY)||0);
+  if(savedUntil>Date.now()){activeAPI=API_BACKUP;primaryRetryAt=savedUntil;}
+ }catch(_){}
+ function markBackup(){
+  activeAPI=API_BACKUP;
+  primaryChecked=true;
+  primaryRetryAt=Date.now()+12*60*60*1000;
+  try{localStorage.setItem(ROUTE_KEY,String(primaryRetryAt));}catch(_){}
+ }
+ function markPrimary(){
+  activeAPI=API_PRIMARY;
+  primaryChecked=true;
+  primaryRetryAt=0;
+  try{localStorage.removeItem(ROUTE_KEY);}catch(_){}
+ }
+ async function primaryHealthCheck(){
+  var controller=new AbortController();
+  var timer=setTimeout(function(){controller.abort();},1000);
+  try{
+   var response=await fetch(API_PRIMARY+"/api/stats",{method:"GET",mode:"cors",cache:"no-store",credentials:"omit",signal:controller.signal});
+   if(!response.ok)throw new Error("primary health "+response.status);
+   markPrimary();
+   return true;
+  }finally{clearTimeout(timer);}
+ }
+ async function ensureRoute(){
+  if(routePromise)return routePromise;
+  routePromise=(async function(){
+   if(activeAPI===API_BACKUP){
+    if(Date.now()<primaryRetryAt)return;
+    try{await primaryHealthCheck();}catch(_){markBackup();}
+    return;
+   }
+   if(!primaryChecked){
+    try{await primaryHealthCheck();}catch(_){markBackup();}
+   }
+  })();
+  try{await routePromise;}finally{routePromise=null;}
+ }
  async function apiFetch(path,options){
-  var now=Date.now();
-  if(activeAPI===API_BACKUP&&now>=primaryRetryAt){
-   try{var probe=await fetch(API_PRIMARY+"/api/stats",{method:"GET",mode:"cors",cache:"no-store",credentials:"omit"});if(probe.ok){activeAPI=API_PRIMARY;return await fetch(API_PRIMARY+path,options);}}catch(_){}
-   primaryRetryAt=now+12*60*60*1000;
+  await ensureRoute();
+  try{
+   var response=await fetch(activeAPI+path,options);
+   if(!response.ok)throw new Error("counter "+response.status);
+   return response;
+  }catch(error){
+   if(activeAPI===API_PRIMARY){
+    markBackup();
+    var backupResponse=await fetch(API_BACKUP+path,options);
+    if(!backupResponse.ok)throw new Error("backup counter "+backupResponse.status);
+    return backupResponse;
+   }
+   throw error;
   }
-  try{var response=await fetch(activeAPI+path,options);if(!response.ok)throw new Error("counter "+response.status);return response;}
-  catch(error){if(activeAPI===API_PRIMARY){activeAPI=API_BACKUP;primaryRetryAt=Date.now()+12*60*60*1000;var backupResponse=await fetch(API_BACKUP+path,options);if(!backupResponse.ok)throw new Error("backup counter "+backupResponse.status);return backupResponse;}throw error;}
  }
  var totalEl=document.getElementById("totalVisits");
   var liveEl=document.getElementById("liveWatching");
