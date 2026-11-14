@@ -606,10 +606,10 @@ body:has(#playerView:not([hidden])) #viewerBadge{
   var now=Date.now();
   if(activeAPI===API_BACKUP&&now>=primaryRetryAt){
    try{var probe=await fetch(API_PRIMARY+"/api/stats",{method:"GET",mode:"cors",cache:"no-store",credentials:"omit"});if(probe.ok){activeAPI=API_PRIMARY;return await fetch(API_PRIMARY+path,options);}}catch(_){}
-   primaryRetryAt=now+60000;
+   primaryRetryAt=now+12*60*60*1000;
   }
   try{var response=await fetch(activeAPI+path,options);if(!response.ok)throw new Error("counter "+response.status);return response;}
-  catch(error){if(activeAPI===API_PRIMARY){activeAPI=API_BACKUP;primaryRetryAt=Date.now()+60000;var backupResponse=await fetch(API_BACKUP+path,options);if(!backupResponse.ok)throw new Error("backup counter "+backupResponse.status);return backupResponse;}throw error;}
+  catch(error){if(activeAPI===API_PRIMARY){activeAPI=API_BACKUP;primaryRetryAt=Date.now()+12*60*60*1000;var backupResponse=await fetch(API_BACKUP+path,options);if(!backupResponse.ok)throw new Error("backup counter "+backupResponse.status);return backupResponse;}throw error;}
  }
  var totalEl=document.getElementById("totalVisits");
  var liveEl=document.getElementById("liveWatching");
