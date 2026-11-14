@@ -99,12 +99,57 @@
       var style = document.createElement("style");
       style.id = "cz-global-counter-style";
       style.textContent =
-        "#viewerBadge{position:fixed!important;z-index:2147483000!important;top:12px!important;right:12px!important;left:auto!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:0!important;width:auto!important;height:auto!important;margin:0!important;padding:4px 7px!important;border:1px solid rgba(70,235,210,.48)!important;border-radius:9px!important;background:rgba(3,15,23,.94)!important;color:#d9f8f2!important;font:800 9px/1.2 system-ui,sans-serif!important;letter-spacing:.35px!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important;pointer-events:none!important;backdrop-filter:blur(12px)!important}" +
+        "#viewerBadge{position:fixed!important;z-index:2147483000!important;top:12px!important;right:12px!important;left:auto!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:0!important;width:auto!important;height:auto!important;margin:0!important;padding:4px 7px!important;border:1px solid rgba(70,235,210,.48)!important;border-radius:9px!important;background:rgba(3,15,23,.94)!important;color:#d9f8f2!important;font:800 9px/1.2 system-ui,sans-serif!important;letter-spacing:.35px!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important;pointer-events:auto!important;cursor:grab!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;backdrop-filter:blur(12px)!important}" +
         "#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{display:flex!important;align-items:center!important;gap:4px!important;padding:2px 4px!important;font:800 8px/1.2 system-ui,sans-serif!important}" +
         "#viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.25)!important}" +
         "#viewerBadge #totalVisits,#viewerBadge #liveWatching{display:inline-block!important;min-width:16px!important;padding:2px 4px!important;border-radius:4px!important;background:linear-gradient(135deg,#8fffea,#2bd9b7)!important;color:#071b20!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}" +
         "@media(max-width:480px){#viewerBadge{top:8px!important;right:8px!important;padding:3px 5px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:7px!important}}";
       document.head.appendChild(style);
+    }
+    // Make the compact counter draggable on desktop and touch devices.
+    // Position is remembered separately for each folder/page path.
+    if (!badge.__czDraggable) {
+      badge.__czDraggable = true;
+      badge.setAttribute("title", "Drag to move counter");
+      var positionKey = "cz_counter_position_v1:" + location.pathname;
+      try {
+        var saved = JSON.parse(localStorage.getItem(positionKey) || "null");
+        if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+          badge.style.setProperty("left", Math.max(0, Math.min(saved.x, innerWidth - badge.offsetWidth)) + "px", "important");
+          badge.style.setProperty("top", Math.max(0, Math.min(saved.y, innerHeight - badge.offsetHeight)) + "px", "important");
+          badge.style.setProperty("right", "auto", "important");
+        }
+      } catch (_) {}
+      var drag = null;
+      badge.addEventListener("pointerdown", function (event) {
+        if (event.button !== undefined && event.button !== 0) return;
+        var rect = badge.getBoundingClientRect();
+        drag = { id: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top, moved: false };
+        badge.style.setProperty("left", rect.left + "px", "important");
+        badge.style.setProperty("top", rect.top + "px", "important");
+        badge.style.setProperty("right", "auto", "important");
+        badge.style.setProperty("bottom", "auto", "important");
+        badge.style.setProperty("cursor", "grabbing", "important");
+        try { badge.setPointerCapture(event.pointerId); } catch (_) {}
+        event.preventDefault();
+      });
+      badge.addEventListener("pointermove", function (event) {
+        if (!drag || event.pointerId !== drag.id) return;
+        var x = Math.max(0, Math.min(event.clientX - drag.dx, innerWidth - badge.offsetWidth));
+        var y = Math.max(0, Math.min(event.clientY - drag.dy, innerHeight - badge.offsetHeight));
+        if (Math.abs(x - (parseFloat(badge.style.left) || 0)) > 1 || Math.abs(y - (parseFloat(badge.style.top) || 0)) > 1) drag.moved = true;
+        badge.style.setProperty("left", x + "px", "important");
+        badge.style.setProperty("top", y + "px", "important");
+      });
+      function finishDrag(event) {
+        if (!drag || (event && event.pointerId !== drag.id)) return;
+        var rect = badge.getBoundingClientRect();
+        try { localStorage.setItem(positionKey, JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) })); } catch (_) {}
+        drag = null;
+        badge.style.setProperty("cursor", "grab", "important");
+      }
+      badge.addEventListener("pointerup", finishDrag);
+      badge.addEventListener("pointercancel", finishDrag);
     }
     return { total: document.getElementById("totalVisits"), live: document.getElementById("liveWatching") };
   }
