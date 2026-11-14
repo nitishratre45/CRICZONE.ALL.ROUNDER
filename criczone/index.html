@@ -1305,10 +1305,11 @@ document.addEventListener("DOMContentLoaded", main);
  }
  totalEl.textContent="9,220";
  heartbeat();
+ refreshStats();
  window.setInterval(heartbeat,30000);
- window.setInterval(refreshStats,15000);
+ window.setInterval(refreshStats,60000);
  document.addEventListener("visibilitychange",function(){
-  if(document.visibilityState==="visible") heartbeat();
+  if(document.visibilityState==="visible"){heartbeat();refreshStats();}
  });
 })();
 </script>
