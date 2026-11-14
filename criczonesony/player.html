@@ -110,7 +110,8 @@ h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-1px;
 "use strict";
 var params=new URLSearchParams(location.search);
 var channelId=params.get("channel")||"all";
-var rawUrl=params.get("url")||sessionStorage.getItem("czSonyStream:"+channelId)||"";
+var rawUrl=params.get("url")||"";
+if(!rawUrl){try{rawUrl=sessionStorage.getItem("czSonyStream:"+channelId)||"";}catch(e){}}
 var title=params.get("title")||"Live Channel";
 var video=document.getElementById("video");
 var status=document.getElementById("status");
