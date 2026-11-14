@@ -377,7 +377,6 @@ function openChannel(item){
  frame.src=src;
  frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
  frame.setAttribute("allowfullscreen","");
- frame.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-presentation");
  frame.referrerPolicy="no-referrer";
  container.appendChild(frame);
  home.hidden=true;playerView.hidden=false;
@@ -418,7 +417,7 @@ async function loadAllChannels(){
 function openChannelInitial(item){
  const src=safeHttpUrl(item.iframeSrc);if(!src)return;
  $("playingTitle").textContent=channelName(item);container.replaceChildren();
- const frame=document.createElement("iframe");frame.title=channelName(item);frame.src=src;frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");frame.setAttribute("allowfullscreen","");frame.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-presentation");frame.referrerPolicy="no-referrer";container.appendChild(frame);home.hidden=true;playerView.hidden=false;
+ const frame=document.createElement("iframe");frame.title=channelName(item);frame.src=src;frame.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");frame.setAttribute("allowfullscreen","");frame.referrerPolicy="no-referrer";container.appendChild(frame);home.hidden=true;playerView.hidden=false;
 }
 document.addEventListener("DOMContentLoaded",()=>{
  $("channelSearch").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();renderChannels(allChannels.filter(item=>[channelName(item),item.id,item.category,item.group].join(" ").toLowerCase().includes(q)))});
