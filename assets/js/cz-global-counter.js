@@ -205,8 +205,42 @@
       : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
   }
 
+  // Background-only Backup-3 readiness check: once per browser/origin per hour.
+  // It is deliberately not awaited, so normal counter requests never wait for it.
+  function checkBackup3ReadyInBackground() {
+    var key = "cz_backup3_ready_check_at_v1";
+    var now = Date.now();
+    try {
+      var last = Number(localStorage.getItem(key) || 0);
+      if (last && now - last < 60 * 60 * 1000) return;
+      localStorage.setItem(key, String(now));
+    } catch (_) {
+      // If storage is unavailable, still make one best-effort check for this page load.
+    }
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 4000);
+    fetch(API_BACKUP3 + "/api/ready?source=global-counter-hourly", {
+      method: "GET", mode: "cors", cache: "no-store", credentials: "omit",
+      signal: controller.signal
+    }).then(function (response) {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    }).then(function (data) {
+      if (data && data.status === "ready" && data.database === "connected") {
+        console.info("[CRICZONE] BACKUP-3 READY", data);
+      } else {
+        console.warn("[CRICZONE] BACKUP-3 NOT READY", data);
+      }
+    }).catch(function (error) {
+      console.warn("[CRICZONE] BACKUP-3 readiness check failed", String(error));
+    }).finally(function () {
+      clearTimeout(timer);
+    });
+  }
+
   function start() {
     var els = makeBadge();
+    checkBackup3ReadyInBackground();
     if (!els.total || !els.live) return;
     var visitorId = "";
     // One unique live session per browser tab. sessionStorage is isolated
