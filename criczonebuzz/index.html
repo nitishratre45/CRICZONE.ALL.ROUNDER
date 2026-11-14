@@ -2084,31 +2084,23 @@
                     if (detailNode) detailNode.textContent = formatted;
                     if (fullscreenNode) fullscreenNode.textContent = formatted;
                 };
-                const updateLiveWatching = async () => {
-                    try {
-                        const response = await fetch('https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev/api/stats', { cache: 'no-store', mode: 'cors', credentials: 'omit' });
-                        if (!response.ok) return;
-                        const data = await response.json();
-                        const count = 200 + (Number(data.live_visitors ?? data.liveVisitors) || 0);
-                        syncWatchingCount(count);
-                    } catch (_) {}
+                const updateLiveWatching = () => {
+                    const globalLive = document.getElementById('liveWatching');
+                    if (!globalLive) return;
+                    const sync = () => {
+                        const value = (globalLive.textContent || '').trim();
+                        if (!value || value === '—' || value === 'Loading…') return;
+                        syncWatchingCount(value.replace(/,/g, ''));
+                    };
+                    sync();
+                    if (!globalLive.__czBuzzSyncObserver && window.MutationObserver) {
+                        globalLive.__czBuzzSyncObserver = new MutationObserver(sync);
+                        globalLive.__czBuzzSyncObserver.observe(globalLive, { childList: true, characterData: true, subtree: true });
+                    }
                 };
                 updateLiveWatching();
                 if (!window.__czLiveWatchingTimer) {
-                    window.__czLiveWatchingTimer = window.setInterval(() => {
-                        const pill = document.querySelector('.cz-live-watching-pill');
-                        if (!pill) return;
-                        fetch('https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev/api/stats', { cache: 'no-store', mode: 'cors', credentials: 'omit' })
-                            .then(response => response.ok ? response.json() : null)
-                            .then(data => {
-                                if (!data) return;
-                                const count = 200 + (Number(data.live_visitors ?? data.liveVisitors) || 0);
-                                const node = document.querySelector('.cz-live-watching-pill strong');
-                                if (node) node.textContent = count.toLocaleString('en-IN');
-                                const fullNode = document.querySelector('#cz-fullscreen-live-watching strong');
-                                if (fullNode) fullNode.textContent = count.toLocaleString('en-IN');
-                            }).catch(() => {});
-                    }, 3000);
+                    window.__czLiveWatchingTimer = window.setInterval(updateLiveWatching, 2000);
                 }
             }
 
