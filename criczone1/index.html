@@ -3577,15 +3577,15 @@ main{color:#f5f3ff}
       >
         <div class="cz-stat-card">
           <span class="cz-stat-dot"></span
-          ><span class="cz-stat-label">AVAILABLE CHANNELS</span
-          ><strong id="czLiveWatching">0</strong
-          ><span class="cz-stat-note">Loaded in directory</span>
+          ><span class="cz-stat-label">LIVE WATCHING</span
+          ><strong id="czLiveWatching">245</strong
+          ><span class="cz-stat-note">Watching now</span>
         </div>
         <div class="cz-stat-card">
           <span class="cz-stat-icon">◉</span
-          ><span class="cz-stat-label">SPORTS CATEGORIES</span
-          ><strong id="czTotalVisits">0</strong
-          ><span class="cz-stat-note">Available categories</span>
+          ><span class="cz-stat-label">TOTAL VISITS</span
+          ><strong id="czTotalVisits">245</strong
+          ><span class="cz-stat-note">All-time visits</span>
         </div>
       </section>
       <main id="mainContent">
@@ -3732,12 +3732,12 @@ main{color:#f5f3ff}
       </div>
       <div class="cz-player-stats" aria-label="Live audience statistics">
         <div>
-          <i></i><span>AVAILABLE CHANNELS</span
-          ><strong id="czPlayerLive">0</strong>
+          <i></i><span>LIVE WATCHING</span
+          ><strong id="czPlayerLive">245</strong>
         </div>
         <div>
-          <span class="cz-player-total-icon">◉</span><span>SPORTS CATEGORIES</span
-          ><strong id="czPlayerTotal">0</strong>
+          <span class="cz-player-total-icon">◉</span><span>TOTAL VISITS</span
+          ><strong id="czPlayerTotal">245</strong>
         </div>
       </div>
       <a
@@ -3881,15 +3881,7 @@ main{color:#f5f3ff}
               ),
             ).sort(),
           ];
-          const channelTotal = channels.length.toLocaleString("en-IN");
-          const categoryTotal = Math.max(0, cats.length - 1).toLocaleString("en-IN");
-          ["czLiveWatching", "czPlayerLive"].forEach((id) => {
-            if ($(id)) $(id).textContent = channelTotal;
-          });
-          ["czTotalVisits", "czPlayerTotal"].forEach((id) => {
-            if ($(id)) $(id).textContent = categoryTotal;
-          });
-          $("filters").innerHTML = cats
+remove conflicting static metrics updater          $("filters").innerHTML = cats
             .map((c) => {
               const n =
                 c === "All"
