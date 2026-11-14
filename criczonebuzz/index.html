@@ -1082,7 +1082,11 @@
   transition:object-fit .18s ease, transform .18s ease;
 }
 #video-wrapper .shaka-video-container.mode-fill video,
-#video-wrapper video#player-video.mode-fill {object-fit:fill !important;transform:none !important}
+#video-wrapper video#player-video.mode-fill {
+  object-fit:cover !important;
+  transform:none !important;
+  transform-origin:center center !important;
+}
 #video-wrapper .shaka-video-container.mode-cover video,
 #video-wrapper video#player-video.mode-cover {
   object-fit:cover !important;
