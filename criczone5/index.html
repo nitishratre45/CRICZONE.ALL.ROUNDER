@@ -434,6 +434,13 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
   
 
 <!-- CRICZONE shared Total Visits + Live Watching counter -->
+<style id="cz-popup-overlay-cleanup">
+/* Hide floating overlays while the Telegram community popup is open. */
+body:has(#popup.visible) #topActions,
+body:has(#popup.visible) #viewerBadge{
+ display:none!important;
+}
+</style>
 <style id="cz-shared-visitor-badge">
 #viewerBadge{
  position:fixed;z-index:2147483647;right:6px;top:110px;
