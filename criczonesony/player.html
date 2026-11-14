@@ -44,7 +44,7 @@ h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-1px;
 .status[data-state="live"] .status-dot{background:#34d399;color:#34d399}
 .status[data-state="error"] .status-dot{background:#fb7185;color:#fb7185}
 .status strong{color:#eee9ff;font-size:10px;letter-spacing:.8px}
-.status span:last-child{margin-left:auto;text-align:right}
+.status span:last-child{margin-left:auto;text-align:right}\n.audience-line{display:flex;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#858398;font-size:9px;font-weight:800;letter-spacing:.35px}.audience-line strong{color:#e9dcff;font-variant-numeric:tabular-nums}\n@media(max-width:680px){.audience-line{padding:0 12px 12px;font-size:8px}}
 .player-actions{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 15px}
 .player-actions button,.settings select{min-height:37px;padding:8px 12px;border:1px solid rgba(185,165,255,.2);border-radius:10px;background:#171629;color:#eeeaff;font-size:10px;font-weight:800}
 .player-actions button{cursor:pointer}
@@ -85,7 +85,7 @@ h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-1px;
       <div class="buffering" id="buffering" aria-hidden="true"><span class="spinner"></span></div>
     </div>
     <div class="status" id="status" data-state="loading" role="status" aria-live="polite"><i class="status-dot"></i><strong id="status-label">CONNECTING</strong><span id="status-detail">Preparing live stream…</span></div>
-    <div class="player-actions">
+    <div class="audience-line"><span>LIVE WATCHING <strong id="live-count">—</strong></span><span>TOTAL VISITS <strong id="visit-count">—</strong></span></div>\n    <div class="player-actions">
       <button id="retry" type="button">↻ Reload stream</button>
       <button id="aspect" type="button">▣ Fit: Contain</button>
       <button id="pip" type="button">▣ Picture in Picture</button>
@@ -128,7 +128,7 @@ function hideBuffer(){clearTimeout(bufferTimer);bufferTimer=0;buffering.classLis
 function stop(){clearTimeout(retryTimer);retryTimer=0;hideBuffer();if(hls){hls.destroy();hls=null;}if(plyr){try{plyr.destroy()}catch(e){}plyr=null;}video.pause();video.removeAttribute("src");video.load();}
 function safePlay(){var p=video.play();if(p&&p.catch)p.catch(function(){setStatus("loading","TAP TO PLAY","Your browser requires a tap to start playback.");});}
 function proxiedUrl(url){return PROXY_BASE+"="+encodeURIComponent(url);}
-function isHls(url){try{return /.m3u8?$/i.test(new URL(url).pathname)}catch(e){return /.m3u8?($|[?#])/i.test(url)}}
+function isHls(url){try{return new URL(url).pathname.toLowerCase().endsWith(".m3u8")}catch(e){return url.toLowerCase().indexOf(".m3u8")!==-1}}
 function refreshTracks(){
  var audio=document.getElementById("audio-track"),subs=document.getElementById("subtitle-track"),oldA=audio.value,oldS=subs.value;
  audio.innerHTML='<option value="-1">Default audio</option>';subs.innerHTML='<option value="-1">Off</option>';
@@ -208,8 +208,10 @@ try{
  const uid=globalThis.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"_"+Math.random().toString(36).slice(2);
  const mine=ref(db,"sonyPlayerLiveViewers/"+key+"/"+uid);
  await onDisconnect(mine).remove();await set(mine,{online:true,joinedAt:Date.now(),channel:key});
- onValue(liveRef,s=>{const el=document.getElementById("status-detail");if(el)el.textContent="Live viewers · "+s.size;});
- onValue(countRef,s=>{const el=document.getElementById("status-detail");if(el&&document.getElementById("status").dataset.state==="live")el.textContent="Live viewers · "+document.getElementById("status-detail").textContent.split("·").pop().trim()+" · Total visits "+(Number(s.val())||0).toLocaleString("en-IN");});
+ let liveCount=0,totalCount=0;
+ const updateCounts=()=>{document.getElementById("live-count").textContent=liveCount.toLocaleString("en-IN");document.getElementById("visit-count").textContent=totalCount.toLocaleString("en-IN");};
+ onValue(liveRef,s=>{liveCount=typeof s.numChildren==="function"?s.numChildren():0;updateCounts();});
+ onValue(countRef,s=>{totalCount=Number(s.val())||0;updateCounts();});
  window.addEventListener("pagehide",()=>remove(mine).catch(()=>{}));
 }catch(e){console.warn("CRICZONE audience stats unavailable:",e);}
 </script>
