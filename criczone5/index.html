@@ -462,7 +462,8 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
 }
 /* Home screen: keep the counter on the left below the header, away from Telegram/Get App and floating action buttons. */
 body:has(#home:not([hidden])) #viewerBadge{
- left:10px!important;right:auto!important;top:126px!important;
+ left:10px!important;right:10px!important;top:270px!important;
+ width:max-content;margin-left:auto;
 }
 /* Player view: move Share and Rotate below the title/Telegram toolbar. */
 body:has(#playerView:not([hidden])) .top-actions{
