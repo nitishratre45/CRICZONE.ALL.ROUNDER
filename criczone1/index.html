@@ -19,7 +19,7 @@
       href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./style.css?v=4" />
+    <link rel="stylesheet" href="./style.css?v=5" />
     
   
     
@@ -306,7 +306,7 @@
                 esc(c) +
                 '">' +
                 esc(c) +
-                ' <span style="font-size:9px;opacity:.72">' +
+                ' <span class="filter-count">' +
                 n +
                 "</span></button>"
               );
@@ -422,13 +422,9 @@
           const initials =
             words.slice(0, 2).map((x) => x[0]).join("").toUpperCase() || "TV";
           return (
-            '<div class="channel-brand-logo channel-name-art" style="--brand-accent:' +
-            b.accent +
-            ";--brand-bg:" +
-            b.bg +
-            ";--brand-glow:" +
-            b.accent +
-            '33"><span class="brand-symbol">' +
+            '<div class="channel-brand-logo channel-name-art brand-' +
+            b.label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") +
+            '"><span class="brand-symbol">' +
             esc(initials) +
             '</span><span class="brand-word"><strong>' +
             esc(b.label) +
