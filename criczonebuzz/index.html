@@ -1030,6 +1030,42 @@
 }
 </style>
 
+<style id="cz-mobile-live-watching">
+/* Keep the live counter fully visible on narrow phones without horizontal clipping. */
+@media (max-width: 600px) {
+  .player-servers-bar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 9px 10px !important;
+  }
+  .player-servers-bar .cz-live-watching-pill {
+    order: 10;
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 2px 0 0 !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+  .player-servers-bar .cz-live-watching-pill span {
+    font-size: 10px !important;
+    letter-spacing: .04em;
+  }
+  .player-servers-bar .player-server-pill {
+    min-width: 0;
+    max-width: calc(100vw - 150px);
+  }
+}
+</style>
+
 <style id="cz-shaka-compact-quality">
 /* Compact Shaka quality/settings menu: keep every resolution reachable on small screens. */
 .shaka-overflow-menu,.shaka-settings-menu{width:min(228px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px)!important;max-height:min(46vh,300px)!important;overflow-x:hidden!important;overflow-y:auto!important;border-radius:10px!important;box-sizing:border-box!important;scrollbar-width:thin!important}
