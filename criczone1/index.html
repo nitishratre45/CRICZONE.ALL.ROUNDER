@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
-    <meta name="theme-color" content="#080d16" />
+    <meta name="theme-color" content="#080710" />
     <title>CRICZONE — Live Channels</title>
     <meta
       name="description"
@@ -3535,6 +3535,20 @@ main{color:#f5f3ff}
  #cz-tg-local-bar .cz-tg-label strong{font-size:8px!important}#cz-tg-local-bar .cz-tg-label small{font-size:7px!important}
  #cz-tg-local-bar .cz-tg-tap{min-height:31px!important;padding:0 8px!important;font-size:7px!important}
 }
+
+
+/* Final folder audit fixes */
+#grid .poster{position:relative;overflow:hidden;isolation:isolate}
+#grid .poster:after{content:"▶";position:absolute;inset:auto 9px 9px auto;display:grid;place-items:center;width:29px;height:29px;padding:0;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(5,10,18,.86);color:#d8c5ff;font-size:12px;line-height:1;text-shadow:none;box-shadow:0 4px 12px #0007;z-index:4}
+#grid .poster .channel-brand-logo.channel-name-art{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;height:100%;min-width:0;min-height:0;max-width:100%;overflow:hidden;gap:clamp(7px,1.5vw,12px);padding:clamp(8px,2vw,15px)}
+#grid .poster .channel-brand-logo.channel-name-art .brand-symbol{flex:0 0 clamp(36px,14%,54px);width:clamp(36px,14%,54px);height:clamp(36px,14%,54px);min-width:0;border-radius:12px;font-size:clamp(12px,1.5vw,17px)}
+#grid .poster .channel-brand-logo.channel-name-art .brand-word{display:flex;flex:1 1 0;flex-direction:column;gap:4px;min-width:0;max-width:none;overflow:hidden;text-align:left;font-size:clamp(9px,1.35vw,15px);line-height:1.15}
+#grid .poster .channel-brand-logo.channel-name-art .brand-word strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;font-size:inherit;line-height:1.18;overflow-wrap:anywhere}
+#grid .poster .channel-brand-logo.channel-name-art .brand-word small{display:inline-block;margin:0;color:var(--brand-accent,#c4adff);font-size:7px;letter-spacing:1px;white-space:nowrap}
+#cz-tg-local-bar{box-sizing:border-box;overflow:hidden}
+#cz-tg-local-bar .cz-tg-logo{overflow:hidden;isolation:isolate}
+#cz-tg-local-bar .cz-tg-logo svg{display:block;width:30px;height:30px;max-width:30px;max-height:30px}
+@media(max-width:599px){#grid .poster .channel-brand-logo.channel-name-art{gap:7px;padding:8px}#grid .poster .channel-brand-logo.channel-name-art .brand-symbol{flex-basis:39px;width:39px;height:39px;font-size:13px}#grid .poster .channel-brand-logo.channel-name-art .brand-word{font-size:9px}#grid .poster .channel-brand-logo.channel-name-art .brand-word small{font-size:6px;letter-spacing:.55px}#grid .poster:after{right:7px;bottom:7px;width:26px;height:26px;font-size:11px}#cz-tg-local-bar{width:calc(100% - 24px)!important;max-width:100%!important}}
 </style>
   </head>
 
@@ -3563,15 +3577,15 @@ main{color:#f5f3ff}
       >
         <div class="cz-stat-card">
           <span class="cz-stat-dot"></span
-          ><span class="cz-stat-label">LIVE WATCHING</span
-          ><strong id="czLiveWatching">245</strong
-          ><span class="cz-stat-note">Watching now</span>
+          ><span class="cz-stat-label">AVAILABLE CHANNELS</span
+          ><strong id="czLiveWatching">0</strong
+          ><span class="cz-stat-note">Loaded in directory</span>
         </div>
         <div class="cz-stat-card">
           <span class="cz-stat-icon">◉</span
-          ><span class="cz-stat-label">TOTAL VISITS</span
-          ><strong id="czTotalVisits">245</strong
-          ><span class="cz-stat-note">All-time visits</span>
+          ><span class="cz-stat-label">SPORTS CATEGORIES</span
+          ><strong id="czTotalVisits">0</strong
+          ><span class="cz-stat-note">Available categories</span>
         </div>
       </section>
       <main id="mainContent">
@@ -3718,12 +3732,12 @@ main{color:#f5f3ff}
       </div>
       <div class="cz-player-stats" aria-label="Live audience statistics">
         <div>
-          <i></i><span>LIVE WATCHING</span
-          ><strong id="czPlayerLive">245</strong>
+          <i></i><span>AVAILABLE CHANNELS</span
+          ><strong id="czPlayerLive">0</strong>
         </div>
         <div>
-          <span class="cz-player-total-icon">◉</span><span>TOTAL VISITS</span
-          ><strong id="czPlayerTotal">245</strong>
+          <span class="cz-player-total-icon">◉</span><span>SPORTS CATEGORIES</span
+          ><strong id="czPlayerTotal">0</strong>
         </div>
       </div>
       <a
@@ -3867,6 +3881,14 @@ main{color:#f5f3ff}
               ),
             ).sort(),
           ];
+          const channelTotal = channels.length.toLocaleString("en-IN");
+          const categoryTotal = Math.max(0, cats.length - 1).toLocaleString("en-IN");
+          ["czLiveWatching", "czPlayerLive"].forEach((id) => {
+            if ($(id)) $(id).textContent = channelTotal;
+          });
+          ["czTotalVisits", "czPlayerTotal"].forEach((id) => {
+            if ($(id)) $(id).textContent = categoryTotal;
+          });
           $("filters").innerHTML = cats
             .map((c) => {
               const n =
@@ -3949,9 +3971,7 @@ main{color:#f5f3ff}
                 .map((w) => w[0])
                 .join("")
                 .toUpperCase() || "TV",
-            label: (
-              words.slice(0, 3).join(" ") || "LIVE CHANNEL"
-            ).toUpperCase(),
+            label: "SPORTS CHANNEL",
             accent: "#ffd36b",
             bg: "#172338",
           };
@@ -3996,14 +4016,7 @@ main{color:#f5f3ff}
             .split(/\s+/)
             .filter(Boolean);
           const initials =
-            words
-              .slice(0, 2)
-              .map((x) => x[0])
-              .join("")
-              .toUpperCase() || "TV";
-          const clean = String(c.name || "SPORTS CHANNEL")
-            .replace(/\s+/g, " ")
-            .trim();
+            words.slice(0, 2).map((x) => x[0]).join("").toUpperCase() || "TV";
           return (
             '<div class="channel-brand-logo channel-name-art" style="--brand-accent:' +
             b.accent +
@@ -4014,8 +4027,8 @@ main{color:#f5f3ff}
             '33"><span class="brand-symbol">' +
             esc(initials) +
             '</span><span class="brand-word"><strong>' +
-            esc(clean) +
-            '</strong><small>CRICZONE • LIVE CHANNEL</small></span><span class="art-orbit" aria-hidden="true"></span></div>'
+            esc(b.label) +
+            '</strong><small>LIVE</small></span><span class="art-orbit" aria-hidden="true"></span></div>'
           );
         }
         function render() {
