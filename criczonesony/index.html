@@ -1440,51 +1440,19 @@ function showList(){
   var url=new URL(location.href);url.searchParams.delete("id");url.searchParams.delete("channel");history.replaceState({}, "",url.pathname+url.search+url.hash);
 }
 function showPlayer(ch){
-  activeChannelId=ch.id;
-  var audioPrompt=document.getElementById("czAudioPrompt");audioPrompt.hidden=true;
-  $video.muted=false;$video.defaultMuted=false;$video.volume=1;$video.removeAttribute("muted");
-  $video.muted=false;$video.volume=1;if(currentPlayer){currentPlayer.muted=false;currentPlayer.volume=1;}
-  try{localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}));var recent=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});recent.unshift(ch.id);localStorage.setItem("czSonyRecent",JSON.stringify(recent.slice(0,20)));}catch(e){}
-  updateFavoriteButton(ch);renderRecent();renderQuickChannels(ch);updateDiagnostics();
-  $list.style.display="none";$playerContainer.style.display="block";
-  if(window.startSonyPlayerStats)window.startSonyPlayerStats(ch.id);
-  document.getElementById("now-playing").textContent=ch.name;
-  $loadMsg.textContent="Connecting to "+ch.name+"…";$overlay.style.display="flex";
-  destroyPlayer();
-  var session=playerSessionId;
-  var source=proxyUrl(ch.stream_url);
-  var options={controls:["play","progress","current-time","mute","volume","settings","fullscreen"],settings:["quality"],autoplay:true,muted:false};
-  if(window.Hls&&Hls.isSupported()&&/\.m3u8(\?|$)/i.test(ch.stream_url)){
-    currentHls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30,maxMaxBufferLength:60,manifestLoadingMaxRetry:3,fragLoadingMaxRetry:3});
-    currentHls.loadSource(source);currentHls.attachMedia($video);
-    currentHls.on(Hls.Events.MANIFEST_PARSED,function(_,data){
-      if(session!==playerSessionId||!currentHls)return;
-      refreshMediaTrackOptions();
-      var heights=data.levels.map(function(level){return level.height;}).filter(Boolean);
-      var unique=heights.filter(function(value,index){return heights.indexOf(value)===index;}).sort(function(a,b){return b-a;});
-      currentPlayer=new Plyr($video,Object.assign({},options,unique.length?{quality:{default:unique[0],options:unique,forced:true,onChange:function(q){if(!currentHls)return;currentHls.levels.forEach(function(level,index){if(level.height===q)currentHls.currentLevel=index;});}}}:{}));
-      if(currentHls&&unique.length)currentHls.currentLevel=-1;
-      setPlayerStatus("connecting","CONNECTING","Stream manifest loaded · waiting for video");
-      $video.muted=false;$video.volume=1;$video.play().then(function(){audioPrompt.hidden=true;}).catch(function(){audioPrompt.hidden=false;setPlayerStatus("connecting","TAP TO PLAY WITH SOUND","Your browser requires a tap to start audio");});$overlay.style.display="none";
-    });
-    currentHls.on(Hls.Events.AUDIO_TRACKS_UPDATED,function(){if(session===playerSessionId)refreshMediaTrackOptions();});
-    currentHls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,function(){if(session===playerSessionId)refreshMediaTrackOptions();});
-    currentHls.on(Hls.Events.ERROR,function(_,data){
-      if(session!==playerSessionId||!currentHls)return;
-      if(data.fatal){
-        setPlayerStatus("retry","RECONNECTING","Trying to restore the stream…");
-        $loadMsg.textContent="Reconnecting to stream…";
-        if(data.type===Hls.ErrorTypes.NETWORK_ERROR&&retryCount<4){retryCount++;clearRetry();retryTimer=setTimeout(function(){if(session===playerSessionId&&currentHls)currentHls.startLoad();},Math.min(8000,1000*Math.pow(2,retryCount-1)));}
-        else if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&retryCount<4){retryCount++;clearRetry();retryTimer=setTimeout(function(){if(session===playerSessionId&&currentHls)currentHls.recoverMediaError();},Math.min(5000,700*retryCount));}
-        else{setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");$loadMsg.textContent="Stream unavailable. Please try again shortly.";$overlay.style.display="flex";}
-      }
-    });
-  }else{
-    $video.src=source;currentPlayer=new Plyr($video,options);
-    $video.addEventListener("loadedmetadata",function(){if(session===playerSessionId)$overlay.style.display="none";},{once:true});
-    $video.addEventListener("error",function(){if(session!==playerSessionId)return;setPlayerStatus("offline","STREAM UNAVAILABLE","Try another channel or refresh");$loadMsg.textContent="Unable to play this stream. Check source/proxy access.";$overlay.style.display="flex";},{once:true});
-    $video.muted=false;$video.volume=1;$video.play().catch(function(){if(session!==playerSessionId)return;audioPrompt.hidden=false;setPlayerStatus("connecting","TAP TO PLAY WITH SOUND","Your browser requires a tap to start audio");$loadMsg.textContent="Tap the sound button to start playback.";});
-  }
+  if(!ch||!ch.stream_url)return;
+  try{
+    localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}));
+    var recent=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});
+    recent.unshift(ch.id);
+    localStorage.setItem("czSonyRecent",JSON.stringify(recent.slice(0,20)));
+  }catch(e){}
+  var target=new URL("./player.html",location.href);
+  target.searchParams.set("url",ch.stream_url);
+  target.searchParams.set("title",ch.name||"Live Channel");
+  target.searchParams.set("channel",ch.id||"all");
+  // Replace the selected-channel history entry so browser Back returns to the channel list.
+  location.replace(target.href);
 }
 
 $video.addEventListener("playing",function(){clearRetry();retryCount=0;setPlayerStatus("live","LIVE PLAYBACK","Stream connected");$overlay.style.display="none";});
