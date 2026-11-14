@@ -8,58 +8,78 @@
   window.__CRICZONE_TOTAL_COUNTER__ = true;
 
   var API_PRIMARY = "https://criczone-visitor-counter.criczonebuzz.workers.dev";
-  var API_BACKUP = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
+  var API_BACKUP2 = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
+  var API_BACKUP3 = "https://criczone-visitor-counter-backup-3.nitish-3.workers.dev";
+  var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3];
   var ROUTE_KEY = "cz_counter_backup_until_v1";
-  var activeAPI = API_PRIMARY;
-  var primaryRetryAt = 0;
-  var primaryChecked = false;
+  var ROUTE_STATE_KEY = "cz_counter_route_v2";
+  var activeIndex = 0;
+  var retryAt = 0;
   var routePromise = null;
 
   try {
-    var savedUntil = Number(localStorage.getItem(ROUTE_KEY) || 0);
-    if (savedUntil > Date.now()) {
-      activeAPI = API_BACKUP;
-      primaryRetryAt = savedUntil;
+    var routeState = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
+    if (routeState && Number.isInteger(routeState.level) && routeState.level >= 1 && routeState.level <= 3) {
+      activeIndex = routeState.level - 1;
+      retryAt = Number(routeState.retryAt) || 0;
+    } else {
+      var oldUntil = Number(localStorage.getItem(ROUTE_KEY) || 0);
+      if (oldUntil > Date.now()) { activeIndex = 1; retryAt = oldUntil; }
     }
   } catch (_) {}
 
-  function markBackup() {
-    activeAPI = API_BACKUP;
-    primaryChecked = true;
-    primaryRetryAt = Date.now() + 12 * 60 * 60 * 1000;
-    try { localStorage.setItem(ROUTE_KEY, String(primaryRetryAt)); } catch (_) {}
-  }
-
-  function markPrimary() {
-    activeAPI = API_PRIMARY;
-    primaryChecked = true;
-    primaryRetryAt = 0;
-    try { localStorage.removeItem(ROUTE_KEY); } catch (_) {}
-  }
-
-  async function primaryHealthCheck() {
-    var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 2500);
+  function saveRoute() {
     try {
-      var response = await fetch(API_PRIMARY + "/api/stats", {
-        method: "GET", mode: "cors", cache: "no-store",
-        credentials: "omit", signal: controller.signal
-      });
-      if (!response.ok) throw new Error("Primary stats " + response.status);
-      await response.json();
-      markPrimary();
-      return true;
+      localStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
+      if (activeIndex > 0) localStorage.setItem(ROUTE_KEY, String(retryAt));
+      else localStorage.removeItem(ROUTE_KEY);
+    } catch (_) {}
+  }
+
+  function setActive(index) {
+    activeIndex = index;
+    retryAt = index === 0 ? 0 : Date.now() + 12 * 60 * 60 * 1000;
+    saveRoute();
+  }
+
+  async function requestAPI(base, path, options) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 5000);
+    try {
+      var response = await fetch(base + path, Object.assign({}, options || {}, {
+        mode: "cors", cache: "no-store", credentials: "omit", signal: controller.signal
+      }));
+      if (!response.ok) throw new Error("Counter HTTP " + response.status);
+      var data = await response.clone().json();
+      if (path === "/api/stats") {
+        if (!data || !Number.isFinite(Number(data.total_visits)) || !Number.isFinite(Number(data.live_visitors))) {
+          throw new Error("Invalid counter stats response");
+        }
+      } else if (path === "/api/visit" && (!data || data.ok !== true)) {
+        throw new Error("Counter visit write was not acknowledged");
+      }
+      return { response: response, data: data };
     } finally {
       clearTimeout(timer);
     }
   }
 
+  async function probeAPI(index) {
+    var result = await requestAPI(API_LIST[index], "/api/stats", { method: "GET" });
+    return result.data;
+  }
+
   async function ensureRoute() {
+    if (activeIndex === 0 || Date.now() < retryAt) return;
     if (routePromise) return routePromise;
     routePromise = (async function () {
-      if (activeAPI === API_BACKUP && Date.now() < primaryRetryAt) return;
-      try { await primaryHealthCheck(); }
-      catch (_) { markBackup(); }
+      for (var i = 0; i < API_LIST.length; i++) {
+        try {
+          await probeAPI(i);
+          setActive(i);
+          return;
+        } catch (_) {}
+      }
     })();
     try { await routePromise; }
     finally { routePromise = null; }
@@ -67,18 +87,20 @@
 
   async function apiFetch(path, options) {
     await ensureRoute();
-    var target = activeAPI;
-    try {
-      var response = await fetch(target + path, options);
-      if (!response.ok) throw new Error("Counter " + response.status);
-      return response;
-    } catch (error) {
-      if (target !== API_PRIMARY) throw error;
-      markBackup();
-      var backupResponse = await fetch(API_BACKUP + path, options);
-      if (!backupResponse.ok) throw new Error("Backup counter " + backupResponse.status);
-      return backupResponse;
+    var order = activeIndex === 0 ? [0, 1, 2] : (activeIndex === 1 ? [1, 2, 0] : [2, 1, 0]);
+    var lastError = null;
+    for (var n = 0; n < order.length; n++) {
+      var index = order[n];
+      try {
+        var result = await requestAPI(API_LIST[index], path, options);
+        if (index !== activeIndex) setActive(index);
+        return result.response;
+      } catch (error) {
+        lastError = error;
+        if (n < order.length - 1) setActive(order[n + 1]);
+      }
     }
+    throw lastError || new Error("All three visitor counter endpoints are unavailable");
   }
 
   function makeBadge() {
