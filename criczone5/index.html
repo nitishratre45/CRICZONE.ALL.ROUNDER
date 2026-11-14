@@ -426,7 +426,6 @@ document.addEventListener("DOMContentLoaded",()=>{
  $("rotateBtn").addEventListener("click",()=>{const elem=document.documentElement;if(!document.fullscreenElement){if(elem.requestFullscreen)elem.requestFullscreen().catch(()=>{});}else if(document.exitFullscreen)document.exitFullscreen();try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(()=>{})}catch(e){}});
  $("exitFullscreenBtn").addEventListener("click",()=>{if(document.exitFullscreen)document.exitFullscreen()});
  document.addEventListener("fullscreenchange",()=>{const full=!!document.fullscreenElement;$("topActions").classList.toggle("fullscreen-hidden",full);$("exitFullscreenBtn").style.display=full?"grid":"none"});
- $("topActions").querySelector(".get-app-btn").href=POPUP_TG_LINK;
  loadAllChannels();
 });
 window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=container.querySelector("iframe");if(frame)frame.src="about:blank";container.replaceChildren();playerView.hidden=true;home.hidden=false}});
