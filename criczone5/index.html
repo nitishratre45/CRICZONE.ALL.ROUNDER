@@ -551,13 +551,13 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  body:has(#playerView:not([hidden])) #viewerBadge{right:16px!important;top:195px!important}
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{width:42px;height:42px}
 }
-/* Keep floating actions below the header Telegram link; counters below the actions. */
+/* Keep floating controls below the Telegram popup overlay so it can blur/cover them. */
 .top-actions{
- top:100px!important;right:14px!important;z-index:2147483648!important;
+ top:100px!important;right:14px!important;z-index:2147483646!important;
 }
 #viewerBadge{
  top:195px!important;right:14px!important;left:auto!important;
- z-index:2147483648!important;
+ z-index:2147483646!important;
 }
 body:has(#playerView:not([hidden])) .top-actions{
  top:100px!important;right:14px!important;
