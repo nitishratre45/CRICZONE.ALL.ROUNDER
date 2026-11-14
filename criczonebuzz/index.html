@@ -1068,6 +1068,43 @@
 }
 </style>
 
+<style id="cz-video-zoom-fix">
+/* Make Fit / Fill / Zoom apply to Shaka's actual rendered video surface. */
+#video-wrapper .shaka-video-container,
+#video-wrapper .shaka-video-container video,
+#video-wrapper video#player-video {
+  width:100% !important;
+  height:100% !important;
+}
+#video-wrapper .shaka-video-container video,
+#video-wrapper video#player-video {
+  object-position:center center !important;
+  transition:object-fit .18s ease, transform .18s ease;
+}
+#video-wrapper .shaka-video-container.mode-fill video,
+#video-wrapper video#player-video.mode-fill {object-fit:fill !important;transform:none !important}
+#video-wrapper .shaka-video-container.mode-cover video,
+#video-wrapper video#player-video.mode-cover {
+  object-fit:cover !important;
+  transform:scale(1.12) !important;
+  transform-origin:center center !important;
+}
+#video-wrapper:fullscreen .shaka-video-container,
+#video-wrapper:-webkit-full-screen .shaka-video-container,
+#video-wrapper:fullscreen .shaka-video-container video,
+#video-wrapper:-webkit-full-screen .shaka-video-container video,
+#video-wrapper:fullscreen video#player-video,
+#video-wrapper:-webkit-full-screen video#player-video {
+  width:100vw !important;height:100vh !important;max-width:none !important;max-height:none !important;
+}
+#video-wrapper:fullscreen .shaka-video-container.mode-cover video,
+#video-wrapper:-webkit-full-screen .shaka-video-container.mode-cover video,
+#video-wrapper:fullscreen video#player-video.mode-cover,
+#video-wrapper:-webkit-full-screen video#player-video.mode-cover {
+  object-fit:cover !important;transform:scale(1.12) !important;
+}
+</style>
+
 <style id="cz-fullscreen-live-watching-style">
 #cz-fullscreen-live-watching {
   display:none;
@@ -1881,9 +1918,11 @@
                     e.stopPropagation();
                     fitIdx = (fitIdx + 1) % FITS.length;
                     const mode = FITS[fitIdx];
-                    $video.classList.remove("mode-fill", "mode-cover");
-                    if (mode === "fill") $video.classList.add("mode-fill");
-                    if (mode === "cover") $video.classList.add("mode-cover");
+                    const shakaVideo = $videoWrapper.querySelector(".shaka-video-container");
+                    [$video, shakaVideo].filter(Boolean).forEach(node => {
+                        node.classList.remove("mode-fill", "mode-cover");
+                        if (mode === "fill" || mode === "cover") node.classList.add("mode-" + mode);
+                    });
                     btn.className = "sp-fit-btn mode-" + mode;
                     const pill = btn.querySelector(".fit-pill");
                     if (pill) pill.textContent = FIT_LABELS[mode];
