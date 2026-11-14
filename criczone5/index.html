@@ -675,7 +675,7 @@ body:has(#playerView:not([hidden])) #viewerBadge{
    localStorage.setItem("criczone_live_browser_id",visitorId);
   }
  }catch(_){visitorId=createId();}
- var busy=false,pageVisitPending=true;
+ var busy=false,pageVisitPending=true,pageVisitRequestId=createId();
  function paint(data){
   var total=data.total_visits??data.totalVisits;
   var live=data.live_visitors??data.liveVisitors;
@@ -689,7 +689,7 @@ body:has(#playerView:not([hidden])) #viewerBadge{
    var response=await apiFetch("/api/visit",{
     method:"POST",mode:"cors",cache:"no-store",credentials:"omit",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending})
+    body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending,request_id:pageVisitRequestId})
    });
    if(!response.ok) throw new Error("visit "+response.status);
    paint(await response.json());
