@@ -104,27 +104,35 @@
         "#viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.25)!important}" +
         "#viewerBadge #totalVisits,#viewerBadge #liveWatching{display:inline-block!important;min-width:16px!important;padding:2px 4px!important;border-radius:4px!important;background:linear-gradient(135deg,#8fffea,#2bd9b7)!important;color:#071b20!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}" +
         "@media(max-width:480px){#viewerBadge{top:8px!important;right:8px!important;padding:3px 5px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:7px!important}}";
+      style.textContent += "@keyframes czCounterSweep{from{transform:translateX(0)}to{transform:translateX(calc(-1 * (100vw - 100% - 24px)))}}";
       document.head.appendChild(style);
     }
-    // Make the compact counter draggable on desktop and touch devices.
-    // Position is remembered separately for each folder/page path.
+    // Auto-sweep horizontally every 10 seconds until the user manually places it.
+    // A saved manual position disables the automatic movement for this page.
     if (!badge.__czDraggable) {
       badge.__czDraggable = true;
-      badge.setAttribute("title", "Drag to move counter");
       var positionKey = "cz_counter_position_v1:" + location.pathname;
+      var manuallyPlaced = false;
       try {
         var saved = JSON.parse(localStorage.getItem(positionKey) || "null");
         if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+          manuallyPlaced = true;
           badge.style.setProperty("left", Math.max(0, Math.min(saved.x, innerWidth - badge.offsetWidth)) + "px", "important");
           badge.style.setProperty("top", Math.max(0, Math.min(saved.y, innerHeight - badge.offsetHeight)) + "px", "important");
           badge.style.setProperty("right", "auto", "important");
         }
       } catch (_) {}
+      if (!manuallyPlaced) {
+        badge.classList.add("cz-counter-auto-move");
+        badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+      }
+      badge.setAttribute("title", manuallyPlaced ? "Drag to move counter" : "Automatically moves; drag to set position");
       var drag = null;
       badge.addEventListener("pointerdown", function (event) {
         if (event.button !== undefined && event.button !== 0) return;
         var rect = badge.getBoundingClientRect();
-        drag = { id: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top, moved: false };
+        badge.style.setProperty("animation", "none", "important");
+        drag = { id: event.pointerId, dx: event.clientX - rect.left, dy: event.clientY - rect.top, startX: rect.left, startY: rect.top, moved: false };
         badge.style.setProperty("left", rect.left + "px", "important");
         badge.style.setProperty("top", rect.top + "px", "important");
         badge.style.setProperty("right", "auto", "important");
@@ -137,19 +145,34 @@
         if (!drag || event.pointerId !== drag.id) return;
         var x = Math.max(0, Math.min(event.clientX - drag.dx, innerWidth - badge.offsetWidth));
         var y = Math.max(0, Math.min(event.clientY - drag.dy, innerHeight - badge.offsetHeight));
-        if (Math.abs(x - (parseFloat(badge.style.left) || 0)) > 1 || Math.abs(y - (parseFloat(badge.style.top) || 0)) > 1) drag.moved = true;
+        if (Math.abs(x - drag.startX) > 5 || Math.abs(y - drag.startY) > 5) drag.moved = true;
         badge.style.setProperty("left", x + "px", "important");
         badge.style.setProperty("top", y + "px", "important");
       });
       function finishDrag(event) {
         if (!drag || (event && event.pointerId !== drag.id)) return;
+        var wasMoved = drag.moved;
         var rect = badge.getBoundingClientRect();
-        try { localStorage.setItem(positionKey, JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) })); } catch (_) {}
+        if (wasMoved) {
+          manuallyPlaced = true;
+          badge.classList.remove("cz-counter-auto-move");
+          badge.style.setProperty("animation", "none", "important");
+          try { localStorage.setItem(positionKey, JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) })); } catch (_) {}
+          badge.setAttribute("title", "Drag to move counter");
+        } else if (!manuallyPlaced) {
+          badge.style.setProperty("left", "", "important");
+          badge.style.setProperty("top", "", "important");
+          badge.style.setProperty("right", "12px", "important");
+          badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+        }
         drag = null;
         badge.style.setProperty("cursor", "grab", "important");
       }
       badge.addEventListener("pointerup", finishDrag);
       badge.addEventListener("pointercancel", finishDrag);
+      window.addEventListener("resize", function () {
+        if (!manuallyPlaced && !drag) badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+      });
     }
     return { total: document.getElementById("totalVisits"), live: document.getElementById("liveWatching") };
   }
