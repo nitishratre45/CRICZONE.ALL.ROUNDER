@@ -1242,17 +1242,63 @@ document.addEventListener("DOMContentLoaded", main);
 
 <script>
 (function(){
- const totalEl=document.getElementById("totalVisits");
+ "use strict";
+ if(window.__CRICZONE_TOTAL_COUNTER__) return;
+ window.__CRICZONE_TOTAL_COUNTER__=true;
+ var API="https://criczone-visitor-counter.criczonebuzz.workers.dev";
+ var totalEl=document.getElementById("totalVisits");
  if(!totalEl) return;
+ var visitorId="";
+ function createId(){
+  return (window.crypto&&crypto.randomUUID)
+   ?crypto.randomUUID().replace(/-/g,"")
+   :"cz"+Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);
+ }
+ try{
+  visitorId=localStorage.getItem("criczone_live_browser_id")||"";
+  if(!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)){
+   visitorId=createId();
+   localStorage.setItem("criczone_live_browser_id",visitorId);
+  }
+ }catch(_){visitorId=createId();}
+ var busy=false,pageVisitPending=true;
+ function paint(data){
+  var total=data.total_visits??data.totalVisits;
+  if(Number.isFinite(Number(total))) totalEl.textContent=Number(total).toLocaleString("en-IN");
+ }
+ async function heartbeat(){
+  if(busy||document.visibilityState!=="visible") return;
+  busy=true;
+  try{
+   var response=await fetch(API+"/api/visit",{
+    method:"POST",mode:"cors",cache:"no-store",credentials:"omit",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending})
+   });
+   if(!response.ok) throw new Error("visit "+response.status);
+   var data=await response.json();
+   pageVisitPending=false;
+   paint(data);
+  }catch(error){console.warn("[CRICZONE] Total counter unavailable:",error);}
+  finally{busy=false;}
+ }
+ async function refreshStats(){
+  if(document.visibilityState!=="visible") return;
+  try{
+   var response=await fetch(API+"/api/stats",{
+    method:"GET",mode:"cors",cache:"no-store",credentials:"omit"
+   });
+   if(!response.ok) throw new Error("stats "+response.status);
+   paint(await response.json());
+  }catch(error){console.warn("[CRICZONE] Total counter refresh unavailable:",error);}
+ }
  totalEl.textContent="9,220";
- fetch("https://criczone-total-counter.pages-1.workers.dev/count",{
-  method:"POST",
-  cache:"no-store",
-  headers:{"Content-Type":"application/json"},
-  body:"{}"
- }).then(r=>{if(!r.ok) throw new Error("Counter HTTP "+r.status);return r.json();})
- .then(data=>{if(Number.isFinite(Number(data.total))) totalEl.textContent=Number(data.total).toLocaleString("en-IN");})
- .catch(err=>console.warn("Cloudflare total counter unavailable; showing saved total",err));
+ heartbeat();
+ window.setInterval(heartbeat,30000);
+ window.setInterval(refreshStats,15000);
+ document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible") heartbeat();
+ });
 })();
 </script>
 
