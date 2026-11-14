@@ -2,13 +2,13 @@
   "id": "./",
   "name": "CRICZONE · Live Cricket",
   "short_name": "CRICZONE",
-  "description": "CricZone live sports channels",
+  "description": "CRICZONE live sports channel directory and matchday streaming portal",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#080d16",
-  "theme_color": "#080d16",
+  "background_color": "#080710",
+  "theme_color": "#080710",
   "icons": [
     {
       "src": "../photos/photo_2026-10-28_14-52-23.jpg",
