@@ -1546,8 +1546,15 @@
                             list.forEach(raw => {
                                 const norm = normalizeMatch(raw);
                                 if (!norm || !norm.title) return;
-                                const cleanId = String(norm.id || '').trim().replace(/^match-/i, '');
-                                const key = cleanId || norm.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                const cleanId = String(norm.id || norm.match_id || '').trim().replace(/^match-/i, '');
+                                // Feeds may assign different IDs to the same fixture. Prefer a normalized
+                                // event title key so the same live match is counted/rendered only once.
+                                const titleKey = String(norm.title || norm.event_name || '')
+                                    .toLowerCase()
+                                    .replace(/\b(u\s*19|under\s*19)\b/g, 'u19')
+                                    .replace(/\b(vs?\.?|versus)\b/g, 'vs')
+                                    .replace(/[^a-z0-9]/g, '');
+                                const key = titleKey || cleanId || ('feed-' + matchMap.size);
                                 if (!matchMap.has(key)) {
                                     matchMap.set(key, norm);
                                 } else {
