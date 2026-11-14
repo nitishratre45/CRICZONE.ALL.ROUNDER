@@ -558,6 +558,19 @@ body:has(#playerView:not([hidden])) #viewerBadge{
 @media(max-width:520px){
  .cz-player-top .cz-player-tg{margin-right:52px!important}
 }
+/* The player view creates a stacking context (z-index:1000).
+   Raise that whole context while the popup is open so its blurred backdrop
+   covers floating Share/Rotate and Total/Live overlays outside it. */
+body:has(#popup.visible) .cz-player-view{
+ z-index:2147483647!important;
+}
+body:has(#popup.visible) #popup{
+ z-index:2147483647!important;
+}
+body:has(#popup.visible) .top-actions,
+body:has(#popup.visible) #viewerBadge{
+ z-index:2147483646!important;
+}
 /* Keep Share/Rotate and counters above the popup card, clear of its close button. */
 .top-actions{
  top:8px!important;right:14px!important;z-index:2147483646!important;
