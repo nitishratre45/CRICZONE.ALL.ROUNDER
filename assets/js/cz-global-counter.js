@@ -40,6 +40,31 @@
     activeIndex = index;
     retryAt = index === 0 ? 0 : Date.now() + 12 * 60 * 60 * 1000;
     saveRoute();
+    try {
+      localStorage.setItem("cz_counter_failover_state_v1", JSON.stringify({
+        activeLevel: index + 1,
+        activeEndpoint: index === 0 ? "PRIMARY" : (index === 1 ? "BACKUP_2" : "BACKUP_3"),
+        updatedAt: new Date().toISOString()
+      }));
+    } catch (_) {}
+  }
+
+  function saveEndpointHealth(index, status, error) {
+    var names = ["PRIMARY", "BACKUP_2", "BACKUP_3"];
+    var keys = ["cz_counter_primary_status_v1", "cz_counter_backup2_status_v1", "cz_counter_backup3_status_v1"];
+    var record = {
+      level: index + 1,
+      endpoint: names[index],
+      status: status,
+      checkedAt: new Date().toISOString()
+    };
+    if (error) record.error = String(error).slice(0, 180);
+    try {
+      localStorage.setItem(keys[index], JSON.stringify(record));
+      var all = JSON.parse(localStorage.getItem("cz_counter_endpoint_health_v1") || "{}");
+      all[names[index]] = record;
+      localStorage.setItem("cz_counter_endpoint_health_v1", JSON.stringify(all));
+    } catch (_) {}
   }
 
   async function requestAPI(base, path, options) {
@@ -58,7 +83,13 @@
       } else if (path === "/api/visit" && (!data || data.ok !== true)) {
         throw new Error("Counter visit write was not acknowledged");
       }
+      var endpointIndex = API_LIST.indexOf(base);
+      if (endpointIndex >= 0) saveEndpointHealth(endpointIndex, "READY");
       return { response: response, data: data };
+    } catch (error) {
+      var failedIndex = API_LIST.indexOf(base);
+      if (failedIndex >= 0) saveEndpointHealth(failedIndex, "FAILED", error);
+      throw error;
     } finally {
       clearTimeout(timer);
     }
