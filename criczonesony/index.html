@@ -1443,12 +1443,12 @@ function showPlayer(ch){
   if(!ch||!ch.stream_url)return;
   try{
     localStorage.setItem("czSonyLastChannel",JSON.stringify({id:ch.id,name:ch.name,at:Date.now()}));
+    sessionStorage.setItem("czSonyStream:"+ch.id,ch.stream_url);
     var recent=safeStoreGet("czSonyRecent",[]).filter(function(id){return id!==ch.id;});
     recent.unshift(ch.id);
     localStorage.setItem("czSonyRecent",JSON.stringify(recent.slice(0,20)));
   }catch(e){}
   var target=new URL("./player.html",location.href);
-  target.searchParams.set("url",ch.stream_url);
   target.searchParams.set("title",ch.name||"Live Channel");
   target.searchParams.set("channel",ch.id||"all");
   // Replace the selected-channel history entry so browser Back returns to the channel list.
