@@ -464,6 +464,25 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
 body:has(#home:not([hidden])) #viewerBadge{
  left:10px!important;right:auto!important;top:250px!important;
 }
+/* Player view: move Share and Rotate below the title/Telegram toolbar. */
+body:has(#playerView:not([hidden])) .top-actions{
+ top:108px!important;right:14px!important;gap:12px!important;
+}
+body:has(#playerView:not([hidden])) .top-actions .action-icon-btn{
+ width:34px;height:34px;
+}
+/* Make the shared Total/Live pill clearer without covering player controls. */
+body:has(#playerView:not([hidden])) #viewerBadge{
+ right:auto!important;left:10px!important;top:68px!important;
+ border-radius:10px;padding:1px;
+ box-shadow:0 4px 14px rgba(0,0,0,.45),0 0 12px rgba(0,229,192,.13);
+}
+#viewerBadge .watching-total-label,#viewerBadge .watching-live-label{
+ gap:4px;padding:4px 6px;font-size:8px;letter-spacing:.35px;
+}
+#totalVisits,#liveWatching{
+ min-width:17px;padding:2px 4px;font-size:9px;border-radius:5px;
+}
 /* Keep counter clear of the channel title and floating Get App button while a stream is open. */
 body:has(#playerView:not([hidden])) #viewerBadge{
  right:auto!important;left:10px!important;top:68px!important;
