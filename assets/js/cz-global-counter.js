@@ -124,7 +124,7 @@
       } catch (_) {}
       if (!manuallyPlaced) {
         badge.classList.add("cz-counter-auto-move");
-        badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+        badge.style.setProperty("animation", "czCounterSweep 5s ease-in-out infinite alternate", "important");
       }
       badge.setAttribute("title", manuallyPlaced ? "Drag to move counter" : "Automatically moves; drag to set position");
       var drag = null;
@@ -163,7 +163,7 @@
           badge.style.setProperty("left", "", "important");
           badge.style.setProperty("top", "", "important");
           badge.style.setProperty("right", "12px", "important");
-          badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+          badge.style.setProperty("animation", "czCounterSweep 5s ease-in-out infinite alternate", "important");
         }
         drag = null;
         badge.style.setProperty("cursor", "grab", "important");
@@ -171,7 +171,7 @@
       badge.addEventListener("pointerup", finishDrag);
       badge.addEventListener("pointercancel", finishDrag);
       window.addEventListener("resize", function () {
-        if (!manuallyPlaced && !drag) badge.style.setProperty("animation", "czCounterSweep 10s ease-in-out infinite alternate", "important");
+        if (!manuallyPlaced && !drag) badge.style.setProperty("animation", "czCounterSweep 5s ease-in-out infinite alternate", "important");
       });
     }
     return { total: document.getElementById("totalVisits"), live: document.getElementById("liveWatching") };
