@@ -4,26 +4,13 @@
   window.__CZ_VISITOR_COUNTER__ = true;
 
   var API = "https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev";
-  var VISITOR_KEY = "czbuzz_visitor_id_v2";
-  var visitorId = "";
+  // A fresh ID per page load counts every new visit, without a 30-minute cooldown.
+  var visitorId = createVisitorId();
 
   function createVisitorId() {
     return (window.crypto && crypto.randomUUID)
       ? crypto.randomUUID().replace(/-/g, "")
       : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  }
-
-  // localStorage shares one browser identity across tabs, unlike sessionStorage.
-  try {
-    visitorId = localStorage.getItem(VISITOR_KEY) || "";
-    if (!visitorId) {
-      // Migrate an existing tab identity so the upgrade does not create a needless new visit.
-      try { visitorId = sessionStorage.getItem("czbuzz_visitor_id") || ""; } catch (_) {}
-      if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) visitorId = createVisitorId();
-      localStorage.setItem(VISITOR_KEY, visitorId);
-    }
-  } catch (_) {
-    visitorId = createVisitorId();
   }
 
   var stats = { totalVisits: null, liveVisitors: null };
@@ -122,7 +109,7 @@
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">👥</span><strong class="czbuzz-counter-value" id="czbuzz-total-visits">—</strong><span class="czbuzz-counter-label">Total Visits</span></div>' +
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">🟢</span><strong class="czbuzz-counter-value" id="czbuzz-live-visitors">—</strong><span class="czbuzz-counter-label">Live Visitors</span></div>' +
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">🏏</span><strong class="czbuzz-counter-value" id="czbuzz-live-matches">0</strong><span class="czbuzz-counter-label">Live Matches</span></div>' +
-      '</div><div class="czbuzz-counter-foot">One browser counts once per 30-minute visit · Inactive browsers expire after 75 seconds</div>';
+      '</div>';
     hero.insertAdjacentElement("afterend", panel);
     paint();
     var liveNode = document.getElementById("count-live");
