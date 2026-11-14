@@ -162,6 +162,149 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(40,91,126,.22),transparen
 @media(max-width:520px){.cz-home{padding:12px 11px 30px}.cz-header{padding:10px 12px;border-radius:14px}.cz-brand-mark{width:39px;height:39px}.cz-brand b{font-size:16px}.cz-telegram{padding:9px 10px;font-size:9px}.cz-intro{padding:29px 3px 17px}.cz-tools{align-items:stretch;flex-direction:column}.cz-search{width:100%}.cz-count{text-align:right}.cz-grid{grid-template-columns:1fr;gap:10px}.cz-channel{min-height:76px}.cz-player-top{gap:8px;padding:0 8px}.cz-back{padding:8px;font-size:8px}.cz-player-top strong{font-size:10px}.cz-player-tg{padding:8px;font-size:8px}}
 @media(prefers-reduced-motion:reduce){.cz-channel{transition:none}}
 
+
+/* CRICZONE5 premium visual refresh — CSS only */
+:root{
+  --cz-gold:#f3c66b;
+  --cz-gold-2:#d99a38;
+  --cz-panel:#121a27;
+  --cz-panel-2:#182335;
+  --cz-line:rgba(243,198,107,.18);
+}
+html,body{background:#070a10;color:#f7f8fb}
+body{
+  background:
+    radial-gradient(ellipse at 8% -8%,rgba(243,198,107,.13),transparent 34%),
+    radial-gradient(ellipse at 92% 6%,rgba(42,111,166,.16),transparent 32%),
+    linear-gradient(180deg,#080d16 0%,#070a10 58%,#0b1019 100%);
+}
+.cz-home{padding-top:clamp(14px,2.5vw,34px)}
+.cz-header{
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(243,198,107,.2);
+  border-radius:20px;
+  background:linear-gradient(112deg,rgba(28,37,52,.97),rgba(13,21,33,.96) 58%,rgba(25,34,47,.97));
+  box-shadow:0 18px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.06);
+}
+.cz-header:after{
+  content:"";position:absolute;z-index:-1;width:230px;height:230px;right:-95px;top:-155px;
+  border-radius:50%;background:rgba(243,198,107,.12);filter:blur(5px)
+}
+.cz-brand-mark{
+  width:48px;height:48px;border:1px solid rgba(255,255,255,.35);
+  border-radius:15px;background:linear-gradient(145deg,#ffe29a,#d99a38 72%,#9c6424);
+  box-shadow:0 8px 24px rgba(217,154,56,.28),inset 0 1px rgba(255,255,255,.55);
+}
+.cz-brand b{font-size:20px;letter-spacing:1.7px}
+.cz-brand small{color:#c4ccd7;letter-spacing:2.2px}
+.cz-telegram,.cz-player-tg{
+  border:1px solid rgba(91,183,255,.34);
+  background:linear-gradient(135deg,#17618f,#10436b);
+  box-shadow:0 7px 20px rgba(0,102,170,.2);
+  transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;
+}
+.cz-telegram:hover,.cz-player-tg:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 10px 25px rgba(0,136,204,.28)}
+.cz-intro{padding:clamp(32px,5vw,58px) 5px 25px}
+.cz-intro>span:nth-child(2){color:var(--cz-gold);letter-spacing:2.5px}
+.cz-live-dot{background:#ff5265;box-shadow:0 0 0 5px rgba(255,82,101,.12),0 0 16px #ff5265}
+.cz-intro h1{
+  margin:13px 0 10px;font-size:clamp(30px,5vw,50px);line-height:1.08;
+  letter-spacing:-1.8px;text-shadow:0 5px 24px rgba(0,0,0,.35)
+}
+.cz-intro p{max-width:580px;color:#aeb8c7;font-size:14px}
+.cz-tools{margin:8px 0 20px}
+.cz-search{
+  min-height:50px;border:1px solid rgba(255,255,255,.13);border-radius:15px;
+  background:linear-gradient(135deg,rgba(22,31,45,.98),rgba(13,20,31,.98));
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 8px 24px rgba(0,0,0,.16);
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.cz-search:focus-within{border-color:rgba(243,198,107,.65);box-shadow:0 0 0 3px rgba(243,198,107,.1),0 8px 24px rgba(0,0,0,.2)}
+.cz-search span{color:var(--cz-gold);font-size:27px}
+.cz-search input{font-size:13px}
+.cz-count{color:#c0c8d3;letter-spacing:.8px}
+.cz-grid{gap:15px}
+.cz-channel{
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:94px;padding:15px;
+  border:1px solid rgba(255,255,255,.095);border-radius:18px;
+  background:linear-gradient(135deg,rgba(25,35,51,.98),rgba(14,22,34,.98));
+  box-shadow:0 8px 24px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.035);
+  transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;
+}
+.cz-channel:before{
+  content:"";position:absolute;z-index:-1;inset:0;opacity:0;
+  background:radial-gradient(circle at 0 0,rgba(243,198,107,.13),transparent 65%);
+  transition:opacity .22s ease
+}
+.cz-channel:hover{
+  transform:translateY(-4px);border-color:rgba(243,198,107,.55);
+  background:linear-gradient(135deg,#202d40,#111d2d);
+  box-shadow:0 16px 34px rgba(0,0,0,.3),0 0 0 1px rgba(243,198,107,.08)
+}
+.cz-channel:hover:before{opacity:1}
+.cz-channel:focus-visible,.cz-back:focus-visible,.cz-telegram:focus-visible,.cz-player-tg:focus-visible{
+  outline:3px solid rgba(243,198,107,.8);outline-offset:3px
+}
+.cz-channel-logo{
+  width:56px;height:56px;flex-basis:56px;border-radius:15px;
+  border:1px solid rgba(243,198,107,.3);
+  background:linear-gradient(145deg,#34435a,#141e2c);
+  color:#ffe09a;box-shadow:0 5px 16px rgba(0,0,0,.2)
+}
+.cz-channel-logo img{padding:4px;background:#f7f8fa}
+.cz-channel-info strong{font-size:13.5px;letter-spacing:.1px}
+.cz-channel-info small{color:#a4afbf;font-size:9px;letter-spacing:1px}
+.cz-play-icon{
+  width:34px;height:34px;flex-basis:34px;
+  background:linear-gradient(145deg,#ffe29a,#e2aa4c);
+  box-shadow:0 5px 14px rgba(217,154,56,.22);
+  transition:transform .2s ease,box-shadow .2s ease
+}
+.cz-channel:hover .cz-play-icon{transform:scale(1.1);box-shadow:0 7px 20px rgba(243,198,107,.32)}
+.cz-loading,.cz-empty{
+  border:1px dashed rgba(243,198,107,.25);border-radius:18px;
+  background:rgba(18,26,39,.55);color:#b7c1cf
+}
+.cz-player-view{background:#03060b}
+.cz-player-top{
+  height:64px;flex-basis:64px;padding:0 16px;
+  border-bottom:1px solid rgba(243,198,107,.18);
+  background:linear-gradient(100deg,#151f2e,#0d1521);
+  box-shadow:0 8px 24px rgba(0,0,0,.24)
+}
+.cz-player-top strong{font-size:13px;letter-spacing:.2px}
+.cz-back{
+  border:1px solid rgba(243,198,107,.3);border-radius:11px;
+  background:linear-gradient(135deg,#263449,#172334);color:#ffe3a4;
+  transition:transform .2s ease,background .2s ease
+}
+.cz-back:hover{transform:translateY(-1px);background:#30415a}
+.cz-player-view .iframe-container{background:#000}
+@media(min-width:760px){
+  .cz-grid{gap:18px}
+  .cz-channel{min-height:100px;padding:17px}
+}
+@media(max-width:520px){
+  .cz-home{padding:10px 10px 28px}
+  .cz-header{border-radius:16px}
+  .cz-brand-mark{width:42px;height:42px;border-radius:13px}
+  .cz-brand b{font-size:17px}
+  .cz-intro{padding:32px 3px 20px}
+  .cz-intro h1{letter-spacing:-1px}
+  .cz-intro p{font-size:12px}
+  .cz-tools{gap:10px}
+  .cz-channel{min-height:82px;padding:12px;border-radius:15px}
+  .cz-channel-logo{width:50px;height:50px;flex-basis:50px;border-radius:13px}
+  .cz-player-top{height:56px;flex-basis:56px}
+}
+@media(hover:none){
+  .cz-channel:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
