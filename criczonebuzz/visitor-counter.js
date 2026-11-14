@@ -3,85 +3,20 @@
   if (window.__CZ_VISITOR_COUNTER__) return;
   window.__CZ_VISITOR_COUNTER__ = true;
 
-  var API = "https://criczonebuzz-visitor-counter.criczonebuzz.workers.dev";
-  // One stable browser ID across refreshes and tabs, so Live Watching counts a browser once.
-  var visitorId = "";
-
-  function createVisitorId() {
-    return (window.crypto && crypto.randomUUID)
-      ? crypto.randomUUID().replace(/-/g, "")
-      : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  }
-
-  try {
-    visitorId = localStorage.getItem("czbuzz_live_browser_id") || "";
-    if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
-      visitorId = createVisitorId();
-      localStorage.setItem("czbuzz_live_browser_id", visitorId);
+  function syncFromGlobalCounter() {
+    var totalNode = document.getElementById("totalVisits");
+    var liveNode = document.getElementById("liveWatching");
+    var total = document.getElementById("czbuzz-total-visits");
+    var live = document.getElementById("czbuzz-live-visitors");
+    if (total && totalNode && totalNode.textContent.trim() && totalNode.textContent.trim() !== "Loading…") {
+      total.textContent = totalNode.textContent.trim();
     }
-  } catch (_) {
-    visitorId = createVisitorId();
-  }
-
-  var stats = { totalVisits: null, liveVisitors: null };
-  var busy = false;
-  var pageVisitPending = true;
-
-  function format(value) {
-    return Number(value || 0).toLocaleString("en-IN");
-  }
-  function updateNumber(id, value) {
-    var node = document.getElementById(id);
-    if (node) node.textContent = value == null ? "—" : format(value);
-  }
-  function paint() {
-    updateNumber("czbuzz-total-visits", stats.totalVisits);
-    updateNumber("czbuzz-live-visitors", stats.liveVisitors);
-    var liveNode = document.getElementById("count-live");
+    if (live && liveNode && liveNode.textContent.trim() && liveNode.textContent.trim() !== "Loading…") {
+      live.textContent = liveNode.textContent.trim();
+    }
+    var liveCount = document.getElementById("count-live");
     var matchNode = document.getElementById("czbuzz-live-matches");
-    if (matchNode && liveNode) matchNode.textContent = (liveNode.textContent || "0").trim();
-  }
-
-  async function heartbeat() {
-    // Hidden/background tabs are not considered active visitors. They expire naturally.
-    if (busy || document.visibilityState !== "visible") return;
-    busy = true;
-    try {
-      var response = await fetch(API + "/api/visit", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-store",
-        credentials: "omit",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitor_id: visitorId, count_visit: pageVisitPending })
-      });
-      if (!response.ok) throw new Error("visit " + response.status);
-      var data = await response.json();
-      pageVisitPending = false;
-      stats.totalVisits = data.total_visits ?? data.totalVisits;
-      stats.liveVisitors = (Number(data.live_visitors ?? data.liveVisitors) || 0) + 200;
-      paint();
-    } catch (error) {
-      console.warn("[CRICZONE] Visitor counter unavailable:", error);
-    } finally {
-      busy = false;
-    }
-  }
-
-  async function refreshStats() {
-    if (document.visibilityState !== "visible") return;
-    try {
-      var response = await fetch(API + "/api/stats", {
-        method: "GET", mode: "cors", cache: "no-store", credentials: "omit"
-      });
-      if (!response.ok) throw new Error("stats " + response.status);
-      var data = await response.json();
-      stats.totalVisits = data.total_visits ?? data.totalVisits;
-      stats.liveVisitors = (Number(data.live_visitors ?? data.liveVisitors) || 0) + 200;
-      paint();
-    } catch (error) {
-      console.warn("[CRICZONE] Visitor stats refresh unavailable:", error);
-    }
+    if (matchNode && liveCount) matchNode.textContent = (liveCount.textContent || "0").trim();
   }
 
   function addStyles() {
@@ -123,21 +58,20 @@
       '<div class="czbuzz-counter-item"><span class="czbuzz-counter-icon">🏏</span><strong class="czbuzz-counter-value" id="czbuzz-live-matches">0</strong><span class="czbuzz-counter-label">Live Matches</span></div>' +
       '</div>';
     hero.insertAdjacentElement("afterend", panel);
-    paint();
+    syncFromGlobalCounter();
     var liveNode = document.getElementById("count-live");
     if (liveNode && window.MutationObserver) {
-      new MutationObserver(paint).observe(liveNode, { childList: true, characterData: true, subtree: true });
+      new MutationObserver(syncFromGlobalCounter).observe(liveNode, { childList: true, characterData: true, subtree: true });
     }
   }
 
   function init() {
     addStyles();
     mountCounter();
-    heartbeat();
-    window.setInterval(heartbeat, 30000);
-    window.setInterval(refreshStats, 15000);
+    syncFromGlobalCounter();
+    window.setInterval(syncFromGlobalCounter, 2000);
     document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "visible") heartbeat();
+      if (document.visibilityState === "visible") syncFromGlobalCounter();
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
