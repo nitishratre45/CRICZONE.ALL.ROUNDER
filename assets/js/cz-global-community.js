@@ -11,6 +11,30 @@
   photos.forEach(function(photo){var preload=new Image();preload.decoding="async";preload.src=photo.src;});
   var telegram = "https://t.me/+pN15_8gc54s2NDU1";
 
+  /* Build each portrait pair once. Rotation only toggles opacity; image URLs are never reassigned. */
+  function createPhotoPair(container, className) {
+    container.style.position = "relative";
+    photos.forEach(function(photo,index){
+      var img = document.createElement("img");
+      img.className = className;
+      img.alt = photo.name;
+      img.decoding = "async";
+      img.src = photo.src;
+      img.style.position = "absolute";
+      img.style.inset = "0";
+      img.style.opacity = index === 0 ? "1" : "0";
+      img.style.transition = "opacity .18s ease";
+      img.style.pointerEvents = "none";
+      container.appendChild(img);
+    });
+    return Array.from(container.querySelectorAll("img"));
+  }
+  function showPhotoPair(images,index) {
+    images.forEach(function(img,i){
+      img.style.opacity = i === index ? "1" : "0";
+    });
+  }
+
   /* Replace cricket emoji in site navbar/brand marks with rotating player portraits. */
   var logoPhotoIndex = 0;
   function updateBrandPhotos(root) {
@@ -24,15 +48,12 @@
       if (!hasCricketEmoji && el.querySelector("img,svg")) return;
       el.dataset.czPlayerLogo = "1";
       el.classList.add("cz-player-brand-photo");
-      var img = document.createElement("img");
-      img.className = "cz-player-brand-img";
-      img.alt = photos[logoPhotoIndex].name;
-      img.src = photos[logoPhotoIndex].src;
-      el.replaceChildren(img);
+      el.replaceChildren();
+      createPhotoPair(el, "cz-player-brand-img");
     });
   }
   var brandPhotoStyle = document.createElement("style");
-  brandPhotoStyle.textContent = ".cz-player-brand-photo{position:relative!important;isolation:isolate!important;overflow:hidden!important;padding:0!important;border:1px solid rgba(105,205,255,.28)!important;outline:0!important;box-shadow:0 3px 12px rgba(0,0,0,.22),0 0 14px rgba(40,160,255,.08)!important;background:#101b2b!important;border-radius:11px!important;transform:translateZ(0);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important}.cz-player-brand-photo:after{content:\"\";position:absolute;inset:-40% auto -40% -75%;width:42%;pointer-events:none;background:linear-gradient(105deg,transparent,rgba(255,255,255,.24),transparent);transform:skewX(-18deg);animation:cz-brand-sheen 6s ease-in-out infinite}.cz-player-brand-img{position:relative;z-index:0;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 20%!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:inherit!important;opacity:1;transition:opacity .22s ease,transform .28s ease!important}.cz-player-brand-photo:hover{transform:translateY(-2px) scale(1.035)!important;border-color:rgba(105,205,255,.65)!important;box-shadow:0 7px 18px rgba(0,0,0,.28),0 0 18px rgba(40,160,255,.2)!important}.cz-player-brand-photo:hover .cz-player-brand-img{transform:scale(1.06)!important}@keyframes cz-brand-sheen{0%,68%,100%{left:-75%;opacity:0}74%{opacity:1}92%{left:140%;opacity:0}}@media(prefers-reduced-motion:reduce){.cz-player-brand-photo,.cz-player-brand-img{transition:none!important}.cz-player-brand-photo:after{animation:none!important}.cz-player-brand-photo:hover,.cz-player-brand-photo:hover .cz-player-brand-img{transform:none!important}}";
+  brandPhotoStyle.textContent = ".cz-player-brand-photo{position:relative!important;isolation:isolate!important;overflow:hidden!important;padding:0!important;border:1px solid rgba(105,205,255,.28)!important;outline:0!important;box-shadow:0 3px 12px rgba(0,0,0,.22),0 0 14px rgba(40,160,255,.08)!important;background:#101b2b!important;border-radius:11px!important;transform:translateZ(0);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important}.cz-player-brand-photo:after{content:\"\";position:absolute;inset:-40% auto -40% -75%;width:42%;pointer-events:none;background:linear-gradient(105deg,transparent,rgba(255,255,255,.24),transparent);transform:skewX(-18deg);animation:cz-brand-sheen 6s ease-in-out infinite}.cz-player-brand-img{position:absolute!important;inset:0!important;z-index:0;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 20%!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:inherit!important;opacity:0;transition:opacity .22s ease,transform .28s ease!important}.cz-player-brand-photo:hover{transform:translateY(-2px) scale(1.035)!important;border-color:rgba(105,205,255,.65)!important;box-shadow:0 7px 18px rgba(0,0,0,.28),0 0 18px rgba(40,160,255,.2)!important}.cz-player-brand-photo:hover .cz-player-brand-img{transform:scale(1.06)!important}@keyframes cz-brand-sheen{0%,68%,100%{left:-75%;opacity:0}74%{opacity:1}92%{left:140%;opacity:0}}@media(prefers-reduced-motion:reduce){.cz-player-brand-photo,.cz-player-brand-img{transition:none!important}.cz-player-brand-photo:after{animation:none!important}.cz-player-brand-photo:hover,.cz-player-brand-photo:hover .cz-player-brand-img{transform:none!important}}";
   document.head.appendChild(brandPhotoStyle);
   updateBrandPhotos(document);
   var brandObserver = new MutationObserver(function(){ updateBrandPhotos(document); });
@@ -41,14 +62,8 @@
   var brandPhotoTimer=window.setInterval(function(){
     if(document.hidden)return;
     logoPhotoIndex = (logoPhotoIndex + 1) % photos.length;
-    document.querySelectorAll(".cz-player-brand-img").forEach(function(img){
-      var next=photos[logoPhotoIndex];
-      if(img.src===next.src)return;
-      img.style.opacity="0.35";
-      window.setTimeout(function(){
-        if(!document.hidden){img.src=next.src;img.alt=next.name;}
-        img.style.opacity="1";
-      },140);
+    document.querySelectorAll(".cz-player-brand-photo").forEach(function(container){
+      showPhotoPair(Array.from(container.querySelectorAll(".cz-player-brand-img")),logoPhotoIndex);
     });
   },15000);
   var style = document.createElement("style");
@@ -56,7 +71,7 @@
     #cz-global-loader{position:fixed;inset:0;z-index:2147483646;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 48%,#17112c 0%,#090910 42%,#050509 100%);color:#f7f5ff;font-family:Inter,system-ui,sans-serif;opacity:1;visibility:visible;transition:opacity .45s,visibility .45s}
     #cz-global-loader.cz-hide{opacity:0;visibility:hidden;pointer-events:none}
     #cz-global-loader .cz-load-inner{width:min(82vw,330px);text-align:center}
-    #cz-global-loader .cz-photo-frame{width:126px;height:126px;margin:0 auto 25px;border-radius:30px;padding:2px;background:linear-gradient(135deg,#8b5cf6,#2563eb,#a855f7);box-shadow:0 0 65px #7138d755;overflow:hidden}
+    #cz-global-loader .cz-photo-frame{position:relative;width:126px;height:126px;margin:0 auto 25px;border-radius:30px;padding:2px;background:linear-gradient(135deg,#8b5cf6,#2563eb,#a855f7);box-shadow:0 0 65px #7138d755;overflow:hidden}
     #cz-global-loader img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 20%;border-radius:28px;background:#171722;transition:opacity .25s}
     #cz-global-loader .cz-load-brand{font-size:27px;font-weight:900;letter-spacing:5px;margin:0 0 10px}
     #cz-global-loader .cz-load-caption{font-size:11px;letter-spacing:3px;color:#9a91b1;text-transform:uppercase}
@@ -68,7 +83,7 @@
     #cz-global-community .cz-community-card{position:relative;width:min(100%,440px);padding:30px 22px 25px;text-align:center;border:1px solid #ffffff20;border-radius:30px;background:radial-gradient(ellipse at 50% 0%,#6d36a52b,transparent 55%),linear-gradient(145deg,#171323,#090a12 78%);box-shadow:0 25px 90px #000a,0 0 45px #7138d51c;transform:translateY(15px) scale(.98);transition:transform .28s}
     #cz-global-community.cz-show .cz-community-card{transform:none}
     #cz-global-community .cz-community-close{position:absolute;right:13px;top:13px;width:36px;height:36px;border:1px solid #ffffff25;border-radius:50%;background:#ffffff0b;color:#ddd;font-size:23px;cursor:pointer}
-    #cz-global-community .cz-community-photo{width:90px;height:90px;margin:4px auto 16px;border-radius:24px;overflow:hidden;border:1px solid #ffffff22;box-shadow:0 0 32px #7040b933}
+    #cz-global-community .cz-community-photo{position:relative;width:90px;height:90px;margin:4px auto 16px;border-radius:24px;overflow:hidden;border:1px solid #ffffff22;box-shadow:0 0 32px #7040b933}
     #cz-global-community .cz-community-photo img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
     #cz-global-community .cz-community-tag{display:inline-block;margin-bottom:12px;padding:8px 14px;border:1px solid #8b5cf64a;border-radius:30px;background:#6d36a51b;color:#c8b2ff;font-size:10px;font-weight:900;letter-spacing:1.6px}
     #cz-global-community h2{font-size:clamp(23px,6vw,30px);line-height:1.15;margin:0;font-weight:850;letter-spacing:-.7px}
@@ -124,14 +139,13 @@
 
   var loader=document.createElement("div");
   loader.id="cz-global-loader";
-  loader.innerHTML='<div class="cz-load-inner"><div class="cz-photo-frame"><img alt="Indian cricket star" /></div><div class="cz-load-brand">CRICZONE</div><div class="cz-load-caption">CONNECTING TO CRICZONE...</div><div class="cz-load-track"></div></div>';
+  loader.innerHTML='<div class="cz-load-inner"><div class="cz-photo-frame"></div><div class="cz-load-brand">CRICZONE</div><div class="cz-load-caption">CONNECTING TO CRICZONE...</div><div class="cz-load-track"></div></div>';
   document.documentElement.appendChild(loader);
-  var loadImg=loader.querySelector("img");
+  var loadImages=createPhotoPair(loader.querySelector(".cz-photo-frame"),"cz-load-img");
   var photoIndex=0;
   function setPhoto(index){
     photoIndex=index%photos.length;
-    loadImg.style.opacity="0";
-    window.setTimeout(function(){loadImg.src=photos[photoIndex].src;loadImg.alt=photos[photoIndex].name;loadImg.style.opacity="1";},180);
+    showPhotoPair(loadImages,photoIndex);
   }
   setPhoto(0);
   // Show Rohit for 1 second, then Virat for 1 second; loader still ends at 2 seconds.
@@ -141,18 +155,13 @@
 
   var popup=document.createElement("div");
   popup.id="cz-global-community";
-  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"><img alt="CRICZONE community" /></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_self" rel="noopener noreferrer" role="button" aria-label="Open CRICZONE Telegram invite"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div><p class="cz-community-trust">Free to join · Get updates in our Telegram community</p></section>';
+  popup.innerHTML='<section class="cz-community-card" role="dialog" aria-modal="true" aria-labelledby="cz-community-title"><button class="cz-community-close" type="button" aria-label="Close">×</button><div class="cz-community-photo"></div><div class="cz-community-tag">✦ CRICZONE COMMUNITY</div><h2 id="cz-community-title">Join Our Channels</h2><p class="cz-community-copy">For Clips, Links and Premium Contents</p><div class="cz-community-cats"><div class="cz-community-cat"><b>🎬</b>Clips</div><div class="cz-community-cat"><b>🔗</b>Links</div><div class="cz-community-cat"><b>⭐</b>Premium</div></div><a class="cz-community-join" href="'+telegram+'" target="_self" rel="noopener noreferrer" role="button" aria-label="Open CRICZONE Telegram invite"><span>✈</span><span>JOIN TELEGRAM</span><span>➜</span></a><div class="cz-community-foot">CRICZONE • COMMUNITY</div><p class="cz-community-trust">Free to join · Get updates in our Telegram community</p></section>';
   document.documentElement.appendChild(popup);
-  var popupImg=popup.querySelector(".cz-community-photo img");
+  var popupImages=createPhotoPair(popup.querySelector(".cz-community-photo"),"cz-popup-img");
   var popupPhotoIndex=0;
   function setPopupPhoto(index){
     popupPhotoIndex=index%photos.length;
-    popupImg.style.opacity="0";
-    window.setTimeout(function(){
-      popupImg.src=photos[popupPhotoIndex].src;
-      popupImg.alt=photos[popupPhotoIndex].name;
-      popupImg.style.opacity="1";
-    },120);
+    showPhotoPair(popupImages,popupPhotoIndex);
   }
   setPopupPhoto(0);
   // Popup portrait alternates Rohit/Virat every 1 second while visible.
