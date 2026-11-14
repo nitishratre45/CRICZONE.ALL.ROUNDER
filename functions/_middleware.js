@@ -5,25 +5,21 @@ const COUNTER_SCRIPT = '<script src="/assets/js/cz-global-counter.js?v=20261114"
 
 const apiError=(error,path,method)=>new Response(JSON.stringify({ok:false,source:"criczone-pages-middleware",path,method,error:String(error?.message||error||"Unknown runtime error")}),{status:500,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}});
 
-function injectGlobalCounter(response) {
-  return response.text().then(html => {
-    // The two pages that already contain the full counter keep their existing
-    // implementation. This prevents duplicate heartbeats and duplicate badges.
-    if (html.includes(COUNTER_MARKER) || html.includes("cz-global-counter.js")) {
-      return new Response(html, {status:response.status,statusText:response.statusText,headers:response.headers});
-    }
-    const injected = html.includes("</body>")
-      ? html.replace(/</body>/i, COUNTER_SCRIPT + "</body>")
-      : html + COUNTER_SCRIPT;
-    const headers = new Headers(response.headers);
-    // The body has been decoded and rebuilt; stale encoded-body metadata is invalid.
-    headers.delete("content-length");
-    headers.delete("content-encoding");
-    headers.delete("content-md5");
-    headers.delete("etag");
-    headers.set("x-criczone-counter-injected", "global-v1");
-    return new Response(injected, {status:response.status,statusText:response.statusText,headers});
-  });
+async function injectGlobalCounter(response) {
+  const html = await response.clone().text();
+  // Existing counter-enabled pages retain their original response and script.
+  if (html.includes(COUNTER_MARKER) || html.includes("cz-global-counter.js")) return response;
+
+  const injected = html.includes("</body>")
+    ? html.replace(/<\/body>/i, COUNTER_SCRIPT + "</body>")
+    : html + COUNTER_SCRIPT;
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("content-encoding");
+  headers.delete("content-md5");
+  headers.delete("etag");
+  headers.set("x-criczone-counter-injected", "global-v1");
+  return new Response(injected, {status:response.status,statusText:response.statusText,headers});
 }
 
 export async function onRequest(context){
