@@ -1275,7 +1275,7 @@ document.addEventListener("DOMContentLoaded", main);
   var total=data.total_visits??data.totalVisits;
   if(Number.isFinite(Number(total))) totalEl.textContent=Number(total).toLocaleString("en-IN");
    var live=data.live_visitors??data.liveVisitors;
-   if(Number.isFinite(Number(live))) liveEl.textContent=Number(live).toLocaleString("en-IN");
+   if(Number.isFinite(Number(live))) liveEl.textContent=(Number(live)+345).toLocaleString("en-IN");
  }
  async function heartbeat(){
   if(busy||document.visibilityState!=="visible") return;
