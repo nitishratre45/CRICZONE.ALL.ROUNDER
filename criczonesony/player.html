@@ -3,220 +3,79 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#100b20">
-<meta name="referrer" content="no-referrer">
-<title>CRICZONE | Live Player</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.3/dist/hls.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
+<meta name="theme-color" content="#080b12">
+<title>CRICZONE Player</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
 <style>
-:root{color-scheme:dark;--bg:#080811;--panel:#111321;--line:rgba(185,165,255,.18);--muted:#9c9bad;--purple:#8c5cf6;--gold:#f5d88b;--plyr-color-main:#a78bfa;--plyr-video-background:#000;--plyr-menu-background:rgba(15,13,27,.98);--plyr-menu-color:#fff;--plyr-tooltip-background:#171329;--plyr-tooltip-color:#fff}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:var(--bg);color:#f7f5ff;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-body{min-height:100vh;background:radial-gradient(ellipse at 0 0,rgba(104,42,170,.28),transparent 48%),radial-gradient(ellipse at 100% 8%,rgba(18,111,126,.17),transparent 42%),linear-gradient(145deg,#0c0818,#080a12 58%,#080811)}
-button,a,select{font:inherit}
-.topbar{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(14px,4vw,54px);background:rgba(8,7,16,.88);border-bottom:1px solid rgba(211,188,255,.14);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.brand-mark{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(180,150,255,.45);border-radius:15px;background:linear-gradient(145deg,#21163c,#101a2c);font-size:24px;box-shadow:0 8px 24px #0005}
-.brand-name{font-size:21px;font-weight:950;letter-spacing:1px;background:linear-gradient(90deg,#ffe08b,#f4f1ff 75%);color:transparent;background-clip:text}
-.brand-sub{margin-top:3px;color:#a99bd5;font-size:8px;font-weight:850;letter-spacing:2px}
-.back{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:1px solid rgba(174,145,255,.3);border-radius:12px;background:#19152a;color:#eee8ff;text-decoration:none;font-size:11px;font-weight:850;white-space:nowrap}
-main{width:min(1120px,100%);margin:0 auto;padding:clamp(16px,3vw,32px) clamp(12px,2.5vw,24px) 40px}
-.eyebrow{display:flex;align-items:center;gap:9px;margin:8px 0 12px;color:#bda6ff;font-size:10px;font-weight:950;letter-spacing:2px}
-.eyebrow i{width:8px;height:8px;border-radius:50%;background:#fb7185;box-shadow:0 0 12px #fb7185}
-h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-1px;font-weight:950;overflow-wrap:anywhere}
-.intro{max-width:760px;margin:12px 0 24px;color:#a7a5b6;font-size:13px;line-height:1.7}
-.player-card{overflow:hidden;border:1px solid rgba(188,165,255,.18);border-radius:22px;background:linear-gradient(145deg,rgba(19,18,29,.98),rgba(10,13,20,.98));box-shadow:0 22px 60px #0007}
-.player-head{display:flex;align-items:center;gap:12px;min-height:64px;padding:13px 17px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(5,7,13,.58)}
-.live-pill{padding:7px 10px;border:1px solid rgba(251,113,133,.28);border-radius:9px;background:rgba(251,113,133,.1);color:#ff9eae;font-size:9px;font-weight:950;letter-spacing:1px}
-.channel-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:900}
-.player-stage{position:relative;width:100%;aspect-ratio:16/9;max-height:76vh;background:#000;overflow:hidden}
-#video{display:block;width:100%;height:100%;background:#000;object-fit:contain}
-.plyr,.plyr__video-wrapper,.plyr video{width:100%;height:100%;background:#000}
-.plyr video{object-fit:contain}
-.buffering{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:transparent;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
-.buffering.show{opacity:1;visibility:visible}
-.spinner{width:38px;height:38px;border:3px solid #ffffff30;border-top-color:#fff;border-right-color:#c4b5fd;border-radius:50%;animation:spin .75s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.status{display:flex;align-items:center;gap:9px;min-height:46px;padding:11px 16px;color:#aaa9b9;font-size:11px}
-.status-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#fbbf24;box-shadow:0 0 12px currentColor}
-.status[data-state="live"] .status-dot{background:#34d399;color:#34d399}
-.status[data-state="error"] .status-dot{background:#fb7185;color:#fb7185}
-.status strong{color:#eee9ff;font-size:10px;letter-spacing:.8px}
-.status span:last-child{margin-left:auto;text-align:right}\n.audience-line{display:flex;justify-content:space-between;gap:10px;padding:0 16px 14px;color:#858398;font-size:9px;font-weight:800;letter-spacing:.35px}.audience-line strong{color:#e9dcff;font-variant-numeric:tabular-nums}\n@media(max-width:680px){.audience-line{padding:0 12px 12px;font-size:8px}}
-.player-actions{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 15px}
-.player-actions button,.settings select{min-height:37px;padding:8px 12px;border:1px solid rgba(185,165,255,.2);border-radius:10px;background:#171629;color:#eeeaff;font-size:10px;font-weight:800}
-.player-actions button{cursor:pointer}
-.player-actions button:hover{border-color:#a78bfa;background:#211b39}
-.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 16px 16px}
-.settings label{display:grid;gap:6px;color:#a9a5ba;font-size:9px;font-weight:850;letter-spacing:.5px}
-.settings select{width:100%;min-width:0}
-.telegram{display:flex;align-items:center;gap:12px;margin:16px 0 20px;padding:12px 14px;border:1px solid rgba(90,156,255,.25);border-radius:16px;background:linear-gradient(105deg,rgba(24,44,79,.9),rgba(17,24,44,.94));text-decoration:none;color:#fff;transition:transform .2s,border-color .2s}
-.telegram:hover{transform:translateY(-2px);border-color:rgba(125,180,255,.6)}
-.telegram-icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border-radius:12px;background:linear-gradient(145deg,#39b9ff,#0876cf);font-size:20px}
-.telegram-copy{min-width:0;display:grid;gap:4px}
-.telegram-copy strong{font-size:10px;letter-spacing:.7px}
-.telegram-copy small{color:#b8c5dc;font-size:9px}
-.telegram-cta{margin-left:auto;padding:9px 11px;border-radius:10px;background:#f3f5ff;color:#17243c;font-size:9px;font-weight:950;white-space:nowrap}
-.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-.feature{min-height:142px;padding:20px;border:1px solid rgba(185,165,255,.13);border-radius:19px;background:linear-gradient(145deg,rgba(22,19,35,.92),rgba(11,14,22,.95));box-shadow:0 12px 30px #0003}
-.feature-icon{display:block;margin-bottom:14px;font-size:24px}
-.feature strong{display:block;margin-bottom:7px;font-size:13px}
-.feature p{margin:0;color:#9291a3;font-size:11px;line-height:1.6}
-.footer{padding:24px 0 0;text-align:center;color:#656477;font-size:9px;letter-spacing:1px}
-@media(max-width:680px){.topbar{min-height:62px;padding:9px 12px}.brand-mark{width:42px;height:42px;border-radius:13px}.brand-name{font-size:18px}.brand-sub{font-size:7px;letter-spacing:1.5px}.back{min-height:37px;padding:0 10px;font-size:9px}main{padding:15px 11px 28px}.intro{font-size:12px;margin-bottom:18px}.player-card{border-radius:16px}.player-head{min-height:55px;padding:10px 12px}.player-stage{max-height:58vh}.status{padding:10px 12px;font-size:9px}.player-actions{padding:0 12px 12px}.settings{padding:0 12px 13px}.features{grid-template-columns:1fr;gap:10px}.feature{min-height:0;padding:16px}.feature-icon{margin-bottom:9px}.telegram{padding:10px;border-radius:14px}.telegram-copy strong{font-size:9px}.telegram-copy small{font-size:8px}.telegram-cta{padding:8px;font-size:8px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:root{color-scheme:dark;--gold:#f5c542;--line:#26344a;--muted:#9aa8ba}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#172944,#070b12 62%);color:#f5f7fb;font-family:Inter,system-ui,Arial,sans-serif}
+header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,3vw,36px);background:#080d16;border-bottom:1px solid var(--line)}
+.brand{font-weight:950;letter-spacing:.5px}.brand span{color:var(--gold)}.back{color:#111;background:var(--gold);text-decoration:none;border-radius:10px;padding:10px 15px;font-size:12px;font-weight:900}
+main{width:min(1500px,100%);margin:auto;padding:clamp(14px,3vw,34px)}
+.panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#121e30,#0a111d);padding:clamp(12px,2vw,22px);box-shadow:0 20px 60px #0006}
+h1{font-size:clamp(18px,2.3vw,27px);margin:0 0 6px}.sub{color:var(--muted);font-size:12px;margin:0 0 16px}
+.player{position:relative;width:100%;aspect-ratio:16/9;max-height:78vh;background:#000;border-radius:12px;overflow:hidden;border:1px solid #ffffff18}
+video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+#status{color:var(--muted);font-size:12px;padding:12px 2px 2px;min-height:32px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.actions button{border:1px solid var(--line);background:#1a2940;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+@media(max-width:600px){header{height:58px}.player{aspect-ratio:16/9}.panel{padding:10px}}
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><span class="brand-mark">🏏</span><div><div class="brand-name">CRICZONE</div><div class="brand-sub">PREMIUM STREAMING PORTAL</div></div></div>
-  <a class="back" href="./?view=channels">← ALL CHANNELS</a>
-</header>
-<main>
-  <div class="eyebrow"><i></i> CRICZONE LIVE PORTAL</div>
-  <h1 id="page-title">Live Channel</h1>
-  <p class="intro">Welcome to CRICZONE. Enjoy a clean, fast and immersive viewing experience through our premium sports portal.</p>
-  <section class="player-card" aria-label="Live video player">
-    <div class="player-head"><span class="live-pill">LIVE</span><span class="channel-title" id="channel-title">Loading channel…</span></div>
-    <div class="player-stage" id="stage">
-      <video id="video" controls playsinline webkit-playsinline preload="metadata"></video>
-      <div class="buffering" id="buffering" aria-hidden="true"><span class="spinner"></span></div>
-    </div>
-    <div class="status" id="status" data-state="loading" role="status" aria-live="polite"><i class="status-dot"></i><strong id="status-label">CONNECTING</strong><span id="status-detail">Preparing live stream…</span></div>
-    <div class="audience-line"><span>LIVE WATCHING <strong id="live-count">—</strong></span><span>TOTAL VISITS <strong id="visit-count">—</strong></span></div>\n    <div class="player-actions">
-      <button id="retry" type="button">↻ Reload stream</button>
-      <button id="aspect" type="button">▣ Fit: Contain</button>
-      <button id="pip" type="button">▣ Picture in Picture</button>
-    </div>
-    <div class="settings">
-      <label>Audio track<select id="audio-track"><option value="-1">Default audio</option></select></label>
-      <label>Subtitles<select id="subtitle-track"><option value="-1">Off</option></select></label>
-    </div>
-  </section>
-  <a class="telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">
-    <span class="telegram-icon">➤</span><span class="telegram-copy"><strong>JOIN CRICZONE TELEGRAM</strong><small>Live match updates · Cricket news · Community</small></span><span class="telegram-cta">JOIN NOW →</span>
-  </a>
-  <section class="features" aria-label="Player features">
-    <article class="feature"><span class="feature-icon">⚡</span><strong>Fast Streaming</strong><p>Lightweight playback with automatic stream recovery when the connection drops.</p></article>
-    <article class="feature"><span class="feature-icon">◉</span><strong>Live Portal</strong><p>Your selected channel loads directly with its own live stream address.</p></article>
-    <article class="feature"><span class="feature-icon">✦</span><strong>Premium Interface</strong><p>A clean cinematic layout, built to fit desktop, tablet and mobile screens.</p></article>
-  </section>
-  <div class="footer">CRICZONE · LIVE SPORTS EXPERIENCE</div>
-</main>
+<header><div class="brand">⚡ CRIC<span>ZONE</span> PLAYER</div><a class="back" href="./">← BACK TO SONY</a></header>
+<main><section class="panel">
+<h1 id="title">Live Event</h1><p class="sub">CRICZONE Live Player · HLS / DASH compatible</p>
+<div class="player"><video id="video" controls playsinline webkit-playsinline autoplay></video></div>
+<div id="status" role="status">Preparing stream…</div>
+<div class="actions"><button id="retry" type="button">↻ Reload Stream</button><button id="fullscreen" type="button">⛶ Fullscreen</button></div>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.12.8/dist/shaka-player.compiled.js"></script>
 <script>
 (function(){
 "use strict";
-var params=new URLSearchParams(location.search);
-var channelId=params.get("channel")||"all";
-var rawUrl=params.get("url")||"";
-if(!rawUrl){try{rawUrl=sessionStorage.getItem("czSonyStream:"+channelId)||"";}catch(e){}}
-var title=params.get("title")||"Live Channel";
-var video=document.getElementById("video");
-var status=document.getElementById("status");
-var statusLabel=document.getElementById("status-label");
-var statusDetail=document.getElementById("status-detail");
-var buffering=document.getElementById("buffering");
-var hls=null,plyr=null,retryTimer=0,retries=0,destroyed=false,aspect=0,bufferTimer=0;
-var PROXY_BASE="https://stream-through-spark.lovable.app/api/proxy?u";
-document.getElementById("page-title").textContent=title;
-document.getElementById("channel-title").textContent=title;
-document.title="CRICZONE | "+title;
-function setStatus(state,label,detail){status.dataset.state=state;statusLabel.textContent=label;statusDetail.textContent=detail||"";}
-function showBuffer(){clearTimeout(bufferTimer);bufferTimer=setTimeout(function(){if(!video.paused&&!video.ended&&(video.readyState<3||video.seeking))buffering.classList.add("show");},350);}
-function hideBuffer(){clearTimeout(bufferTimer);bufferTimer=0;buffering.classList.remove("show");}
-function stop(){clearTimeout(retryTimer);retryTimer=0;hideBuffer();if(hls){hls.destroy();hls=null;}video.pause();video.removeAttribute("src");video.load();}
-function safePlay(){var p=video.play();if(p&&p.catch)p.catch(function(){setStatus("loading","TAP TO PLAY","Your browser requires a tap to start playback.");});}
-function proxiedUrl(url){return PROXY_BASE+"="+encodeURIComponent(url);}
-function isHls(url){try{return new URL(url).pathname.toLowerCase().endsWith(".m3u8")}catch(e){return url.toLowerCase().indexOf(".m3u8")!==-1}}
-function refreshTracks(){
- var audio=document.getElementById("audio-track"),subs=document.getElementById("subtitle-track"),oldA=audio.value,oldS=subs.value;
- audio.innerHTML='<option value="-1">Default audio</option>';subs.innerHTML='<option value="-1">Off</option>';
- if(hls){
-  (hls.audioTracks||[]).forEach(function(t,i){var o=document.createElement("option");o.value=String(i);o.textContent=t.name||t.lang||("Audio "+(i+1));audio.appendChild(o);});
-  (hls.subtitleTracks||[]).forEach(function(t,i){var o=document.createElement("option");o.value=String(i);o.textContent=t.name||t.lang||("Subtitle "+(i+1));subs.appendChild(o);});
-  if(Array.from(audio.options).some(function(o){return o.value===oldA}))audio.value=oldA;
-  if(Array.from(subs.options).some(function(o){return o.value===oldS}))subs.value=oldS;
- }else if(video.textTracks){Array.prototype.forEach.call(video.textTracks,function(t,i){var o=document.createElement("option");o.value="native:"+i;o.textContent=t.label||t.language||("Subtitle "+(i+1));subs.appendChild(o);});}
-}
-function buildPlyr(levels){
- if(plyr)return;
- var heights=(levels||[]).map(function(l){return Number(l.height)}).filter(function(h,i,a){return h>0&&a.indexOf(h)===i}).sort(function(a,b){return b-a;});
- var config={controls:["play-large","play","progress","current-time","mute","volume","settings","fullscreen"],settings:heights.length?["quality"]:[],seekTime:10,hideControls:true,tooltips:{controls:true,seek:true},fullscreen:{enabled:true,fallback:true,iosNative:true},iconUrl:"https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.svg"};
- if(heights.length&&hls){config.quality={default:heights.indexOf(720)>=0?720:heights[0],options:heights,forced:true,onChange:function(q){if(!hls)return;var idx=hls.levels.findIndex(function(l){return Number(l.height)===Number(q)});if(idx>=0)hls.currentLevel=idx;}};}
- if(window.Plyr){try{plyr=new Plyr(video,config);}catch(e){console.warn("Plyr init:",e);}}
-}
-function scheduleRetry(message){
- if(destroyed||retryTimer)return;
- if(retries>=7){setStatus("error","STREAM UNAVAILABLE",message||"Automatic recovery limit reached. Try reload.");return;}
- var delay=Math.min(16000,1000*Math.pow(2,retries++));
- setStatus("loading","RECONNECTING","Retrying stream in "+Math.ceil(delay/1000)+"s…");
- retryTimer=setTimeout(function(){retryTimer=0;start(true);},delay);
-}
-function start(recovering){
- if(destroyed)return;
+var params=new URLSearchParams(location.search),url=params.get("url"),title=params.get("title")||"Live Event";
+var video=document.getElementById("video"),status=document.getElementById("status"),titleEl=document.getElementById("title");
+var STREAM_PROXY="/api/proxy?u=";
+var hls=null,shakaPlayer=null;
+titleEl.textContent=title;document.title="CRICZONE Player — "+title;
+function stop(){if(hls){hls.destroy();hls=null;}if(shakaPlayer){shakaPlayer.destroy();shakaPlayer=null;}video.pause();video.removeAttribute("src");video.load();}
+async function start(){
  stop();
- if(!rawUrl||!/^https?:\/\//i.test(rawUrl)){setStatus("error","INVALID STREAM","This channel does not have a valid stream URL.");return;}
- var source=isHls(rawUrl)?proxiedUrl(rawUrl):rawUrl;
- setStatus("loading",recovering?"RECOVERING":"CONNECTING","Preparing "+title+"…");
- if(isHls(rawUrl)&&window.Hls&&Hls.isSupported()){
-  hls=new Hls({debug:false,enableWorker:true,lowLatencyMode:false,maxBufferLength:30,backBufferLength:30,maxMaxBufferLength:60,maxBufferSize:62914560,maxBufferHole:.5,liveSyncDurationCount:5,liveMaxLatencyDurationCount:12,manifestLoadingMaxRetry:3,levelLoadingMaxRetry:3,fragLoadingMaxRetry:3});
-  hls.on(Hls.Events.MEDIA_ATTACHED,function(){if(hls)hls.loadSource(source);});
-  hls.on(Hls.Events.MANIFEST_PARSED,function(_,data){if(!hls)return;buildPlyr(data.levels||[]);refreshTracks();setStatus("loading","STREAM READY","Live stream loaded. Starting playback…");safePlay();});
-  hls.on(Hls.Events.AUDIO_TRACKS_UPDATED,refreshTracks);
-  hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,refreshTracks);
-  hls.on(Hls.Events.ERROR,function(_,data){
-   if(!data||!data.fatal||!hls)return;
-   var code=data.response&&data.response.code;
-   if(code===401||code===403||code===404){setStatus("error","STREAM ACCESS ERROR","The source returned HTTP "+code+". Check stream access or expiry.");return;}
-   if(data.type===Hls.ErrorTypes.NETWORK_ERROR){try{hls.startLoad(-1);scheduleRetry("Network error");}catch(e){scheduleRetry("Network error");}}
-   else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){try{hls.recoverMediaError();setStatus("loading","RECOVERING VIDEO","Restoring media decoder…");}catch(e){scheduleRetry("Media error");}}
-   else scheduleRetry(data.details||"HLS playback error");
-  });
-  hls.attachMedia(video);
- }else if(isHls(rawUrl)&&video.canPlayType("application/vnd.apple.mpegurl")){
-  video.src=rawUrl;video.load();buildPlyr([]);video.play().catch(function(){setStatus("loading","TAP TO PLAY","Tap play to begin the live stream.");});
- }else{
-  video.src=source;video.load();buildPlyr([]);
-  video.play().catch(function(){setStatus("loading","TAP TO PLAY","Tap play to begin the live stream.");});
+ if(!url||!/^https?:\/\//i.test(url)){status.textContent="Invalid or missing stream URL.";return;}
+ status.textContent="Connecting to stream…";
+ var type=url.split("?")[0].toLowerCase();
+ // Route HLS/DASH manifests through the repository's same-origin proxy.
+ // The proxy rewrites relative playlist/segment URLs so the browser does not
+ // request cross-origin media resources directly.
+ var isHls=/\.m3u8?($|[?#])/i.test(url);
+ var isDash=/\.mpd($|[?#])/i.test(url);
+ var playbackUrl=(isHls||isDash)?STREAM_PROXY+encodeURIComponent(url):url;
+ if(type.endsWith(".mpd")&&window.shaka){
+  shaka.polyfill.installAll();
+  if(shaka.Player.isBrowserSupported()){
+   shakaPlayer=new shaka.Player(video);
+   shakaPlayer.addEventListener("error",function(e){status.textContent="DASH error: "+(e.detail&&e.detail.message||"stream unavailable");});
+   try{await shakaPlayer.load(playbackUrl);status.textContent="Stream ready. Press Play if playback does not start.";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});return;}
+   catch(e){status.textContent="DASH playback failed: "+(e.message||"source unavailable");return;}
+  }
  }
+ if(type.endsWith(".m3u8")&&window.Hls&&Hls.isSupported()){
+  hls=new Hls({enableWorker:true,lowLatencyMode:true,liveSyncDurationCount:3,maxBufferLength:30});
+  hls.on(Hls.Events.ERROR,function(_,data){if(data.fatal)status.textContent="HLS "+data.type+" error: "+(data.details||"stream request failed")+(data.response&&data.response.code?" (HTTP "+data.response.code+")":"")+". Direct source playback.";});
+  hls.on(Hls.Events.MANIFEST_PARSED,function(){status.textContent="Live stream loaded. Starting player…";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});});
+  hls.loadSource(playbackUrl);hls.attachMedia(video);return;
+ }
+ video.src=playbackUrl;video.load();
+ video.addEventListener("loadedmetadata",function(){status.textContent="Stream ready.";video.play().catch(function(){status.textContent="Stream ready. Press Play to start.";});},{once:true});
+ video.addEventListener("error",function(){status.textContent="Playback failed. Check the failed playlist/segment request; source may be expired or access-restricted.";},{once:true});
 }
-video.addEventListener("playing",function(){retries=0;clearTimeout(retryTimer);retryTimer=0;hideBuffer();setStatus("live","LIVE","Stream connected · "+title);});
-video.addEventListener("waiting",function(){showBuffer();setStatus("loading","BUFFERING","Waiting for network data…");});
-video.addEventListener("stalled",function(){showBuffer();setStatus("loading","CONNECTION SLOW","Trying to restore the stream…");if(hls)scheduleRetry("Connection stalled");});
-video.addEventListener("canplay",hideBuffer);
-video.addEventListener("pause",hideBuffer);
-video.addEventListener("error",function(){if(!hls&&rawUrl)setStatus("error","PLAYBACK ERROR","The source may be unavailable, expired or unsupported.");});
-document.getElementById("retry").addEventListener("click",function(){retries=0;start(false);});
-document.getElementById("aspect").addEventListener("click",function(){aspect=(aspect+1)%3;var modes=["contain","fill","cover"],labels=["Contain","Stretch","Crop"];video.style.objectFit=modes[aspect];this.textContent="▣ Fit: "+labels[aspect];});
-document.getElementById("pip").addEventListener("click",async function(){try{if(document.pictureInPictureElement)await document.exitPictureInPicture();else if(document.pictureInPictureEnabled&&video.requestPictureInPicture)await video.requestPictureInPicture();else setStatus("error","PIP UNAVAILABLE","This browser does not support Picture in Picture.");}catch(e){setStatus("error","PIP UNAVAILABLE",e.message||"Browser blocked Picture in Picture.");}});
-document.getElementById("audio-track").addEventListener("change",function(){if(hls)hls.audioTrack=Number(this.value);});
-document.getElementById("subtitle-track").addEventListener("change",function(){var v=this.value;if(hls)hls.subtitleTrack=Number(v);else if(v.indexOf("native:")===0){var n=Number(v.split(":")[1]);Array.prototype.forEach.call(video.textTracks,function(t,i){t.mode=i===n?"showing":"disabled";});}else if(video.textTracks)Array.prototype.forEach.call(video.textTracks,function(t){t.mode="disabled";});});
-window.addEventListener("online",function(){retries=0;start(true);});
-window.addEventListener("offline",function(){setStatus("error","NETWORK OFFLINE","Waiting for internet connection…");});
-window.addEventListener("pagehide",function(){destroyed=true;stop();if(plyr){try{plyr.destroy()}catch(e){}plyr=null;}});
-start(false);
+document.getElementById("retry").addEventListener("click",start);
+document.getElementById("fullscreen").addEventListener("click",function(){var box=video.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(box.requestFullscreen)box.requestFullscreen();});
+start();
+window.addEventListener("pagehide",stop);
 })();
 </script>
-<script type="module">
-import {initializeApp,getApps} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import {getDatabase,ref,onValue,onDisconnect,set,remove} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-const config={apiKey:"AIzaSyCFusKEh9wF7O6yux5xLQgafvcr_jCv5aA",authDomain:"criczone-4daa2.firebaseapp.com",databaseURL:"https://criczone-4daa2-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"criczone-4daa2",storageBucket:"criczone-4daa2.firebasestorage.app",messagingSenderId:"113293633217",appId:"1:113293633217:web:a96d9b3af3045bcd99d640"};
-try{
- const appName="criczone-sony-player-audience",app=getApps().find(x=>x.name===appName)||initializeApp(config,appName),db=getDatabase(app);
- const params=new URLSearchParams(location.search),key=String(params.get("channel")||"all").replace(/[^a-zA-Z0-9_-]/g,"_");
- const liveRef=ref(db,"sonyPlayerLiveViewers/"+key),countRef=ref(db,"siteStats/sonyPlayerTotalVisits");
- const uid=globalThis.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"_"+Math.random().toString(36).slice(2);
- const mine=ref(db,"sonyPlayerLiveViewers/"+key+"/"+uid);
- await onDisconnect(mine).remove();await set(mine,{online:true,joinedAt:Date.now(),channel:key});
- let liveCount=0,totalCount=0;
- const updateCounts=()=>{document.getElementById("live-count").textContent=liveCount.toLocaleString("en-IN");document.getElementById("visit-count").textContent=totalCount.toLocaleString("en-IN");};
- onValue(liveRef,s=>{liveCount=typeof s.numChildren==="function"?s.numChildren():0;updateCounts();});
- onValue(countRef,s=>{totalCount=Number(s.val())||0;updateCounts();});
- window.addEventListener("pagehide",()=>remove(mine).catch(()=>{}));
-}catch(e){console.warn("CRICZONE audience stats unavailable:",e);}
-</script>
 <script src="/assets/js/cz-global-community.js" defer></script>
-</body>
-</html>
+</body></html>
