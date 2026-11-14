@@ -434,13 +434,6 @@ window.addEventListener("popstate",()=>{if(!playerView.hidden){const frame=conta
   
 
 <!-- CRICZONE shared Total Visits + Live Watching counter -->
-<style id="cz-popup-overlay-cleanup">
-/* Hide floating overlays while the Telegram community popup is open. */
-body:has(#popup.visible) #topActions,
-body:has(#popup.visible) #viewerBadge{
- display:none!important;
-}
-</style>
 <style id="cz-shared-visitor-badge">
 #viewerBadge{
  position:fixed;z-index:2147483647;right:6px;top:110px;
@@ -514,6 +507,14 @@ body:has(#home:not([hidden])) #viewerBadge .watching-live-label{
 body:has(#home:not([hidden])) #totalVisits,
 body:has(#home:not([hidden])) #liveWatching{
  font-size:7.5px!important;
+}
+/* Keep Share/Rotate and circular counters above the popup card's close control area. */
+body:has(#popup.visible) .top-actions{
+ top:8px!important;right:14px!important;z-index:2147483648!important;
+}
+body:has(#popup.visible) #viewerBadge{
+ top:105px!important;right:14px!important;left:auto!important;
+ z-index:2147483648!important;
 }
 /* Compact circular counters stacked directly below Share + Rotate. */
 #viewerBadge{
