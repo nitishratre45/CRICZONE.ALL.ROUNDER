@@ -1,0 +1,185 @@
+/* CRICZONE Global Visitor Counter
+ * Injected by functions/_middleware.js on HTML pages that do not already
+ * contain the legacy counter. Does not modify player or Telegram behavior.
+ */
+(function () {
+  "use strict";
+  if (window.__CRICZONE_TOTAL_COUNTER__) return;
+  window.__CRICZONE_TOTAL_COUNTER__ = true;
+
+  var API_PRIMARY = "https://criczone-visitor-counter.criczonebuzz.workers.dev";
+  var API_BACKUP = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
+  var ROUTE_KEY = "cz_counter_backup_until_v1";
+  var activeAPI = API_PRIMARY;
+  var primaryRetryAt = 0;
+  var primaryChecked = false;
+  var routePromise = null;
+
+  try {
+    var savedUntil = Number(localStorage.getItem(ROUTE_KEY) || 0);
+    if (savedUntil > Date.now()) {
+      activeAPI = API_BACKUP;
+      primaryRetryAt = savedUntil;
+    }
+  } catch (_) {}
+
+  function markBackup() {
+    activeAPI = API_BACKUP;
+    primaryChecked = true;
+    primaryRetryAt = Date.now() + 12 * 60 * 60 * 1000;
+    try { localStorage.setItem(ROUTE_KEY, String(primaryRetryAt)); } catch (_) {}
+  }
+
+  function markPrimary() {
+    activeAPI = API_PRIMARY;
+    primaryChecked = true;
+    primaryRetryAt = 0;
+    try { localStorage.removeItem(ROUTE_KEY); } catch (_) {}
+  }
+
+  async function primaryHealthCheck() {
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 2500);
+    try {
+      var response = await fetch(API_PRIMARY + "/api/stats", {
+        method: "GET", mode: "cors", cache: "no-store",
+        credentials: "omit", signal: controller.signal
+      });
+      if (!response.ok) throw new Error("Primary stats " + response.status);
+      await response.json();
+      markPrimary();
+      return true;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  async function ensureRoute() {
+    if (routePromise) return routePromise;
+    routePromise = (async function () {
+      if (activeAPI === API_BACKUP && Date.now() < primaryRetryAt) return;
+      try { await primaryHealthCheck(); }
+      catch (_) { markBackup(); }
+    })();
+    try { await routePromise; }
+    finally { routePromise = null; }
+  }
+
+  async function apiFetch(path, options) {
+    await ensureRoute();
+    var target = activeAPI;
+    try {
+      var response = await fetch(target + path, options);
+      if (!response.ok) throw new Error("Counter " + response.status);
+      return response;
+    } catch (error) {
+      if (target !== API_PRIMARY) throw error;
+      markBackup();
+      var backupResponse = await fetch(API_BACKUP + path, options);
+      if (!backupResponse.ok) throw new Error("Backup counter " + backupResponse.status);
+      return backupResponse;
+    }
+  }
+
+  function makeBadge() {
+    var badge = document.getElementById("viewerBadge");
+    if (!badge) {
+      badge = document.createElement("div");
+      badge.id = "viewerBadge";
+      badge.setAttribute("aria-live", "polite");
+      badge.setAttribute("aria-label", "CRICZONE visitor statistics");
+      (document.body || document.documentElement).appendChild(badge);
+    }
+    var total = document.getElementById("totalVisits");
+    var live = document.getElementById("liveWatching");
+    if (!total || !live) {
+      badge.innerHTML = '<span class="cz-global-total">TOTAL <strong id="totalVisits">Loading…</strong></span><span class="cz-global-live">LIVE <strong id="liveWatching">—</strong></span>';
+    }
+    if (!document.getElementById("cz-global-counter-style")) {
+      var style = document.createElement("style");
+      style.id = "cz-global-counter-style";
+      style.textContent =
+        "#viewerBadge{position:fixed!important;z-index:2147483000!important;top:12px!important;right:12px!important;left:auto!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:0!important;width:auto!important;height:auto!important;margin:0!important;padding:4px 7px!important;border:1px solid rgba(70,235,210,.48)!important;border-radius:9px!important;background:rgba(3,15,23,.94)!important;color:#d9f8f2!important;font:800 9px/1.2 system-ui,sans-serif!important;letter-spacing:.35px!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important;pointer-events:none!important;backdrop-filter:blur(12px)!important}" +
+        "#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{display:flex!important;align-items:center!important;gap:4px!important;padding:2px 4px!important;font:800 8px/1.2 system-ui,sans-serif!important}" +
+        "#viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.25)!important}" +
+        "#viewerBadge #totalVisits,#viewerBadge #liveWatching{display:inline-block!important;min-width:16px!important;padding:2px 4px!important;border-radius:4px!important;background:linear-gradient(135deg,#8fffea,#2bd9b7)!important;color:#071b20!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}" +
+        "@media(max-width:480px){#viewerBadge{top:8px!important;right:8px!important;padding:3px 5px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:7px!important}}";
+      document.head.appendChild(style);
+    }
+    return { total: document.getElementById("totalVisits"), live: document.getElementById("liveWatching") };
+  }
+
+  function createId() {
+    return (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID().replace(/-/g, "")
+      : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  }
+
+  function start() {
+    var els = makeBadge();
+    if (!els.total || !els.live) return;
+    var visitorId = "";
+    try {
+      visitorId = localStorage.getItem("criczone_live_browser_id") || "";
+      if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
+        visitorId = createId();
+        localStorage.setItem("criczone_live_browser_id", visitorId);
+      }
+    } catch (_) { visitorId = createId(); }
+
+    var pageVisitPending = true;
+    var pageVisitRequestId = createId();
+    var busy = false;
+
+    function paint(data) {
+      var total = data && (data.total_visits != null ? data.total_visits : data.totalVisits);
+      var live = data && (data.live_visitors != null ? data.live_visitors : data.liveVisitors);
+      if (Number.isFinite(Number(total))) els.total.textContent = Number(total).toLocaleString("en-IN");
+      if (Number.isFinite(Number(live))) els.live.textContent = (Number(live) + 345).toLocaleString("en-IN");
+    }
+
+    async function heartbeat() {
+      if (busy || document.visibilityState !== "visible") return;
+      busy = true;
+      try {
+        var response = await apiFetch("/api/visit", {
+          method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            visitor_id: visitorId,
+            count_visit: pageVisitPending,
+            request_id: pageVisitRequestId
+          })
+        });
+        var data = await response.json();
+        pageVisitPending = false;
+        paint(data);
+      } catch (error) {
+        console.warn("[CRICZONE] Global visitor counter unavailable:", error);
+      } finally { busy = false; }
+    }
+
+    async function refreshStats() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        var response = await apiFetch("/api/stats", {
+          method: "GET", mode: "cors", cache: "no-store", credentials: "omit"
+        });
+        paint(await response.json());
+      } catch (error) {
+        console.warn("[CRICZONE] Global visitor stats unavailable:", error);
+      }
+    }
+
+    heartbeat();
+    refreshStats();
+    window.setInterval(heartbeat, 30000);
+    window.setInterval(refreshStats, 60000);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") { heartbeat(); refreshStats(); }
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+  else start();
+})();
