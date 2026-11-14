@@ -601,7 +601,7 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  window.__CRICZONE_TOTAL_COUNTER__=true;
  var API_PRIMARY="https://criczone-visitor-counter.criczonebuzz.workers.dev";
  var API_BACKUP="https://criczone-visitor-counter-backup.nitish-2.workers.dev";
- var activeAPI=API_PRIMARY,primaryRetryAt=0;
+ var activeAPI=API_BACKUP,primaryRetryAt=Date.now()+12*60*60*1000;
  async function apiFetch(path,options){
   var now=Date.now();
   if(activeAPI===API_BACKUP&&now>=primaryRetryAt){
