@@ -1329,7 +1329,7 @@ document.addEventListener("DOMContentLoaded", main);
    localStorage.setItem("criczone_live_browser_id",visitorId);
   }
  }catch(_){visitorId=createId();}
- var busy=false,pageVisitPending=true;
+ var busy=false,pageVisitPending=true,pageVisitRequestId=createId();
  function paint(data){
   var total=data.total_visits??data.totalVisits;
   if(Number.isFinite(Number(total))) totalEl.textContent=Number(total).toLocaleString("en-IN");
@@ -1343,7 +1343,7 @@ document.addEventListener("DOMContentLoaded", main);
    var response=await apiFetch("/api/visit",{
     method:"POST",mode:"cors",cache:"no-store",credentials:"omit",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending})
+    body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending,request_id:pageVisitRequestId})
    });
    if(!response.ok) throw new Error("visit "+response.status);
    var data=await response.json();
