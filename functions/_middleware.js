@@ -13,7 +13,8 @@ async function injectGlobalCounter(response) {
   const hasNavbarScript = html.includes("cz-counter-navbar.js");
   const scripts = [];
   if (!hasLegacyCounter && !hasGlobalCounter) scripts.push(COUNTER_SCRIPT);
-  if (!hasNavbarScript) scripts.push(NAVBAR_SCRIPT);
+  const isBuzzPlayerPage = new URL(response.url || "https://criczone.pages.dev" + "/").pathname.startsWith("/criczonebuzz/");
+  if (!hasNavbarScript && !isBuzzPlayerPage) scripts.push(NAVBAR_SCRIPT);
   if (!scripts.length) return response;
 
   const injection = scripts.join("");
