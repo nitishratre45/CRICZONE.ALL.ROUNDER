@@ -60,7 +60,7 @@
       if (!response.ok) throw new Error("visit " + response.status);
       var data = await response.json();
       stats.totalVisits = data.total_visits ?? data.totalVisits;
-      stats.liveVisitors = data.live_visitors ?? data.liveVisitors;
+      stats.liveVisitors = (Number(data.live_visitors ?? data.liveVisitors) || 0) + 200;
       paint();
     } catch (error) {
       console.warn("[CRICZONE] Visitor counter unavailable:", error);
@@ -77,8 +77,8 @@
       });
       if (!response.ok) throw new Error("stats " + response.status);
       var data = await response.json();
-      stats.totalVisits = data.totalVisits;
-      stats.liveVisitors = data.liveVisitors;
+      stats.totalVisits = data.total_visits ?? data.totalVisits;
+      stats.liveVisitors = (Number(data.live_visitors ?? data.liveVisitors) || 0) + 200;
       paint();
     } catch (error) {
       console.warn("[CRICZONE] Visitor stats refresh unavailable:", error);
