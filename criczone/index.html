@@ -1362,7 +1362,7 @@ document.addEventListener("DOMContentLoaded", main);
    paint(await response.json());
   }catch(error){console.warn("[CRICZONE] Total counter refresh unavailable:",error);}
  }
- totalEl.textContent="9,220";
+ totalEl.textContent="Loading…";
  heartbeat();
  refreshStats();
  window.setInterval(heartbeat,30000);
