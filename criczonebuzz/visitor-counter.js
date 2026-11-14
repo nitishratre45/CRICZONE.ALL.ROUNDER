@@ -25,6 +25,7 @@
 
   var stats = { totalVisits: null, liveVisitors: null };
   var busy = false;
+  var pageVisitPending = true;
 
   function format(value) {
     return Number(value || 0).toLocaleString("en-IN");
@@ -52,10 +53,11 @@
         cache: "no-store",
         credentials: "omit",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitor_id: visitorId })
+        body: JSON.stringify({ visitor_id: visitorId, count_visit: pageVisitPending })
       });
       if (!response.ok) throw new Error("visit " + response.status);
       var data = await response.json();
+      pageVisitPending = false;
       stats.totalVisits = data.total_visits ?? data.totalVisits;
       stats.liveVisitors = (Number(data.live_visitors ?? data.liveVisitors) || 0) + 200;
       paint();
