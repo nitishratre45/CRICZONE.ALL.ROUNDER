@@ -5385,3 +5385,52 @@ a:focus-visible,button:focus-visible,.pill:focus-visible,input:focus-visible{
     scroll-behavior:auto!important;
   }
 }
+
+
+/* CRICZONE1 DESKTOP FULL-WIDTH LAYOUT v1
+   Scoped to the channel catalogue. Existing mobile and player layout are preserved. */
+@media(min-width:1200px){
+  .toprow{
+    width:94%!important;
+    max-width:1800px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  main{
+    width:94%!important;
+    max-width:1800px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:clamp(22px,2vw,38px)!important;
+    padding-right:clamp(22px,2vw,38px)!important;
+  }
+  #grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:18px!important;
+  }
+  #grid .cardbody{padding:15px 17px 17px!important}
+  #grid .channelname{font-size:13px!important}
+  #filters{gap:10px!important}
+  #filters .pill{padding:10px 16px!important}
+  #search{min-height:58px!important;font-size:14px!important}
+  .intro{margin-bottom:29px!important}
+  .intro h1{font-size:clamp(42px,3.5vw,58px)!important}
+  .subtitle{max-width:850px!important;font-size:14px!important}
+  footer .footer-inner{
+    width:94%!important;
+    max-width:1800px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+}
+@media(min-width:1500px){
+  #grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:19px!important}
+}
+@media(min-width:2000px){
+  .toprow,main,footer .footer-inner{max-width:2100px!important}
+  #grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:22px!important}
+  #grid .cardbody{padding:17px 19px 19px!important}
+}
+@media(min-width:1200px) and (max-width:1499px){
+  #grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
