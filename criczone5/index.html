@@ -551,6 +551,13 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  body:has(#playerView:not([hidden])) #viewerBadge{right:16px!important;top:195px!important}
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{width:42px;height:42px}
 }
+/* Shift the player-header Telegram link left so the floating Share control never covers it. */
+.cz-player-top .cz-player-tg{
+ margin-right:48px!important;
+}
+@media(max-width:520px){
+ .cz-player-top .cz-player-tg{margin-right:52px!important}
+}
 /* Keep Share/Rotate and counters above the popup card, clear of its close button. */
 .top-actions{
  top:8px!important;right:14px!important;z-index:2147483646!important;
