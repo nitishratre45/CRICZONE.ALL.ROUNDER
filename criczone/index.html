@@ -1253,7 +1253,18 @@ document.addEventListener("DOMContentLoaded", main);
  "use strict";
  if(window.__CRICZONE_TOTAL_COUNTER__) return;
  window.__CRICZONE_TOTAL_COUNTER__=true;
- var API="https://criczone-visitor-counter.criczonebuzz.workers.dev";
+ var API_PRIMARY="https://criczone-visitor-counter.criczonebuzz.workers.dev";
+ var API_BACKUP="https://criczone-visitor-counter-backup.nitish-2.workers.dev";
+ var activeAPI=API_PRIMARY,primaryRetryAt=0;
+ async function apiFetch(path,options){
+  var now=Date.now();
+  if(activeAPI===API_BACKUP&&now>=primaryRetryAt){
+   try{var probe=await fetch(API_PRIMARY+"/api/stats",{method:"GET",mode:"cors",cache:"no-store",credentials:"omit"});if(probe.ok){activeAPI=API_PRIMARY;return await fetch(API_PRIMARY+path,options);}}catch(_){}
+   primaryRetryAt=now+60000;
+  }
+  try{var response=await fetch(activeAPI+path,options);if(!response.ok)throw new Error("counter "+response.status);return response;}
+  catch(error){if(activeAPI===API_PRIMARY){activeAPI=API_BACKUP;primaryRetryAt=Date.now()+60000;var backupResponse=await fetch(API_BACKUP+path,options);if(!backupResponse.ok)throw new Error("backup counter "+backupResponse.status);return backupResponse;}throw error;}
+ }
  var totalEl=document.getElementById("totalVisits");
   var liveEl=document.getElementById("liveWatching");
  if(!totalEl||!liveEl) return;
@@ -1281,7 +1292,7 @@ document.addEventListener("DOMContentLoaded", main);
   if(busy||document.visibilityState!=="visible") return;
   busy=true;
   try{
-   var response=await fetch(API+"/api/visit",{
+   var response=await apiFetch("/api/visit",{
     method:"POST",mode:"cors",cache:"no-store",credentials:"omit",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({visitor_id:visitorId,count_visit:pageVisitPending})
@@ -1296,7 +1307,7 @@ document.addEventListener("DOMContentLoaded", main);
  async function refreshStats(){
   if(document.visibilityState!=="visible") return;
   try{
-   var response=await fetch(API+"/api/stats",{
+   var response=await apiFetch("/api/stats",{
     method:"GET",mode:"cors",cache:"no-store",credentials:"omit"
    });
    if(!response.ok) throw new Error("stats "+response.status);
