@@ -226,12 +226,27 @@
       if (!response.ok) throw new Error("HTTP " + response.status);
       return response.json();
     }).then(function (data) {
-      if (data && data.status === "ready" && data.database === "connected") {
+      var isReady = !!(data && data.status === "ready" && data.database === "connected");
+      try {
+        localStorage.setItem("cz_backup3_status_v1", JSON.stringify({
+          level: 3,
+          status: isReady ? "READY" : "NOT_READY",
+          database: data && data.database ? data.database : "unknown",
+          checkedAt: new Date().toISOString()
+        }));
+      } catch (_) {}
+      if (isReady) {
         console.info("[CRICZONE] BACKUP-3 READY", data);
       } else {
         console.warn("[CRICZONE] BACKUP-3 NOT READY", data);
       }
     }).catch(function (error) {
+      try {
+        localStorage.setItem("cz_backup3_status_v1", JSON.stringify({
+          level: 3, status: "CHECK_FAILED", checkedAt: new Date().toISOString(),
+          error: String(error)
+        }));
+      } catch (_) {}
       console.warn("[CRICZONE] BACKUP-3 readiness check failed", String(error));
     }).finally(function () {
       clearTimeout(timer);
