@@ -5262,3 +5262,31 @@ footer a{color:#bba4ff!important}footer .footer-inner{max-width:1120px!important
   #player[style*="display: block"] .cz-feature-copy strong{font-size:14px!important;margin-bottom:6px!important}
   #player[style*="display: block"] .cz-feature-copy p{font-size:11px!important}
 }
+
+
+/* Keep all presentation rules in this stylesheet; no HTML style attributes */
+.filter-count{font-size:9px;opacity:.72}
+#grid .poster .channel-brand-logo.channel-name-art{
+  --brand-accent:#c4adff;
+  --brand-bg:#172338;
+  --brand-glow:rgba(139,92,246,.20);
+  background:
+    radial-gradient(circle at 80% 15%,var(--brand-glow),transparent 55%),
+    linear-gradient(145deg,var(--brand-bg),#090e17)!important;
+}
+#grid .poster .channel-name-art .brand-symbol{
+  border-color:var(--brand-accent)!important;
+  color:var(--brand-accent)!important;
+}
+#grid .poster .channel-name-art .brand-word small{color:var(--brand-accent)!important}
+#grid .poster .brand-star-sports{--brand-accent:#f5a623;--brand-bg:#171c32;--brand-glow:rgba(245,166,35,.22)}
+#grid .poster .brand-sony-sports{--brand-accent:#65c7ff;--brand-bg:#101c3c;--brand-glow:rgba(101,199,255,.22)}
+#grid .poster .brand-sports-18{--brand-accent:#ff7a45;--brand-bg:#25152a;--brand-glow:rgba(255,122,69,.22)}
+#grid .poster .brand-willow{--brand-accent:#9be15d;--brand-bg:#10251c;--brand-glow:rgba(155,225,93,.2)}
+#grid .poster .brand-sky-sports{--brand-accent:#62c8ff;--brand-bg:#102b50;--brand-glow:rgba(98,200,255,.22)}
+#grid .poster .brand-tnt-sports{--brand-accent:#ff5555;--brand-bg:#24151c;--brand-glow:rgba(255,85,85,.2)}
+#grid .poster .brand-fox-sports{--brand-accent:#69b9ff;--brand-bg:#10213b;--brand-glow:rgba(105,185,255,.2)}
+#grid .poster .brand-supersport{--brand-accent:#f5c84c;--brand-bg:#17251f;--brand-glow:rgba(245,200,76,.2)}
+#grid .poster .brand-astro{--brand-accent:#65d5ff;--brand-bg:#10253c;--brand-glow:rgba(101,213,255,.2)}
+#grid .poster .brand-espn{--brand-accent:#ff5757;--brand-bg:#24151b;--brand-glow:rgba(255,87,87,.2)}
+#grid .poster .brand-cricket{--brand-accent:#ffd36b;--brand-bg:#172338;--brand-glow:rgba(255,211,107,.2)}
