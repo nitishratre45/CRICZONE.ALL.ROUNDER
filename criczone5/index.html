@@ -493,6 +493,41 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{font-size:8px;padding:4px 5px}
  #totalVisits,#liveWatching{font-size:9px}
 }
+/* Compact circular counters stacked directly below Share + Rotate. */
+#viewerBadge{
+ left:auto!important;right:14px!important;top:105px!important;
+ display:flex!important;flex-direction:column!important;align-items:center!important;
+ gap:5px!important;padding:0!important;border:0!important;border-radius:0!important;
+ background:transparent!important;box-shadow:none!important;overflow:visible!important;
+}
+#viewerBadge .watching-total-label,#viewerBadge .watching-live-label{
+ width:40px;height:40px;min-width:40px;padding:3px!important;
+ display:flex!important;flex-direction:column!important;justify-content:center!important;
+ align-items:center!important;gap:2px!important;border:1px solid rgba(70,235,210,.55)!important;
+ border-radius:50%!important;font-size:6px!important;line-height:1!important;
+ letter-spacing:.35px!important;color:#d9f8f2!important;
+ background:radial-gradient(circle at 30% 25%,rgba(29,83,83,.98),rgba(3,15,23,.98) 72%)!important;
+ box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 10px rgba(39,230,189,.12)!important;
+}
+#viewerBadge .watching-live-label{
+ border-color:rgba(255,93,120,.62)!important;
+ background:radial-gradient(circle at 30% 25%,rgba(92,35,52,.98),rgba(20,8,17,.98) 72%)!important;
+}
+#viewerBadge .watching-total-label:before,#viewerBadge .watching-live-label:before{display:none!important}
+#totalVisits,#liveWatching{
+ min-width:0!important;padding:0!important;background:none!important;box-shadow:none!important;
+ color:#8fffea!important;font-size:8px!important;font-weight:900!important;
+ line-height:1.1!important;border-radius:0!important;
+}
+#liveWatching{color:#ff9aad!important}
+body:has(#playerView:not([hidden])) #viewerBadge{
+ left:auto!important;right:14px!important;top:195px!important;
+}
+@media(min-width:700px){
+ #viewerBadge{right:16px!important;top:105px!important}
+ body:has(#playerView:not([hidden])) #viewerBadge{right:16px!important;top:195px!important}
+ #viewerBadge .watching-total-label,#viewerBadge .watching-live-label{width:42px;height:42px}
+}
 </style>
 <div id="viewerBadge" aria-live="polite">
  <span class="watching-total-label">TOTAL <strong id="totalVisits">13,450</strong></span>
