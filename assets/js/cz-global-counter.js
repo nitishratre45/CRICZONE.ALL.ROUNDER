@@ -364,8 +364,11 @@
       if (document.visibilityState !== "visible") return;
       var active = activeIndex;
       var results = await Promise.all(API_LIST.map(async function (base, index) {
+        // PRIMARY has already failed. Do not send background LIVE stats requests
+        // to it during the 12-hour cooldown; retry only through ensureRoute().
+        if (index === 0 && activeIndex > 0 && Date.now() < retryAt) return null;
         try {
-          // Reuse active stats; fetch other workers and union their visitor IDs.
+          // Reuse active stats; query eligible workers and union their visitor IDs.
           return index === active ? activeStats :
             (await requestAPI(base, "/api/stats", { method: "GET" })).data;
         } catch (_) {
