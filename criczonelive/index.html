@@ -839,7 +839,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .cz-channel-card strong{font-size:14px;line-height:1.25;font-weight:800}
 .cz-channel-card small{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#8993a0}
 .cz-channel-empty{grid-column:1/-1;padding:28px 16px;text-align:center;border:1px dashed #384454;border-radius:18px;color:#8d99a8;font-size:13px}
-.cz-player-wrap{margin:8px 2px 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.cz-player-wrap{margin:8px 2px 24px;padding:0 0 20px;border-bottom:1px solid rgba(255,255,255,.08);scroll-margin-top:16px}
 .cz-player-heading{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
 .cz-player-heading span{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#7f8b9b}
 .cz-player-heading strong{font:700 17px var(--font-d);color:#f2f5f9}
@@ -973,14 +973,14 @@ button,a{-webkit-tap-highlight-color:transparent}
       </div>
     </div>
 
-    <div class="cz-channels-heading"><h3>LIVE CHANNELS</h3><span id="czChannelCount">0 CHANNELS</span></div>
-    <div class="cz-channel-grid" id="streams"></div>
-
-    <div class="cz-player-wrap">
+    <div class="cz-player-wrap" id="czPlayerSection">
       <div class="cz-player-heading"><span>NOW PLAYING</span><strong id="playerTitle">CRICZONE Player</strong></div>
       <p class="cz-player-sub" id="playerSub"></p>
       <div class="screen"><div id="player-container"></div></div>
     </div>
+
+    <div class="cz-channels-heading"><h3>LIVE CHANNELS</h3><span id="czChannelCount">0 CHANNELS</span></div>
+    <div class="cz-channel-grid" id="streams"></div>
   </section>
 
 </div>
@@ -1996,6 +1996,7 @@ $("streams").addEventListener("click", e => {
   renderPlayerStreams(index);
   history.replaceState(null, "", `#watch?id=${encodeURIComponent(state.currentEvent.id)}&stream=${index}`);
   playRecord(state.currentStreams[index], index);
+  $("czPlayerSection").scrollIntoView({behavior:"smooth", block:"start"});
 });
 
 $("czShareMatch").addEventListener("click", async () => {
