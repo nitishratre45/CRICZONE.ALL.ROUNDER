@@ -15,7 +15,7 @@ main{width:min(1100px,calc(100% - 32px));margin:34px auto 60px}.top{display:flex
 .actions{display:flex;gap:9px;align-items:center}button{border:1px solid #344764;background:#182840;color:white;padding:11px 15px;border-radius:11px;font-weight:700;cursor:pointer}button:hover{background:#213958}
 .overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-bottom:18px}.metric,.worker{background:linear-gradient(145deg,#142139,#101929);border:1px solid var(--line);border-radius:17px;padding:18px}.metric small,.label{display:block;color:var(--muted);font-size:12px;font-weight:600}.metric strong{display:block;font-size:29px;margin-top:8px;font-variant-numeric:tabular-nums}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.worker-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:18px}.worker h2{font-size:16px;margin:0}.status{font-size:11px;font-weight:800;padding:6px 9px;border-radius:99px;background:#29344a;color:var(--gold)}.status.ok{background:#103b31;color:var(--green)}.status.bad{background:#421f2a;color:var(--red)}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#0b1423;border:1px solid #202f45;border-radius:12px;padding:13px}.stat strong{display:block;font-size:25px;margin-top:6px;font-variant-numeric:tabular-nums}.stat.live strong{color:var(--green)}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:15px;color:var(--muted);font-size:11px;flex-wrap:wrap}.endpoint{overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#0b1423;border:1px solid #202f45;border-radius:12px;padding:13px}.stat strong{display:block;font-size:25px;margin-top:6px;font-variant-numeric:tabular-nums}.stat.live strong{color:var(--green)}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:15px;color:var(--muted);font-size:11px;flex-wrap:wrap}.endpoint{overflow-wrap:anywhere}.reason{display:none;margin-top:10px;padding:10px 12px;border:1px solid #603342;border-radius:10px;background:#281a29;color:#ffb8c0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.reason.show{display:block}.reason b{color:#ffdce0}
 .note{color:var(--muted);font-size:12px;line-height:1.6;margin-top:17px}.updated{color:var(--muted);font-size:12px}
 @media(max-width:650px){main{width:calc(100% - 22px);margin-top:22px}.grid{grid-template-columns:1fr}.overview{gap:9px}.metric{padding:14px}.metric strong{font-size:24px}.worker{padding:15px}}
 </style>
@@ -39,23 +39,30 @@ const WORKERS=[
 ];
 const root=document.getElementById("workers");
 const number=v=>Number.isFinite(Number(v))?Number(v).toLocaleString("en-IN"):"—";
-root.innerHTML=WORKERS.map((w,i)=>`<article class="worker" id="worker-${i}"><div class="worker-head"><h2>${w.name}</h2><span class="status" id="status-${i}">WAITING</span></div><div class="stats"><div class="stat live"><span class="label">LIVE VISITORS</span><strong id="live-${i}">—</strong></div><div class="stat"><span class="label">TOTAL VISITS</span><strong id="total-${i}">—</strong></div></div><div class="foot"><span id="checked-${i}">Not checked</span><span class="endpoint">/api/stats</span></div></article>`).join("");
+root.innerHTML=WORKERS.map((w,i)=>`<article class="worker" id="worker-${i}"><div class="worker-head"><h2>${w.name}</h2><span class="status" id="status-${i}">WAITING</span></div><div class="stats"><div class="stat live"><span class="label">LIVE VISITORS</span><strong id="live-${i}">—</strong></div><div class="stat"><span class="label">TOTAL VISITS</span><strong id="total-${i}">—</strong></div></div><div class="foot"><span id="checked-${i}">Not checked</span><span class="endpoint">/api/stats</span></div><div class="reason" id="reason-${i}"></div></article>`).join("");
 async function refresh(){
  const button=document.getElementById("refresh");button.disabled=true;
  let online=0,liveSum=0;
  await Promise.all(WORKERS.map(async(w,i)=>{
-  const status=document.getElementById("status-"+i), liveEl=document.getElementById("live-"+i), totalEl=document.getElementById("total-"+i), checked=document.getElementById("checked-"+i);
+  const status=document.getElementById("status-"+i), liveEl=document.getElementById("live-"+i), totalEl=document.getElementById("total-"+i), checked=document.getElementById("checked-"+i), reason=document.getElementById("reason-"+i);
+  reason.className="reason";reason.textContent="";
   try{
    const response=await fetch(w.url+"/api/stats",{method:"GET",cache:"no-store"});
-   if(!response.ok)throw new Error("HTTP "+response.status);
+   if(!response.ok){
+    const body=await response.text().catch(()=>"");
+    let detail="";
+    try{const parsed=JSON.parse(body);detail=parsed.message||parsed.error||parsed.detail||parsed.reason||"";}catch(_){}
+    const label=response.status===503?"Service Unavailable":response.status===522?"Connection timed out":response.status===524?"Origin timed out":response.status===429?"Rate limited":response.statusText||"Request failed";
+    throw new Error("HTTP "+response.status+" · "+label+(detail?" · "+detail:""));
+   }
    const data=await response.json();
    const live=Number(data.live_visitors),total=Number(data.total_visits);
    if(!Number.isFinite(live)||!Number.isFinite(total))throw new Error("Unexpected API response");
    liveEl.textContent=number(live);totalEl.textContent=number(total);
    status.textContent="ONLINE";status.className="status ok";online++;liveSum+=live;
-   checked.textContent="Updated "+new Date().toLocaleTimeString();
+   checked.textContent="Updated "+new Date().toLocaleTimeString();reason.className="reason";reason.textContent="";
   }catch(error){
-   status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";checked.textContent=error.message||"Request failed";
+   status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";checked.textContent="Failed "+new Date().toLocaleTimeString();reason.textContent="Reason: "+(error.message||"Request failed")+(String(error.message||"").includes("Failed to fetch")?" (Possible network, CORS, DNS, or Worker connectivity issue.)":"");reason.className="reason show";
   }
  }));
  document.getElementById("online").textContent=online+" / 5";
