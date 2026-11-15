@@ -104,6 +104,7 @@
   let genresSet = new Set();
   let activeGenre = "All";
   let searchQuery = "";
+  let displayedChannels = [];
   const container = document.getElementById("channels-container");
   const filterContainer = document.getElementById("categoryFilter");
   const loadingEl = document.getElementById("loading");
@@ -203,15 +204,20 @@
       renderChannels();
     });
   }
-  function openPlayer(title,streamUrl) {
+  function channelSlug(title) {
+    return String(title || "channel").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "channel";
+  }
+  function openPlayer(title,streamUrl,updateUrl=true) {
     const fullPlayerUrl = PLAYER_PREFIX + encodeURIComponent(streamUrl);
     modalTitle.textContent = title;
     playerFrame.src = fullPlayerUrl;
     playerModal.classList.add("active");
+    if (updateUrl) history.replaceState(null,"",location.pathname + location.search + "#" + channelSlug(title));
   }
   function closePlayer() {
     playerModal.classList.remove("active");
     playerFrame.src = "about:blank";
+    if (location.hash) history.replaceState(null,"",location.pathname + location.search);
   }
   modalClose.addEventListener("click",closePlayer);
   playerModal.addEventListener("click",e => { if (e.target === playerModal) closePlayer(); });
@@ -224,22 +230,33 @@
       const matchesSearch = !searchQuery || (ch.title && ch.title.toLowerCase().includes(searchQuery));
       return matchesCategory && matchesSearch;
     });
+    displayedChannels = filtered;
     if (filtered.length === 0) {
       container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-secondary);">No channels found matching your search.</div>';
       return;
     }
-    container.innerHTML = filtered.map(ch => {
+    container.innerHTML = filtered.map((ch,index) => {
       const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(ch.title || "TV")}&background=1e88e5&color=fff&rounded=true`;
       const card = document.createElement("div");
       card.className = "sky-card";
+      card.dataset.channelIndex = String(index);
       card.innerHTML = `<div class="sky-card-media"><img src="${escapeHtml(ch.logo || fallbackLogo)}" alt="${escapeHtml(ch.title)}"><span class="sky-badge genre"><span class="material-icons" style="font-size:13px;">${getGenreIcon(ch.genre)}</span>${escapeHtml(ch.genre || "General")}</span></div><div class="sky-card-content"><div class="channel-title">${escapeHtml(ch.title)}</div><button class="watch-btn" type="button"><span class="material-icons" style="font-size:18px;">play_arrow</span> Watch Live</button></div>`;
       card.querySelector("img").addEventListener("error",e => { e.currentTarget.src = fallbackLogo; },{once:true});
-      card.addEventListener("click",() => openPlayer(ch.title,ch.streamUrl));
-      card.querySelector(".watch-btn").addEventListener("click",e => { e.stopPropagation(); openPlayer(ch.title,ch.streamUrl); });
       return card.outerHTML;
     }).join("");
   }
-  fetchChannels();
+  container.addEventListener("click",e => {
+    const card = e.target.closest(".sky-card[data-channel-index]");
+    if (!card) return;
+    const channel = displayedChannels[Number(card.dataset.channelIndex)];
+    if (channel && channel.streamUrl) openPlayer(channel.title,channel.streamUrl);
+  });
+  fetchChannels().then(() => {
+    const requestedSlug = decodeURIComponent(location.hash.slice(1)).toLowerCase();
+    if (!requestedSlug) return;
+    const channel = channelsList.find(ch => channelSlug(ch.title) === requestedSlug);
+    if (channel && channel.streamUrl) openPlayer(channel.title,channel.streamUrl,false);
+  });
 </script>
 </body>
 </html>
