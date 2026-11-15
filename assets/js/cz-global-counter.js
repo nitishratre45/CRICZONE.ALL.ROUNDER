@@ -7,7 +7,7 @@
   if (window.__CRICZONE_TOTAL_COUNTER__) return;
   window.__CRICZONE_TOTAL_COUNTER__ = true;
 
-  var API_PRIMARY = "https://criczone-visitor-counter.criczonebuzz.workers.dev";
+  var API_PRIMARY = "https://criczone-visitor-counter.criczone-nitish.workers.dev";
   var API_BACKUP2 = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
   var API_BACKUP3 = "https://criczone-visitor-counter-backup-3.nitish-3.workers.dev";
   var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3];
