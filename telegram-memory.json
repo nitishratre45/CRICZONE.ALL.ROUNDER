@@ -8,7 +8,7 @@
     "channel_selection": "When a user selects a channel, return only that channel name and its page URL.",
     "privacy": "Never expose upstream stream URLs, DRM keys, cookies, tokens, or credentials.",
     "quality": "Deduplicate channels, exclude unrelated broadcaster channels, tolerate minor spelling mistakes, and never invent a channel or ID.",
-    "sony_primary": "Show the seven Sony Sports channel-ID entries in sony_channel_sets.primary first. Each item includes its exact name and URL.",
+    "sony_primary": "Show all primary Sony Sports entries, including the three IOS Sony entries, from sony_channel_sets.primary.",
     "sony_backup": "Only if the user reports the primary Sony channel is not working, show the criczone1 alternate entries in sony_channel_sets.backup.",
     "willow_cricbuzz": "For direct Willow or Cricbuzz requests, reply only with https://criczone.pages.dev/criczonebuzz/. Willow provider/channel search may include curated Willow USA entries in folder e when the user asks for Willow channels.",
     "fancode_web": "For FanCode, use the five channel_entries directly from memory, do not query feeds. Return five exact names and URLs, then append FANCODE WEB primary https://criczone.pages.dev/fancodeweb/ and OLD FANCODE WEB backup https://criczone.pages.dev/criczonefancode/. Exact fancode web request returns both links with the new web first.",
@@ -37,7 +37,8 @@
       "aliases": [
         "sony sports",
         "sony ten",
-        "sony sports ten"
+        "sony sports ten",
+        "ios sony"
       ],
       "sources": [
         "sony_playlist",
@@ -453,6 +454,24 @@
         "name": "Sony Sports Ten 5 HD",
         "folder": "criczone",
         "url": "https://criczone.pages.dev/criczone/?id=155"
+      },
+      {
+        "id": "ios-sony-1hd",
+        "name": "IOS Sony 1 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=ios-sony-1hd"
+      },
+      {
+        "id": "ios-sony-2hd",
+        "name": "IOS Sony 2 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=ios-sony-2hd"
+      },
+      {
+        "id": "ios-sony-3hd",
+        "name": "IOS Sony 3 HD",
+        "folder": "criczone",
+        "url": "https://criczone.pages.dev/criczone/?id=ios-sony-3hd"
       }
     ],
     "backup": [
