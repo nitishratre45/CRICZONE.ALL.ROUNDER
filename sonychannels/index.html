@@ -304,7 +304,7 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
       const card = document.createElement("div");
       card.className = "sky-card";
       card.dataset.channelIndex = String(index);
-      card.innerHTML = `<div class="sky-card-media"><img src="${escapeHtml(ch.logo || fallbackLogo)}" alt="${escapeHtml(ch.title)}"><span class="sky-badge genre"><span class="material-icons" style="font-size:13px;">${getGenreIcon(ch.genre)}</span>${escapeHtml(ch.genre || "General")}</span></div><div class="sky-card-content"><div class="channel-title">${escapeHtml(ch.title)}</div><button class="watch-btn" type="button"><span class="material-icons" style="font-size:18px;">play_arrow</span> Watch Live</button></div>`;
+      card.innerHTML = `<div class="sky-card-media"><img src="${escapeHtml(ch.logo || fallbackLogo)}" alt="${escapeHtml(ch.title)}"></div><div class="sky-card-content"><div class="channel-title">${escapeHtml(ch.title)}</div><button class="watch-btn" type="button"><span class="material-icons" style="font-size:18px;">play_arrow</span> Watch Live</button></div>`;
       card.querySelector("img").addEventListener("error",e => { e.currentTarget.src = fallbackLogo; },{once:true});
       return card.outerHTML;
     }).join("");
