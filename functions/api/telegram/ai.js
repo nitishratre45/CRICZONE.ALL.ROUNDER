@@ -448,7 +448,7 @@ async function handleText({ request, env, message }) {
       await clearState(env.TELEGRAM_DB, chatId, userId);
       const buttons = iosSony.map(item => [{ text: String(item.name).slice(0, 64), url: item.url }]);
       return reply(
-        "📱 <b>IOS SONY CHANNELS (" + buttons.length + ")</b>\\n\\n<i>Choose an iOS-compatible Sony channel below.</i>",
+        "📱 <b>IOS SONY CHANNELS (" + buttons.length + ")</b>\n\n<i>Choose an iOS-compatible Sony channel below.</i>",
         { inline_keyboard: buttons },
         "HTML"
       );
