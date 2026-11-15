@@ -955,7 +955,11 @@ async function startPlayer(ch){
   var viewerBadge = document.getElementById("viewerBadge");
   // Sony 3 HD-2 embeds SonyChannels, which already displays its own visitor badge.
   // Hide only the outer CRICZONE badge for this nested stream to prevent duplicates.
-  if(viewerBadge) viewerBadge.style.display = (ch && ch.id === "sony-3hd-2") ? "none" : "inline-flex";
+  if(viewerBadge){
+    var disableOuterCounter = !!(ch && ch.id === "sony-3hd-2");
+    viewerBadge.hidden = disableOuterCounter;
+    viewerBadge.style.setProperty("display", disableOuterCounter ? "none" : "inline-flex", "important");
+  }
   if(ch && ch.url){
     $vid.style.display = "none";
     if(streamFrame){
