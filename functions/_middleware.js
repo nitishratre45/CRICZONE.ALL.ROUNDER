@@ -29,8 +29,8 @@ export async function onRequest(context){
   try {
     if(path==="/api/channels") return await channels(context);
     const response=await context.next();
-    // Keep the visitor badge/counter completely disabled only inside /criczone6.
-    if(path==="/criczone6" || path.startsWith("/criczone6/")) return response;
+    // Keep the visitor badge/counter disabled inside /criczone6 and /sonychannels.
+    if(path==="/criczone6" || path.startsWith("/criczone6/") || path==="/sonychannels" || path.startsWith("/sonychannels/")) return response;
     const contentType=response.headers.get("content-type")||"";
     if(method!=="GET" || !contentType.toLowerCase().includes("text/html") || response.status!==200) return response;
     return await injectGlobalCounter(response);
