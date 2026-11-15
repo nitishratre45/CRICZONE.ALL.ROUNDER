@@ -35,6 +35,8 @@
     } catch (_) {}
   }
   readSharedRoute();
+  // Remove the misnamed Backup-5 readiness key written by the first S6 build.
+  try { localStorage.removeItem("cz_backup5_readiness_status_v1"); } catch (_) {}
 
   // Route changes are shared by every page/tab on criczone.pages.dev.
   window.addEventListener("storage", function (event) {
@@ -367,7 +369,7 @@
     }).then(function (data) {
       var isReady = !!(data && String(data.status || "").toUpperCase() === "READY" && data.database === "connected");
       try {
-        localStorage.setItem("cz_backup5_readiness_status_v1", JSON.stringify({
+        localStorage.setItem("cz_backup6_readiness_status_v1", JSON.stringify({
           level: 6,
           status: isReady ? "READY" : "NOT_READY",
           database: data && data.database ? data.database : "unknown",
