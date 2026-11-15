@@ -866,6 +866,31 @@ button,a{-webkit-tap-highlight-color:transparent}
 }
 @media(min-width:760px){.cz-channel-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cz-channel-card{min-height:176px}}
 
+
+/* CRICxCRATE-inspired compact live layout, CRICZONE branding */
+.cz-reference-header{padding:18px 6px 22px;align-items:center}
+.cz-reference-logo{width:68px;height:68px;flex:none;overflow:hidden;border-radius:18px;background:linear-gradient(145deg,#263c4d,#111b28);border:1px solid rgba(255,255,255,.16);box-shadow:0 7px 20px rgba(0,0,0,.3)}
+.cz-reference-logo img{width:100%;height:100%;display:block;object-fit:cover;object-position:top center}
+.cz-reference-header .cz-live-brand-copy strong{font-size:21px;letter-spacing:-.5px}
+.cz-reference-header .cz-live-brand-copy span{font-size:12px;letter-spacing:1.7px}
+.cz-get-app{min-height:50px;padding:0 18px;border-radius:16px;font-size:14px;box-shadow:0 7px 22px rgba(0,136,210,.26)}
+.cz-reference-player{margin:0 2px 24px;padding:0;border:0;scroll-margin-top:12px}
+.cz-reference-player .screen{margin:0;max-width:none;border-radius:17px;overflow:hidden}
+.cz-reference-player #player-container{width:100%}
+.cz-reference-player .screen video{object-fit:contain}
+.cz-live-view .cz-teams-row{margin:0 2px 27px;padding:0 14px}
+.cz-live-view .cz-channel-grid{margin-bottom:26px}
+.cz-live-view .cz-channels-heading{margin-bottom:13px}
+@media(max-width:520px){
+ .cz-reference-header{padding:14px 3px 22px}
+ .cz-reference-logo{width:60px;height:60px;border-radius:17px}
+ .cz-reference-header .cz-live-brand-copy strong{font-size:19px}
+ .cz-reference-header .cz-live-brand-copy span{font-size:10px}
+ .cz-get-app{min-height:46px;padding:0 14px;border-radius:15px;font-size:13px}
+ .cz-reference-player{margin-bottom:22px}
+ .cz-live-view .cz-teams-row{padding:0 8px}
+}
+
 </style>
 </head>
 
@@ -932,29 +957,16 @@ button,a{-webkit-tap-highlight-color:transparent}
 
   <!-- ==================== CRICZONE LIVE PLAYER VIEW ==================== -->
   <section id="playerView" class="view cz-live-view">
-    <header class="cz-live-header">
+    <header class="cz-live-header cz-reference-header">
       <div class="cz-live-brand">
-        <div class="brand-photo-frame cz-player-photo-frame"><img id="czPlayerNavbarPhoto" class="brand-photo" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
-        <div class="cz-live-brand-copy"><strong>CRICZONE</strong><span>LIVE STREAMING</span></div>
+        <div class="cz-reference-logo"><img id="czPlayerNavbarPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"></div>
+        <div class="cz-live-brand-copy"><strong>CRICZONE</strong><span>LIVE</span></div>
       </div>
-      <a class="cz-live-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Join CRICZONE Telegram">
+      <a class="cz-live-telegram cz-get-app" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Get CRICZONE app">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
-        <span>Telegram</span>
+        <span>Get App</span>
       </a>
     </header>
-
-    <button class="cz-back" id="backHub" type="button" aria-label="Back to matches">← <span>Back to matches</span></button>
-
-    <div class="cz-match-banner" aria-label="Live match details">
-      <div class="cz-banner-glow"></div>
-      <div class="cz-banner-top"><span class="cz-banner-kicker">CRICZONE LIVE</span><span class="cz-banner-live"><i></i> MATCH CENTER</span></div>
-      <div class="cz-banner-content">
-        <span class="cz-banner-league" id="czBannerLeague">LIVE CRICKET</span>
-        <h2 id="czBannerTitle">CRICZONE LIVE</h2>
-        <p id="czBannerSub">Watch the action live</p>
-      </div>
-      <div class="cz-banner-watermark">CZ</div>
-    </div>
 
     <div class="cz-teams-row">
       <div class="cz-team-side">
@@ -973,10 +985,25 @@ button,a{-webkit-tap-highlight-color:transparent}
       </div>
     </div>
 
-    <div class="cz-player-wrap" id="czPlayerSection">
-      <div class="cz-player-heading"><span>NOW PLAYING</span><strong id="playerTitle">CRICZONE Player</strong></div>
-      <p class="cz-player-sub" id="playerSub"></p>
+    <div class="cz-player-wrap cz-reference-player" id="czPlayerSection">
       <div class="screen"><div id="player-container"></div></div>
+    </div>
+
+    <div class="cz-teams-row">
+      <div class="cz-team-side">
+        <div class="cz-team-logo" id="czTeamLogoA">A</div>
+        <strong id="czTeamA">Team A</strong>
+      </div>
+      <div class="cz-match-middle">
+        <button class="cz-share-btn" id="czShareMatch" type="button" aria-label="Share match">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.7 10.7 6.6-4.1M8.7 13.3l6.6 4.1"></path></svg><span>Share</span>
+        </button>
+        <b>VS</b>
+      </div>
+      <div class="cz-team-side">
+        <div class="cz-team-logo" id="czTeamLogoB">B</div>
+        <strong id="czTeamB">Team B</strong>
+      </div>
     </div>
 
     <div class="cz-channels-heading"><h3>LIVE CHANNELS</h3><span id="czChannelCount">0 CHANNELS</span></div>
@@ -1419,9 +1446,6 @@ async function openPlayer(id, index){
   const matchName = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "CRICZONE LIVE");
   $("playerTitle").textContent = matchName;
   $("playerSub").textContent = [event.sport, event.comp].filter(Boolean).join(" · ");
-  $("czBannerLeague").textContent = String(event.comp || event.sport || "LIVE CRICKET").toUpperCase();
-  $("czBannerTitle").textContent = matchName;
-  $("czBannerSub").textContent = [event.sport, "Live match streaming on CRICZONE"].filter(Boolean).join(" · ");
   $("czTeamA").textContent = event.a || event.comp || "Team A";
   $("czTeamB").textContent = event.b || event.comp || "Team B";
   const setTeamMark = (id, flag, name, fallback) => {
