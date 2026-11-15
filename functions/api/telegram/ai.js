@@ -439,6 +439,22 @@ async function handleText({ request, env, message }) {
     return reply("⚠️ <b>Channel list unavailable</b>\n\n<i>The channel directory is empty or temporarily unavailable.</i>\n\n<blockquote>Please contact a CRICZONE admin for help.</blockquote>", undefined, "HTML");
   }
 
+  // A direct "IOS Sony" request returns only the three iOS-compatible Sony iframe channels.
+  if (/^ios sony(?: channels?)?$/.test(value)) {
+    const iosSony = (memory.sony_channel_sets?.primary || []).filter(item =>
+      item && item.id && item.name && item.url && /^ios-sony-/.test(String(item.id))
+    );
+    if (iosSony.length) {
+      await clearState(env.TELEGRAM_DB, chatId, userId);
+      const buttons = iosSony.map(item => [{ text: String(item.name).slice(0, 64), url: item.url }]);
+      return reply(
+        "📱 <b>IOS SONY CHANNELS (" + buttons.length + ")</b>\\n\\n<i>Choose an iOS-compatible Sony channel below.</i>",
+        { inline_keyboard: buttons },
+        "HTML"
+      );
+    }
+  }
+
   // A standalone "Sony" request returns the complete Sony channel directory.
   // Use only the two Sony source folders and always share the Sony page base URL.
   if (value === "sony") {
