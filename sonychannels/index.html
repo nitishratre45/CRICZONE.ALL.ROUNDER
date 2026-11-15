@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Sony Live TV Hub</title>
+  <title>CRICZONE SONY HUB | Live Channels</title>
   <!-- Google Fonts & Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -64,11 +64,53 @@
       .watch-btn { padding:8px; font-size:.8rem; }
     }
     footer { text-align:center; padding:28px; font-size:.8rem; color:var(--text-secondary); border-top:1px solid var(--border-light); margin-top:40px; }
-  </style>
+  
+/* CRICZONE Sony Hub visual refresh */
+body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transparent 34%),radial-gradient(ellipse at 95% 18%,rgba(129,55,220,.13),transparent 32%),#080c18}
+.sky-header{padding:14px clamp(14px,3vw,30px);background:linear-gradient(110deg,rgba(9,17,35,.98),rgba(19,15,43,.98));border-bottom:1px solid rgba(112,145,211,.22);box-shadow:0 8px 28px rgba(0,0,0,.28);gap:14px}
+.sky-logo{gap:10px;font-size:1.18rem;letter-spacing:.02em}
+.sky-logo>.material-icons{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#27b9f3,#3158d8);color:#fff!important;font-size:25px!important;box-shadow:0 5px 18px rgba(38,148,235,.28)}
+.sky-logo>span:last-child{display:flex;flex-direction:column;gap:3px}
+.sky-logo strong{font-size:1.1rem;line-height:1;color:#f5f7ff}
+.sky-logo small{font-size:.61rem;letter-spacing:.18em;color:#9daac5;font-weight:700}
+.search-input{background:rgba(8,14,29,.9);border-color:rgba(119,143,190,.25);min-height:44px}
+.search-input:focus{border-color:#8b55f5;box-shadow:0 0 0 3px rgba(139,85,245,.16)}
+.sky-telegram{background:linear-gradient(120deg,#168cda,#1767c7);box-shadow:0 5px 17px rgba(21,125,208,.22)}
+.sky-telegram:hover{background:linear-gradient(120deg,#117fc9,#145bb1)}
+.container{padding-top:25px}
+.category-filter-wrapper{margin-bottom:24px}
+.category-btn{background:rgba(19,25,43,.92);border-color:rgba(126,145,190,.23);color:#b8c3d8}
+.category-btn.active{background:linear-gradient(120deg,#8039ed,#4b5bd4);border-color:#a77aff;box-shadow:0 5px 18px rgba(116,64,220,.22)}
+.grid-layout{gap:16px}
+.sky-card{background:linear-gradient(155deg,#1b2233,#121827);border-color:rgba(122,145,194,.2);box-shadow:0 8px 22px rgba(0,0,0,.2)}
+.sky-card:hover{border-color:#648cf5;box-shadow:0 12px 28px rgba(40,105,215,.17)}
+.sky-card-media{background:linear-gradient(145deg,#151e31,#111522);height:150px}
+.sky-card-content{background:linear-gradient(160deg,rgba(32,40,58,.96),rgba(20,27,42,.98))}
+.watch-btn{background:linear-gradient(110deg,#237fe0,#315ed1);box-shadow:0 4px 13px rgba(35,117,216,.18)}
+.watch-btn:hover{background:linear-gradient(110deg,#328feb,#416de0)}
+.player-modal{cursor:default}
+.modal-box{border-color:rgba(132,153,201,.3);box-shadow:0 24px 70px rgba(0,0,0,.72)}
+.modal-header{min-height:58px;background:linear-gradient(110deg,#111b30,#17132c)}
+.modal-close{width:38px;height:38px;border:1px solid rgba(160,175,210,.18);background:rgba(255,255,255,.05)}
+.modal-close:active{transform:scale(.94)}
+@media(max-width:768px){
+ .sky-header{padding:12px 14px;gap:10px}
+ .sky-logo{font-size:1rem;gap:8px}
+ .sky-logo>.material-icons{width:38px;height:38px;font-size:23px!important}
+ .sky-logo strong{font-size:1rem}
+ .sky-logo small{font-size:.53rem;letter-spacing:.13em}
+ .sky-telegram{padding:8px 13px;font-size:.8rem;gap:7px}
+ .container{padding:20px 12px}
+ .category-filter-wrapper{margin-bottom:19px}
+ .grid-layout{gap:12px}
+ .sky-card-media{height:120px}
+}
+
+</style>
 </head>
 <body>
 <header class="sky-header">
-  <div class="sky-logo"><span class="material-icons">live_tv</span><span>SONY LIVE HUB</span></div>
+  <div class="sky-logo"><span class="material-icons">live_tv</span><span><strong>CRICZONE</strong><small>SONY HUB · LIVE CHANNELS</small></span></div>
   <div class="search-wrapper">
     <span class="material-icons">search</span>
     <input type="text" id="channelSearch" class="search-input" placeholder="Search channels..." autocomplete="off" spellcheck="false">
@@ -220,10 +262,7 @@
     if (location.hash) history.replaceState(null,"",location.pathname + location.search);
   }
   modalClose.addEventListener("click",closePlayer);
-  playerModal.addEventListener("click",e => { if (e.target === playerModal) closePlayer(); });
-  window.addEventListener("keydown",e => {
-    if (e.key === "Escape" && playerModal.classList.contains("active")) closePlayer();
-  });
+  // The player closes only when the dedicated close button is pressed.
   function renderChannels() {
     const filtered = channelsList.filter(ch => {
       const matchesCategory = activeGenre === "All" || ch.genre === activeGenre;
