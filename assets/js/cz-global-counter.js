@@ -310,13 +310,11 @@
 
     function paint(data) {
       var total = data && (data.total_visits != null ? data.total_visits : data.totalVisits);
-      var live = data && (data.live_visitors != null ? data.live_visitors : data.liveVisitors);
       if (Number.isFinite(Number(total))) {
         totalFloor = Math.max(totalFloor, Number(total));
         try { localStorage.setItem(TOTAL_KEY, String(totalFloor)); } catch (_) {}
         els.total.textContent = totalFloor.toLocaleString("en-IN");
       }
-      if (Number.isFinite(Number(live))) els.live.textContent = (Number(live) + 345).toLocaleString("en-IN");
     }
 
     async function heartbeat() {
@@ -340,6 +338,22 @@
       } finally { busy = false; }
     }
 
+    async function refreshCombinedLive() {
+      if (document.visibilityState !== "visible") return;
+      var results = await Promise.all(API_LIST.map(async function (base) {
+        try {
+          var result = await requestAPI(base, "/api/stats", { method: "GET" });
+          var value = Number(result.data && result.data.live_visitors);
+          return Number.isFinite(value) && value > 0 ? value : 0;
+        } catch (_) {
+          // An unavailable/limited worker contributes zero; other workers still count.
+          return 0;
+        }
+      }));
+      var combined = results.reduce(function (sum, value) { return sum + value; }, 0);
+      els.live.textContent = (combined + 345).toLocaleString("en-IN");
+    }
+
     async function refreshStats() {
       if (document.visibilityState !== "visible") return;
       try {
@@ -348,6 +362,7 @@
         });
         var data = await response.json();
         paint(data);
+        await refreshCombinedLive();
         // Keep both backups at least at the latest total observed by this browser.
         var floor = totalFloor;
         [API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5].forEach(function (backup) {
