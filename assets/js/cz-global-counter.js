@@ -13,7 +13,8 @@
   var API_BACKUP4 = "https://criczone-visitor-counter-backup-4.nitish-4.workers.dev";
   var API_BACKUP5 = "https://criczone-visitor-counter-backup-5.nitish-5.workers.dev";
   var API_BACKUP6 = "https://criczone-visitor-counter-backup-6.nitish-6.workers.dev";
-  var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5, API_BACKUP6];
+  var API_BACKUP7 = "https://criczone-visitor-counter-backup-7.nitish-7.workers.dev";
+  var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5, API_BACKUP6, API_BACKUP7];
   var ROUTE_KEY = "cz_counter_backup_until_local_v2";
   var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
   var TOTAL_KEY = "cz_counter_total_floor_v2";
@@ -27,7 +28,7 @@
   function readSharedRoute() {
     try {
       var saved = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
-      if (saved && Number.isInteger(saved.level) && saved.level >= 1 && saved.level <= 6) {
+      if (saved && Number.isInteger(saved.level) && saved.level >= 1 && saved.level <= 7) {
         activeIndex = saved.level - 1;
         retryAt = Number(saved.retryAt) || 0;
       }
@@ -77,8 +78,8 @@
   }
 
   function saveEndpointHealth(index, status, error) {
-    var names = ["PRIMARY", "BACKUP_2", "BACKUP_3", "BACKUP_4", "BACKUP_5", "BACKUP_6"];
-    var keys = ["cz_counter_primary_status_v1", "cz_counter_backup2_status_v1", "cz_counter_backup3_status_v1", "cz_counter_backup4_status_v1", "cz_counter_backup5_status_v1", "cz_counter_backup6_status_v1"];
+    var names = ["PRIMARY", "BACKUP_2", "BACKUP_3", "BACKUP_4", "BACKUP_5", "BACKUP_6", "BACKUP_7"];
+    var keys = ["cz_counter_primary_status_v1", "cz_counter_backup2_status_v1", "cz_counter_backup3_status_v1", "cz_counter_backup4_status_v1", "cz_counter_backup5_status_v1", "cz_counter_backup6_status_v1", "cz_counter_backup7_status_v1"];
     var record = {
       level: index + 1,
       endpoint: names[index],
@@ -139,7 +140,7 @@
       try { lease = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null"); } catch (_) {}
 
       if (lease && lease.expiresAt > now && lease.owner !== tabId) {
-        // Wait for the current tab's full five-endpoint check (up to ~25s),
+        // Wait for the current tab's full seven-endpoint check (up to ~35s),
         // not just 12 seconds, then adopt its shared route.
         var deadline = Math.max(lease.expiresAt + 3000, now + 30000);
         while (Date.now() < deadline) {
@@ -166,7 +167,7 @@
         }
       } catch (_) {}
 
-      // Failover order: PRIMARY → BACKUP 2 → BACKUP 3 → BACKUP 4 → BACKUP 5 → BACKUP 6.
+      // Failover order: PRIMARY → BACKUP 2 → BACKUP 3 → BACKUP 4 → BACKUP 5 → BACKUP 6 → BACKUP 7.
       // Probe the failed route too: it may have recovered by the time the check runs.
       for (var i = 0; i < API_LIST.length; i++) {
         try {
@@ -235,11 +236,11 @@
       badge.appendChild(server);
     }
     function updateCounterServer() {
-      var names = ["Primary", "Backup 2", "Backup 3", "Backup 4", "Backup 5", "Backup 6"];
+      var names = ["Primary", "Backup 2", "Backup 3", "Backup 4", "Backup 5", "Backup 6", "Backup 7"];
       var level = 1;
       try {
         var route = JSON.parse(localStorage.getItem("cz_counter_route_local_v2") || "null");
-        if (route && Number.isInteger(route.level) && route.level >= 1 && route.level <= 6) level = route.level;
+        if (route && Number.isInteger(route.level) && route.level >= 1 && route.level <= 7) level = route.level;
       } catch (_) {}
       server.textContent = "S" + level;
       server.title = "Connected counter server: " + names[level - 1];
