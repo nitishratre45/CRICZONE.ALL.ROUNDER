@@ -1231,6 +1231,15 @@ async function main(){
   await startPlayer(ch);
 }
 
+window.addEventListener("message", function(event){
+  var streamFrame = document.getElementById("stream-frame");
+  if (event.origin !== window.location.origin || !streamFrame || event.source !== streamFrame.contentWindow) return;
+  if (!event.data || event.data.type !== "CZ_CLOSE_SONY_PLAYER") return;
+  streamFrame.src = "about:blank";
+  streamFrame.style.display = "none";
+  document.getElementById("pc").style.display = "none";
+  document.getElementById("v").pause();
+});
 document.addEventListener("DOMContentLoaded", main);
 })();
 </script>
