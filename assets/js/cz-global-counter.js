@@ -16,19 +16,38 @@
   var ROUTE_KEY = "cz_counter_backup_until_local_v2";
   var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
   var TOTAL_KEY = "cz_counter_total_floor_v2";
+  var FAILOVER_LOCK_KEY = "cz_counter_failover_lock_v1";
   var activeIndex = 0;
   var retryAt = 0;
   var totalFloor = 0;
-  try {
-    var savedRoute = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
-    if (savedRoute && Number.isInteger(savedRoute.level) && savedRoute.level >= 1 && savedRoute.level <= 5 &&
-        Number(savedRoute.retryAt) > Date.now()) {
-      activeIndex = savedRoute.level - 1;
-      retryAt = Number(savedRoute.retryAt);
-    }
-    totalFloor = Math.max(0, Number(localStorage.getItem(TOTAL_KEY) || 0) || 0);
-  } catch (_) {}
   var routePromise = null;
+  var tabId = createId();
+
+  function readSharedRoute() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
+      if (saved && Number.isInteger(saved.level) && saved.level >= 1 && saved.level <= 5) {
+        activeIndex = saved.level - 1;
+        retryAt = Number(saved.retryAt) || 0;
+      }
+      totalFloor = Math.max(totalFloor, Number(localStorage.getItem(TOTAL_KEY) || 0) || 0);
+    } catch (_) {}
+  }
+  readSharedRoute();
+
+  // Route changes are shared by every page/tab on criczone.pages.dev.
+  window.addEventListener("storage", function (event) {
+    if (event.key === ROUTE_STATE_KEY && event.newValue) readSharedRoute();
+  });
+  var routeChannel = null;
+  try {
+    if ("BroadcastChannel" in window) {
+      routeChannel = new BroadcastChannel("criczone-counter-route-v1");
+      routeChannel.onmessage = function (event) {
+        if (event.data && event.data.type === "route-updated") readSharedRoute();
+      };
+    }
+  } catch (_) {}
 
   // Keep counter state out of Session Storage. Remove keys written by older builds.
   try {
@@ -37,14 +56,14 @@
       .forEach(function (key) { sessionStorage.removeItem(key); });
   } catch (_) {}
 
-  // Restore the last known route across page loads. When a backup is active,
-  // keep PRIMARY out of normal failover attempts until its 12-hour retry time.
-
   function saveRoute() {
     try {
-      localStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
+      localStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({
+        level: activeIndex + 1, retryAt: retryAt, updatedAt: Date.now(), updatedBy: tabId
+      }));
       if (activeIndex > 0) localStorage.setItem(ROUTE_KEY, String(retryAt));
       else localStorage.removeItem(ROUTE_KEY);
+      if (routeChannel) routeChannel.postMessage({ type: "route-updated" });
     } catch (_) {}
   }
 
@@ -105,47 +124,73 @@
     return result.data;
   }
 
-  async function ensureRoute() {
-    if (activeIndex === 0 || Date.now() < retryAt) return;
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function coordinateFailover() {
     if (routePromise) return routePromise;
     routePromise = (async function () {
+      var lease = null;
+      var now = Date.now();
+      try { lease = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null"); } catch (_) {}
+      if (lease && lease.expiresAt > now && lease.owner !== tabId) {
+        // Another tab is checking the five endpoints. Wait for its shared decision.
+        var until = Date.now() + 12000;
+        while (Date.now() < until) {
+          await wait(300);
+          readSharedRoute();
+          try {
+            var current = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
+            if (!current || current.expiresAt <= Date.now()) break;
+          } catch (_) { break; }
+        }
+        return activeIndex;
+      }
+
+      try {
+        localStorage.setItem(FAILOVER_LOCK_KEY, JSON.stringify({ owner: tabId, expiresAt: Date.now() + 30000 }));
+      } catch (_) {}
+
+      // Always test in the selected B order: PRIMARY, BACKUP 2, 3, 4, 5.
       for (var i = 0; i < API_LIST.length; i++) {
         try {
           await probeAPI(i);
           setActive(i);
-          return;
+          return i;
         } catch (_) {}
       }
+      return -1;
     })();
-    try { await routePromise; }
-    finally { routePromise = null; }
+    try { return await routePromise; }
+    finally {
+      try {
+        var current = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
+        if (current && current.owner === tabId) localStorage.removeItem(FAILOVER_LOCK_KEY);
+      } catch (_) {}
+      routePromise = null;
+    }
   }
 
   async function apiFetch(path, options) {
-    await ensureRoute();
-    var order = [];
-    if (activeIndex > 0 && Date.now() < retryAt) {
-      // Primary already failed; use the remaining backups in fixed order and
-      // do not hit PRIMARY again until the scheduled retry window expires.
-      for (var i = activeIndex; i < API_LIST.length; i++) order.push(i);
-      for (var j = 1; j < activeIndex; j++) order.push(j);
-    } else {
-      // Normal preference / scheduled retry: PRIMARY, then BACKUP 2–5.
-      for (var k = 0; k < API_LIST.length; k++) order.push(k);
+    readSharedRoute();
+    // After the 12-hour retry window, one tab tests Primary first for everyone.
+    if (activeIndex > 0 && Date.now() >= retryAt) {
+      await coordinateFailover();
+      readSharedRoute();
     }
-    var lastError = null;
-    for (var n = 0; n < order.length; n++) {
-      var index = order[n];
-      try {
-        var result = await requestAPI(API_LIST[index], path, options);
-        if (index !== activeIndex) setActive(index);
-        return result.response;
-      } catch (error) {
-        lastError = error;
-        if (n < order.length - 1) setActive(order[n + 1]);
-      }
+
+    var index = activeIndex;
+    try {
+      return (await requestAPI(API_LIST[index], path, options)).response;
+    } catch (error) {
+      // One tab owns failover testing; all other tabs wait and adopt its route.
+      var selected = await coordinateFailover();
+      readSharedRoute();
+      if (selected < 0) throw error;
+      if (activeIndex === index) throw error;
+      return (await requestAPI(API_LIST[activeIndex], path, options)).response;
     }
-    throw lastError || new Error("All five visitor counter endpoints are unavailable");
   }
 
   function makeBadge() {
