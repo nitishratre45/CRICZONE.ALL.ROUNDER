@@ -640,12 +640,41 @@ body:has(#playerView:not([hidden])) #viewerBadge{top:95px!important;right:14px!i
   top:16px!important;bottom:auto!important;right:190px!important;left:auto!important;
  }
 }
+
+/* Active counter server indicator: S1=Primary, S2-S5=Backups. */
+#viewerBadge #counterServer{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ margin-left:4px!important;padding:2px 4px!important;min-width:19px!important;
+ border-left:1px solid rgba(70,235,210,.25)!important;border-radius:3px!important;
+ background:rgba(70,235,210,.12)!important;color:#8fffea!important;
+ font:900 7px/1.1 Inter,system-ui,sans-serif!important;letter-spacing:.25px!important;
+}
 </style>
 <div id="viewerBadge" aria-live="polite">
  <span class="watching-total-label">TOTAL <strong id="totalVisits">13,450</strong></span>
  <span class="watching-live-label">LIVE <strong id="liveWatching">0</strong></span>
+ <span id="counterServer" title="Active counter server">S1</span>
 </div>
 
+<script>
+(function(){
+ const el=document.getElementById("counterServer");
+ if(!el)return;
+ const names=["Primary","Backup 2","Backup 3","Backup 4","Backup 5"];
+ function update(){
+  try{
+   const route=JSON.parse(localStorage.getItem("cz_counter_route_local_v2")||"null");
+   const level=route&&Number.isInteger(route.level)&&route.level>=1&&route.level<=5?route.level:1;
+   el.textContent="S"+level;
+   el.title="Connected counter server: "+names[level-1];
+  }catch(_){el.textContent="S1";el.title="Connected counter server: Primary"}
+ }
+ update();
+ window.addEventListener("storage",e=>{if(e.key==="cz_counter_route_local_v2")update()});
+ try{const ch=new BroadcastChannel("criczone-counter-route-v1");ch.onmessage=update}catch(_){}
+ setInterval(update,2000);
+})();
+</script>
 
 </body>
 </html>
