@@ -1187,15 +1187,25 @@ async function main(){
   var channels = data.channels || [];
 
   // Dedicated iOS-compatible Sony Sports 3 HD channel via the existing iframe player.
-  var iosSonyChannel = {
-    id: "ios-sony-3hd",
-    name: "IOS Sony 3 HD",
-    logo: LOGO_MAP["sony_sports_3_hindi_hd_17"] || "",
-    url: "https://criczone.pages.dev/criczone6/?id=sony_sports_3_hindi_hd_17"
-  };
-  if (!channels.some(function(ch){ return ch && ch.id === iosSonyChannel.id; })) {
-    channels.unshift(iosSonyChannel);
-  }
+  var iosSonyChannels = [
+    {
+      id: "ios-sony-3hd",
+      name: "IOS Sony 3 HD",
+      logo: LOGO_MAP["sony_sports_3_hindi_hd_17"] || "",
+      url: "https://criczone.pages.dev/criczone6/?id=sony_sports_3_hindi_hd_17"
+    },
+    {
+      id: "ios-sony-1hd",
+      name: "IOS Sony 1 HD",
+      logo: LOGO_MAP["sony_sports_1_hd_13"] || "",
+      url: "https://criczone.pages.dev/criczone6/?id=sony_sports_1_hd_13"
+    }
+  ];
+  iosSonyChannels.slice().reverse().forEach(function(iosChannel){
+    if (!channels.some(function(ch){ return ch && ch.id === iosChannel.id; })) {
+      channels.unshift(iosChannel);
+    }
+  });
 
   if(!id){ renderList(channels); return; }
 
