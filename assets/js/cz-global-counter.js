@@ -241,7 +241,7 @@
       : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
   }
 
-  // Background-only Backup-3 readiness check: once per browser/origin per hour.
+  // Background-only Backup-5 readiness check: once per browser/origin per hour.
   // It is deliberately not awaited, so normal counter requests never wait for it.
   function checkBackup3ReadyInBackground() {
     var key = "cz_backup5_ready_check_at_v1";
@@ -264,7 +264,7 @@
     }).then(function (data) {
       var isReady = !!(data && data.status === "ready" && data.database === "connected");
       try {
-        localStorage.setItem("cz_backup3_status_v1", JSON.stringify({
+        localStorage.setItem("cz_backup5_readiness_status_v1", JSON.stringify({
           level: 5,
           status: isReady ? "READY" : "NOT_READY",
           database: data && data.database ? data.database : "unknown",
