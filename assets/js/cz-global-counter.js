@@ -330,12 +330,36 @@
       } finally { busy = false; }
     }
 
-    async function refreshCombinedLive() {
+    // Per-page memory cache: only sync a backup when the observed total changes.
+    var lastSyncedTotals = [-1, -1, -1, -1, -1];
+
+    async function syncBackupTotals(floor) {
+      if (!Number.isFinite(floor) || floor < 0) return;
+      var jobs = [];
+      for (var i = 1; i < API_LIST.length; i++) {
+        if (i === activeIndex || floor <= lastSyncedTotals[i]) continue;
+        (function (index) {
+          jobs.push(fetch(API_LIST[index] + "/api/sync-total", {
+            method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ total_visits: floor })
+          }).then(function (response) {
+            if (response.ok) lastSyncedTotals[index] = floor;
+          }).catch(function () {}));
+        })(i);
+      }
+      await Promise.all(jobs);
+    }
+
+    async function refreshCombinedLive(activeStats) {
       if (document.visibilityState !== "visible") return;
-      var results = await Promise.all(API_LIST.map(async function (base) {
+      var active = activeIndex;
+      var results = await Promise.all(API_LIST.map(async function (base, index) {
         try {
-          var result = await requestAPI(base, "/api/stats", { method: "GET" });
-          var value = Number(result.data && result.data.live_visitors);
+          // Reuse the active worker's /api/stats response; query only the other workers.
+          var data = index === active ? activeStats :
+            (await requestAPI(base, "/api/stats", { method: "GET" })).data;
+          var value = Number(data && data.live_visitors);
           return Number.isFinite(value) && value > 0 ? value : 0;
         } catch (_) {
           // An unavailable/limited worker contributes zero; other workers still count.
@@ -354,16 +378,9 @@
         });
         var data = await response.json();
         paint(data);
-        await refreshCombinedLive();
-        // Keep both backups at least at the latest total observed by this browser.
-        var floor = totalFloor;
-        [API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5].forEach(function (backup) {
-          fetch(backup + "/api/sync-total", {
-            method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ total_visits: floor })
-          }).catch(function () {});
-        });
+        await refreshCombinedLive(data);
+        // Sync only backups whose stored total has not yet reached this value.
+        await syncBackupTotals(totalFloor);
       } catch (error) {
         console.warn("[CRICZONE] Global visitor stats unavailable:", error);
       }
