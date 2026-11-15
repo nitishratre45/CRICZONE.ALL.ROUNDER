@@ -928,6 +928,62 @@ button,a{-webkit-tap-highlight-color:transparent}
  .cz-channel-card small{font-size:8px}
 }
 
+
+/* CRICZONE hub refresh — cleaner filters and sharper match cards */
+#hubView .filters{gap:12px;padding:7px 0 18px;margin-bottom:20px;border-bottom-color:rgba(142,111,255,.2)}
+#hubView .filter-row{gap:9px;padding:3px 2px 5px}
+#hubView .pill{min-height:42px;padding:9px 15px;border-radius:14px;background:linear-gradient(145deg,rgba(20,26,48,.96),rgba(11,16,32,.96));border-color:rgba(132,148,190,.2);font-size:12.5px}
+#hubView .pill.active{background:linear-gradient(120deg,#8b35ef,#5b20bb);border-color:#c18aff;color:#fff;box-shadow:0 5px 18px rgba(137,52,235,.24)}
+#hubView .pill.active .count{background:rgba(255,255,255,.18);color:#fff}
+#hubView .hub-tools{max-width:none;margin:0 0 20px}
+#hubView .search-wrap{min-height:54px;border-radius:17px;border-color:rgba(157,91,255,.48);background:linear-gradient(135deg,rgba(17,23,43,.98),rgba(10,15,30,.98));box-shadow:0 8px 24px rgba(0,0,0,.16)}
+#hubView .hub-tools-meta{font-size:11px;color:#9ba6bb}
+#hubView .refresh-btn{min-height:38px;padding:8px 13px;border-radius:13px;border-color:rgba(139,155,196,.25);background:rgba(17,24,43,.8);font-size:11px}
+#hubView .grid{gap:13px;padding-bottom:42px}
+#hubView .card{gap:13px;padding:16px;border-radius:21px;border-color:rgba(126,145,190,.2);background:linear-gradient(145deg,rgba(18,25,47,.98),rgba(9,15,31,.98));box-shadow:0 8px 24px rgba(0,0,0,.16)}
+#hubView .card::before{height:2px;opacity:.5;background:linear-gradient(90deg,transparent,#8f4cff,#39b9ff,transparent)}
+#hubView .card.is-live{border-color:rgba(255,77,109,.38);background:linear-gradient(135deg,rgba(91,25,64,.15),transparent 48%),linear-gradient(145deg,rgba(18,25,47,.98),rgba(9,15,31,.98))}
+#hubView .card-top{gap:8px}
+#hubView .sport-chip{font-size:10.5px;letter-spacing:.055em;color:#aab6cb}
+#hubView .sport-chip .icon{font-size:15px}
+#hubView .status{padding:5px 10px;font-size:9.5px;letter-spacing:.07em}
+#hubView .status.live{box-shadow:0 0 15px rgba(255,77,109,.12)}
+#hubView .card-body{gap:7px;padding:8px 0 6px;min-height:128px}
+#hubView .team{gap:8px}
+#hubView .crest{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#253455,#10182d 70%);border:2px solid rgba(119,151,219,.23);box-shadow:0 0 0 4px rgba(96,119,185,.07)}
+#hubView .crest img{padding:5px;background:transparent}
+#hubView .team-name{font-size:13px;font-weight:700;color:#edf1fa}
+#hubView .versus{gap:5px}
+#hubView .kickoff-time{font-size:21px;letter-spacing:-.02em;text-shadow:0 0 18px rgba(176,83,255,.2)}
+#hubView .kickoff-date{font-size:10px;color:#9aa6bc}
+#hubView .card-foot{padding-top:11px;border-top-color:rgba(143,157,193,.16);font-size:11px}
+#hubView .stream-count{color:#a5b1c7}
+#hubView .watch-cta{padding:8px 13px;border-radius:999px;background:linear-gradient(120deg,#8b35ed,#5c22bd);color:#fff;font-size:11px;box-shadow:0 4px 15px rgba(133,49,226,.2)}
+#hubView .card:hover .watch-cta{gap:8px}
+@media(max-width:760px){
+ #hubView .filters{gap:10px;padding-bottom:15px;margin-bottom:17px}
+ #hubView .pill{min-height:39px;padding:8px 12px;font-size:11.5px;border-radius:13px}
+ #hubView .hub-tools{margin:0 0 16px}
+ #hubView .search-wrap{min-height:49px}
+ #hubView .grid{gap:11px}
+ #hubView .card{padding:14px;border-radius:18px;gap:11px}
+ #hubView .card-body{min-height:119px;padding:6px 0}
+ #hubView .crest{width:55px;height:55px}
+ #hubView .team-name{font-size:12px}
+ #hubView .kickoff-time{font-size:19px}
+ #hubView .sport-chip{font-size:9.5px}
+ #hubView .status{font-size:9px;padding:4px 8px}
+ #hubView .card-foot{padding-top:9px}
+ #hubView .watch-cta{padding:7px 11px}
+}
+@media(max-width:380px){
+ #hubView .card{padding:12px}
+ #hubView .crest{width:49px;height:49px}
+ #hubView .team-name{font-size:11px}
+ #hubView .kickoff-time{font-size:17px}
+ #hubView .sport-chip{font-size:9px}
+}
+
 </style>
 </head>
 
