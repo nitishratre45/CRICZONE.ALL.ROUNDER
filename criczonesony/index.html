@@ -1454,7 +1454,7 @@ function showPlayer(ch){
   var session=playerSessionId;
   var source=proxyUrl(ch.stream_url);
   var options={controls:["play","progress","current-time","mute","volume","settings","fullscreen"],settings:["quality"],autoplay:true,muted:false};
-  if(window.Hls&&Hls.isSupported()&&/\\.m3u8(\\?|$)/i.test(ch.stream_url)){
+  if(window.Hls&&Hls.isSupported()&&/\.m3u8(\?|$)/i.test(ch.stream_url)){
     // More tolerant live HLS configuration: longer timeouts and bounded retries
     // help on slower mobile networks without changing the stream URL or proxy.
     currentHls=new Hls({
