@@ -622,6 +622,24 @@ body:has(#playerView:not([hidden])) #viewerBadge{
 #liveWatching{color:#071b20!important}
 body:has(#playerView:not([hidden])) #viewerBadge{top:95px!important;right:14px!important;left:auto!important}
 @media(min-width:700px){#viewerBadge{top:95px!important;right:16px!important}}
+
+/* HOME FIX: keep the horizontal counter away from the LIVE CHANNELS heading. */
+@media(max-width:700px){
+ body:has(#home:not([hidden])) #viewerBadge{
+  top:auto!important;bottom:14px!important;right:12px!important;left:auto!important;
+  position:fixed!important;z-index:2147483000!important;
+ }
+ body:has(#home:not([hidden])) .cz-intro h1{
+  max-width:100%;font-size:clamp(25px,7vw,38px);line-height:1.12;
+  overflow-wrap:break-word;
+ }
+ body:has(#home:not([hidden])) .cz-intro{padding-top:25px}
+}
+@media(min-width:701px){
+ body:has(#home:not([hidden])) #viewerBadge{
+  top:16px!important;bottom:auto!important;right:190px!important;left:auto!important;
+ }
+}
 </style>
 <div id="viewerBadge" aria-live="polite">
  <span class="watching-total-label">TOTAL <strong id="totalVisits">13,450</strong></span>
