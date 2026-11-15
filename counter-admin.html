@@ -21,9 +21,9 @@ main{width:min(1100px,calc(100% - 32px));margin:34px auto 60px}.top{display:flex
 </style>
 </head>
 <body><main>
-<header class="top"><div><div class="eyebrow">CRICZONE • SYSTEM STATUS</div><div class="title">Worker Monitor</div><div class="sub">Five visitor-counter workers • live status and visit totals</div></div><div class="actions"><span class="updated" id="updated">Not checked yet</span><button id="refresh">↻ Refresh</button></div></header>
+<header class="top"><div><div class="eyebrow">CRICZONE • SYSTEM STATUS</div><div class="title">Worker Monitor</div><div class="sub">Six visitor-counter workers • live status and visit totals</div></div><div class="actions"><span class="updated" id="updated">Not checked yet</span><button id="refresh">↻ Refresh</button></div></header>
 <section class="overview">
-<div class="metric"><small>Workers online</small><strong id="online">— / 5</strong></div>
+<div class="metric"><small>Workers online</small><strong id="online">— / 6</strong></div>
 <div class="metric"><small>Combined live visitors*</small><strong id="combinedLive">—</strong></div>
 </section>
 <section class="grid" id="workers"></section>
@@ -35,7 +35,8 @@ const WORKERS=[
 {name:"BACKUP 2",url:"https://criczone-visitor-counter-backup.nitish-2.workers.dev"},
 {name:"BACKUP 3",url:"https://criczone-visitor-counter-backup-3.nitish-3.workers.dev"},
 {name:"BACKUP 4",url:"https://criczone-visitor-counter-backup-4.nitish-4.workers.dev"},
-{name:"BACKUP 5",url:"https://criczone-visitor-counter-backup-5.nitish-5.workers.dev"}
+{name:"BACKUP 5",url:"https://criczone-visitor-counter-backup-5.nitish-5.workers.dev"},
+{name:"BACKUP 6",url:"https://criczone-visitor-counter-backup-6.nitish-6.workers.dev"}
 ];
 const root=document.getElementById("workers");
 const number=v=>Number.isFinite(Number(v))?Number(v).toLocaleString("en-IN"):"—";
@@ -82,7 +83,7 @@ async function refresh(manual=false){
    status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";const failedAt=new Date();checked.textContent="Failed at "+failedAt.toLocaleString();checked.title="Failure detected at "+failedAt.toISOString();reason.textContent="Failed at: "+failedAt.toLocaleString()+" · Reason: "+(error.message||"Request failed")+(String(error.message||"").includes("Failed to fetch")?" (Possible network, CORS, DNS, or Worker connectivity issue.)":"")+" · Auto-check paused; press Refresh to retry.";reason.className="reason show";pausedWorkers.add(i);savePausedWorkers();
   }
  }));
- document.getElementById("online").textContent=online+" / 5";
+ document.getElementById("online").textContent=online+" / 6";
  document.getElementById("combinedLive").textContent=idSources?number(combinedIds.size):"—";
  document.getElementById("updated").textContent="Last refresh: "+new Date().toLocaleTimeString();
  button.disabled=false;
