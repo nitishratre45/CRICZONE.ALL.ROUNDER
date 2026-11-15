@@ -167,9 +167,11 @@
         }
       } catch (_) {}
 
-      // Failover order: PRIMARY → BACKUP 2 → BACKUP 3 → BACKUP 4 → BACKUP 5 → BACKUP 6 → BACKUP 7.
-      // Probe the failed route too: it may have recovered by the time the check runs.
-      for (var i = 0; i < API_LIST.length; i++) {
+      // Start with the server AFTER the failed route, wrapping around only
+      // after all later backups have been checked. Never jump back to PRIMARY
+      // before trying the next configured backup (especially S6 -> S7).
+      for (var step = 1; step <= API_LIST.length; step++) {
+        var i = (failedIndex + step) % API_LIST.length;
         try {
           await probeAPI(i);
           setActive(i);
