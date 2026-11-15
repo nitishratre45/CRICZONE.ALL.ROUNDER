@@ -339,51 +339,14 @@
       } finally { busy = false; }
     }
 
-    // Per-page memory cache: only sync a backup when the observed total changes.
-    var lastSyncedTotals = [-1, -1, -1, -1, -1];
-
-    async function syncBackupTotals(floor) {
-      if (!Number.isFinite(floor) || floor < 0) return;
-      var jobs = [];
-      for (var i = 1; i < API_LIST.length; i++) {
-        if (i === activeIndex || floor <= lastSyncedTotals[i]) continue;
-        (function (index) {
-          jobs.push(fetch(API_LIST[index] + "/api/sync-total", {
-            method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ total_visits: floor })
-          }).then(function (response) {
-            if (response.ok) lastSyncedTotals[index] = floor;
-          }).catch(function () {}));
-        })(i);
-      }
-      await Promise.all(jobs);
-    }
-
+    // Keep visitor-counter traffic on the active worker only.
+    // Polling every database and syncing totals from every page multiplies API usage.
     async function refreshCombinedLive(activeStats) {
-      if (document.visibilityState !== "visible") return;
-      var active = activeIndex;
-      var results = await Promise.all(API_LIST.map(async function (base, index) {
-        // PRIMARY has already failed. Do not send background LIVE stats requests
-        // to it during the 12-hour cooldown; retry only through ensureRoute().
-        if (index === 0 && activeIndex > 0 && Date.now() < retryAt) return null;
-        try {
-          // Reuse active stats; query eligible workers and union their visitor IDs.
-          return index === active ? activeStats :
-            (await requestAPI(base, "/api/stats", { method: "GET" })).data;
-        } catch (_) {
-          // An unavailable/limited worker contributes no IDs.
-          return null;
-        }
-      }));
-      var uniqueVisitors = new Set();
-      results.forEach(function (data) {
-        if (!data || !Array.isArray(data.live_visitor_ids)) return;
-        data.live_visitor_ids.forEach(function (id) {
-          if (typeof id === "string" && id) uniqueVisitors.add(id);
-        });
-      });
-      els.live.textContent = (uniqueVisitors.size + 345).toLocaleString("en-IN");
+      if (document.visibilityState !== "visible" || !activeStats) return;
+      var live = Number(activeStats.live_visitors);
+      if (Number.isFinite(live)) {
+        els.live.textContent = (live + 345).toLocaleString("en-IN");
+      }
     }
 
     async function refreshStats() {
@@ -395,8 +358,6 @@
         var data = await response.json();
         paint(data);
         await refreshCombinedLive(data);
-        // Sync only backups whose stored total has not yet reached this value.
-        await syncBackupTotals(totalFloor);
       } catch (error) {
         console.warn("[CRICZONE] Global visitor stats unavailable:", error);
       }
