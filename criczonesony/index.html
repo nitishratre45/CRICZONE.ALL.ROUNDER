@@ -1563,10 +1563,30 @@ document.getElementById("sonyResumeBtn").addEventListener("click",function(){var
 document.getElementById("czClearRecent").addEventListener("click",function(){try{localStorage.removeItem("czSonyRecent");}catch(e){}renderRecent();});
 var audioPrompt=document.getElementById("czAudioPrompt");
 document.getElementById("czEnableAudio").addEventListener("click",function(){
+  // Run playback synchronously inside the user's gesture. If HLS has not
+  // started fetching yet, explicitly resume loading before retrying playback.
+  var button=this;
+  button.disabled=true;
   $video.muted=false;$video.defaultMuted=false;$video.volume=1;$video.removeAttribute("muted");
   if(currentPlayer){currentPlayer.muted=false;currentPlayer.volume=1;}
-  var result=$video.play();
-  if(result&&result.then)result.then(function(){audioPrompt.hidden=true;setPlayerStatus("live","LIVE PLAYBACK","Stream connected · sound on");}).catch(function(){setPlayerStatus("connecting","AUDIO BLOCKED","Use the device/browser media controls to allow sound");});
+  if(currentHls){
+    try{
+      if(currentHls.startLoad)currentHls.startLoad(-1);
+      if(currentHls.currentLevel===-1)currentHls.nextLevel=-1;
+    }catch(e){console.warn("[CRICZONE] HLS resume:",e);}
+  }
+  setPlayerStatus("connecting","STARTING LIVE","Starting stream playback…");
+  var result;
+  try{result=$video.play();}catch(error){result=Promise.reject(error);}
+  Promise.resolve(result).then(function(){
+    audioPrompt.hidden=true;
+    // The video 'playing' event is the authority for LIVE status.
+    setPlayerStatus("connecting","BUFFERING","Waiting for live video data…");
+  }).catch(function(error){
+    if(currentHls&&currentHls.startLoad){try{currentHls.startLoad(-1);}catch(e){}}
+    setPlayerStatus("connecting","BUFFERING","Stream is loading. Tap Play again when video data arrives.");
+    console.warn("[CRICZONE] User playback attempt:",error&&error.message||error);
+  }).finally(function(){button.disabled=false;});
 });
 $video.addEventListener("playing",function(){if(!$video.muted&&$video.volume>0)audioPrompt.hidden=true;});
 var mediaSettings=document.getElementById("czMediaSettings"),mediaSettingsBtn=document.getElementById("czMediaSettingsBtn");
