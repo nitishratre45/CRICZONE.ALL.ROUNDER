@@ -952,6 +952,10 @@ function hookSony3Close(streamFrame){
 async function startPlayer(ch){
   $pc.style.display = "flex";
   var streamFrame = document.getElementById("stream-frame");
+  var viewerBadge = document.getElementById("viewerBadge");
+  // Sony 3 HD-2 embeds SonyChannels, which already displays its own visitor badge.
+  // Hide only the outer CRICZONE badge for this nested stream to prevent duplicates.
+  if(viewerBadge) viewerBadge.style.display = (ch && ch.id === "sony-3hd-2") ? "none" : "inline-flex";
   if(ch && ch.url){
     $vid.style.display = "none";
     if(streamFrame){
