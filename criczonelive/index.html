@@ -934,7 +934,7 @@ button,a{-webkit-tap-highlight-color:transparent}
   <section id="playerView" class="view cz-live-view">
     <header class="cz-live-header">
       <div class="cz-live-brand">
-        <div class="cz-live-mark">CZ</div>
+        <div class="brand-photo-frame cz-player-photo-frame"><img id="czPlayerNavbarPhoto" class="brand-photo" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
         <div class="cz-live-brand-copy"><strong>CRICZONE</strong><span>LIVE STREAMING</span></div>
       </div>
       <a class="cz-live-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Join CRICZONE Telegram">
@@ -2016,8 +2016,6 @@ window.addEventListener("hashchange", route);
    NAVBAR PLAYER PORTRAIT ROTATION
    ============================================================ */
 (function rotateNavbarPortrait(){
- const photo=$("czNavbarPlayerPhoto");
- if(!photo)return;
  const players=[
   {name:"Rohit Sharma",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
   {name:"Virat Kohli",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
@@ -2025,8 +2023,14 @@ window.addEventListener("hashchange", route);
  let index=0;
  setInterval(()=>{
   const nextIndex=(index+1)%players.length,next=players[nextIndex],preload=new Image();
-  preload.onload=()=>{photo.classList.add("is-changing");setTimeout(()=>{photo.src=next.src;photo.alt=next.name;photo.classList.remove("is-changing");index=nextIndex},160)};
-  preload.onerror=()=>photo.classList.remove("is-changing");
+  preload.onload=()=>{
+   document.querySelectorAll("#czNavbarPlayerPhoto,#czPlayerNavbarPhoto").forEach(photo=>{
+    photo.classList.add("is-changing");
+    setTimeout(()=>{photo.src=next.src;photo.alt=next.name;photo.classList.remove("is-changing")},160);
+   });
+   index=nextIndex;
+  };
+  preload.onerror=()=>document.querySelectorAll("#czNavbarPlayerPhoto,#czPlayerNavbarPhoto").forEach(photo=>photo.classList.remove("is-changing"));
   preload.src=next.src;
  },4000);
 })();
