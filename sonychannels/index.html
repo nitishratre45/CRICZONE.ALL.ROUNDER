@@ -278,7 +278,13 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
   function closePlayer() {
     playerModal.classList.remove("active");
     playerFrame.src = "about:blank";
-    if (location.hash) history.replaceState(null,"",location.pathname + location.search);
+    // Close the nested player by returning the top-level browser page to CRICZONE.
+    // Do not use history.back(): that can navigate inside an embedded stream iframe.
+    try {
+      window.top.location.replace("https://criczone.pages.dev/criczone/");
+    } catch (_) {
+      window.location.href = "https://criczone.pages.dev/criczone/";
+    }
   }
   modalClose.addEventListener("click",closePlayer);
   // The player closes only when the dedicated close button is pressed.
