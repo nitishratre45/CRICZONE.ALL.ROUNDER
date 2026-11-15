@@ -589,6 +589,39 @@ body:has(#playerView:not([hidden])) #viewerBadge{
  .top-actions{top:8px!important;right:16px!important}
  #viewerBadge{top:95px!important;right:16px!important}
 }
+
+/* CRICZONE5 counter: match the compact horizontal Total / Live badge used elsewhere. */
+#viewerBadge{
+ left:auto!important;right:14px!important;top:95px!important;
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:0!important;
+ width:auto!important;height:auto!important;min-width:0!important;
+ padding:3px 5px!important;border:1px solid rgba(70,235,210,.48)!important;
+ border-radius:8px!important;
+ background:rgba(3,15,23,.94)!important;color:#d9f8f2!important;
+ box-shadow:0 4px 14px rgba(0,0,0,.35)!important;
+ overflow:visible!important;white-space:nowrap!important;
+}
+#viewerBadge .watching-total-label,#viewerBadge .watching-live-label{
+ width:auto!important;height:auto!important;min-width:0!important;
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:3px!important;
+ padding:2px 4px!important;border:0!important;border-radius:0!important;
+ background:transparent!important;font-size:7px!important;line-height:1.2!important;
+ letter-spacing:.3px!important;
+}
+#viewerBadge .watching-live-label{border-left:1px solid rgba(70,235,210,.25)!important}
+#viewerBadge .watching-total-label:before,#viewerBadge .watching-live-label:before{display:none!important}
+#totalVisits,#liveWatching{
+ display:inline-block!important;min-width:14px!important;width:auto!important;height:auto!important;
+ padding:1px 3px!important;border:0!important;border-radius:4px!important;
+ background:linear-gradient(135deg,#8fffea,#2bd9b7)!important;
+ color:#071b20!important;box-shadow:none!important;font-size:8px!important;
+ font-weight:950!important;line-height:1.1!important;text-align:center!important;
+}
+#liveWatching{color:#071b20!important}
+body:has(#playerView:not([hidden])) #viewerBadge{top:95px!important;right:14px!important;left:auto!important}
+@media(min-width:700px){#viewerBadge{top:95px!important;right:16px!important}}
 </style>
 <div id="viewerBadge" aria-live="polite">
  <span class="watching-total-label">TOTAL <strong id="totalVisits">13,450</strong></span>
