@@ -128,31 +128,43 @@
     return new Promise(function (resolve) { setTimeout(resolve, ms); });
   }
 
-  async function coordinateFailover() {
+  async function coordinateFailover(failedIndex) {
     if (routePromise) return routePromise;
     routePromise = (async function () {
-      var lease = null;
       var now = Date.now();
+      var lease = null;
       try { lease = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null"); } catch (_) {}
+
       if (lease && lease.expiresAt > now && lease.owner !== tabId) {
-        // Another tab is checking the five endpoints. Wait for its shared decision.
-        var until = Date.now() + 12000;
-        while (Date.now() < until) {
-          await wait(300);
+        // Wait for the current tab's full five-endpoint check (up to ~25s),
+        // not just 12 seconds, then adopt its shared route.
+        var deadline = Math.max(lease.expiresAt + 3000, now + 30000);
+        while (Date.now() < deadline) {
+          await wait(250);
           readSharedRoute();
           try {
-            var current = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
-            if (!current || current.expiresAt <= Date.now()) break;
+            var currentLease = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
+            if (!currentLease || currentLease.expiresAt <= Date.now()) break;
           } catch (_) { break; }
         }
+        readSharedRoute();
         return activeIndex;
       }
 
+      // Claim a short lease so only one tab performs the failover probes.
+      var myLease = { owner: tabId, expiresAt: Date.now() + 30000 };
       try {
-        localStorage.setItem(FAILOVER_LOCK_KEY, JSON.stringify({ owner: tabId, expiresAt: Date.now() + 30000 }));
+        localStorage.setItem(FAILOVER_LOCK_KEY, JSON.stringify(myLease));
+        var confirmed = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
+        if (!confirmed || confirmed.owner !== tabId) {
+          await wait(500);
+          readSharedRoute();
+          return activeIndex;
+        }
       } catch (_) {}
 
-      // Always test in the selected B order: PRIMARY, BACKUP 2, 3, 4, 5.
+      // User-selected order B: PRIMARY, BACKUP 2, BACKUP 3, BACKUP 4, BACKUP 5.
+      // Probe the failed route too: it may have recovered by the time the check runs.
       for (var i = 0; i < API_LIST.length; i++) {
         try {
           await probeAPI(i);
@@ -174,22 +186,25 @@
 
   async function apiFetch(path, options) {
     readSharedRoute();
-    // After the 12-hour retry window, one tab tests Primary first for everyone.
+    // Once a backup's 12-hour retry time expires, the coordinated check starts
+    // from PRIMARY. If the active worker fails earlier, use the same B order.
     if (activeIndex > 0 && Date.now() >= retryAt) {
-      await coordinateFailover();
+      await coordinateFailover(activeIndex);
       readSharedRoute();
     }
 
-    var index = activeIndex;
+    var attemptedIndex = activeIndex;
     try {
-      return (await requestAPI(API_LIST[index], path, options)).response;
+      return (await requestAPI(API_LIST[attemptedIndex], path, options)).response;
     } catch (error) {
-      // One tab owns failover testing; all other tabs wait and adopt its route.
-      var selected = await coordinateFailover();
+      var selected = await coordinateFailover(attemptedIndex);
       readSharedRoute();
       if (selected < 0) throw error;
-      if (activeIndex === index) throw error;
-      return (await requestAPI(API_LIST[activeIndex], path, options)).response;
+
+      // A probe may confirm that the same worker recovered. Retry the actual
+      // request once against the selected worker instead of failing immediately.
+      var targetIndex = activeIndex;
+      return (await requestAPI(API_LIST[targetIndex], path, options)).response;
     }
   }
 
