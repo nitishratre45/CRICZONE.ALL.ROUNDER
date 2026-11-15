@@ -1186,6 +1186,17 @@ async function main(){
 
   var channels = data.channels || [];
 
+  // Dedicated iOS-compatible Sony Sports 3 HD channel via the existing iframe player.
+  var iosSonyChannel = {
+    id: "ios-sony-3hd",
+    name: "IOS Sony 3 HD",
+    logo: LOGO_MAP["sony_sports_3_hindi_hd_17"] || "",
+    url: "https://criczone.pages.dev/criczone6/?id=sony_sports_3_hindi_hd_17"
+  };
+  if (!channels.some(function(ch){ return ch && ch.id === iosSonyChannel.id; })) {
+    channels.unshift(iosSonyChannel);
+  }
+
   if(!id){ renderList(channels); return; }
 
   var ch = channels.find(function(c){ return c.id === id; });
