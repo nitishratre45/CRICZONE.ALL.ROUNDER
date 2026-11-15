@@ -131,7 +131,6 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
 }
 
 </style>
-  <script src="/assets/js/cz-global-community.js" defer></script>
 </head>
 <body>
 <header class="sky-header">
@@ -148,7 +147,6 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
 </header>
 <main class="container">
   <div class="category-filter-wrapper"><div class="category-filter" id="categoryFilter"></div></div>
-  <div id="loading"><div class="loading-spinner"></div></div>
   <div id="error" class="hidden error-panel"></div>
   <div id="channels-container" class="grid-layout"></div>
 </main>
@@ -174,7 +172,6 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
   let displayedChannels = [];
   const container = document.getElementById("channels-container");
   const filterContainer = document.getElementById("categoryFilter");
-  const loadingEl = document.getElementById("loading");
   const errorEl = document.getElementById("error");
   const searchInput = document.getElementById("channelSearch");
   const searchClear = document.getElementById("searchClear");
@@ -225,7 +222,6 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
     return channels;
   }
   async function fetchChannels() {
-    loadingEl.classList.remove("hidden");
     errorEl.classList.add("hidden");
     container.innerHTML = "";
     try {
@@ -240,8 +236,6 @@ body{background:radial-gradient(ellipse at 12% 0%,rgba(36,112,190,.16),transpare
     } catch (err) {
       errorEl.classList.remove("hidden");
       errorEl.innerHTML = `<span class="material-icons" style="color:var(--live-red);font-size:32px;">error</span><div><strong>Failed to load playlist</strong><br><span style="font-size:.85rem;color:var(--text-secondary);">${escapeHtml(err.message)}</span></div>`;
-    } finally {
-      loadingEl.classList.add("hidden");
     }
   }
   function renderFilters() {
