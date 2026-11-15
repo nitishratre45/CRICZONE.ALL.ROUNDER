@@ -58,6 +58,7 @@ async function refresh(){
    status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";checked.textContent=error.message||"Request failed";
   }
  }));
+ WORKERS.forEach((w,i)=>{document.getElementById("live-"+i).textContent=number(liveSum);});
  document.getElementById("online").textContent=online+" / 5";
  document.getElementById("combinedLive").textContent=number(liveSum);
  document.getElementById("updated").textContent="Last refresh: "+new Date().toLocaleTimeString();
