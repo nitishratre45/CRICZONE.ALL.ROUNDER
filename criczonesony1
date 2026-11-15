@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="referrer" content="no-referrer"/>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>CRICZONE </title>
+
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css"/>
+
+  <!-- HLS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <!-- Plyr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;background:#0a0a0a;overflow:hidden;
+      font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:#0a0a0a}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ef4444,#f97316);border-radius:4px}
+
+    /* Overlay */
+    #overlay{position:fixed;inset:0;background:#0a0a0a;z-index:9999;
+      display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+    #overlay svg{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #overlay p{color:#555;font-size:13px;letter-spacing:.4px;
+      text-align:center;padding:0 24px;font-weight:500}
+
+    /* Channel List */
+    #channel-list{
+      position:fixed;
+      inset:0;
+      background:#0a0a0a;
+      z-index:9998;
+      display:none;
+      flex-direction:column;
+      overflow:hidden;
+      padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));
+    }
+
+    #channel-list .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding-bottom:12px;
+      border-bottom:1px solid #141414;
+      flex-shrink:0;
+    }
+    #channel-list .header h1{
+      color:#fff;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.5px;
+      background:linear-gradient(135deg,#ef4444,#f97316,#eab308);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    #channel-list .header .subtitle{
+      color:#555;
+      font-size:10px;
+      font-weight:400;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+      background:rgba(255,255,255,0.05);
+      padding:4px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.05);
+    }
+    #channel-list .header .count{
+      color:#666;
+      font-size:11px;
+      font-weight:500;
+    }
+
+    /* Category filter */
+    #category-filter{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding:12px 0 12px 0;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      flex-shrink:0;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    #category-filter::-webkit-scrollbar{display:none}
+    .filter-pill{
+      flex-shrink:0;
+      padding:6px 16px;
+      border-radius:20px;
+      font-size:10px;
+      font-weight:600;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      cursor:pointer;
+      background:#111;
+      color:#666;
+      border:1px solid #1a1a1a;
+      transition:all .25s;
+      white-space:nowrap;
+    }
+    .filter-pill:hover{
+      background:#1a1a1a;
+      color:#aaa;
+      transform:translateY(-1px);
+    }
+    .filter-pill.active{
+      background:linear-gradient(135deg,#ef4444,#f97316);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 4px 15px rgba(239,68,68,0.3);
+    }
+
+    /* Grid wrapper */
+    #grid-wrapper{
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding-top:12px;
+      margin:0 -4px;
+      padding-right:4px;
+    }
+    #grid-wrapper::-webkit-scrollbar{width:4px}
+    #grid-wrapper::-webkit-scrollbar-track{background:transparent}
+    #grid-wrapper::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ef4444,#f97316);border-radius:4px}
+
+    #ch-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:14px;
+    }
+
+    .ch-card{
+      background:linear-gradient(145deg,#111,#0d0d0d);
+      border:1px solid #1a1a1a;
+      border-radius:14px;
+      padding:16px 12px;
+      cursor:pointer;
+      text-decoration:none;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      gap:10px;
+      transition:all .3s cubic-bezier(.4,0,.2,1);
+      -webkit-tap-highlight-color:transparent;
+      min-height:130px;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .ch-card::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:14px;
+      padding:1px;
+      background:linear-gradient(135deg,transparent,transparent);
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      transition:all .4s;
+    }
+    .ch-card:hover{
+      transform:translateY(-3px);
+      border-color:#ef4444;
+      box-shadow:0 8px 30px rgba(239,68,68,0.15);
+    }
+    .ch-card:hover::before{
+      background:linear-gradient(135deg,#ef4444,#f97316,#eab308);
+    }
+    .ch-card:active{
+      transform:scale(.96);
+    }
+    .ch-card:focus-visible{
+      outline:2px solid #ef4444;
+      outline-offset:2px;
+    }
+
+    .ch-card .ch-logo{
+      width:100%;
+      max-width:110px;
+      height:auto;
+      max-height:55px;
+      object-fit:contain;
+      border-radius:6px;
+      padding:4px;
+      transition:transform .3s;
+    }
+    .ch-card:hover .ch-logo{
+      transform:scale(1.05);
+    }
+
+    .ch-card .ch-name{
+      color:#e0e0e0;
+      font-size:12px;
+      font-weight:600;
+      line-height:1.3;
+      letter-spacing:.2px;
+    }
+
+    .ch-card .ch-placeholder{
+      width:100%;
+      max-width:110px;
+      height:55px;
+      background:linear-gradient(135deg,#1a1a1a,#111);
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#333;
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:1px;
+      border:1px solid #1a1a1a;
+    }
+    .ch-card .ch-placeholder .initials{
+      background:linear-gradient(135deg,#ef4444,#f97316);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    /* Player */
+    #player-container{
+      position:fixed;
+      inset:0;
+      background:#000;
+      z-index:9997;
+      display:none;
+      align-items:center;
+      justify-content:center;
+    }
+    #player-container video{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:#000;
+    }
+    .plyr{
+      height:100%;
+      width:100%;
+      background:#000;
+    }
+    .plyr__controls{
+      background:linear-gradient(0deg,rgba(0,0,0,0.9),transparent)!important;
+    }
+    .plyr__control--overlaid{
+      background:linear-gradient(135deg,#ef4444,#f97316)!important;
+    }
+    .plyr__control.plyr__control--overlaid:hover{
+      background:linear-gradient(135deg,#dc2626,#ea580c)!important;
+    }
+    .plyr__control[data-plyr="play"]:hover,
+    .plyr__control[data-plyr="fullscreen"]:hover{
+      background:rgba(239,68,68,0.2)!important;
+    }
+    .plyr__progress__buffer{
+      background:rgba(239,68,68,0.3)!important;
+    }
+    .plyr__progress__played{
+      background:linear-gradient(90deg,#ef4444,#f97316)!important;
+    }
+    .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before{
+      background:linear-gradient(135deg,#ef4444,#f97316)!important;
+    }
+
+    /* ════════════════════════════════════════════
+       FULLSCREEN FORCE-LANDSCAPE FALLBACK
+       (used only when screen.orientation.lock is
+        unavailable, e.g. some Android WebViews)
+    ════════════════════════════════════════════ */
+    .plyr.rotate-fallback{
+      position:fixed!important;
+      top:0!important;
+      left:0!important;
+      width:100vh!important;
+      height:100vw!important;
+      max-width:none!important;
+      max-height:none!important;
+      margin:0!important;
+      transform:rotate(90deg) translateY(-100%);
+      transform-origin:top left;
+      z-index:2147483000!important;
+    }
+
+    #status{
+      position:fixed;
+      top:max(12px,env(safe-area-inset-top));
+      right:max(12px,env(safe-area-inset-right));
+      z-index:9997;
+      padding:5px 13px;
+      background:rgba(8,8,8,.9);
+      border:1px solid rgba(255,255,255,.05);
+      font-size:11px;
+      font-weight:500;
+      letter-spacing:.02em;
+      border-radius:20px;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity .3s;
+      max-width:260px;
+      text-align:right;
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      color:#ef4444;
+    }
+    #status.show{opacity:1}
+    #status.ok{color:#ef4444}
+    #status.warn{color:#fb923c}
+    #status.err{color:#f87171}
+
+    @media (max-width:400px){
+      #ch-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+      .ch-card{min-height:110px;padding:12px 8px}
+      .ch-card .ch-logo{max-height:40px}
+      .ch-card .ch-name{font-size:10px}
+      #channel-list .header h1{font-size:15px}
+      .filter-pill{font-size:8px;padding:4px 12px}
+      #category-filter{padding:10px 0 10px 0}
+    }
+    @media (min-width:768px){
+      #ch-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+      .ch-card{min-height:150px;padding:20px 16px}
+      .ch-card .ch-logo{max-height:65px}
+      .ch-card .ch-name{font-size:14px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="overlay">
+  <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+    <circle cx="20" cy="20" r="16" stroke="#161616" stroke-width="4"/>
+    <path d="M20 4a16 16 0 0 1 16 16" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <p id="loadMsg">Loading channels…</p>
+</div>
+
+<!-- Status Toast -->
+<div id="status"></div>
+
+<!-- Channel List -->
+<div id="channel-list">
+  <div class="header">
+    <h1>⚡ SPORTLINK</h1>
+    <span class="subtitle">Sony Sports</span>
+  </div>
+  <div id="category-filter"></div>
+  <div id="grid-wrapper">
+    <div id="ch-grid"></div>
+  </div>
+</div>
+
+<!-- Player Container -->
+<div id="player-container">
+  <video id="player" playsinline webkit-playsinline controls preload="metadata"></video>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+// ============ CONFIG ============
+var M3U_URL = "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/refs/heads/main/sony.m3u";
+var PROXY_BASE = "https://sportlink-proxy10.lovable.app/api/public/proxy?url=";
+
+// ── Sony Sports filter ──────────────────────────────
+// Set to false to disable filtering and show every channel again.
+var SONY_SPORT_ONLY = true;
+
+// Must mention Sony…
+var SONY_RE  = /\bsony\b/i;
+// …and one of these sports keywords
+var SPORT_RE = /(\bsports?\b|\bten\b|\bten\s*[1-5]\b|\bsix\b|\bespn\b|\bgolf\b)/i;
+
+// True when the channel is a Sony sports channel
+function isSonySport(ch){
+  var hay = ((ch.name || "") + " " + (ch.category || ""));
+  if(!SONY_RE.test(hay)) return false;
+  return SPORT_RE.test(hay);
+}
+// ────────────────────────────────────────────────────
+
+var $overlay = document.getElementById("overlay");
+var $loadMsg = document.getElementById("loadMsg");
+var $status = document.getElementById("status");
+var $list = document.getElementById("channel-list");
+var $grid = document.getElementById("ch-grid");
+var $gridWrapper = document.getElementById("grid-wrapper");
+var $filter = document.getElementById("category-filter");
+var $playerContainer = document.getElementById("player-container");
+var $video = document.getElementById("player");
+var _stTmr = null;
+var allChannels = [];
+var currentCategory = 'All';
+var currentPlayer = null;
+var currentHls = null;
+var resumeTmr = null;
+
+function toast(msg,type,dur){
+  $status.textContent=msg;
+  $status.className="show "+(type||"ok");
+  if(_stTmr) clearTimeout(_stTmr);
+  if(dur!==0){
+    _stTmr=setTimeout(function(){
+      $status.className=$status.className.replace("show","").trim();
+      _stTmr=null;
+    },dur||4000);
+  }
+}
+
+function setMsg(m) { $loadMsg && ($loadMsg.textContent = m); }
+function hideOverlay() { $overlay && ($overlay.style.display = "none"); }
+function getChId() { return new URLSearchParams(location.search).get("id") || ""; }
+
+// ============ PROXY HELPER ============
+function proxyUrl(url){
+  if(!url) return url;
+  // If already proxied, don't double-wrap
+  if(url.indexOf(PROXY_BASE) === 0) return url;
+  return PROXY_BASE + encodeURIComponent(url);
+}
+
+// ============ M3U PARSER ============
+function parseM3U(text){
+  var channels = [];
+  var lines = text.split(/\r?\n/);
+  var current = null;
+
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i].trim();
+    if(!line) continue;
+
+    if(line.indexOf("#EXTINF:") === 0){
+      var info = line.substring(8);
+      var commaIdx = info.indexOf(",");
+      var name = commaIdx >= 0 ? info.substring(commaIdx+1).trim() : "Unknown";
+      var attrs = commaIdx >= 0 ? info.substring(0,commaIdx) : info;
+
+      var id = "";
+      var logo = "";
+      var group = "General";
+
+      var idMatch = attrs.match(/tvg-id="([^"]*)"/i);
+      if(idMatch) id = idMatch[1];
+
+      var logoMatch = attrs.match(/tvg-logo="([^"]*)"/i) || attrs.match(/logo="([^"]*)"/i);
+      if(logoMatch) logo = logoMatch[1];
+
+      var groupMatch = attrs.match(/group-title="([^"]*)"/i);
+      if(groupMatch) group = groupMatch[1] || "General";
+
+      var safeId = id || (name.replace(/[^a-z0-9]+/gi,"_").toLowerCase() + "_" + channels.length);
+
+      current = {
+        id: safeId,
+        name: name,
+        logo: logo,
+        category: group,
+        stream_url: ""
+      };
+    }
+    else if(line.charAt(0) === "#"){
+      // Skip other directives (#EXTVLCOPT, #KODIPROP, #EXTGRP etc.)
+      if(line.indexOf("#EXTGRP:") === 0 && current){
+        var g = line.substring(8).trim();
+        if(g) current.category = g;
+      }
+      continue;
+    }
+    else if(current){
+      current.stream_url = line;
+      channels.push(current);
+      current = null;
+    }
+  }
+
+  return channels;
+}
+
+// ============ LOAD DATA ============
+async function loadData(){
+  var r = await fetch(M3U_URL, {cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP " + r.status);
+  var text = await r.text();
+  var channels = parseM3U(text);
+
+  // Filter out entries without a stream URL
+  channels = channels.filter(function(c){ return c.stream_url && c.stream_url.length > 0; });
+
+  // ── Apply Sony Sports filter ──
+  if(SONY_SPORT_ONLY){
+    var sonySports = channels.filter(isSonySport);
+
+    if(sonySports.length){
+      channels = sonySports;
+    } else {
+      // Fallback 1: any channel that mentions Sony
+      var sonyOnly = channels.filter(function(c){
+        return SONY_RE.test((c.name || "") + " " + (c.category || ""));
+      });
+      if(sonyOnly.length){
+        channels = sonyOnly;
+        console.warn("[SPORTLINK] No Sony *sports* match — showing all Sony channels.");
+      } else {
+        console.warn("[SPORTLINK] No Sony channels matched — showing full list.");
+      }
+    }
+  }
+
+  if(!channels.length) throw new Error("No channels found");
+  return { channels: channels };
+}
+
+// ============ RENDER FILTERS ============
+function renderFilters(channels){
+  var categories = ['All'];
+  var cats = {};
+  channels.forEach(function(ch){
+    if(ch.category && ch.category !== 'General') {
+      cats[ch.category] = true;
+    }
+  });
+  Object.keys(cats).sort().forEach(function(c){ categories.push(c); });
+
+  var f = document.createDocumentFragment();
+  categories.forEach(function(cat){
+    var pill = document.createElement('span');
+    pill.className = 'filter-pill' + (cat === currentCategory ? ' active' : '');
+    pill.textContent = cat;
+    pill.dataset.category = cat;
+    pill.addEventListener('click', function(){
+      currentCategory = cat;
+      document.querySelectorAll('.filter-pill').forEach(function(p){
+        p.classList.toggle('active', p.dataset.category === cat);
+      });
+      renderChannels(channels);
+      if($gridWrapper) $gridWrapper.scrollTop = 0;
+    });
+    f.appendChild(pill);
+  });
+  $filter.innerHTML = '';
+  $filter.appendChild(f);
+}
+
+// ============ RENDER CHANNELS ============
+function renderChannels(channels){
+  var filtered = channels;
+  if(currentCategory !== 'All') {
+    filtered = channels.filter(function(ch){ return ch.category === currentCategory; });
+  }
+
+  var countEl = document.querySelector('.header .count');
+  if(!countEl) {
+    var header = document.querySelector('.header');
+    var count = document.createElement('span');
+    count.className = 'count';
+    header.appendChild(count);
+  }
+  document.querySelector('.header .count').textContent = filtered.length + ' channels';
+
+  var f = document.createDocumentFragment();
+  filtered.forEach(function(ch){
+    var a = document.createElement("a");
+    a.className = "ch-card";
+    a.href = "?id=" + encodeURIComponent(ch.id);
+
+    var logoHtml = '';
+    if(ch.logo && ch.logo.trim()) {
+      logoHtml = '<img class="ch-logo" src="'+ch.logo+'" alt="'+ch.name+'" loading="lazy" onerror="this.style.display=\'none\'">';
+    } else {
+      var initials = ch.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('');
+      logoHtml = '<div class="ch-placeholder"><span class="initials">'+initials+'</span></div>';
+    }
+
+    a.innerHTML = logoHtml + '<span class="ch-name">'+ch.name+'</span>';
+    f.appendChild(a);
+  });
+
+  $grid.innerHTML = '';
+  $grid.appendChild(f);
+}
+
+// ============ RENDER LIST ============
+function renderList(data){
+  hideOverlay();
+  var channels = data.channels || data;
+  allChannels = channels;
+  renderFilters(channels);
+  renderChannels(channels);
+  $list.style.display = "flex";
+}
+
+// ============ PLAYER SHOW / HIDE ============
+function showPlayer(){
+  $list.style.display = "none";
+  $playerContainer.style.display = "flex";
+}
+
+function hidePlayer(){
+  // Exit fullscreen first (so orientation unlocks cleanly)
+  if(isFullscreenActive()){
+    try{
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }catch(e){}
+  }
+  unlockOrientation();
+
+  $list.style.display = "flex";
+  $playerContainer.style.display = "none";
+
+  if(resumeTmr) { clearInterval(resumeTmr); resumeTmr = null; }
+
+  if(currentHls) {
+    try { currentHls.destroy(); } catch(e){}
+    currentHls = null;
+  }
+  if(currentPlayer) {
+    try { currentPlayer.destroy(); } catch(e){}
+    currentPlayer = null;
+  }
+  // Reset video
+  try {
+    $video.pause();
+    $video.removeAttribute('src');
+    $video.load();
+  } catch(e){}
+
+  // Update URL without reload
+  if(window.history && window.history.pushState) {
+    window.history.pushState({}, document.title, window.location.pathname);
+  }
+}
+
+// ============ FULLSCREEN LANDSCAPE ROTATION ============
+// On fullscreen, try to lock the screen to landscape.
+// If the API is unavailable (some Android WebViews / older
+// browsers), fall back to a CSS rotation of the player.
+function getPlyrEl(){
+  return document.querySelector(".plyr");
+}
+
+function isFullscreenActive(){
+  return !!(document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.msFullscreenElement);
+}
+
+function isPortraitMode(){
+  if(screen.orientation && typeof screen.orientation.type === "string"){
+    return screen.orientation.type.indexOf("portrait") === 0;
+  }
+  return window.innerHeight > window.innerWidth;
+}
+
+function clearRotateFallback(){
+  var el = getPlyrEl();
+  if(el) el.classList.remove("rotate-fallback");
+}
+
+function applyRotateFallback(){
+  if(!isFullscreenActive()) return;
+  if(!isPortraitMode()) return;
+  var el = getPlyrEl();
+  if(el) el.classList.add("rotate-fallback");
+}
+
+function lockLandscape(){
+  if(screen.orientation && typeof screen.orientation.lock === "function"){
+    try{
+      var p = screen.orientation.lock("landscape");
+      if(p && typeof p.catch === "function"){
+        p.catch(function(){ applyRotateFallback(); });
+      }
+    }catch(e){
+      applyRotateFallback();
+    }
+  } else {
+    applyRotateFallback();
+  }
+}
+
+function unlockOrientation(){
+  if(screen.orientation && typeof screen.orientation.unlock === "function"){
+    try { screen.orientation.unlock(); } catch(e){}
+  }
+  clearRotateFallback();
+}
+
+function handleFullscreenChange(){
+  if(isFullscreenActive()){
+    lockLandscape();
+  } else {
+    unlockOrientation();
+  }
+}
+
+document.addEventListener("fullscreenchange", handleFullscreenChange);
+document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+
+// Keep rotation in sync if the device is physically rotated while fullscreen
+if(screen.orientation && screen.orientation.addEventListener){
+  screen.orientation.addEventListener("change", function(){
+    if(!isFullscreenActive()) return;
+    if(isPortraitMode()) applyRotateFallback();
+    else clearRotateFallback();
+  });
+}
+window.addEventListener("orientationchange", function(){
+  setTimeout(function(){
+    if(!isFullscreenActive()) return;
+    if(isPortraitMode()) applyRotateFallback();
+    else clearRotateFallback();
+  }, 300);
+});
+// ====================================================
+
+// ============ PLAYER SETUP ============
+function setupHLSPlayer(url){
+  showPlayer();
+  toast("Loading stream…", "warn", 0);
+
+  // Clean up existing player
+  if(currentHls) {
+    try { currentHls.destroy(); } catch(e){}
+    currentHls = null;
+  }
+  if(currentPlayer) {
+    try { currentPlayer.destroy(); } catch(e){}
+    currentPlayer = null;
+  }
+
+  // Apply proxy
+  var playUrl = proxyUrl(url);
+
+  var defaultOptions = {
+    controls: [
+      'play', 'progress', 'current-time', 'mute', 'volume',
+      'captions', 'settings', 'fullscreen'
+    ],
+    settings: ['quality'],
+    autoplay: true,
+    muted: true,
+    fullscreen: {
+      enabled: true,
+      fallback: true,
+      iosNative: true
+    }
+  };
+
+  var isM3U8 = /\.m3u8(\?|$)/i.test(url) || url.indexOf('.m3u8') !== -1;
+
+  if(Hls.isSupported() && isM3U8) {
+    var hls = new Hls({
+      autoStartLoad: true,
+      enableWorker: true,
+      lowLatencyMode: true,
+      backbufferLength: 30,
+      manifestLoadingTimeOut: 20000,
+      manifestLoadingMaxRetry: 6,
+      levelLoadingTimeOut: 20000,
+      fragLoadingTimeOut: 30000
+    });
+    currentHls = hls;
+
+    hls.loadSource(playUrl);
+    hls.attachMedia($video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, function(_, data) {
+      var qualities = data.levels.map(function(l) { return l.height; })
+        .filter(function(h){ return h; })
+        .sort(function(a,b){ return b-a; });
+
+      // Unique
+      qualities = qualities.filter(function(v,i){ return qualities.indexOf(v) === i; });
+
+      currentPlayer = new Plyr($video, Object.assign({}, defaultOptions, qualities.length ? {
+        quality: {
+          default: qualities[0],
+          options: qualities,
+          forced: true,
+          onChange: function(q) {
+            hls.levels.forEach(function(level, index) {
+              if(level.height === q) {
+                hls.currentLevel = index;
+              }
+            });
+          }
+        }
+      } : {}));
+
+      $video.play().catch(function(){});
+      hideOverlay();
+      toast("● Live", "ok", 3000);
+    });
+
+    hls.on(Hls.Events.ERROR, function(_, data) {
+      if(data.fatal) {
+        toast("Reconnecting…", "warn", 0);
+        setTimeout(function(){
+          try {
+            if(data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+            else if(data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+            else { hls.destroy(); setupHLSPlayer(url); }
+          } catch(e){}
+        }, 2000);
+      }
+    });
+
+  } else if($video.canPlayType("application/vnd.apple.mpegurl") && isM3U8) {
+    // Native HLS (Safari / iOS)
+    $video.src = playUrl;
+    $video.addEventListener("loadedmetadata", function onMeta(){
+      $video.removeEventListener("loadedmetadata", onMeta);
+      currentPlayer = new Plyr($video, defaultOptions);
+      $video.play().catch(function(){});
+      hideOverlay();
+      toast("● Live", "ok", 3000);
+    });
+    $video.addEventListener("error", function(){
+      toast("Stream error", "err", 0);
+    });
+  } else {
+    // Direct video (mp4 / other)
+    $video.src = playUrl;
+    currentPlayer = new Plyr($video, defaultOptions);
+    $video.addEventListener("loadedmetadata", function(){
+      hideOverlay();
+      toast("● Live", "ok", 3000);
+    });
+    $video.play().catch(function(){});
+  }
+
+  // Auto resume if paused
+  if(resumeTmr) clearInterval(resumeTmr);
+  resumeTmr = setInterval(function() {
+    if($video.paused && $video.readyState > 2) {
+      $video.play().catch(function(){});
+    }
+  }, 3000);
+
+  // Auto unmute on first interaction
+  function unmute() {
+    $video.muted = false;
+    $video.volume = 1;
+    document.removeEventListener("click", unmute);
+    document.removeEventListener("touchstart", unmute);
+  }
+  document.addEventListener("click", unmute);
+  document.addEventListener("touchstart", unmute);
+}
+
+function errMsg(msg){ setMsg(msg); $overlay.style.display="flex"; toast(msg,"err",0); }
+
+// ============ MAIN ============
+async function main(){
+  var id = getChId();
+  var data;
+
+  try {
+    setMsg("Loading Sony Sports channels…");
+    data = await loadData();
+  } catch(e) {
+    console.error(e);
+    errMsg("Connection error.");
+    return;
+  }
+
+  if(!id) {
+    renderList(data);
+    return;
+  }
+
+  var channels = data.channels || data;
+  var ch = channels.find(function(c){ return c.id === id; });
+  if(!ch) {
+    errMsg("Channel not found.");
+    return;
+  }
+
+  document.title = "SPORTLINK · " + ch.name;
+  renderList(data);
+  setupHLSPlayer(ch.stream_url);
+}
+
+// Handle browser back button
+window.addEventListener("popstate", function(e){
+  if($playerContainer.style.display === "flex") {
+    hidePlayer();
+  }
+});
+
+// Handle escape key
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape" && $playerContainer.style.display === "flex") {
+    hidePlayer();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", main);
+})();
+</script>
+
+  <script src="https://pl31358401.profitableratecpmnetwork.com/a3/81/41/a38141b4ff99f6ef8dbf9dc5f76bd86b.js"></script>
+</body>
+</html>
