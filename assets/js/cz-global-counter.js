@@ -356,18 +356,22 @@
       var active = activeIndex;
       var results = await Promise.all(API_LIST.map(async function (base, index) {
         try {
-          // Reuse the active worker's /api/stats response; query only the other workers.
-          var data = index === active ? activeStats :
+          // Reuse active stats; fetch other workers and union their visitor IDs.
+          return index === active ? activeStats :
             (await requestAPI(base, "/api/stats", { method: "GET" })).data;
-          var value = Number(data && data.live_visitors);
-          return Number.isFinite(value) && value > 0 ? value : 0;
         } catch (_) {
-          // An unavailable/limited worker contributes zero; other workers still count.
-          return 0;
+          // An unavailable/limited worker contributes no IDs.
+          return null;
         }
       }));
-      var combined = results.reduce(function (sum, value) { return sum + value; }, 0);
-      els.live.textContent = (combined + 345).toLocaleString("en-IN");
+      var uniqueVisitors = new Set();
+      results.forEach(function (data) {
+        if (!data || !Array.isArray(data.live_visitor_ids)) return;
+        data.live_visitor_ids.forEach(function (id) {
+          if (typeof id === "string" && id) uniqueVisitors.add(id);
+        });
+      });
+      els.live.textContent = (uniqueVisitors.size + 345).toLocaleString("en-IN");
     }
 
     async function refreshStats() {
