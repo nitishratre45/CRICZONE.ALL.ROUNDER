@@ -37,8 +37,8 @@
       .forEach(function (key) { sessionStorage.removeItem(key); });
   } catch (_) {}
 
-  // Every fresh page load begins with PRIMARY. Backup selection is only
-  // made after a live request to the current endpoint fails in this page session.
+  // Restore the last known route across page loads. When a backup is active,
+  // keep PRIMARY out of normal failover attempts until its 12-hour retry time.
 
   function saveRoute() {
     try {
@@ -123,7 +123,16 @@
 
   async function apiFetch(path, options) {
     await ensureRoute();
-    var order = API_LIST.map(function (_, index) { return (activeIndex + index) % API_LIST.length; });
+    var order = [];
+    if (activeIndex > 0 && Date.now() < retryAt) {
+      // Primary already failed; use the remaining backups in fixed order and
+      // do not hit PRIMARY again until the scheduled retry window expires.
+      for (var i = activeIndex; i < API_LIST.length; i++) order.push(i);
+      for (var j = 1; j < activeIndex; j++) order.push(j);
+    } else {
+      // Normal preference / scheduled retry: PRIMARY, then BACKUP 2–5.
+      for (var k = 0; k < API_LIST.length; k++) order.push(k);
+    }
     var lastError = null;
     for (var n = 0; n < order.length; n++) {
       var index = order[n];
