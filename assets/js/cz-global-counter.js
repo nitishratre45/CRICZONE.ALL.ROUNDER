@@ -17,16 +17,8 @@
   var retryAt = 0;
   var routePromise = null;
 
-  try {
-    var routeState = JSON.parse(sessionStorage.getItem(ROUTE_STATE_KEY) || "null");
-    if (routeState && Number.isInteger(routeState.level) && routeState.level >= 1 && routeState.level <= 3) {
-      activeIndex = routeState.level - 1;
-      retryAt = Number(routeState.retryAt) || 0;
-    } else {
-      var oldUntil = Number(sessionStorage.getItem(ROUTE_KEY) || 0);
-      if (oldUntil > Date.now()) { activeIndex = 1; retryAt = oldUntil; }
-    }
-  } catch (_) {}
+  // Every fresh page load begins with PRIMARY. Backup selection is only
+  // made after a live request to the current endpoint fails in this page session.
 
   function saveRoute() {
     try {
