@@ -924,6 +924,31 @@ function injectControls(container, vid){
   return true;
 }
 
+function hookSony3Close(streamFrame){
+  var attempts = 0;
+  var timer = setInterval(function(){
+    attempts++;
+    try {
+      var wrapperDoc = streamFrame.contentDocument;
+      var nestedFrame = wrapperDoc && wrapperDoc.getElementById("sonyChannelsFrame");
+      var sonyDoc = nestedFrame && nestedFrame.contentDocument;
+      var closeButton = sonyDoc && sonyDoc.getElementById("modalClose");
+      if(closeButton && !closeButton.dataset.czParentCloseHooked){
+        closeButton.dataset.czParentCloseHooked = "1";
+        closeButton.addEventListener("click", function(){
+          // The close action is owned by CRICZONE: return to its channel list,
+          // without navigating the embedded Sony Channels or stream iframe history.
+          window.location.replace("/criczone/");
+        }, true);
+        clearInterval(timer);
+      }
+    } catch (_) {
+      // Keep trying briefly while the same-origin nested Sony iframe loads.
+    }
+    if(attempts >= 100) clearInterval(timer);
+  }, 250);
+}
+
 async function startPlayer(ch){
   $pc.style.display = "flex";
   var streamFrame = document.getElementById("stream-frame");
@@ -932,6 +957,7 @@ async function startPlayer(ch){
     if(streamFrame){
       streamFrame.style.display = "block";
       streamFrame.src = ch.url;
+      if(ch.id === "sony-3hd-2") hookSony3Close(streamFrame);
     }
     hideOverlay();
     toast("Opening Stream…","ok",3000);
