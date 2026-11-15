@@ -1427,7 +1427,7 @@ async function openPlayer(id, index){
   const setTeamMark = (id, flag, name, fallback) => {
     const node = $(id);
     const safeFlag = String(flag || "");
-    node.innerHTML = safeFlag && /^https?:\\/\\//i.test(safeFlag)
+    node.innerHTML = safeFlag && /^https?:\/\//i.test(safeFlag)
       ? `<img src="${esc(safeFlag)}" alt="" loading="lazy" onerror="this.remove();this.parentNode.textContent='${esc(fallback)}'">`
       : esc(fallback);
   };
