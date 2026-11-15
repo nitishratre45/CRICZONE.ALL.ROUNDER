@@ -222,6 +222,39 @@
     if (!total || !live) {
       badge.innerHTML = '<span class="cz-global-total">TOTAL <strong id="totalVisits">Loading…</strong></span><span class="cz-global-live">LIVE <strong id="liveWatching">—</strong></span>';
     }
+    // Show the shared active Worker label on every page using this global counter.
+    var server = document.getElementById("counterServer");
+    if (!server) {
+      server = document.createElement("span");
+      server.id = "counterServer";
+      server.textContent = "S1";
+      server.title = "Connected counter server: Primary";
+      badge.appendChild(server);
+    }
+    function updateCounterServer() {
+      var names = ["Primary", "Backup 2", "Backup 3", "Backup 4", "Backup 5"];
+      var level = 1;
+      try {
+        var route = JSON.parse(localStorage.getItem("cz_counter_route_local_v2") || "null");
+        if (route && Number.isInteger(route.level) && route.level >= 1 && route.level <= 5) level = route.level;
+      } catch (_) {}
+      server.textContent = "S" + level;
+      server.title = "Connected counter server: " + names[level - 1];
+      server.setAttribute("aria-label", server.title);
+    }
+    updateCounterServer();
+    window.addEventListener("storage", function (event) {
+      if (event.key === "cz_counter_route_local_v2") updateCounterServer();
+    });
+    try {
+      if ("BroadcastChannel" in window) {
+        var serverChannel = new BroadcastChannel("criczone-counter-route-v1");
+        serverChannel.onmessage = updateCounterServer;
+      }
+    } catch (_) {}
+    if (!badge.__czServerLabelTimer) {
+      badge.__czServerLabelTimer = window.setInterval(updateCounterServer, 2000);
+    }
     if (!document.getElementById("cz-global-counter-style")) {
       var style = document.createElement("style");
       style.id = "cz-global-counter-style";
