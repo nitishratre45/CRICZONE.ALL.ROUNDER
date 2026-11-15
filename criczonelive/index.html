@@ -891,6 +891,10 @@ button,a{-webkit-tap-highlight-color:transparent}
  .cz-live-view .cz-teams-row{padding:0 8px}
 }
 
+
+.cz-reference-back{display:inline-flex!important;align-items:center;gap:10px;margin:0 2px 16px;padding:10px 14px;border:1px solid rgba(132,151,190,.28);border-radius:13px;background:rgba(19,27,48,.82);color:#dce6f4;font-size:14px;font-weight:700;cursor:pointer}
+.cz-reference-back:active{transform:scale(.98)}
+
 </style>
 </head>
 
@@ -957,7 +961,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 
   <!-- ==================== CRICZONE LIVE PLAYER VIEW ==================== -->
   <section id="playerView" class="view cz-live-view">
-    <button id="backHub" type="button" hidden aria-hidden="true" tabindex="-1"></button>
+    <button id="backHub" class="cz-back cz-reference-back" type="button" aria-label="Back to matches">← <span>Back to matches</span></button>
     <span id="playerTitle" hidden></span><span id="playerSub" hidden></span>
     <header class="cz-live-header cz-reference-header">
       <div class="cz-live-brand">
