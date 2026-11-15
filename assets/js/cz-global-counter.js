@@ -346,20 +346,19 @@
       : "cz" + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
   }
 
-  // Background-only Backup-6 readiness check: once per browser/origin per hour.
-  // It is deliberately not awaited, so normal counter requests never wait for it.
+  // Background-only Backup-6 readiness check.
+  // A successful check is cached for one hour; failures are retried on the next page load.
   function checkBackup6ReadyInBackground() {
-    var key = "cz_backup6_ready_check_at_v1";
+    var timeKey = "cz_backup6_ready_check_at_v1";
+    var statusKey = "cz_backup6_readiness_status_v1";
     var now = Date.now();
     try {
-      var last = Number(localStorage.getItem(key) || 0);
-      if (last && now - last < 60 * 60 * 1000) return;
-      localStorage.setItem(key, String(now));
-    } catch (_) {
-      // If storage is unavailable, still make one best-effort check for this page load.
-    }
+      var last = Number(localStorage.getItem(timeKey) || 0);
+      var savedStatus = JSON.parse(localStorage.getItem(statusKey) || "null");
+      if (last && now - last < 60 * 60 * 1000 && savedStatus && savedStatus.status === "READY") return;
+    } catch (_) {}
     var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 4000);
+    var timer = setTimeout(function () { controller.abort(); }, 8000);
     fetch(API_BACKUP6 + "/api/ready?source=global-counter-hourly", {
       method: "GET", mode: "cors", cache: "no-store", credentials: "omit",
       signal: controller.signal
@@ -367,28 +366,35 @@
       if (!response.ok) throw new Error("HTTP " + response.status);
       return response.json();
     }).then(function (data) {
-      var isReady = !!(data && String(data.status || "").toUpperCase() === "READY" && data.database === "connected");
+      var isReady = !!(data && data.ok === true &&
+        String(data.status || "").toUpperCase() === "READY" &&
+        data.database === "connected" && data.worker === "BACKUP_6");
+      var checkedAt = new Date().toISOString();
+      var record = {
+        level: 6,
+        status: isReady ? "READY" : "NOT_READY",
+        database: data && data.database ? data.database : "unknown",
+        worker: data && data.worker ? data.worker : "unknown",
+        checkedAt: checkedAt
+      };
       try {
-        localStorage.setItem("cz_backup6_readiness_status_v1", JSON.stringify({
-          level: 6,
-          status: isReady ? "READY" : "NOT_READY",
-          database: data && data.database ? data.database : "unknown",
-          checkedAt: new Date().toISOString()
-        }));
+        localStorage.setItem(statusKey, JSON.stringify(record));
+        localStorage.setItem(timeKey, String(Date.now()));
+        localStorage.removeItem("cz_backup6_status_v1");
+        localStorage.removeItem("cz_backup5_readiness_status_v1");
       } catch (_) {}
-      if (isReady) {
-        console.info("[CRICZONE] BACKUP-6 READY", data);
-      } else {
-        console.warn("[CRICZONE] BACKUP-6 NOT READY", data);
-      }
+      if (isReady) console.info("[CRICZONE] BACKUP-6 READY", data);
+      else console.warn("[CRICZONE] BACKUP-6 NOT READY", data);
     }).catch(function (error) {
+      var record = {
+        level: 6, status: "CHECK_FAILED", checkedAt: new Date().toISOString(),
+        error: String(error && error.message ? error.message : error)
+      };
       try {
-        localStorage.setItem("cz_backup6_status_v1", JSON.stringify({
-          level: 6, status: "CHECK_FAILED", checkedAt: new Date().toISOString(),
-          error: String(error)
-        }));
+        localStorage.setItem(statusKey, JSON.stringify(record));
+        localStorage.setItem(timeKey, "0");
       } catch (_) {}
-      console.warn("[CRICZONE] BACKUP-6 readiness check failed", String(error));
+      console.warn("[CRICZONE] BACKUP-6 readiness check failed", record.error);
     }).finally(function () {
       clearTimeout(timer);
     });
