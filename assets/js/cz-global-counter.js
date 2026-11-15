@@ -10,7 +10,9 @@
   var API_PRIMARY = "https://criczone-visitor-counter.criczone-nitish.workers.dev";
   var API_BACKUP2 = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
   var API_BACKUP3 = "https://criczone-visitor-counter-backup-3.nitish-3.workers.dev";
-  var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3];
+  var API_BACKUP4 = "https://criczone-visitor-counter-backup-4.nitish-4.workers.dev";
+  var API_BACKUP5 = "https://criczone-visitor-counter-backup-5.nitish-5.workers.dev";
+  var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5];
   var ROUTE_KEY = "cz_counter_backup_until_local_v2";
   var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
   var TOTAL_KEY = "cz_counter_total_floor_v2";
@@ -19,7 +21,7 @@
   var totalFloor = 0;
   try {
     var savedRoute = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
-    if (savedRoute && Number.isInteger(savedRoute.level) && savedRoute.level >= 1 && savedRoute.level <= 3 &&
+    if (savedRoute && Number.isInteger(savedRoute.level) && savedRoute.level >= 1 && savedRoute.level <= 5 &&
         Number(savedRoute.retryAt) > Date.now()) {
       activeIndex = savedRoute.level - 1;
       retryAt = Number(savedRoute.retryAt);
@@ -46,15 +48,15 @@
     try {
       sessionStorage.setItem("cz_counter_failover_state_v1", JSON.stringify({
         activeLevel: index + 1,
-        activeEndpoint: index === 0 ? "PRIMARY" : (index === 1 ? "BACKUP_2" : "BACKUP_3"),
+        activeEndpoint: index === 0 ? "PRIMARY" : (["BACKUP_2", "BACKUP_3", "BACKUP_4", "BACKUP_5"][index - 1] || "PRIMARY"),
         updatedAt: new Date().toISOString()
       }));
     } catch (_) {}
   }
 
   function saveEndpointHealth(index, status, error) {
-    var names = ["PRIMARY", "BACKUP_2", "BACKUP_3"];
-    var keys = ["cz_counter_primary_status_v1", "cz_counter_backup2_status_v1", "cz_counter_backup3_status_v1"];
+    var names = ["PRIMARY", "BACKUP_2", "BACKUP_3", "BACKUP_4", "BACKUP_5"];
+    var keys = ["cz_counter_primary_status_v1", "cz_counter_backup2_status_v1", "cz_counter_backup3_status_v1", "cz_counter_backup4_status_v1", "cz_counter_backup5_status_v1"];
     var record = {
       level: index + 1,
       endpoint: names[index],
@@ -121,7 +123,7 @@
 
   async function apiFetch(path, options) {
     await ensureRoute();
-    var order = activeIndex === 0 ? [0, 1, 2] : (activeIndex === 1 ? [1, 2, 0] : [2, 1, 0]);
+    var order = API_LIST.map(function (_, index) { return (activeIndex + index) % API_LIST.length; });
     var lastError = null;
     for (var n = 0; n < order.length; n++) {
       var index = order[n];
@@ -134,7 +136,7 @@
         if (n < order.length - 1) setActive(order[n + 1]);
       }
     }
-    throw lastError || new Error("All three visitor counter endpoints are unavailable");
+    throw lastError || new Error("All five visitor counter endpoints are unavailable");
   }
 
   function makeBadge() {
@@ -242,7 +244,7 @@
   // Background-only Backup-3 readiness check: once per browser/origin per hour.
   // It is deliberately not awaited, so normal counter requests never wait for it.
   function checkBackup3ReadyInBackground() {
-    var key = "cz_backup3_ready_check_at_v1";
+    var key = "cz_backup5_ready_check_at_v1";
     var now = Date.now();
     try {
       var last = Number(localStorage.getItem(key) || 0);
@@ -253,7 +255,7 @@
     }
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 4000);
-    fetch(API_BACKUP3 + "/api/ready?source=global-counter-hourly", {
+    fetch(API_BACKUP5 + "/api/ready?source=global-counter-hourly", {
       method: "GET", mode: "cors", cache: "no-store", credentials: "omit",
       signal: controller.signal
     }).then(function (response) {
@@ -263,25 +265,25 @@
       var isReady = !!(data && data.status === "ready" && data.database === "connected");
       try {
         localStorage.setItem("cz_backup3_status_v1", JSON.stringify({
-          level: 3,
+          level: 5,
           status: isReady ? "READY" : "NOT_READY",
           database: data && data.database ? data.database : "unknown",
           checkedAt: new Date().toISOString()
         }));
       } catch (_) {}
       if (isReady) {
-        console.info("[CRICZONE] BACKUP-3 READY", data);
+        console.info("[CRICZONE] BACKUP-5 READY", data);
       } else {
-        console.warn("[CRICZONE] BACKUP-3 NOT READY", data);
+        console.warn("[CRICZONE] BACKUP-5 NOT READY", data);
       }
     }).catch(function (error) {
       try {
         localStorage.setItem("cz_backup3_status_v1", JSON.stringify({
-          level: 3, status: "CHECK_FAILED", checkedAt: new Date().toISOString(),
+          level: 5, status: "CHECK_FAILED", checkedAt: new Date().toISOString(),
           error: String(error)
         }));
       } catch (_) {}
-      console.warn("[CRICZONE] BACKUP-3 readiness check failed", String(error));
+      console.warn("[CRICZONE] BACKUP-5 readiness check failed", String(error));
     }).finally(function () {
       clearTimeout(timer);
     });
@@ -348,7 +350,7 @@
         paint(data);
         // Keep both backups at least at the latest total observed by this browser.
         var floor = totalFloor;
-        [API_BACKUP2, API_BACKUP3].forEach(function (backup) {
+        [API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5].forEach(function (backup) {
           fetch(backup + "/api/sync-total", {
             method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
             headers: { "Content-Type": "application/json" },
