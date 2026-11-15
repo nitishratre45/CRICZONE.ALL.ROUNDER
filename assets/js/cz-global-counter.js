@@ -11,10 +11,21 @@
   var API_BACKUP2 = "https://criczone-visitor-counter-backup.nitish-2.workers.dev";
   var API_BACKUP3 = "https://criczone-visitor-counter-backup-3.nitish-3.workers.dev";
   var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3];
-  var ROUTE_KEY = "cz_counter_backup_until_tab_v1";
-  var ROUTE_STATE_KEY = "cz_counter_route_tab_v1";
+  var ROUTE_KEY = "cz_counter_backup_until_local_v2";
+  var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
+  var TOTAL_KEY = "cz_counter_total_floor_v2";
   var activeIndex = 0;
   var retryAt = 0;
+  var totalFloor = 0;
+  try {
+    var savedRoute = JSON.parse(localStorage.getItem(ROUTE_STATE_KEY) || "null");
+    if (savedRoute && Number.isInteger(savedRoute.level) && savedRoute.level >= 1 && savedRoute.level <= 3 &&
+        Number(savedRoute.retryAt) > Date.now()) {
+      activeIndex = savedRoute.level - 1;
+      retryAt = Number(savedRoute.retryAt);
+    }
+    totalFloor = Math.max(0, Number(localStorage.getItem(TOTAL_KEY) || 0) || 0);
+  } catch (_) {}
   var routePromise = null;
 
   // Every fresh page load begins with PRIMARY. Backup selection is only
@@ -22,9 +33,9 @@
 
   function saveRoute() {
     try {
-      sessionStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
-      if (activeIndex > 0) sessionStorage.setItem(ROUTE_KEY, String(retryAt));
-      else sessionStorage.removeItem(ROUTE_KEY);
+      localStorage.setItem(ROUTE_STATE_KEY, JSON.stringify({ level: activeIndex + 1, retryAt: retryAt }));
+      if (activeIndex > 0) localStorage.setItem(ROUTE_KEY, String(retryAt));
+      else localStorage.removeItem(ROUTE_KEY);
     } catch (_) {}
   }
 
@@ -298,7 +309,11 @@
     function paint(data) {
       var total = data && (data.total_visits != null ? data.total_visits : data.totalVisits);
       var live = data && (data.live_visitors != null ? data.live_visitors : data.liveVisitors);
-      if (Number.isFinite(Number(total))) els.total.textContent = Number(total).toLocaleString("en-IN");
+      if (Number.isFinite(Number(total))) {
+        totalFloor = Math.max(totalFloor, Number(total));
+        try { localStorage.setItem(TOTAL_KEY, String(totalFloor)); } catch (_) {}
+        els.total.textContent = totalFloor.toLocaleString("en-IN");
+      }
       if (Number.isFinite(Number(live))) els.live.textContent = (Number(live) + 345).toLocaleString("en-IN");
     }
 
@@ -329,7 +344,17 @@
         var response = await apiFetch("/api/stats", {
           method: "GET", mode: "cors", cache: "no-store", credentials: "omit"
         });
-        paint(await response.json());
+        var data = await response.json();
+        paint(data);
+        // Keep both backups at least at the latest total observed by this browser.
+        var floor = totalFloor;
+        [API_BACKUP2, API_BACKUP3].forEach(function (backup) {
+          fetch(backup + "/api/sync-total", {
+            method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ total_visits: floor })
+          }).catch(function () {});
+        });
       } catch (error) {
         console.warn("[CRICZONE] Global visitor stats unavailable:", error);
       }
