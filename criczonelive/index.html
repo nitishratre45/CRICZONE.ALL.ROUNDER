@@ -792,6 +792,80 @@ button,a{-webkit-tap-highlight-color:transparent}
   .hub-tools-meta{gap:6px}
 }
 
+
+/* ============================================================
+   CRICZONE LIVE — premium match/player layout
+   ============================================================ */
+.cz-live-view{max-width:1040px;margin:0 auto;padding:0 2px 44px}
+.cz-live-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 6px 20px}
+.cz-live-brand{display:flex;align-items:center;gap:12px}
+.cz-live-mark{width:52px;height:52px;border-radius:17px;display:grid;place-items:center;font:700 19px var(--font-d);color:#fff;background:linear-gradient(145deg,#35c7d9,#1676e8);box-shadow:0 8px 24px rgba(23,142,226,.3);border:1px solid rgba(255,255,255,.2)}
+.cz-live-brand-copy{display:flex;flex-direction:column;line-height:1.12}
+.cz-live-brand-copy strong{font:700 20px var(--font-d);letter-spacing:-.5px;color:#f4f7fb}
+.cz-live-brand-copy span{font-size:10px;letter-spacing:1.6px;color:#8f9ba9;margin-top:5px}
+.cz-live-telegram{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:15px;color:#fff;background:linear-gradient(135deg,#159bdc,#087bd0);font-size:13px;font-weight:700;box-shadow:0 7px 20px rgba(0,136,210,.22)}
+.cz-live-telegram svg{width:17px;height:17px;fill:currentColor}
+.cz-back{display:inline-flex;align-items:center;gap:9px;color:#aab4c1;font-size:13px;font-weight:600;padding:5px 7px;margin:0 0 12px}
+.cz-back:hover{color:#fff}
+.cz-match-banner{position:relative;isolation:isolate;overflow:hidden;min-height:205px;border-radius:22px;margin:0 2px 24px;padding:23px 25px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(117,166,221,.25);background:radial-gradient(ellipse at 80% 15%,rgba(40,145,221,.42),transparent 38%),radial-gradient(ellipse at 10% 100%,rgba(24,171,139,.32),transparent 42%),linear-gradient(120deg,#101c34 0%,#182b4b 48%,#101622 100%);box-shadow:0 16px 35px rgba(0,0,0,.28)}
+.cz-match-banner:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.38;background:repeating-linear-gradient(128deg,transparent 0 38px,rgba(255,255,255,.08) 39px 41px,transparent 42px 82px)}
+.cz-banner-glow{position:absolute;z-index:-1;width:240px;height:240px;right:8%;top:-150px;border-radius:50%;background:#32b6e9;filter:blur(75px);opacity:.35}
+.cz-banner-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cz-banner-kicker{font:700 11px var(--font-d);letter-spacing:2px;color:#b6d8f5}
+.cz-banner-live{display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.22);padding:6px 10px;border-radius:99px;font-size:9px;font-weight:800;letter-spacing:1px;color:#eaf6ff}
+.cz-banner-live i{width:7px;height:7px;border-radius:50%;background:#ff536d;box-shadow:0 0 10px #ff536d}
+.cz-banner-content{position:relative;z-index:1;margin-top:22px}
+.cz-banner-league{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8fc7f2}
+.cz-banner-content h2{font:700 clamp(24px,5vw,38px)/1.12 var(--font-d);color:#fff;margin:7px 0;text-shadow:0 2px 14px rgba(0,0,0,.3)}
+.cz-banner-content p{font-size:12px;color:#c1d0e0}
+.cz-banner-watermark{position:absolute;right:25px;bottom:5px;font:700 105px/.9 var(--font-d);color:rgba(255,255,255,.055);letter-spacing:-9px;pointer-events:none}
+.cz-teams-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:0 2px 29px;padding:0 14px}
+.cz-team-side{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;text-align:center}
+.cz-team-logo{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#273849,#151e2b);border:1px solid rgba(255,255,255,.13);box-shadow:0 7px 18px rgba(0,0,0,.24);font:700 18px var(--font-d);color:#c5d7e9}
+.cz-team-logo img{width:100%;height:100%;object-fit:contain;padding:5px}
+.cz-team-side strong{max-width:100%;font-size:14px;line-height:1.25;color:#f1f4f8}
+.cz-match-middle{display:flex;flex-direction:column;align-items:center;gap:7px}
+.cz-match-middle>b{font:700 16px var(--font-d);color:#8e99a7;letter-spacing:1px}
+.cz-share-btn{display:flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;background:linear-gradient(145deg,#27323e,#171e28);border:1px solid rgba(255,255,255,.1);color:#f1f5f9;font-size:12px;font-weight:700;box-shadow:0 5px 14px rgba(0,0,0,.2)}
+.cz-share-btn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cz-channels-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 2px 13px}
+.cz-channels-heading h3{font:700 15px var(--font-d);letter-spacing:1.4px;color:#aeb8c5}
+.cz-channels-heading span{font-size:10px;font-weight:700;letter-spacing:1px;color:#768395}
+.cz-channel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:0 2px 28px}
+.cz-channel-card{min-height:164px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:17px 12px;border-radius:23px;background:linear-gradient(145deg,#1b2027,#15191f);border:1px solid rgba(255,255,255,.1);color:#f3f5f8;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.18);transition:transform .18s,border-color .18s,box-shadow .18s}
+.cz-channel-card:hover{transform:translateY(-2px);border-color:rgba(74,164,255,.55)}
+.cz-channel-card.active{border:2px solid #339cff;padding:16px 11px;box-shadow:0 0 0 1px rgba(51,156,255,.13),0 0 24px rgba(36,137,255,.16)}
+.cz-channel-icon{width:49px;height:49px;border-radius:50%;display:grid;place-items:center;background:#292e35;color:#aab2bd;font:700 15px var(--font-d);letter-spacing:.4px}
+.cz-channel-card strong{font-size:14px;line-height:1.25;font-weight:800}
+.cz-channel-card small{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#8993a0}
+.cz-channel-empty{grid-column:1/-1;padding:28px 16px;text-align:center;border:1px dashed #384454;border-radius:18px;color:#8d99a8;font-size:13px}
+.cz-player-wrap{margin:8px 2px 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.cz-player-heading{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
+.cz-player-heading span{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#7f8b9b}
+.cz-player-heading strong{font:700 17px var(--font-d);color:#f2f5f9}
+.cz-player-sub{font-size:12px;color:#8793a2;margin-bottom:13px}
+.cz-player-wrap .screen{max-width:100%;margin:0;border-radius:18px}
+.cz-player-wrap .section-title{margin-top:0}
+@media(max-width:520px){
+ .cz-live-view{padding-left:0;padding-right:0}
+ .cz-live-header{padding:14px 2px 18px}
+ .cz-live-mark{width:48px;height:48px;border-radius:15px}
+ .cz-live-brand-copy strong{font-size:18px}
+ .cz-live-telegram{padding:10px 12px;font-size:12px}
+ .cz-match-banner{min-height:180px;padding:19px 17px;border-radius:19px;margin-bottom:22px}
+ .cz-banner-watermark{font-size:86px;right:15px}
+ .cz-team-logo{width:62px;height:62px}
+ .cz-team-side strong{font-size:12px}
+ .cz-teams-row{gap:5px;padding:0 5px}
+ .cz-share-btn{padding:8px 11px;font-size:11px}
+ .cz-channel-grid{gap:10px}
+ .cz-channel-card{min-height:151px;border-radius:19px;padding:14px 8px}
+ .cz-channel-card.active{padding:13px 7px}
+ .cz-channel-card strong{font-size:12px}
+ .cz-channel-icon{width:45px;height:45px}
+}
+@media(min-width:760px){.cz-channel-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cz-channel-card{min-height:176px}}
+
 </style>
 </head>
 
@@ -856,22 +930,57 @@ button,a{-webkit-tap-highlight-color:transparent}
     </footer>
   </section>
 
-  <!-- ==================== PLAYER VIEW ==================== -->
-  <section id="playerView" class="view">
-    <header class="player-top">
-      <button class="icon-btn" id="backHub" aria-label="Back to matches">←</button>
-      <div class="player-meta">
-        <h2 class="player-title" id="playerTitle">CRICZONE Player</h2>
-        <p class="player-sub" id="playerSub"></p>
+  <!-- ==================== CRICZONE LIVE PLAYER VIEW ==================== -->
+  <section id="playerView" class="view cz-live-view">
+    <header class="cz-live-header">
+      <div class="cz-live-brand">
+        <div class="cz-live-mark">CZ</div>
+        <div class="cz-live-brand-copy"><strong>CRICZONE</strong><span>LIVE STREAMING</span></div>
       </div>
+      <a class="cz-live-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Join CRICZONE Telegram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
+        <span>Telegram</span>
+      </a>
     </header>
 
-    <div class="screen">
-      <div id="player-container"></div>
+    <button class="cz-back" id="backHub" type="button" aria-label="Back to matches">← <span>Back to matches</span></button>
+
+    <div class="cz-match-banner" aria-label="Live match details">
+      <div class="cz-banner-glow"></div>
+      <div class="cz-banner-top"><span class="cz-banner-kicker">CRICZONE LIVE</span><span class="cz-banner-live"><i></i> MATCH CENTER</span></div>
+      <div class="cz-banner-content">
+        <span class="cz-banner-league" id="czBannerLeague">LIVE CRICKET</span>
+        <h2 id="czBannerTitle">CRICZONE LIVE</h2>
+        <p id="czBannerSub">Watch the action live</p>
+      </div>
+      <div class="cz-banner-watermark">CZ</div>
     </div>
 
-    <h3 class="section-title">Available Streams</h3>
-    <div class="streams" id="streams"></div>
+    <div class="cz-teams-row">
+      <div class="cz-team-side">
+        <div class="cz-team-logo" id="czTeamLogoA">A</div>
+        <strong id="czTeamA">Team A</strong>
+      </div>
+      <div class="cz-match-middle">
+        <button class="cz-share-btn" id="czShareMatch" type="button" aria-label="Share match">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.7 10.7 6.6-4.1M8.7 13.3l6.6 4.1"></path></svg><span>Share</span>
+        </button>
+        <b>VS</b>
+      </div>
+      <div class="cz-team-side">
+        <div class="cz-team-logo" id="czTeamLogoB">B</div>
+        <strong id="czTeamB">Team B</strong>
+      </div>
+    </div>
+
+    <div class="cz-channels-heading"><h3>LIVE CHANNELS</h3><span id="czChannelCount">0 CHANNELS</span></div>
+    <div class="cz-channel-grid" id="streams"></div>
+
+    <div class="cz-player-wrap">
+      <div class="cz-player-heading"><span>NOW PLAYING</span><strong id="playerTitle">CRICZONE Player</strong></div>
+      <p class="cz-player-sub" id="playerSub"></p>
+      <div class="screen"><div id="player-container"></div></div>
+    </div>
   </section>
 
 </div>
@@ -1307,8 +1416,23 @@ async function openPlayer(id, index){
   // Reset the flag — popup will show again after this match plays
   tgShownForMatch = false;
 
-  $("playerTitle").textContent = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "CRICZONE Player");
+  const matchName = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "CRICZONE LIVE");
+  $("playerTitle").textContent = matchName;
   $("playerSub").textContent = [event.sport, event.comp].filter(Boolean).join(" · ");
+  $("czBannerLeague").textContent = String(event.comp || event.sport || "LIVE CRICKET").toUpperCase();
+  $("czBannerTitle").textContent = matchName;
+  $("czBannerSub").textContent = [event.sport, "Live match streaming on CRICZONE"].filter(Boolean).join(" · ");
+  $("czTeamA").textContent = event.a || event.comp || "Team A";
+  $("czTeamB").textContent = event.b || event.comp || "Team B";
+  const setTeamMark = (id, flag, name, fallback) => {
+    const node = $(id);
+    const safeFlag = String(flag || "");
+    node.innerHTML = safeFlag && /^https?:\\/\\//i.test(safeFlag)
+      ? `<img src="${esc(safeFlag)}" alt="" loading="lazy" onerror="this.remove();this.parentNode.textContent='${esc(fallback)}'">`
+      : esc(fallback);
+  };
+  setTeamMark("czTeamLogoA", event.fa, event.a, (event.a || "A").slice(0,2).toUpperCase());
+  setTeamMark("czTeamLogoB", event.fb, event.b, (event.b || "B").slice(0,2).toUpperCase());
 
   renderPlayerStreams(index);
 
@@ -1780,16 +1904,22 @@ async function playRecord(record, index){
 
 function renderPlayerStreams(activeIndex){
   const box = $("streams");
+  const count = $("czChannelCount");
+  if(count) count.textContent = `${state.currentStreams.length} CHANNEL${state.currentStreams.length === 1 ? "" : "S"}`;
   if(!state.currentStreams.length){
-    box.innerHTML = `<div class="state" style="padding:40px 20px"><p>No streams were found for this event.</p></div>`;
+    box.innerHTML = `<div class="cz-channel-empty">No live channels are available for this match right now.</div>`;
     return;
   }
-  box.innerHTML = state.currentStreams.map((s, i) =>
-    `<button class="stream-btn ${i === activeIndex ? "active" : ""}" data-player-stream="${i}" type="button">
-       <span class="title">${esc(s.title)}</span>
-       <span class="tags"><span class="type-badge ${s.type.toLowerCase()}">${esc(s.type)}</span></span>
-     </button>`
-  ).join("");
+  box.innerHTML = state.currentStreams.map((s, i) => {
+    const title = String(s.title || `Channel ${i+1}`);
+    const initials = title.split(/\\s+/).filter(Boolean).slice(0,2).map(part => part[0]).join("").toUpperCase() || "TV";
+    const platform = /A SPORTS|MYCO/i.test(title) ? "IOS" : "ANDROID";
+    return `<button class="cz-channel-card ${i === activeIndex ? "active" : ""}" data-player-stream="${i}" type="button" aria-label="Play ${esc(title)}">
+      <span class="cz-channel-icon">${esc(initials)}</span>
+      <strong>${esc(title)}</strong>
+      <small>${platform}</small>
+    </button>`;
+  }).join("");
 }
 
 /* ============================================================
@@ -1863,8 +1993,19 @@ $("streams").addEventListener("click", e => {
   const index = Number(btn.dataset.playerStream);
   if(!state.currentStreams[index]) return;
   state.currentIndex = index;
+  renderPlayerStreams(index);
   history.replaceState(null, "", `#watch?id=${encodeURIComponent(state.currentEvent.id)}&stream=${index}`);
   playRecord(state.currentStreams[index], index);
+});
+
+$("czShareMatch").addEventListener("click", async () => {
+  const title = $("playerTitle").textContent || "CRICZONE LIVE";
+  const url = location.href;
+  try{
+    if(navigator.share) await navigator.share({title, text:"Watch this match on CRICZONE", url});
+    else if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(url); toast("Match link copied", "ok", 2500); }
+    else window.prompt("Copy match link", url);
+  }catch(err){ if(err && err.name !== "AbortError") WARN("Share failed:", err); }
 });
 
 $("backHub").onclick = () => { location.hash = "#/"; };
