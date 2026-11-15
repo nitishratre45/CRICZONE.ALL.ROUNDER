@@ -30,6 +30,13 @@
   } catch (_) {}
   var routePromise = null;
 
+  // Keep counter state out of Session Storage. Remove keys written by older builds.
+  try {
+    ["cz_counter_failover_state_v1", "criczone_live_tab_id_v1",
+     "cz_counter_backup_until_tab_v1", "cz_counter_route_tab_v1"]
+      .forEach(function (key) { sessionStorage.removeItem(key); });
+  } catch (_) {}
+
   // Every fresh page load begins with PRIMARY. Backup selection is only
   // made after a live request to the current endpoint fails in this page session.
 
@@ -45,13 +52,6 @@
     activeIndex = index;
     retryAt = index === 0 ? 0 : Date.now() + 12 * 60 * 60 * 1000;
     saveRoute();
-    try {
-      sessionStorage.setItem("cz_counter_failover_state_v1", JSON.stringify({
-        activeLevel: index + 1,
-        activeEndpoint: index === 0 ? "PRIMARY" : (["BACKUP_2", "BACKUP_3", "BACKUP_4", "BACKUP_5"][index - 1] || "PRIMARY"),
-        updatedAt: new Date().toISOString()
-      }));
-    } catch (_) {}
   }
 
   function saveEndpointHealth(index, status, error) {
@@ -293,16 +293,8 @@
     var els = makeBadge();
     checkBackup3ReadyInBackground();
     if (!els.total || !els.live) return;
-    var visitorId = "";
-    // One unique live session per browser tab. sessionStorage is isolated
-    // between tabs, unlike localStorage, so two open pages count as two live viewers.
-    try {
-      visitorId = sessionStorage.getItem("criczone_live_tab_id_v1") || "";
-      if (!/^[a-zA-Z0-9_-]{12,80}$/.test(visitorId)) {
-        visitorId = createId();
-        sessionStorage.setItem("criczone_live_tab_id_v1", visitorId);
-      }
-    } catch (_) { visitorId = createId(); }
+    // Keep the live visitor ID in memory only; do not persist it in browser storage.
+    var visitorId = createId();
 
     var pageVisitPending = true;
     var pageVisitRequestId = createId();
