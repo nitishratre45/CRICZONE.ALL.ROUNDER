@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>criczone sony liv  </title>
+<title>CRICZONE | Sony LIV Live Sports</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
 <style>
 :root {
@@ -601,234 +601,50 @@ video.mode-cover { object-fit: cover; }
   .ch-card::before { inset: 5px; border-radius: 9px; }
 }
 
-/* ═══════════════════════════════════════════
-   TELEGRAM BADGE — Navy on gold
-═══════════════════════════════════════════ */
-#tgBadge {
-  position: fixed;
-  top: max(14px, env(safe-area-inset-top, 0px));
-  left: max(14px, env(safe-area-inset-left, 0px));
-  z-index: 10001;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 18px 10px 12px;
-  border-radius: 100px;
-  text-decoration: none;
-  font-family: 'Fredoka', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: .5px;
-  color: var(--gold);
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
-  border: 2.5px solid var(--navy);
-  box-shadow:
-    3px 3px 0 var(--gold),
-    0 6px 20px rgba(10,22,40,.4);
-  transition: transform .15s ease, box-shadow .15s ease;
-  -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
-}
-#tgBadge::before {
-  content: '';
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid var(--gold);
-  background: linear-gradient(180deg,
-    var(--gold) 0%, var(--gold) 47%,
-    var(--navy) 47%, var(--navy) 53%,
-    var(--cream) 53%, var(--cream) 100%);
-  position: relative;
-  flex-shrink: 0;
-  box-shadow: inset 0 0 0 4px rgba(255,255,255,.15);
-}
-#tgBadge:hover {
-  transform: translate(-2px, -2px);
-  box-shadow:
-    5px 5px 0 var(--gold),
-    0 10px 28px rgba(10,22,40,.55);
-}
-#tgBadge:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--gold); }
-#tgBadge svg {
-  width: 18px; height: 18px; flex-shrink: 0;
-  fill: var(--gold); display: block;
-}
-#tgBadge span { white-space: nowrap; line-height: 1; }
+</style>
 
-@media (max-width: 480px) {
-  #tgBadge {
-    top: max(10px, env(safe-area-inset-top, 0px));
-    left: max(10px, env(safe-area-inset-left, 0px));
-    padding: 8px 14px 8px 10px;
-    font-size: 12px;
-    gap: 7px;
-  }
-  #tgBadge::before { width: 20px; height: 20px; box-shadow: inset 0 0 0 3px rgba(255,255,255,.15); }
-  #tgBadge svg { width: 15px; height: 15px; }
-}
-@media (max-width: 360px) {
-  #tgBadge {
-    padding: 0;
-    width: 44px;
-    height: 44px;
-    gap: 0;
-    justify-content: center;
-  }
-  #tgBadge span, #tgBadge svg { display: none; }
-  #tgBadge::before { width: 26px; height: 26px; }
-}
-
-/* ═══════════════════════════════════════════
-   TELEGRAM POPUP — Navy outer, cream inner
-═══════════════════════════════════════════ */
-#tgOverlay {
-  position: fixed; inset: 0;
-  background: rgba(245,197,24,.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-  padding: 20px;
-  animation: fadeInPopup .3s cubic-bezier(.25,.8,.25,1);
-}
-#tgOverlay.show { display: flex; }
-
-#tgCard {
-  width: 100%;
-  max-width: 400px;
-  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
-  border: 4px solid var(--navy);
-  border-radius: 24px;
-  padding: 6px;
-  box-shadow:
-    8px 8px 0 var(--gold),
-    0 20px 60px rgba(0,0,0,.4);
-  text-align: center;
-  position: relative;
-}
-#tgCard-inner {
-  background: var(--cream);
-  border-radius: 18px;
-  border: 2.5px solid var(--gold);
-  padding: 32px 24px 24px;
-  position: relative;
-  overflow: hidden;
-}
-#tgCard-inner::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 180px; height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(245,197,24,.55) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-#tgIcon {
-  width: 96px; height: 96px;
-  margin: 0 auto 14px;
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
-#tgIcon .pokeball {
-  width: 96px; height: 96px;
-  border-width: 4px;
-  animation: pk-popup-bounce 2.2s ease-in-out infinite;
-  box-shadow:
-    0 10px 32px rgba(10,22,40,.4),
-    0 0 0 5px var(--cream),
-    0 0 0 8px var(--navy);
-}
-#tgIcon .pokeball::before, #tgIcon .pokeball::after { border-width: 4px; }
-@keyframes pk-popup-bounce {
-  0%,100% { transform: rotate(0deg) translateY(0); }
-  25%     { transform: rotate(-90deg) translateY(-4px); }
-  50%     { transform: rotate(-180deg) translateY(0); }
-  75%     { transform: rotate(-270deg) translateY(-4px); }
-}
-
-#tgCard h2 {
-  margin: 0 0 8px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: .3px;
-  text-transform: uppercase;
-  color: var(--navy);
-  position: relative; z-index: 1;
-  text-shadow: 2px 2px 0 rgba(245,197,24,.55);
-}
-#tgCard p {
-  margin: 0 0 22px;
-  color: var(--fg-dim);
-  font-family: 'Nunito', sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.55;
-  position: relative; z-index: 1;
-}
-.tgBtns {
-  display: flex; gap: 10px;
-  position: relative; z-index: 1;
-}
-.tgBtn {
-  flex: 1; height: 50px;
-  border-radius: 12px;
-  font-family: 'Fredoka', sans-serif;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all .15s ease;
-  border: 2.5px solid var(--navy);
-}
-#joinNow {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
-  color: var(--gold);
-  box-shadow: 3px 3px 0 rgba(10,22,40,.5);
-  text-shadow: 1px 1px 0 rgba(0,0,0,.4);
-}
-#joinNow:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 rgba(10,22,40,.5); }
-#joinNow:active { transform: translate(3px,3px); box-shadow: 0 0 0 rgba(10,22,40,.5); }
-#joinedBtn {
-  background: var(--cream-2);
-  color: var(--navy);
-  box-shadow: 3px 3px 0 rgba(10,22,40,.5);
-}
-#joinedBtn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 rgba(10,22,40,.5); background: var(--gold-light); }
-#joinedBtn:active { transform: translate(3px,3px); box-shadow: 0 0 0 rgba(10,22,40,.5); }
-
-@keyframes fadeInPopup {
-  from { opacity: 0; transform: scale(.92) translateY(16px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-@media (max-width: 480px) {
-  #tgCard { padding: 5px; border-radius: 20px; box-shadow: 6px 6px 0 var(--gold), 0 16px 44px rgba(0,0,0,.35); }
-  #tgCard-inner { padding: 24px 18px 18px; border-radius: 15px; }
-  #tgIcon { width: 78px; height: 78px; margin-bottom: 12px; }
-  #tgIcon .pokeball { width: 78px; height: 78px; border-width: 3.5px; }
-  #tgCard h2 { font-size: 21px; }
-  #tgCard p { font-size: 12px; margin-bottom: 16px; }
-  .tgBtn { height: 44px; font-size: 10.5px; }
-}
+<link rel="stylesheet" href="/site-polish.css?v=sonyliv-premium-20261116">
+<style id="criczone-sonyliv-premium">
+:root{color-scheme:dark;--bg:#07111f;--bg-2:#0c1b2e;--surface:#0d1c30;--surface-2:#12243a;--card:#10233a;--border:rgba(151,184,222,.18);--border-strong:#315477;--fg:#f4f8ff;--fg-dim:#b5c6dc;--muted:#8ca2bd;--accent:#2785e8;--accent-2:#155ab3;--accent-dim:rgba(39,133,232,.13);--live:#ff465c;--upcoming:#17395d;--upcoming-2:#205b91;--gold:#7bd8e9;--gold-2:#43a9d0;--gold-light:#b7f0f5;--navy:#07111f;--navy-2:#10243a;--navy-3:#183652;--cream:#10243a;--cream-2:#142b45;--grad-top:linear-gradient(180deg,rgba(7,17,31,0) 0%,rgba(7,17,31,.85) 60%,#07111f 100%)}
+html,body{background:#07111f;color:#f4f8ff;font-family:Inter,system-ui,sans-serif}
+body{background-image:radial-gradient(ellipse at 10% 0%,rgba(39,133,232,.22),transparent 38%),radial-gradient(ellipse at 95% 15%,rgba(24,190,205,.11),transparent 34%),linear-gradient(180deg,#07111f,#091727 65%,#07111f)}
+#channel-list{background:transparent;padding-top:max(72px,calc(env(safe-area-inset-top,0px) + 60px))}
+.app-header{background:rgba(7,17,31,.92);border-bottom:1px solid rgba(135,180,226,.2);box-shadow:0 12px 32px rgba(0,0,0,.25);backdrop-filter:blur(18px)}
+.brand-name{font-family:Inter,sans-serif;color:#f5f9ff;text-shadow:none;font-size:20px;font-weight:900;letter-spacing:1px}
+.brand-name .accent{color:#66d6e9}
+.brand-icon.pokeball{border:0;border-radius:12px;background:linear-gradient(135deg,#29a9ef,#2257c7);box-shadow:0 8px 22px rgba(35,135,220,.32);animation:none}
+.brand-icon.pokeball:before{content:"🏏";width:auto;height:auto;border:0;background:none;box-shadow:none;font-size:19px}
+.brand-icon.pokeball:after{display:none}
+.tab-btn{border:1px solid rgba(151,184,222,.22);background:#10243a;color:#c6d6e9;box-shadow:none;font-family:Inter,sans-serif}
+.tab-btn.active{background:linear-gradient(120deg,#1b78d3,#2359bd);border-color:#4a9fea;color:#fff;box-shadow:0 6px 18px rgba(25,112,206,.25)}
+.tab-count{background:rgba(255,255,255,.1);color:#eaf4ff}
+.search-wrap input,.mobile-search-bar input{background:#0b1a2b;border:1px solid rgba(151,184,222,.24);color:#fff;box-shadow:none}
+.search-wrap input:focus,.mobile-search-bar input:focus{border-color:#48a9f0;box-shadow:0 0 0 3px rgba(39,133,232,.16)}
+.mobile-search-bar{background:#091727;border-bottom:1px solid rgba(151,184,222,.15)}
+.ch-scroll{padding-top:24px}
+#ch-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:18px}
+.ch-card{border:1px solid rgba(129,175,224,.22);border-radius:18px;padding:7px;background:linear-gradient(155deg,#17304b,#0d1b2d);box-shadow:0 12px 28px rgba(0,0,0,.28);overflow:hidden}
+.ch-card:before{inset:0;border:0;border-radius:17px;background:linear-gradient(155deg,#142b43,#0b192a)}
+.ch-card:after{display:none}
+.ch-card:hover{transform:translateY(-4px);border-color:rgba(80,184,239,.7);box-shadow:0 18px 38px rgba(0,0,0,.4),0 0 0 1px rgba(80,184,239,.12)}
+.ch-thumb-wrap{border:0;border-radius:12px;overflow:hidden;background:#07111f}
+.ch-thumb{object-fit:cover}
+.ch-thumb-placeholder{background:linear-gradient(135deg,#183b5e,#0e2036);color:#8ce4f0;text-shadow:none}
+.card-badge{border:1px solid rgba(255,255,255,.18);box-shadow:none;font-family:Inter,sans-serif}
+.ch-body{padding:13px 12px 8px}
+.ch-title{font-family:Inter,sans-serif;color:#f2f7ff;font-weight:800;font-size:14px}
+.ch-time{color:#9fb4ce}
+.card-action{margin:6px 8px 8px;border:1px solid rgba(93,181,244,.55);border-radius:11px;background:linear-gradient(110deg,#237fd7,#244fb2);color:white;font-family:Inter,sans-serif;box-shadow:0 5px 15px rgba(24,100,190,.25)}
+.card-action svg{fill:#fff}
+#status{background:rgba(8,23,40,.94);border:1px solid rgba(111,191,236,.35);color:#eaf6ff;box-shadow:0 8px 24px rgba(0,0,0,.35);font-family:Inter,sans-serif}
+#overlay{background:radial-gradient(ellipse at 50% 42%,#15385a 0%,#07111f 60%,#050b13 100%)}
+.boot-ring{border-color:#5ac7ec;box-shadow:0 12px 32px rgba(30,145,220,.3),0 0 0 6px #122e49,0 0 0 9px #2866b5}
+#loadMsg{font-family:Inter,sans-serif;color:#eaf6ff;font-weight:800}
+@media(max-width:700px){.brand-name{font-size:16px}.tab-btn{font-size:10px;padding:6px 8px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{border-radius:14px}.ch-title{font-size:12px}}
+@media(max-width:380px){#ch-grid{gap:8px}.brand-name{font-size:14px}}
 </style>
 </head>
 <body>
-
-<a id="tgBadge"
-   href="https://t.me/sportlink10"
-   target="_blank"
-   rel="noopener noreferrer"
-   title="@sportlink10 on Telegram">
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-  </svg>
-  <span>@sportlink10</span>
-</a>
 
 <div id="overlay">
   <div class="boot-ring"></div>
@@ -842,7 +658,7 @@ video.mode-cover { object-fit: cover; }
     <div class="header-inner">
       <a class="brand" href="#">
         <div class="brand-icon pokeball"></div>
-        <span class="brand-name">Sportlink<span class="accent"> <span class="prime-txt">– Prime</span></span></span>
+        <span class="brand-name">CRICZONE <span class="accent">SONY LIV</span></span>
       </a>
 
       <div class="tab-strip">
@@ -879,22 +695,6 @@ video.mode-cover { object-fit: cover; }
 <div id="pc">
   <video id="v" playsinline webkit-playsinline preload="none"
     x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
-</div>
-
-<div id="tgOverlay">
-  <div id="tgCard">
-    <div id="tgCard-inner">
-      <div id="tgIcon">
-        <div class="pokeball"></div>
-      </div>
-      <h2>Catch Live Matches!</h2>
-      <p>Join @sportlink10 on Telegram for match links, updates &amp; more — delivered straight to your phone!</p>
-      <div class="tgBtns">
-        <button class="tgBtn" id="joinedBtn">Already Joined</button>
-        <button class="tgBtn" id="joinNow">Join Now</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
@@ -1280,37 +1080,7 @@ video.mode-cover { object-fit: cover; }
 })();
 </script>
 
-<script>
-(function () {
-  var tgOverlay = document.getElementById('tgOverlay');
-
-  function closePopup() {
-    tgOverlay.classList.remove('show');
-  }
-
-  setTimeout(function () {
-    var pc = document.getElementById('pc');
-    if (pc && pc.style.display === 'flex') return;
-    tgOverlay.classList.add('show');
-  }, 3000);
-
-  document.getElementById('joinNow').onclick = function () {
-    window.open('https://t.me/sportlink10', '_blank', 'noopener');
-    closePopup();
-  };
-
-  document.getElementById('joinedBtn').onclick = closePopup;
-
-  tgOverlay.addEventListener('click', function (e) {
-    if (e.target === tgOverlay) closePopup();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && tgOverlay.classList.contains('show')) {
-      closePopup();
-    }
-  });
-})();
-</script>
+<script src="/assets/js/cz-global-community.js" defer></script>
+<script src="/assets/js/cz-global-counter.js?v=20261116sonyliv" defer></script>
 </body>
 </html>
