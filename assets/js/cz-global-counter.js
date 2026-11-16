@@ -64,6 +64,36 @@
     } catch (_) {}
   }
   applyDailyPrimaryStart();
+
+  // Re-check at the next 06:00 IST even when a tab stays open overnight.
+  function scheduleDailyPrimaryStart() {
+    try {
+      var now = new Date();
+      var parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+      }).formatToParts(now);
+      var v = {};
+      parts.forEach(function (part) { v[part.type] = part.value; });
+      var hour = Number(v.hour), minute = Number(v.minute), second = Number(v.second);
+      var ms = ((6 - hour + 24) % 24) * 3600000 - minute * 60000 - second * 1000;
+      if (ms < 1000) ms += 24 * 3600000;
+      window.setTimeout(function () {
+        try {
+          activeIndex = 0;
+          retryAt = 0;
+          saveRoute();
+          var p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+          var d = {};
+          p.forEach(function (part) { d[part.type] = part.value; });
+          localStorage.setItem("cz_counter_primary_daily_start_ist_v1", d.year + "-" + d.month + "-" + d.day);
+        } catch (_) {}
+        scheduleDailyPrimaryStart();
+      }, ms);
+    } catch (_) {}
+  }
+  scheduleDailyPrimaryStart();
+
   // Remove the misnamed Backup-5 readiness key written by the first S6 build.
   try { localStorage.removeItem("cz_backup5_readiness_status_v1"); } catch (_) {}
 
@@ -199,6 +229,7 @@
       // after all later backups have been checked. Never jump back to PRIMARY
       // before trying the next configured backup (especially S6 -> S7).
       for (var step = 1; step <= API_LIST.length; step++) {
+        // A retry-window expiry passes -1, making PRIMARY (index 0) the first probe.
         var i = (failedIndex + step) % API_LIST.length;
         try {
           await probeAPI(i);
@@ -223,7 +254,7 @@
     // Once a backup's 12-hour retry time expires, the coordinated check starts
     // from PRIMARY. If the active worker fails earlier, use the same B order.
     if (activeIndex > 0 && Date.now() >= retryAt) {
-      await coordinateFailover(activeIndex);
+      await coordinateFailover(-1);
       readSharedRoute();
     }
 
