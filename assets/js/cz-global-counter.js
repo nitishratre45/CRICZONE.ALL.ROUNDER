@@ -78,15 +78,24 @@
       var ms = ((6 - hour + 24) % 24) * 3600000 - minute * 60000 - second * 1000;
       if (ms < 1000) ms += 24 * 3600000;
       window.setTimeout(function () {
-        try {
-          activeIndex = 0;
-          retryAt = 0;
-          saveRoute();
-          var p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
-          var d = {};
-          p.forEach(function (part) { d[part.type] = part.value; });
-          localStorage.setItem("cz_counter_primary_daily_start_ist_v1", d.year + "-" + d.month + "-" + d.day);
-        } catch (_) {}
+        // At 06:00 IST, test PRIMARY before switching traffic back.
+        // Its own D1 total remains untouched; only a healthy PRIMARY becomes active.
+        (async function () {
+          try {
+            await probeAPI(0);
+            setActive(0);
+          } catch (_) {
+            // PRIMARY is still unavailable: continue from the next backup,
+            // preserving that backup's own independently saved total.
+            await coordinateFailover(0);
+          }
+          try {
+            var p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+            var d = {};
+            p.forEach(function (part) { d[part.type] = part.value; });
+            localStorage.setItem("cz_counter_primary_daily_start_ist_v1", d.year + "-" + d.month + "-" + d.day);
+          } catch (_) {}
+        })();
         scheduleDailyPrimaryStart();
       }, ms);
     } catch (_) {}
