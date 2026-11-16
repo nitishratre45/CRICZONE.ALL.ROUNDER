@@ -483,9 +483,33 @@
     // Polling every database and syncing totals from every page multiplies API usage.
     async function refreshCombinedLive(activeStats) {
       if (document.visibilityState !== "visible" || !activeStats) return;
-      var live = Number(activeStats.live_visitors);
-      if (Number.isFinite(live)) {
-        els.live.textContent = (live + 345).toLocaleString("en-IN");
+      // Aggregate the seven workers' active visitor IDs. Counting IDs as a Set
+      // prevents the same browser visitor being counted twice across databases.
+      // Each worker stats response is cached server-side for 15 seconds.
+      var results = await Promise.all(API_LIST.map(async function (base) {
+        try {
+          var result = await requestAPI(base, "/api/stats", { method: "GET" });
+          return result.data;
+        } catch (_) { return null; }
+      }));
+      var ids = new Set();
+      var hasIds = false;
+      var highestTotal = Number(activeStats.total_visits) || 0;
+      results.forEach(function (data) {
+        if (!data) return;
+        var total = Number(data.total_visits);
+        if (Number.isFinite(total)) highestTotal = Math.max(highestTotal, total);
+        if (Array.isArray(data.live_visitor_ids)) {
+          hasIds = true;
+          data.live_visitor_ids.forEach(function (id) {
+            if (typeof id === "string" && id) ids.add(id);
+          });
+        }
+      });
+      if (highestTotal > 0) paint({ total_visits: highestTotal });
+      var liveCount = hasIds ? ids.size : Number(activeStats.live_visitors);
+      if (Number.isFinite(liveCount)) {
+        els.live.textContent = (liveCount + 345).toLocaleString("en-IN");
       }
     }
 
