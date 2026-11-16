@@ -685,6 +685,47 @@ body{background-image:radial-gradient(ellipse at 10% 0%,rgba(39,133,232,.22),tra
 }
 </style>
 
+
+<style id="criczone-sonyliv-layout-final">
+/* Final desktop + mobile layout correction */
+#channel-list{padding-top:0!important;inset:0!important}
+.app-header{top:0!important}
+.header-inner{height:68px!important;min-height:68px!important}
+.ch-scroll{padding-top:16px!important}
+.brand-icon.pokeball:before{content:"CZ"!important;font:900 12px/1 Inter,system-ui,sans-serif!important;letter-spacing:-.5px!important;color:#fff!important}
+@media(max-width:700px){
+ #channel-list{padding-top:0!important}
+ .header-inner{height:auto!important;min-height:58px!important;padding-top:7px;padding-bottom:7px}
+ .brand-name{font-size:14px!important}
+ .tab-strip{justify-content:flex-end!important;flex:1 1 auto!important}
+ .tab-btn{padding:6px 8px!important}
+ .mobile-search-bar{padding-top:8px!important;padding-bottom:8px!important}
+ .ch-scroll{padding-top:10px!important}
+}
+@media(max-width:390px){
+ .brand-name{font-size:12px!important}
+ .brand-icon.pokeball{width:26px!important;height:26px!important}
+ .tab-btn{padding:5px 6px!important;font-size:9px!important}
+}
+</style>
+<script>
+(function(){
+ function pinCounter(){
+  var b=document.getElementById("viewerBadge");
+  if(!b)return;
+  b.style.setProperty("top","10px","important");
+  b.style.setProperty("right","14px","important");
+  b.style.setProperty("left","auto","important");
+  b.style.setProperty("bottom","auto","important");
+  b.style.setProperty("animation","none","important");
+  b.classList.remove("cz-counter-auto-move");
+ }
+ pinCounter();
+ new MutationObserver(pinCounter).observe(document.body,{childList:true,subtree:true});
+ window.addEventListener("resize",pinCounter);
+})();
+</script>
+
 </head>
 <body>
 
