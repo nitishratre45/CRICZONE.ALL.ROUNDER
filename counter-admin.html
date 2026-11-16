@@ -27,7 +27,7 @@ main{width:min(1100px,calc(100% - 32px));margin:34px auto 60px}.top{display:flex
 <div class="metric"><small>Combined live visitors*</small><strong id="combinedLive">—</strong></div>
 </section>
 <section class="grid" id="workers"></section>
-<p class="note">*Combined LIVE is calculated from the union of live_visitor_ids returned by online workers, so the same visitor ID is counted once across databases. If a worker does not return visitor IDs, its LIVE count is excluded from the combined figure. Each worker's total is shown independently. Auto-refreshes every 15 seconds. Read-only dashboard; no counter data is changed.</p>
+<p class="note">*Combined LIVE is calculated from the union of live_visitor_ids returned by online workers, so the same visitor ID is counted once across databases. If a worker does not return visitor IDs, its LIVE count is excluded from the combined figure. Each worker's total is shown independently. Auto-refreshes every 60 seconds. Manual Refresh checks all seven workers immediately. Read-only dashboard; no counter data is changed.</p>
 </main>
 <script>
 const WORKERS=[
@@ -88,5 +88,5 @@ async function refresh(manual=false){
  refreshRunning=false;
 }
 document.getElementById("refresh").addEventListener("click",()=>refresh(true));
-refresh();setInterval(()=>refresh(false),15000);
+refresh();setInterval(()=>refresh(false),60000);
 </script></body></html>
