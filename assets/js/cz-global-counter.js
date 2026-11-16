@@ -54,10 +54,16 @@
       var dayKey = values.year + "-" + values.month + "-" + values.day;
       var savedDay = localStorage.getItem("cz_counter_primary_daily_start_ist_v1");
       if (hour >= 6 && savedDay !== dayKey) {
-        activeIndex = 0;
-        retryAt = 0;
-        saveRoute();
+        // Do not switch a healthy backup to PRIMARY blindly after a page load
+        // or tab resume. Probe PRIMARY first; keep the current route if it fails.
         localStorage.setItem("cz_counter_primary_daily_start_ist_v1", dayKey);
+        if (activeIndex !== 0) {
+          probeAPI(0).then(function () {
+            setActive(0);
+          }).catch(function () {
+            // Keep the currently active backup; the scheduled daily probe retries tomorrow.
+          });
+        }
       }
     } catch (_) {}
   }
