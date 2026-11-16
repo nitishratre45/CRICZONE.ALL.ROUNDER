@@ -726,6 +726,78 @@ body{background-image:radial-gradient(ellipse at 10% 0%,rgba(39,133,232,.22),tra
 })();
 </script>
 
+
+<style id="criczone-shaka-quality-menu-fix">
+/* Shaka quality/resolution menu: readable contrast and usable sizing */
+#pc .shaka-overflow-menu,
+#pc .shaka-settings-menu{
+  background:rgba(10,27,47,.98)!important;
+  color:#f4f8ff!important;
+  border:1px solid rgba(111,190,235,.42)!important;
+  border-radius:16px!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.62)!important;
+  font-family:Inter,system-ui,sans-serif!important;
+  width:min(320px,calc(100vw - 32px))!important;
+  max-width:calc(100vw - 32px)!important;
+  max-height:min(72vh,560px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:#42698f transparent!important;
+  padding:8px!important;
+}
+#pc .shaka-overflow-menu button,
+#pc .shaka-settings-menu button{
+  display:flex!important;
+  align-items:center!important;
+  min-height:48px!important;
+  width:100%!important;
+  padding:10px 14px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#f4f8ff!important;
+  font:600 15px/1.35 Inter,system-ui,sans-serif!important;
+  text-align:left!important;
+  white-space:normal!important;
+}
+#pc .shaka-overflow-menu button:hover,
+#pc .shaka-settings-menu button:hover,
+#pc .shaka-overflow-menu button:focus-visible,
+#pc .shaka-settings-menu button:focus-visible{
+  background:rgba(54,145,220,.22)!important;
+  color:#fff!important;
+  outline:1px solid rgba(105,202,244,.45)!important;
+}
+#pc .shaka-settings-menu button[aria-checked="true"],
+#pc .shaka-settings-menu button[aria-selected="true"],
+#pc .shaka-settings-menu button.shaka-current-selection{
+  background:#164d76!important;
+  color:#8beaff!important;
+}
+#pc .shaka-settings-menu button span,
+#pc .shaka-overflow-menu button span{color:inherit!important}
+#pc .shaka-settings-menu svg,
+#pc .shaka-overflow-menu svg{fill:#d9edff!important;color:#d9edff!important}
+#pc .shaka-settings-menu .shaka-back-to-overflow-button{
+  border-bottom:1px solid rgba(151,184,222,.2)!important;
+  border-radius:0!important;
+  margin-bottom:6px!important;
+}
+@media(max-width:600px){
+ #pc .shaka-overflow-menu,#pc .shaka-settings-menu{
+   width:min(290px,calc(100vw - 28px))!important;
+   max-height:68vh!important;
+   padding:7px!important;
+ }
+ #pc .shaka-overflow-menu button,#pc .shaka-settings-menu button{
+   min-height:46px!important;
+   padding:9px 12px!important;
+   font-size:14px!important;
+ }
+}
+</style>
+
 </head>
 <body>
 
