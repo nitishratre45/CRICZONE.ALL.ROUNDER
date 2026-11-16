@@ -36,6 +36,34 @@
     } catch (_) {}
   }
   readSharedRoute();
+
+  // Reset routing to PRIMARY once per India-local day at/after 06:00.
+  // This lets the morning traffic start on PRIMARY while preserving automatic
+  // failover for the rest of the day if the active worker becomes unavailable.
+  function applyDailyPrimaryStart() {
+    try {
+      var parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(new Date());
+      var values = {};
+      parts.forEach(function (part) { values[part.type] = part.value; });
+      var hour = Number(values.hour);
+      var dayKey = values.year + "-" + values.month + "-" + values.day;
+      var savedDay = localStorage.getItem("cz_counter_primary_daily_start_ist_v1");
+      if (hour >= 6 && savedDay !== dayKey) {
+        activeIndex = 0;
+        retryAt = 0;
+        saveRoute();
+        localStorage.setItem("cz_counter_primary_daily_start_ist_v1", dayKey);
+      }
+    } catch (_) {}
+  }
+  applyDailyPrimaryStart();
   // Remove the misnamed Backup-5 readiness key written by the first S6 build.
   try { localStorage.removeItem("cz_backup5_readiness_status_v1"); } catch (_) {}
 
