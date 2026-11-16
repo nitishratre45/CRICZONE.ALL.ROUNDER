@@ -412,12 +412,39 @@
   function start() {
     var els = makeBadge();
     if (!els.total || !els.live) return;
-    // Keep the live visitor ID in memory only; do not persist it in browser storage.
-    var visitorId = createId();
+    // One stable visitor ID per browser profile: shared by tabs and page refreshes.
+    // A new request_id is still created for every page load, so each visit counts once.
+    var visitorId;
+    try {
+      visitorId = localStorage.getItem("cz_counter_visitor_id_v2");
+      if (!visitorId || !/^[A-Za-z0-9._:-]{8,128}$/.test(visitorId)) {
+        visitorId = createId();
+        localStorage.setItem("cz_counter_visitor_id_v2", visitorId);
+      }
+    } catch (_) {
+      visitorId = createId();
+    }
 
     var pageVisitPending = true;
     var pageVisitRequestId = createId();
     var busy = false;
+    var heartbeatLeaseKey = "cz_counter_live_heartbeat_lease_v1";
+
+    function claimHeartbeatLease() {
+      try {
+        var now = Date.now();
+        var lease = JSON.parse(localStorage.getItem(heartbeatLeaseKey) || "null");
+        if (lease && lease.expiresAt > now && lease.owner !== tabId) return false;
+        localStorage.setItem(heartbeatLeaseKey, JSON.stringify({
+          owner: tabId,
+          expiresAt: now + 45000
+        }));
+        var confirmed = JSON.parse(localStorage.getItem(heartbeatLeaseKey) || "null");
+        return !!confirmed && confirmed.owner === tabId;
+      } catch (_) {
+        return true;
+      }
+    }
 
     function paint(data) {
       var total = data && (data.total_visits != null ? data.total_visits : data.totalVisits);
@@ -430,6 +457,9 @@
 
     async function heartbeat() {
       if (busy || document.visibilityState !== "visible") return;
+      // Every new page load sends its own counted visit. Routine live heartbeats
+      // are sent by only one tab for this browser profile.
+      if (!pageVisitPending && !claimHeartbeatLease()) return;
       busy = true;
       try {
         var response = await apiFetch("/api/visit", {
@@ -475,7 +505,7 @@
 
     heartbeat();
     refreshStats();
-    window.setInterval(heartbeat, 60000);
+    window.setInterval(heartbeat, 30000);
     window.setInterval(refreshStats, 120000);
     document.addEventListener("visibilitychange", function () {
       if (document.visibilityState === "visible") { heartbeat(); refreshStats(); }
