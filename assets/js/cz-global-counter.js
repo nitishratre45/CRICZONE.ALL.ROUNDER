@@ -17,7 +17,7 @@
   var API_LIST = [API_PRIMARY, API_BACKUP2, API_BACKUP3, API_BACKUP4, API_BACKUP5, API_BACKUP6, API_BACKUP7];
   var ROUTE_KEY = "cz_counter_backup_until_local_v2";
   var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
-  var TOTAL_KEY = "cz_counter_total_floor_v2";
+  var FAILOVER_LOCK_KEY = "cz_counter_failover_lock_v1";
   var FAILOVER_LOCK_KEY = "cz_counter_failover_lock_v1";
   var activeIndex = 0;
   var retryAt = 0;
@@ -32,7 +32,6 @@
         activeIndex = saved.level - 1;
         retryAt = Number(saved.retryAt) || 0;
       }
-      totalFloor = Math.max(totalFloor, Number(localStorage.getItem(TOTAL_KEY) || 0) || 0);
     } catch (_) {}
   }
   readSharedRoute();
@@ -449,9 +448,9 @@
     function paint(data) {
       var total = data && (data.total_visits != null ? data.total_visits : data.totalVisits);
       if (Number.isFinite(Number(total))) {
-        totalFloor = Math.max(totalFloor, Number(total));
-        try { localStorage.setItem(TOTAL_KEY, String(totalFloor)); } catch (_) {}
-        els.total.textContent = totalFloor.toLocaleString("en-IN");
+        // Each worker owns its own total. Never carry a larger value from a
+        // different worker into this worker's display after failover.
+        els.total.textContent = Number(total).toLocaleString("en-IN");
       }
     }
 
@@ -483,33 +482,10 @@
     // Polling every database and syncing totals from every page multiplies API usage.
     async function refreshCombinedLive(activeStats) {
       if (document.visibilityState !== "visible" || !activeStats) return;
-      // Aggregate the seven workers' active visitor IDs. Counting IDs as a Set
-      // prevents the same browser visitor being counted twice across databases.
-      // Each worker stats response is cached server-side for 15 seconds.
-      var results = await Promise.all(API_LIST.map(async function (base) {
-        try {
-          var result = await requestAPI(base, "/api/stats", { method: "GET" });
-          return result.data;
-        } catch (_) { return null; }
-      }));
-      var ids = new Set();
-      var hasIds = false;
-      var highestTotal = Number(activeStats.total_visits) || 0;
-      results.forEach(function (data) {
-        if (!data) return;
-        var total = Number(data.total_visits);
-        if (Number.isFinite(total)) highestTotal = Math.max(highestTotal, total);
-        if (Array.isArray(data.live_visitor_ids)) {
-          hasIds = true;
-          data.live_visitor_ids.forEach(function (id) {
-            if (typeof id === "string" && id) ids.add(id);
-          });
-        }
-      });
-      if (highestTotal > 0) paint({ total_visits: highestTotal });
-      var liveCount = hasIds ? ids.size : Number(activeStats.live_visitors);
-      if (Number.isFinite(liveCount)) {
-        els.live.textContent = (liveCount + 345).toLocaleString("en-IN");
+      var live = Number(activeStats.live_visitors);
+      if (Number.isFinite(live)) {
+        // LIVE is local to the currently active worker; no fan-out polling.
+        els.live.textContent = (live + 345).toLocaleString("en-IN");
       }
     }
 
