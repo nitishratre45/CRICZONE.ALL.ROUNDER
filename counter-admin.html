@@ -78,7 +78,7 @@ async function refresh(manual=false){
    }
    checked.textContent="Updated "+new Date().toLocaleTimeString();
   }catch(error){
-   status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";const failedAt=new Date();checked.textContent="Failed at "+failedAt.toLocaleString();checked.title="Failure detected at "+failedAt.toISOString();reason.textContent="Failed at: "+failedAt.toLocaleString()+" · Reason: "+(error.message||"Request failed")+(String(error.message||"").includes("Failed to fetch")?" (Possible network, CORS, DNS, or Worker connectivity issue.)":"")+" · Will retry automatically in 15 seconds.";reason.className="reason show";
+   status.textContent="OFFLINE";status.className="status bad";liveEl.textContent="—";totalEl.textContent="—";const failedAt=new Date();checked.textContent="Failed at "+failedAt.toLocaleString();checked.title="Failure detected at "+failedAt.toISOString();reason.textContent="Failed at: "+failedAt.toLocaleString()+" · Reason: "+(error.message||"Request failed")+(String(error.message||"").includes("Failed to fetch")?" (Possible network, CORS, DNS, or Worker connectivity issue.)":"")+" · Will retry automatically on the next 120-second refresh.";reason.className="reason show";
   }
  }));
  document.getElementById("online").textContent=online+" / 7";
