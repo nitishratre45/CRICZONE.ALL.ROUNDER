@@ -18,7 +18,6 @@
   var ROUTE_KEY = "cz_counter_backup_until_local_v2";
   var ROUTE_STATE_KEY = "cz_counter_route_local_v2";
   var FAILOVER_LOCK_KEY = "cz_counter_failover_lock_v1";
-  var FAILOVER_LOCK_KEY = "cz_counter_failover_lock_v1";
   var activeIndex = 0;
   var retryAt = 0;
   var totalFloor = 0;
@@ -222,7 +221,7 @@
       }
 
       // Claim a short lease so only one tab performs the failover probes.
-      var myLease = { owner: tabId, expiresAt: Date.now() + 30000 };
+      var myLease = { owner: tabId, expiresAt: Date.now() + 45000 };
       try {
         localStorage.setItem(FAILOVER_LOCK_KEY, JSON.stringify(myLease));
         var confirmed = JSON.parse(localStorage.getItem(FAILOVER_LOCK_KEY) || "null");
@@ -277,6 +276,14 @@
       // A probe may confirm that the same worker recovered. Retry the actual
       // request once against the selected worker instead of failing immediately.
       var targetIndex = activeIndex;
+      // A failed POST may have reached the old server even if its response was
+      // lost. Never replay a counted visit into a different independent D1 DB.
+      // This gives at-most-once counting across failover rather than duplicates.
+      if (path === "/api/visit" && options && options.method === "POST" && targetIndex !== attemptedIndex) {
+        var ambiguous = new Error("Visit was not replayed after switching counter servers");
+        ambiguous.counterVisitNotReplayed = true;
+        throw ambiguous;
+      }
       return (await requestAPI(API_LIST[targetIndex], path, options)).response;
     }
   }
@@ -483,6 +490,7 @@
         pageVisitPending = false;
         paint(data);
       } catch (error) {
+        if (error && error.counterVisitNotReplayed) pageVisitPending = false;
         console.warn("[CRICZONE] Global visitor counter unavailable:", error);
       } finally { busy = false; }
     }
@@ -517,7 +525,11 @@
     window.setInterval(heartbeat, 30000);
     window.setInterval(refreshStats, 120000);
     document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "visible") { heartbeat(); refreshStats(); }
+      if (document.visibilityState === "visible") {
+        applyDailyPrimaryStart();
+        heartbeat();
+        refreshStats();
+      }
     });
   }
 
