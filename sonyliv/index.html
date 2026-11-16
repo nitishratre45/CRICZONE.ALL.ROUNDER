@@ -643,6 +643,48 @@ body{background-image:radial-gradient(ellipse at 10% 0%,rgba(39,133,232,.22),tra
 @media(max-width:700px){.brand-name{font-size:16px}.tab-btn{font-size:10px;padding:6px 8px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ch-card{border-radius:14px}.ch-title{font-size:12px}}
 @media(max-width:380px){#ch-grid{gap:8px}.brand-name{font-size:14px}}
 </style>
+
+<style id="criczone-sonyliv-navbar-fix">
+/* Compact top counter rail + properly positioned sticky navigation */
+#channel-list{
+  padding-top:40px !important;
+  min-height:100dvh;
+}
+.app-header{
+  position:sticky;
+  top:0;
+  z-index:120;
+  width:100%;
+}
+.header-inner{
+  min-height:66px;
+  height:66px;
+  gap:clamp(10px,1.5vw,22px);
+}
+.brand{min-width:0}
+.brand-name{font-size:clamp(17px,1.45vw,21px)}
+.tab-strip{gap:8px}
+.tab-btn{padding:9px 16px}
+.search-wrap input{width:220px}
+.search-wrap input:focus{width:250px}
+.ch-scroll{padding-top:18px}
+@media(max-width:700px){
+  #channel-list{padding-top:38px !important}
+  .header-inner{height:auto;min-height:60px;gap:8px;flex-wrap:nowrap}
+  .brand-name{font-size:15px}
+  .tab-strip{justify-content:flex-end;gap:5px}
+  .tab-btn{padding:7px 9px;font-size:10px}
+  .mobile-search-bar{padding-top:9px;padding-bottom:9px}
+  .ch-scroll{padding-top:12px}
+}
+@media(max-width:420px){
+  .brand-name{font-size:13px;letter-spacing:.2px}
+  .brand-icon,.brand-icon.pokeball{width:27px;height:27px}
+  .tab-btn{padding:6px 7px;font-size:9px}
+  .tab-count{font-size:9px;min-width:16px;padding:0 4px}
+}
+</style>
+
 </head>
 <body>
 
