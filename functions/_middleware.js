@@ -1,7 +1,7 @@
 import { onRequest as channels } from "./api/channels.js";
 
 const COUNTER_MARKER = "__CRICZONE_TOTAL_COUNTER__";
-const COUNTER_SCRIPT = '<script src="/assets/js/cz-global-counter.js?v=20261115b" defer></script>';
+const COUNTER_SCRIPT = '<script src="/assets/js/cz-global-counter.js?v=20261116a" defer></script>';
 
 const apiError=(error,path,method)=>new Response(JSON.stringify({ok:false,source:"criczone-pages-middleware",path,method,error:String(error?.message||error||"Unknown runtime error")}),{status:500,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"}});
 
