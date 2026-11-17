@@ -1991,6 +1991,7 @@
                     ? 'MANUAL SWITCH FOR EMBED'
                     : 'AUTO SWITCH ON FAILURE';
                 bar.append(label, wrapper, state);
+            }
 
             function clearPlaybackStallTimer() {
                 if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
