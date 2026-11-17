@@ -808,6 +808,118 @@ body{background-image:radial-gradient(ellipse at 10% 0%,rgba(39,133,232,.22),tra
 }
 </style>
 
+
+<style id="criczone-sonyliv-responsive-v2">
+/* CRICZONE Sony LIV — responsive dark sports UI */
+:root{
+  --bg:#061323;--bg-2:#091a2d;--surface:#0c1d31;--surface-2:#10243a;
+  --card:#10243a;--border:rgba(145,174,211,.22);--border-strong:#29415e;
+  --fg:#edf4ff;--fg-dim:#a8b8cc;--muted:#8294ab;
+  --accent:#2388ef;--accent-2:#155fc0;--accent-dim:rgba(35,136,239,.14);
+  --live:#ef4058;--live-2:#d92d49;--upcoming:#10243a;--upcoming-2:#172d48;
+  --grass:#38d6bd;--grass-2:#20b89f;--gold:#46b7f2;--gold-2:#2388ef;
+  --gold-light:#a6dcff;--navy:#071426;--navy-2:#0c1d31;--navy-3:#172c45;
+  --cream:#0d2035;--cream-2:#122943;--pk-white:#edf4ff;--pk-dark:#071426;
+  color-scheme:dark;
+}
+html,body{background:#061323!important;color:#edf4ff!important;font-family:Inter,system-ui,-apple-system,sans-serif!important}
+body{background-image:radial-gradient(ellipse at 50% 0%,rgba(28,105,175,.14),transparent 52%),linear-gradient(180deg,#071426,#06111f)!important}
+#channel-list{inset:0!important;padding:0!important;background:#061323!important;background-image:radial-gradient(ellipse at 50% 0%,rgba(28,105,175,.14),transparent 52%),linear-gradient(180deg,#071426,#06111f)!important}
+body::before{background:#071426!important}
+.app-header{position:relative!important;top:auto!important;flex:none!important;background:rgba(5,17,31,.97)!important;border-bottom:1px solid rgba(143,177,218,.18)!important;box-shadow:none!important;padding:0 max(18px,env(safe-area-inset-left))!important}
+.header-inner{height:76px!important;max-width:1500px;margin:0 auto;gap:14px!important}
+.brand{min-width:0}
+.brand-icon,.brand-icon.pokeball{width:38px!important;height:38px!important;border:1px solid rgba(143,177,218,.25)!important;background:linear-gradient(145deg,#17395c,#0d2035)!important;box-shadow:0 5px 16px #0005!important}
+.brand-name{font-family:Inter,system-ui,sans-serif!important;font-size:clamp(16px,2vw,21px)!important;font-weight:900!important;letter-spacing:.45px!important;color:#f1f6ff!important;text-shadow:none!important}
+.brand-name .accent{color:#45c6e9!important}
+.tab-strip{justify-content:flex-end!important;gap:8px!important}
+.tab-btn{min-height:38px!important;padding:7px 13px!important;border:1px solid rgba(143,177,218,.23)!important;background:#10243a!important;color:#c2d1e3!important;box-shadow:none!important;font:700 11px/1 Inter,system-ui,sans-serif!important;letter-spacing:.35px!important}
+.tab-btn:hover,.tab-btn:active{transform:none!important;box-shadow:none!important}
+.tab-btn.active{background:linear-gradient(135deg,#278ce9,#2256b5)!important;border-color:#55aaf5!important;color:#fff!important;box-shadow:0 5px 16px rgba(27,112,208,.25)!important}
+.tab-count{background:rgba(255,255,255,.13)!important;color:#d9eaff!important;font:800 10px Inter,system-ui,sans-serif!important}
+.tab-btn.active .tab-count{background:rgba(255,255,255,.2)!important;color:#fff!important}
+.tab-live-dot{box-shadow:none!important}
+.search-wrap{display:flex!important;align-items:center;flex:1;max-width:360px;min-width:160px}
+.search-wrap input{width:100%!important;min-width:0!important;height:44px!important;padding:0 14px 0 40px!important;border:1px solid rgba(143,177,218,.22)!important;border-radius:14px!important;background:#0b1c2e!important;color:#f1f6ff!important;box-shadow:none!important;font:500 14px Inter,system-ui,sans-serif!important}
+.search-wrap input:focus{width:100%!important;border-color:#338de3!important;box-shadow:0 0 0 3px rgba(51,141,227,.12)!important}
+.search-wrap input::placeholder,.mobile-search-bar input::placeholder{color:#8294ab!important}
+.search-wrap svg{left:14px!important;fill:#7790ad!important}
+.mobile-search-bar{display:none!important;background:#071426!important;border-bottom:1px solid rgba(143,177,218,.15)!important;padding:12px max(18px,env(safe-area-inset-left))!important}
+.ch-scroll{padding:20px max(18px,env(safe-area-inset-left)) max(30px,env(safe-area-inset-bottom))!important;overscroll-behavior:contain}
+#ch-grid{width:100%;max-width:1500px;margin:0 auto;grid-template-columns:repeat(auto-fill,minmax(min(100%,285px),1fr))!important;gap:16px!important;align-items:stretch}
+.ch-card,.ch-card.is-upcoming{min-width:0;overflow:hidden!important;padding:7px!important;border:1px solid rgba(133,170,214,.23)!important;border-radius:20px!important;background:linear-gradient(160deg,#122942,#0b1c30)!important;box-shadow:0 8px 24px rgba(0,0,0,.22)!important}
+.ch-card::before{display:none!important}
+.ch-card::after{display:none!important}
+.ch-card:hover{transform:translateY(-2px)!important;border-color:rgba(65,160,239,.55)!important;box-shadow:0 12px 28px rgba(0,0,0,.28)!important}
+.ch-card:active{transform:scale(.99)!important}
+.ch-thumb-wrap{aspect-ratio:16/9!important;border:0!important;border-radius:14px!important;margin:0!important;background:#172d45!important;overflow:hidden!important}
+.ch-thumb{object-fit:cover!important}
+.thumb-overlay{background:linear-gradient(180deg,rgba(2,12,24,.08),rgba(2,12,24,.3))!important}
+.card-badge{top:10px!important;left:10px!important;padding:6px 12px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:999px!important;box-shadow:0 3px 12px #0005!important;font:800 10px Inter,system-ui,sans-serif!important;letter-spacing:.55px!important}
+.card-badge.upcoming{background:rgba(5,19,35,.92)!important;color:#7dd7f5!important}
+.card-badge.live{background:linear-gradient(135deg,#f0445c,#c91e3e)!important}
+.ch-body{padding:14px 12px 8px!important;gap:8px!important;background:transparent!important}
+.ch-title{font:800 16px/1.38 Inter,system-ui,sans-serif!important;letter-spacing:0!important;color:#f1f6ff!important;min-height:44px!important;-webkit-line-clamp:2!important}
+.ch-time{font:600 13px/1.35 Inter,system-ui,sans-serif!important;color:#aabbd0!important;gap:7px!important}
+.ch-time svg{fill:#f05b73!important;width:14px!important;height:14px!important}
+.card-action{min-height:44px!important;margin:5px 8px 8px!important;padding:10px 14px!important;border:1px solid rgba(111,180,255,.65)!important;border-radius:13px!important;background:linear-gradient(110deg,#258de9,#2458bd)!important;color:#fff!important;box-shadow:0 6px 15px rgba(24,103,201,.25)!important;font:800 12px Inter,system-ui,sans-serif!important;letter-spacing:.7px!important}
+.card-action svg{fill:#fff!important}
+.no-results{background:#10243a!important;color:#e5efff!important;border:1px dashed #426080!important}
+#overlay{background:#061323!important}
+#loadMsg{color:#e7f2ff!important}
+#status{background:#10243a!important;color:#eaf4ff!important;border:1px solid #36516e!important;box-shadow:0 8px 22px #0006!important}
+@media(max-width:900px){
+ .header-inner{gap:10px!important}
+ .brand-name{font-size:16px!important}
+ .tab-btn{padding:7px 10px!important}
+ .search-wrap{max-width:240px}
+}
+@media(max-width:700px){
+ #channel-list{padding-top:0!important}
+ .app-header{padding:0 16px!important}
+ .header-inner{height:76px!important;gap:8px!important}
+ .brand{gap:8px!important;flex:0 1 auto!important}
+ .brand-icon,.brand-icon.pokeball{width:34px!important;height:34px!important}
+ .brand-name{font-size:clamp(13px,3.6vw,16px)!important;letter-spacing:0!important}
+ .tab-strip{flex:1 1 auto!important;justify-content:flex-end!important;gap:5px!important}
+ .tab-btn{padding:7px 8px!important;min-height:36px!important;font-size:10px!important;gap:4px!important}
+ .tab-count{font-size:9px!important;padding:1px 5px!important;min-width:17px!important}
+ .search-wrap{display:none!important}
+ .mobile-search-bar{display:block!important;padding:11px 16px!important}
+ .mobile-search-bar input{height:46px!important;padding:0 14px 0 40px!important;border:1px solid rgba(143,177,218,.22)!important;border-radius:14px!important;background:#0b1c2e!important;color:#f1f6ff!important;box-shadow:none!important;font:500 14px Inter,system-ui,sans-serif!important}
+ .msearch-wrap svg{left:14px!important;fill:#7790ad!important}
+ .ch-scroll{padding:14px 14px max(24px,env(safe-area-inset-bottom))!important}
+ #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+ .ch-card{padding:5px!important;border-radius:17px!important}
+ .ch-thumb-wrap{aspect-ratio:1.42/1!important;border-radius:12px!important}
+ .card-badge{top:7px!important;left:7px!important;padding:5px 8px!important;font-size:9px!important;letter-spacing:.3px!important}
+ .ch-body{padding:10px 8px 6px!important;gap:6px!important}
+ .ch-title{font-size:clamp(12px,3.25vw,14px)!important;line-height:1.35!important;min-height:38px!important}
+ .ch-time{font-size:11px!important;gap:5px!important}
+ .ch-time svg{width:12px!important;height:12px!important}
+ .card-action{min-height:38px!important;margin:4px 5px 6px!important;padding:8px 5px!important;border-radius:11px!important;font-size:10px!important;letter-spacing:.35px!important;gap:4px!important}
+ .card-action svg{width:11px!important;height:11px!important}
+}
+@media(max-width:380px){
+ .app-header{padding:0 10px!important}
+ .brand-name{font-size:12px!important}
+ .brand-icon,.brand-icon.pokeball{width:30px!important;height:30px!important}
+ .tab-btn{padding:6px 6px!important;font-size:9px!important}
+ .tab-count{padding:1px 4px!important}
+ #ch-grid{gap:9px!important}
+ .ch-scroll{padding-left:10px!important;padding-right:10px!important}
+ .ch-title{font-size:11.5px!important}
+ .ch-time{font-size:10px!important}
+}
+@media(min-width:701px) and (max-width:1050px){
+ #ch-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .ch-card,.ch-thumb,.tab-btn{transition:none!important}
+ .brand-icon{animation:none!important}
+}
+</style>
+
 </head>
 <body>
 
