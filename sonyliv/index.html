@@ -920,6 +920,44 @@ body::before{background:#071426!important}
 }
 </style>
 
+
+<style id="criczone-sonyliv-tabs-badge-layout">
+/* Put filter tabs on a dedicated row below the brand header */
+@media(max-width:700px){
+ .header-inner{
+   height:auto!important;min-height:0!important;display:flex!important;
+   flex-wrap:wrap!important;gap:0!important;padding:13px 0 10px!important;
+ }
+ .brand{width:100%!important;flex:0 0 100%!important;min-height:42px!important}
+ .tab-strip{
+   width:100%!important;flex:0 0 100%!important;justify-content:space-between!important;
+   padding-top:12px!important;gap:8px!important;
+ }
+ .tab-btn{flex:1 1 0!important;justify-content:center!important;min-height:40px!important}
+ .mobile-search-bar{padding-top:10px!important}
+ .upcoming-below-action{
+   position:static!important;align-self:flex-start!important;
+   display:inline-flex!important;align-items:center!important;
+   width:max-content!important;max-width:calc(100% - 16px)!important;
+   margin:0 8px 9px!important;padding:6px 11px!important;
+   border:1px solid rgba(105,193,245,.28)!important;
+   border-radius:999px!important;background:#0a1b2d!important;
+   color:#78d7f5!important;box-shadow:none!important;
+   font:800 10px/1.2 Inter,system-ui,sans-serif!important;
+   letter-spacing:.45px!important;
+ }
+}
+@media(min-width:701px){
+ .upcoming-below-action{
+   position:static!important;align-self:flex-start!important;display:inline-flex!important;
+   margin:0 8px 9px!important;padding:6px 11px!important;
+   border:1px solid rgba(105,193,245,.28)!important;border-radius:999px!important;
+   background:#0a1b2d!important;color:#78d7f5!important;box-shadow:none!important;
+   font:800 10px/1.2 Inter,system-ui,sans-serif!important;
+ }
+}
+</style>
+
 </head>
 <body>
 
@@ -1099,7 +1137,8 @@ body::before{background:#071426!important}
 
       var badge=isLive
         ?'<span class="card-badge live">Live</span>'
-        :'<span class="card-badge upcoming">Upcoming</span>';
+        :'';
+      var upcomingLabel=isLive?'':'<span class="card-badge upcoming upcoming-below-action">⚡ Upcoming</span>';
 
       var timeRow=time
         ?'<div class="ch-time"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>'+time+'</div>'
@@ -1110,7 +1149,7 @@ body::before{background:#071426!important}
       a.innerHTML=
         '<div class="ch-thumb-wrap">'+badge+thumbHtml+'<div class="thumb-overlay"></div></div>'+
         '<div class="ch-body"><div class="ch-title">'+title+'</div>'+timeRow+'</div>'+
-        actionBar;
+        actionBar+upcomingLabel;
 
       f.appendChild(a);
     });
