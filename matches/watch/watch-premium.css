@@ -49,3 +49,7 @@ button,a,[role=button]{touch-action:manipulation;-webkit-tap-highlight-color:tra
 
 /* Remove floating Telegram brand badge on Prime */
 #tgBadge{display:none!important}
+
+/* Upcoming/live labels sit below the poster, not on top of it */
+.card-status{position:relative!important;display:flex!important;align-items:center!important;padding:8px 12px 0!important;min-height:30px!important;z-index:1!important}
+.ch-card .card-badge{position:static!important;display:inline-flex!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;margin:0!important;transform:none!important;width:max-content!important}
