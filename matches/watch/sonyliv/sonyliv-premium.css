@@ -61,3 +61,8 @@ html,body{background:radial-gradient(ellipse at 50% -20%,rgba(65,230,179,.10),tr
 
 /* Remove floating Telegram brand badge shown above the navbar */
 #tgBadge{display:none!important}
+
+/* Status badges are placed below posters, never overlaying match artwork */
+.card-status{position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;padding:8px 12px 0!important;min-height:30px!important;z-index:1!important}
+.badge-upcoming,.badge-live,.badge-completed{position:static!important;display:inline-flex!important;align-items:center!important;width:max-content!important;max-width:100%!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;margin:0!important}
+.badge-cat{display:none!important}
