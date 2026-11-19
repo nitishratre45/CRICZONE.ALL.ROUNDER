@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080B10">
+<meta name="referrer" content="no-referrer">
+<title>SPORTLINK TV — Live Sports Streaming</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
+<script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
+
+<style>
+/* ============================================================
+   THEME — "Midnight Mint"
+   ============================================================ */
+:root{
+  --bg:#080B10; --surface:#0F141C; --surface-2:#151C26; --surface-3:#1C2531;
+  --border:#212B39; --border-2:#2C3848;
+  --text:#EDF2F9; --text-dim:#A3B3C6; --muted:#6E7E94;
+  --accent:#00E5B0; --accent-2:#22D3EE;
+  --accent-soft:rgba(0,229,176,.12); --accent-glow:rgba(0,229,176,.25);
+  --live:#FF4D6D; --live-soft:rgba(255,77,109,.12);
+  --soon:#FFB020; --soon-soft:rgba(255,176,32,.12);
+  --done:#6E7E94; --done-soft:rgba(110,126,148,.12);
+  --radius:18px; --radius-md:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.35); --shadow-lg:0 24px 60px rgba(0,0,0,.5);
+  --font-d:'Space Grotesk','Inter',system-ui,sans-serif;
+  --font-b:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font:400 15px/1.5 var(--font-b); color:var(--text); background:var(--bg);
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  padding-bottom:40px; position:relative; overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; top:-30%; left:50%; transform:translateX(-50%);
+  width:900px; height:900px;
+  background:radial-gradient(circle,rgba(0,229,176,.07),transparent 65%);
+  pointer-events:none; z-index:0;
+}
+body::after{
+  content:""; position:fixed; bottom:-40%; right:-10%; width:700px; height:700px;
+  background:radial-gradient(circle,rgba(34,211,238,.05),transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:var(--accent);text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+img{display:block;max-width:100%}
+[hidden]{display:none !important}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container{max-width:1320px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+.view{display:none}
+.view.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:22px 0 20px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,#00E5B0,#22D3EE);
+  display:grid;place-items:center;font-size:22px;
+  box-shadow:0 6px 24px var(--accent-glow); flex:none;
+}
+.brand-text h1{
+  font:700 22px/1.1 var(--font-d); letter-spacing:-.01em;
+  background:linear-gradient(100deg,#fff 30%,#00E5B0 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.brand-text p{font-size:12.5px;color:var(--muted);margin-top:2px;font-weight:500}
+
+.header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.live-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 14px;border-radius:999px;
+  background:var(--live-soft);border:1px solid rgba(255,77,109,.25);
+  color:var(--live);font-size:12.5px;font-weight:600;
+}
+.live-pill .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--live);
+  animation:pulse 1.3s infinite;
+}
+@keyframes pulse{50%{opacity:.3}}
+.clock{font-size:12.5px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.join-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:999px;
+  background:linear-gradient(135deg,#00E5B0,#22D3EE);
+  color:#04110D;font-size:13px;font-weight:700;
+  transition:transform .18s ease,box-shadow .18s ease;
+  box-shadow:0 4px 16px var(--accent-glow);
+}
+.join-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px var(--accent-glow)}
+.join-btn svg{width:15px;height:15px}
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+.filters{
+  display:flex;flex-direction:column;gap:10px;
+  padding:4px 0 22px;border-bottom:1px solid var(--border);margin-bottom:24px;
+}
+.filter-row{
+  display:flex;gap:8px;overflow-x:auto;padding:2px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.filter-row::-webkit-scrollbar{display:none}
+
+.pill{
+  flex:none;display:inline-flex;align-items:center;gap:7px;
+  padding:9px 15px;border-radius:999px;
+  font-size:13.5px;font-weight:600;
+  color:var(--text-dim);background:var(--surface);
+  border:1px solid var(--border);transition:all .18s ease;white-space:nowrap;
+}
+.pill:hover{color:var(--text);border-color:var(--border-2);background:var(--surface-2)}
+.pill.active{color:var(--accent);background:var(--accent-soft);border-color:var(--accent)}
+.pill .count{
+  font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;
+  background:var(--surface-3);color:var(--muted);
+}
+.pill.active .count{background:rgba(0,229,176,.2);color:var(--accent)}
+.pill[data-tab="live"].active{color:var(--live);background:var(--live-soft);border-color:var(--live)}
+.pill[data-tab="live"].active .count{background:rgba(255,77,109,.2);color:var(--live)}
+
+/* ============================================================
+   MATCH GRID
+   ============================================================ */
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:16px;padding-bottom:48px;
+}
+
+.card{
+  display:flex;flex-direction:column;gap:14px;padding:18px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);
+  text-align:left;font:inherit;color:inherit;
+  transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease,background .2s ease;
+  cursor:pointer;position:relative;overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .25s ease;
+}
+.card:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:var(--shadow);background:var(--surface-2)}
+.card:hover::before{opacity:.7}
+.card.is-live::before{background:linear-gradient(90deg,transparent,var(--live),transparent);opacity:.9}
+.card.is-live{border-color:rgba(255,77,109,.25)}
+
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sport-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--muted);min-width:0;
+}
+.sport-chip .icon{font-size:14px;flex:none}
+.sport-chip .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.status{
+  flex:none;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+  padding:4px 10px;border-radius:999px;text-transform:uppercase;
+}
+.status.live{color:var(--live);background:var(--live-soft);border:1px solid rgba(255,77,109,.3)}
+.status.soon{color:var(--soon);background:var(--soon-soft);border:1px solid rgba(255,176,32,.3)}
+.status.done{color:var(--done);background:var(--done-soft);border:1px solid rgba(110,126,148,.25)}
+
+.card-body{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:6px 0}
+.team{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+.crest{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--surface-3);border:1px solid var(--border);
+  display:grid;place-items:center;overflow:hidden;position:relative;
+  font-weight:700;font-size:15px;color:var(--muted);flex:none;
+}
+.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--surface-3);padding:4px}
+.team-name{
+  font-size:13px;font-weight:600;text-align:center;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.versus{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 4px}
+.kickoff-time{font:700 20px/1 var(--font-d);color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kickoff-date{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:12px;border-top:1px solid var(--border);font-size:12px;
+}
+.stream-count{color:var(--muted);font-weight:500}
+.stream-count.empty{color:var(--live)}
+.watch-cta{display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;font-size:12.5px;transition:gap .18s ease}
+.card:hover .watch-cta{gap:8px}
+.watch-cta .arrow{transition:transform .18s ease}
+.card:hover .watch-cta .arrow{transform:translateX(2px)}
+
+/* ============================================================
+   PLAYER VIEW
+   ============================================================ */
+.player-top{display:flex;align-items:center;gap:14px;padding:22px 0 20px;flex-wrap:wrap}
+.icon-btn{
+  width:44px;height:44px;border-radius:14px;
+  border:1px solid var(--border);background:var(--surface);
+  display:grid;place-items:center;font-size:18px;color:var(--text);
+  transition:all .18s ease;flex:none;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface-2)}
+.player-meta{flex:1;min-width:0}
+.player-title{font:700 clamp(19px,3.5vw,26px)/1.15 var(--font-d);letter-spacing:-.01em;overflow-wrap:anywhere}
+.player-sub{color:var(--muted);font-size:13px;margin-top:3px;font-weight:500}
+
+.screen{
+  position:relative;background:#000;
+  border-radius:var(--radius);overflow:hidden;
+  aspect-ratio:16/9;width:100%;
+  max-width:min(980px, calc((100vh - 180px) * 16 / 9));
+  max-width:min(980px, calc((100dvh - 180px) * 16 / 9));
+  margin:0 auto;border:1px solid var(--border);box-shadow:var(--shadow-lg);
+}
+@media (max-height:520px){
+  .screen{
+    max-width:min(980px, calc((100vh - 100px) * 16 / 9));
+    max-width:min(980px, calc((100dvh - 100px) * 16 / 9));
+    border-radius:12px;
+  }
+  .player-top{padding:12px 0 12px}
+  .player-title{font-size:16px}
+  .player-sub{display:none}
+}
+
+#player-container{position:absolute;inset:0;background:#000}
+#player-container video{
+  width:100%;height:100%;object-fit:contain;background:#000;display:block;
+}
+#player-container video.mode-fill{object-fit:fill}
+#player-container video.mode-cover{object-fit:cover}
+
+#player-container:fullscreen{width:100%;height:100%;background:#000}
+#player-container:-webkit-full-screen{width:100%;height:100%;background:#000}
+
+#jw-root,#jw-root .jw-wrapper,#jw-root video{width:100%!important;height:100%!important}
+#jw-root{position:absolute;inset:0}
+
+/* ============================================================
+   STATUS TOAST
+   ============================================================ */
+#status{
+  position:absolute;top:12px;left:12px;
+  transform:translateY(-10px);
+  z-index:9998;
+  display:flex;align-items:center;gap:7px;
+  padding:6px 15px 6px 11px;
+  background:rgba(10,10,10,.92);
+  border:1px solid rgba(255,255,255,.07);
+  font-size:11.5px;font-weight:500;letter-spacing:.2px;
+  border-radius:24px;pointer-events:none;
+  opacity:0;transition:opacity .25s ease,transform .25s ease;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;
+  box-shadow:0 2px 14px rgba(0,0,0,.45);
+  color:#c0c0c0;
+}
+#status.show{opacity:1;transform:translateY(0)}
+#status.ok .st-dot{background:#60a5fa}
+#status.live{color:#c8c8c8}
+#status.live .st-dot{background:#22d3a0;animation:dot-pulse 2s ease-in-out infinite}
+#status.warn{color:#fcd34d}
+#status.warn .st-dot{background:#fb923c;animation:dot-pulse 1s ease-in-out infinite}
+#status.err{color:#fca5a5}
+#status.err .st-dot{background:#f87171}
+.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
+@keyframes dot-pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.35;transform:scale(.55)}
+}
+
+/* ============================================================
+   LOADING OVERLAY
+   ============================================================ */
+.loading-overlay{
+  position:absolute;inset:0;z-index:9997;
+  background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.loading-overlay svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay p{color:#8f9baa;font-size:12.5px;letter-spacing:.5px;text-align:center;padding:0 24px;font-weight:500}
+
+/* ============================================================
+   SHAKA FIT BUTTON
+   ============================================================ */
+.sp-btn{
+  background:transparent!important;border:none!important;cursor:pointer!important;
+  padding:0 8px!important;opacity:.75;
+  display:flex;align-items:center;justify-content:center;
+  height:100%;min-width:36px;
+  transition:opacity .15s,color .15s;
+  color:#fff!important;-webkit-tap-highlight-color:transparent;
+}
+.sp-btn:hover{opacity:1}
+.sp-btn:active{opacity:1;transform:scale(.9)}
+.sp-btn:focus-visible{outline:2px solid #38bdf8;outline-offset:2px;border-radius:6px}
+.sp-btn.active{opacity:1;color:#38bdf8!important}
+.sp-fit-btn{padding:0 7px!important;min-width:auto!important}
+.fit-pill{
+  font-size:10px;font-weight:700;letter-spacing:.4px;
+  padding:3px 7px;border-radius:4px;line-height:1;
+  border:1.5px solid rgba(255,255,255,.28);
+  color:rgba(255,255,255,.8);
+  pointer-events:none;white-space:nowrap;
+  transition:border-color .2s,color .2s;
+}
+.sp-fit-btn:hover .fit-pill{border-color:rgba(255,255,255,.55);color:#fff}
+.sp-fit-btn.mode-fill .fit-pill{border-color:#38bdf8;color:#38bdf8}
+.sp-fit-btn.mode-cover .fit-pill{border-color:#a78bfa;color:#a78bfa}
+
+/* ============================================================
+   SHAKA UI OVERRIDES
+   ============================================================ */
+.shaka-controls-container button{color:#fff!important}
+.shaka-video-container{background-color:#000!important}
+.shaka-spinner-container{display:none!important}
+.shaka-video-container .shaka-scrim-container{
+  background:linear-gradient(180deg,
+    rgba(0,0,0,.5) 0%, transparent 25%, transparent 55%, rgba(0,0,0,.75) 100%) !important;
+}
+.shaka-video-container .shaka-bottom-controls{
+  padding-bottom:max(env(safe-area-inset-bottom,0px),6px) !important;
+}
+.shaka-overflow-menu,
+.shaka-settings-menu{
+  background-color:rgba(15,20,28,.97) !important;
+  border:1px solid #212B39 !important;
+  border-radius:14px !important;
+  padding:6px !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.7) !important;
+}
+.shaka-overflow-menu li,
+.shaka-settings-menu li{padding:0 !important;margin:2px 0 !important}
+.shaka-overflow-menu button,
+.shaka-settings-menu button{
+  color:#EDF2F9 !important;padding:10px 14px !important;
+  border-radius:8px !important;font-size:13px !important;
+  transition:background .15s ease,color .15s ease !important;
+}
+.shaka-overflow-menu button:hover,
+.shaka-settings-menu button:hover{background-color:rgba(255,255,255,.06) !important}
+.shaka-settings-menu button.shaka-chosen-item{
+  color:#00E5B0 !important;background-color:rgba(0,229,176,.12) !important;
+}
+.shaka-settings-menu .shaka-back-to-overflow-button{
+  color:#00E5B0 !important;border-bottom:1px solid #212B39 !important;margin-bottom:4px !important;
+}
+.shaka-play-button{filter:drop-shadow(0 4px 16px rgba(0,229,176,.35)) !important}
+.shaka-video-container .shaka-range-element{accent-color:#00E5B0}
+
+/* ============================================================
+   STREAM LIST
+   ============================================================ */
+.section-title{
+  font:600 13px var(--font-b);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);max-width:980px;margin:28px auto 12px;
+}
+.streams{display:flex;flex-direction:column;gap:8px;max-width:980px;margin:0 auto}
+.stream-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;padding:14px 16px;border-radius:var(--radius-md);
+  text-align:left;color:var(--text);
+  border:1px solid var(--border);background:var(--surface);
+  transition:all .18s ease;
+}
+.stream-btn:hover{border-color:var(--border-2);background:var(--surface-2)}
+.stream-btn.active{
+  border-color:var(--accent);background:var(--accent-soft);
+  box-shadow:0 0 0 1px var(--accent) inset;
+}
+.stream-btn .title{
+  font-weight:600;font-size:14px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.stream-btn .tags{display:flex;align-items:center;gap:8px;flex:none}
+.type-badge{
+  font-size:10px;font-weight:700;letter-spacing:.06em;
+  padding:3px 9px;border-radius:999px;
+  background:var(--surface-3);color:var(--text-dim);
+}
+.type-badge.dash{color:#8B9DFF;background:rgba(139,157,255,.12)}
+.type-badge.hls{color:#FFB020;background:rgba(255,176,32,.12)}
+.stream-btn.active .type-badge{background:rgba(0,229,176,.18);color:var(--accent)}
+
+/* ============================================================
+   STATES
+   ============================================================ */
+.state{
+  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px;gap:14px;text-align:center;
+}
+.state h3{font:600 18px var(--font-d);color:var(--text)}
+.state p{color:var(--muted);font-size:13.5px;max-width:400px}
+.err-icon{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--live-soft);color:var(--live);
+  display:grid;place-items:center;font-size:22px;
+}
+
+/* ============================================================
+   TELEGRAM POPUP
+   ============================================================ */
+#tgOverlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  display:none;align-items:center;justify-content:center;
+  z-index:999999;padding:20px;
+}
+#tgOverlay.show{display:flex;animation:fadeInPopup .4s cubic-bezier(.25,.8,.25,1)}
+@keyframes fadeInPopup{from{opacity:0}to{opacity:1}}
+
+#tgCard{
+  width:100%;max-width:400px;
+  background:linear-gradient(160deg,#121A2F,#0A0F1D);
+  border:1px solid rgba(0,229,176,.2);
+  border-radius:24px;padding:36px 28px 28px;
+  box-shadow:0 40px 80px rgba(0,0,0,.8),0 0 60px rgba(0,229,176,.06);
+  text-align:center;position:relative;overflow:hidden;
+  animation:popupScale .4s cubic-bezier(.25,.8,.25,1);
+}
+@keyframes popupScale{
+  from{transform:scale(.95) translateY(12px);opacity:0}
+  to{transform:scale(1) translateY(0);opacity:1}
+}
+#tgCard::before{
+  content:"";position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle at 30% 20%,rgba(0,229,176,.06),transparent 60%);
+  pointer-events:none;
+}
+#tgIcon{
+  width:72px;height:72px;margin:0 auto 16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#2AABEE,#229ED9);
+  box-shadow:0 0 40px rgba(42,171,238,.3);
+  position:relative;z-index:1;
+}
+#tgIcon svg{width:36px;height:36px}
+#tgCard h2{
+  margin:0 0 8px;font-size:clamp(1.3rem,2.5vw,1.8rem);font-weight:700;
+  color:#fff;font-family:'Space Grotesk','Inter',system-ui,sans-serif;
+  position:relative;z-index:1;letter-spacing:-.01em;
+}
+#tgCard p{
+  margin:0 0 24px;color:#8e9baf;
+  font-size:clamp(.9rem,1.2vw,1.05rem);line-height:1.6;
+  position:relative;z-index:1;
+}
+#tgCard p b{color:#00E5B0;font-weight:600}
+.tgBtns{display:flex;gap:12px;position:relative;z-index:1}
+.tgBtn{
+  flex:1;height:48px;border-radius:40px;font-weight:700;
+  font-size:clamp(.85rem,1vw,1rem);cursor:pointer;
+  transition:all .25s ease;border:none;
+  font-family:'Inter',system-ui,sans-serif;letter-spacing:.01em;
+}
+#joinNow{
+  background:linear-gradient(135deg,#00E5B0,#22D3EE);
+  color:#04110D;box-shadow:0 6px 24px rgba(0,229,176,.3);
+}
+#joinNow:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,229,176,.45)}
+#joinedBtn{
+  background:rgba(255,255,255,.05);color:#8e9baf;
+  border:1px solid rgba(255,255,255,.08);
+}
+#joinedBtn:hover{background:rgba(255,255,255,.08);color:#fff}
+@media(max-width:480px){
+  #tgCard{padding:24px 18px 20px;border-radius:20px}
+  #tgIcon{width:60px;height:60px}
+  #tgIcon svg{width:30px;height:30px}
+  #tgCard h2{font-size:1.2rem}
+  #tgCard p{font-size:.85rem;margin-bottom:18px}
+  .tgBtn{height:42px;font-size:.8rem}
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  .container{padding:0 16px}
+  .header{padding:16px 0}
+  .brand-mark{width:40px;height:40px;font-size:19px;border-radius:12px}
+  .brand-text h1{font-size:19px}
+  .brand-text p{font-size:11.5px}
+  .header-actions{gap:8px}
+  .live-pill,.clock{font-size:11.5px;padding:6px 10px}
+  .join-btn{padding:7px 12px;font-size:12px}
+  .join-btn span{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{padding:16px}
+  .section-title{margin-top:22px}
+}
+@media(max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .crest{width:50px;height:50px}
+  .kickoff-time{font-size:18px}
+  .team-name{font-size:12.5px}
+  .card-body{gap:8px}
+  #status{top:8px;left:8px;font-size:10.5px;padding:5px 12px 5px 9px}
+  .fit-pill{font-size:9px;padding:2px 5px}
+  .sp-btn{padding:0 5px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==================== TELEGRAM POPUP ==================== -->
+<div id="tgOverlay">
+  <div id="tgCard">
+    <div id="tgIcon">
+      <svg viewBox="0 0 24 24" fill="white" width="36" height="36" aria-hidden="true">
+        <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/>
+      </svg>
+    </div>
+    <h2>Join Our Telegram</h2>
+    <p>Get match links &amp; live updates delivered straight to your phone.</p>
+    <div class="tgBtns">
+      <button class="tgBtn" id="joinedBtn">Already Joined</button>
+      <button class="tgBtn" id="joinNow">Join Now</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ==================== HUB VIEW ==================== -->
+  <section id="hubView" class="view active">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark">⚡</div>
+        <div class="brand-text">
+          <h1>SPORTLINK TV</h1>
+          <p>Live sports streaming hub</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="live-pill"><span class="dot"></span> Live</div>
+        <div class="clock" id="clock">—</div>
+        <a class="join-btn" href="https://t.me/sportlink10" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+          </svg>
+          <span>Join</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="filters">
+      <div class="filter-row" id="sports" role="tablist" aria-label="Sports"></div>
+      <div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div>
+    </div>
+
+    <main id="list" class="grid" aria-live="polite"></main>
+  </section>
+
+  <!-- ==================== PLAYER VIEW ==================== -->
+  <section id="playerView" class="view">
+    <header class="player-top">
+      <button class="icon-btn" id="backHub" aria-label="Back to matches">←</button>
+      <div class="player-meta">
+        <h2 class="player-title" id="playerTitle">SPORTLINK TV Player</h2>
+        <p class="player-sub" id="playerSub"></p>
+      </div>
+    </header>
+
+    <div class="screen">
+      <div id="player-container"></div>
+    </div>
+
+    <h3 class="section-title">Available Streams</h3>
+    <div class="streams" id="streams"></div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
+
+<script>
+"use strict";
+
+/* ============================================================
+   CONFIG — direct
+   ============================================================ */
+const DATA_URL = "https://sonujson-v6.pages.dev/Data/events/football.json";
+const LOG  = (...a) => console.log("[SPORTLINK TV]", ...a);
+const WARN = (...a) => console.warn("[SPORTLINK TV]", ...a);
+const ERR  = (...a) => console.error("[SPORTLINK TV]", ...a);
+
+const $ = id => document.getElementById(id);
+
+const state = {
+  events: [],
+  sport: "All",
+  tab: "all",
+  currentEvent: null,
+  currentStreams: [],
+  currentIndex: 0
+};
+
+/* ============================================================
+   TELEGRAM POPUP CONTROLLER
+   ============================================================ */
+const TG = (function(){
+  const overlay = document.getElementById("tgOverlay");
+
+  function isOpen(){ return overlay.classList.contains("show"); }
+  function open(){ overlay.classList.add("show"); try{ document.body.style.overflow = "hidden"; }catch(_){} }
+  function close(){ overlay.classList.remove("show"); try{ document.body.style.overflow = ""; }catch(_){} }
+  function markSeen(){ try{ sessionStorage.setItem("tg_popup_seen","1"); }catch(_){} }
+  function wasSeen(){ try{ return sessionStorage.getItem("tg_popup_seen") === "1"; }catch(_){ return false; } }
+
+  document.getElementById("joinNow").addEventListener("click", () => {
+    window.open("https://t.me/sportlink10","_blank","noopener");
+    markSeen(); close();
+  });
+  document.getElementById("joinedBtn").addEventListener("click", () => { markSeen(); close(); });
+  overlay.addEventListener("click", (e) => {
+    if(e.target === overlay){ markSeen(); close(); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && isOpen()){ markSeen(); close(); }
+  });
+
+  return { open, close, isOpen, markSeen, wasSeen };
+})();
+
+/* ============================================================
+   TIER / DEVICE PROFILE
+   ============================================================ */
+function getTier(){
+  const mem = navigator.deviceMemory || 4;
+  const cores = navigator.hardwareConcurrency || 4;
+  const mob = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const net = conn ? (conn.effectiveType || "4g") : "4g";
+  if(!mob) return "high";
+  if(mem <= 1.5 || cores <= 2 || net === "slow-2g" || net === "2g") return "low";
+  if(mem <= 3 || cores <= 4) return "mid";
+  return "high";
+}
+const TIER = getTier();
+const PROF = {
+  low : { buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000  },
+  mid : { buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000 },
+  high: { buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000 }
+}[TIER];
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function parseDate(value){
+  if(!value) return null;
+  let s = String(value).trim();
+  if(!s || s === "null" || s === "undefined") return null;
+
+  const isIST = /\bIST\b/i.test(s);
+  if(isIST) s = s.replace(/\s*IST\s*$/i, "").trim();
+
+  let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?\s*([+-]\d{2}:?\d{2}|Z)?$/);
+  if(m){
+    const [,y,mo,d,h,mi,se="00",off] = m;
+    let offset = "+0000";
+    if(off) offset = off === "Z" ? "+0000" : (off.includes(":") ? off.replace(":","") : off);
+    else if(isIST) offset = "+0530";
+    const iso = `${y}-${mo.padStart(2,"0")}-${d.padStart(2,"0")}T${h.padStart(2,"0")}:${mi}:${se}${offset.slice(0,3)}:${offset.slice(3)}`;
+    const dt = new Date(iso);
+    if(!isNaN(dt.getTime())) return dt;
+  }
+
+  const MONTHS = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  m = s.match(/^(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?\s*([+-]\d{2}:?\d{2})?$/i);
+  if(m){
+    const [,d,mon,y,h,mi,se="00",ampm,off] = m;
+    const mi2 = MONTHS[mon.toLowerCase().slice(0,3)];
+    if(mi2 !== undefined){
+      let hour = parseInt(h,10);
+      if(ampm){
+        if(ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+        if(ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+      }
+      const offset = off ? (off.includes(":") ? off.replace(":","") : off) : (isIST ? "+0530" : "+0000");
+      const iso = `${y}-${String(mi2+1).padStart(2,"0")}-${d.padStart(2,"0")}T${String(hour).padStart(2,"0")}:${mi}:${se}${offset.slice(0,3)}:${offset.slice(3)}`;
+      const dt = new Date(iso);
+      if(!isNaN(dt.getTime())) return dt;
+    }
+  }
+  const dt = new Date(s);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+
+function getStatus(e){
+  const now = Date.now();
+  if(now < e.st) return "soon";
+  if(now <= e.en) return "live";
+  return "done";
+}
+
+function duration(ms){
+  const mins = Math.max(0, Math.round(ms / 60000));
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if(h >= 24){ const d = Math.floor(h / 24); return `${d}d ${h % 24}h`; }
+  if(h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+function timeString(d){ return d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}); }
+function dateString(d){ return d.toLocaleDateString([], {day:"numeric", month:"short"}); }
+
+function sportIcon(sport){
+  const s = String(sport).toLowerCase();
+  if(s.includes("cricket")) return "🏏";
+  if(s.includes("football") || s.includes("soccer")) return "⚽";
+  if(s.includes("wwe") || s.includes("wrestling")) return "🤼";
+  if(s.includes("basketball")) return "🏀";
+  if(s.includes("tennis")) return "🎾";
+  if(s.includes("baseball")) return "⚾";
+  if(s.includes("hockey")) return "🏒";
+  if(s.includes("motor") || s.includes("formula") || s.includes("motogp")) return "🏎️";
+  if(s.includes("boxing")) return "🥊";
+  if(s.includes("ufc") || s.includes("mma")) return "🥋";
+  if(s.includes("snooker") || s.includes("pool")) return "🎱";
+  if(s.includes("cycling")) return "🚴";
+  return "🏆";
+}
+
+function crest(url, name){
+  const initials = String(name || "")
+    .replace(/[^A-Za-z0-9 ]/g,"").split(/\s+/).filter(Boolean)
+    .map(x => x[0]).join("").slice(0,3).toUpperCase() || "?";
+  if(!url || url === "null") return `<div class="crest">${esc(initials)}</div>`;
+  return `<div class="crest"><span>${esc(initials)}</span><img src="${esc(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div>`;
+}
+
+/* ============================================================
+   FETCH & NORMALIZE
+   ============================================================ */
+async function fetchJson(url){
+  LOG("Fetching:", url);
+  const res = await fetch(url, {cache:"no-store"});
+  if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+  const text = await res.text();
+  if(text.trim().startsWith("<")) throw new Error("Server returned HTML instead of JSON.");
+  try{ return JSON.parse(text); }
+  catch(err){ throw new Error("Invalid JSON: " + err.message); }
+}
+
+function normalize(data){
+  const list = Array.isArray(data) ? data : (data && Array.isArray(data.events) ? data.events : null);
+  if(!list) throw new Error("Expected an events array.");
+  const events = [];
+  let ok = 0, skipped = 0;
+
+  list.forEach((item, index) => {
+    try{
+      const info = item.event || {};
+      const st = parseDate(info.startTimeIST) || parseDate(info.startTime) || parseDate(item.startTime);
+      if(!st){ skipped++; return; }
+      let en = parseDate(info.endTimeIST) || parseDate(info.endTime) || parseDate(item.endTime);
+      if(!en || en <= st) en = new Date(st.getTime() + 3 * 3600000);
+
+      const rawStreams = Array.isArray(item.streams) ? item.streams : [];
+      const seen = new Set();
+      const streams = [];
+      rawStreams.forEach((s, i) => {
+        if(!s) return;
+        const link = String(s.link || s.url || "").split("|")[0].trim();
+        if(!link || !/^https?:\/\//i.test(link)) return;
+        if(seen.has(link)) return;
+        const t = String(s.type || "").toLowerCase();
+        const isDash = t === "dash" || /\.mpd(\?|$)/i.test(link);
+        const isHls  = t === "hls"  || t === "0" || /\.m3u8(\?|$)/i.test(link);
+        if(!isDash && !isHls) return;
+        seen.add(link);
+        streams.push({
+          title: String(s.title || s.name || `Stream ${i+1}`).trim(),
+          link,
+          type: isDash ? "DASH" : "HLS",
+          key: String(s.api || s.key || "").trim()
+        });
+      });
+
+      events.push({
+        id: item.id ?? String(index),
+        sport: String(info.category || info.name || item.cat || "Other").trim(),
+        comp: String(info.type || info.name || item.title || "").trim(),
+        a: info.teamA || info.home || "",
+        b: info.teamB || info.away || "",
+        fa: info.teamAFlag || info.homeFlag || "",
+        fb: info.teamBFlag || info.awayFlag || "",
+        st, en, streams
+      });
+      ok++;
+    }catch(err){ ERR(`Event #${index} error:`, err); skipped++; }
+  });
+  LOG(`Normalize done — ok=${ok}, skipped=${skipped}`);
+  return events;
+}
+
+async function loadData(){
+  try{
+    const raw = await fetchJson(DATA_URL);
+    state.events = normalize(raw);
+    if(!state.events.length){
+      $("list").innerHTML = `<div class="state"><div class="err-icon">!</div><h3>No events found</h3><p>The feed loaded but no matches had a usable start time.</p></div>`;
+      return;
+    }
+    renderHub();
+    if(!window.__booted){
+      window.__booted = true;
+      route();
+      maybeShowHubPopup();
+    }
+  }catch(err){
+    ERR("Load failed:", err);
+    $("list").innerHTML = `<div class="state"><div class="err-icon">!</div><h3>Could not load events</h3><p>${esc(err.message)}</p></div>`;
+  }
+}
+
+/* ============================================================
+   HUB RENDERING
+   ============================================================ */
+function eventCard(e){
+  const status = getStatus(e);
+  const now = Date.now();
+  const isLive = status === "live";
+  let statusClass = "", statusText = "";
+  if(status === "live"){ statusClass = "live"; statusText = "Live"; }
+  else if(status === "soon"){ statusClass = "soon"; statusText = `in ${duration(e.st - now)}`; }
+  else { statusClass = "done"; statusText = "Finished"; }
+  const n = e.streams.length;
+  const streamInfo = n === 0 ? `<span class="stream-count empty">No streams</span>` : `<span class="stream-count">${n} stream${n > 1 ? "s" : ""}</span>`;
+  const sameTeam = !e.b || e.a === e.b;
+  const sideA = `<div class="team">${crest(e.fa, e.a || e.comp)}<div class="team-name">${esc(e.a || e.comp || "TBD")}</div></div>`;
+  const sideB = sameTeam ? `<div class="team"></div>` : `<div class="team">${crest(e.fb, e.b)}<div class="team-name">${esc(e.b)}</div></div>`;
+  return `
+    <button class="card ${isLive ? "is-live" : ""}" data-watch-event="${esc(e.id)}" type="button" aria-label="${esc(e.a)} vs ${esc(e.b || "TBD")}">
+      <div class="card-top">
+        <span class="sport-chip"><span class="icon">${sportIcon(e.sport)}</span><span class="name">${esc(e.sport)}${e.comp ? " · " + esc(e.comp) : ""}</span></span>
+        <span class="status ${statusClass}">${statusText}</span>
+      </div>
+      <div class="card-body">
+        ${sideA}
+        <div class="versus"><div class="kickoff-time">${timeString(e.st)}</div><div class="kickoff-date">${dateString(e.st)} · IST</div></div>
+        ${sideB}
+      </div>
+      <div class="card-foot">${streamInfo}<span class="watch-cta">Watch <span class="arrow">→</span></span></div>
+    </button>
+  `;
+}
+
+function renderHub(){
+  const counts = {live:0, soon:0, done:0};
+  state.events.forEach(e => counts[getStatus(e)]++);
+  const sports = ["All", ...new Set(state.events.map(e => e.sport).filter(Boolean))];
+  $("sports").innerHTML = sports.map(s => {
+    const n = s === "All" ? state.events.length : state.events.filter(e => e.sport === s).length;
+    return `<button class="pill ${state.sport === s ? "active" : ""}" data-sport="${esc(s)}" role="tab">${s === "All" ? "🏆" : sportIcon(s)} ${esc(s)}<span class="count">${n}</span></button>`;
+  }).join("");
+  const tabs = [["all","All",state.events.length],["live","Live",counts.live],["soon","Upcoming",counts.soon]];
+  $("tabs").innerHTML = tabs.map(([key,label,n]) =>
+    `<button class="pill ${state.tab === key ? "active" : ""}" data-tab="${key}" role="tab">${key === "live" ? "🔴" : key === "soon" ? "📅" : "✅"} ${label}<span class="count">${n}</span></button>`
+  ).join("");
+  const rows = state.events
+    .filter(e => (state.tab === "all" || getStatus(e) === state.tab) && (state.sport === "All" || e.sport === state.sport))
+    .sort((a, b) => {
+      const order = {live:0, soon:1, done:2};
+      const sa = order[getStatus(a)] ?? 3, sb = order[getStatus(b)] ?? 3;
+      if(sa !== sb) return sa - sb;
+      return a.st - b.st;
+    });
+  $("list").innerHTML = rows.length ? rows.map(eventCard).join("") : `<div class="state"><h3>No matches found</h3><p>Try a different filter.</p></div>`;
+  $("clock").textContent = new Date().toLocaleString([], {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) + " IST";
+}
+
+/* ============================================================
+   HUB POPUP (landing page only, once per session)
+   ============================================================ */
+function maybeShowHubPopup(){
+  if(TG.wasSeen()) return;
+  if(location.hash.includes("watch")) return; // direct watch URL — handled in player
+  setTimeout(() => {
+    if(!TG.isOpen() && !location.hash.includes("watch")){
+      TG.open();
+    }
+  }, 3000);
+}
+
+/* ============================================================
+   ROUTER — opens player directly, no popup gate
+   ============================================================ */
+function route(){
+  const raw = location.hash.replace(/^#\/?/, "");
+  const [path, qs] = raw.split("?");
+  const params = new URLSearchParams(qs || "");
+  if(path === "watch") openPlayer(params.get("id"), Number(params.get("stream") || 0));
+  else showHub();
+}
+
+function showHub(){
+  stopPlayback();
+  state.currentEvent = null;
+  state.currentStreams = [];
+  $("playerView").classList.remove("active");
+  $("hubView").classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+/* ============================================================
+   PLAYER STATE
+   ============================================================ */
+let player = null;
+let overlay = null;
+let jwInstance = null;
+let playbackToken = 0;
+
+let sessionStart = 0;
+let thermalTimer = null;
+let thermalApplied = false;
+let restrictionsRelaxed = false;
+let refreshing = false;
+let retries = 0;
+let edgeTried = false;
+let started = false;
+let stallTmr = null;
+let currentStreamInfo = null;
+let jwFitMode = 0;
+
+/* TG shown flag — reset per match open, blocks popup on stream switch */
+let tgShownForMatch = false;
+
+/* Trigger the popup AFTER playback starts */
+function showPlayerTGPopup(){
+  if(tgShownForMatch) return;
+  tgShownForMatch = true;
+  setTimeout(() => {
+    if(!TG.isOpen()) TG.open();
+  }, 1500);
+}
+
+/* ============================================================
+   OPEN PLAYER
+   ============================================================ */
+async function openPlayer(id, index){
+  $("hubView").classList.remove("active");
+  $("playerView").classList.add("active");
+  window.scrollTo(0, 0);
+
+  const event = state.events.find(e => String(e.id) === String(id));
+  if(!event){
+    state.currentEvent = null;
+    state.currentStreams = [];
+    $("playerTitle").textContent = "Match not found";
+    $("playerSub").textContent = "";
+    $("streams").innerHTML = "";
+    $("player-container").innerHTML = `<div class="screen-msg">This match is no longer available.</div>`;
+    return;
+  }
+
+  state.currentEvent = event;
+  state.currentStreams = event.streams || [];
+  state.currentIndex = index;
+
+  // Reset the flag — popup will show again after this match plays
+  tgShownForMatch = false;
+
+  $("playerTitle").textContent = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "SPORTLINK TV Player");
+  $("playerSub").textContent = [event.sport, event.comp].filter(Boolean).join(" · ");
+
+  renderPlayerStreams(index);
+
+  const record = state.currentStreams[index];
+  if(record) await playRecord(record, index);
+  else $("player-container").innerHTML = `<div class="screen-msg">No playable streams for this match.</div>`;
+}
+
+/* ============================================================
+   TOAST / ERR
+   ============================================================ */
+function toast(msg, type, dur){
+  const el = $("status");
+  if(!el) return;
+  el.innerHTML = `<span class="st-dot"></span><span>${esc(msg)}</span>`;
+  el.className = "show " + (type || "ok");
+  clearTimeout(el.__tmr);
+  if(dur !== 0){
+    el.__tmr = setTimeout(() => {
+      el.className = el.className.replace("show","").trim();
+    }, dur || 4000);
+  }
+}
+
+function shakaErrStr(e){
+  if(!e) return "Playback Error";
+  const cat = {1:"Network",2:"Text",3:"Media",4:"Manifest",5:"Stream",6:"DRM",7:"Player"};
+  let s = (cat[e.category] || "Error") + " " + e.category + ":" + e.code;
+  if(e.data && e.data[0] && typeof e.data[0] === "string") s += " — " + e.data[0].slice(0,72);
+  return s;
+}
+
+function ratioLabel(w,h){
+  if(!w || !h) return "—";
+  const gcd = (a,b) => b ? gcd(b,a%b) : a;
+  const g = gcd(w,h) || 1;
+  const rw = w/g, rh = h/g;
+  const named = {"16:9":16/9,"4:3":4/3,"21:9":21/9,"1:1":1,"9:16":9/16,"3:2":3/2,"5:4":5/4,"2:1":2};
+  const real = w/h;
+  let best = null, bestD = .02;
+  Object.keys(named).forEach(k => {
+    const d = Math.abs(named[k] - real);
+    if(d < bestD){ bestD = d; best = k; }
+  });
+  if(best) return best;
+  if(rw <= 40 && rh <= 40) return rw + ":" + rh;
+  return real.toFixed(2) + ":1";
+}
+
+function getClearKey(record){
+  const raw = String(record && record.key || "").trim();
+  if(!raw || !raw.includes(":")) return null;
+  const parts = raw.split(":");
+  if(parts.length < 2) return null;
+  const kid = parts.shift().trim().replace(/^0x/i,"").toLowerCase();
+  const key = parts.join(":").trim().replace(/^0x/i,"").toLowerCase();
+  if(!/^[0-9a-f]+$/.test(kid) || !/^[0-9a-f]+$/.test(key)) return null;
+  return {keyId: kid, key};
+}
+
+function makeLoadingEl(){
+  const el = document.createElement("div");
+  el.className = "loading-overlay";
+  el.innerHTML = `<svg width="34" height="34" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/><path d="M20 4a16 16 0 0 1 16 16" stroke="#00E5B0" stroke-width="4" stroke-linecap="round"/></svg><p>Loading stream…</p>`;
+  return el;
+}
+
+/* ============================================================
+   FIT BUTTON (Shaka)
+   ============================================================ */
+function injectFitButton(container, vid){
+  const panel = container.querySelector(".shaka-controls-button-panel");
+  if(!panel) return false;
+  if(panel.querySelector(".sp-fit-btn")) return true;
+  const anchor = panel.querySelector(".shaka-fullscreen-button");
+  const FITS = ["contain","fill","cover"];
+  const FIT_LABELS = {contain:"Fit", fill:"Fill", cover:"Zoom"};
+  let fitIdx = 0;
+  const fitBtn = document.createElement("button");
+  fitBtn.className = "sp-btn sp-fit-btn";
+  fitBtn.title = "Video Fit: Fit";
+  fitBtn.setAttribute("aria-label", "Cycle Video Fit Mode");
+  fitBtn.innerHTML = '<span class="fit-pill">—</span>';
+  if(anchor) panel.insertBefore(fitBtn, anchor);
+  else panel.appendChild(fitBtn);
+  let currentRatio = "—";
+  function applyFit(i){
+    fitIdx = i;
+    const m = FITS[i];
+    vid.classList.remove("mode-fill","mode-cover");
+    if(m === "fill") vid.classList.add("mode-fill");
+    if(m === "cover") vid.classList.add("mode-cover");
+    fitBtn.classList.remove("mode-fill","mode-cover");
+    if(m !== "contain") fitBtn.classList.add("mode-" + m);
+    fitBtn.title = "Video Fit: " + FIT_LABELS[m];
+    const pill = fitBtn.querySelector(".fit-pill");
+    if(pill) pill.textContent = m === "contain" ? currentRatio : FIT_LABELS[m];
+  }
+  fitBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    applyFit((fitIdx + 1) % FITS.length);
+  });
+  ["fullscreenchange","webkitfullscreenchange"].forEach(ev => {
+    document.addEventListener(ev, () => {
+      if(!document.fullscreenElement && !document.webkitFullscreenElement) applyFit(0);
+    });
+  });
+  let ratioTries = 0;
+  function updateRatio(){
+    const pill = fitBtn.querySelector(".fit-pill");
+    if(!pill) return;
+    if(vid.videoWidth > 0){
+      currentRatio = ratioLabel(vid.videoWidth, vid.videoHeight);
+      if(FITS[fitIdx] === "contain") pill.textContent = currentRatio;
+      ratioTries = 0;
+    } else if(ratioTries < 15){
+      ratioTries++;
+      setTimeout(updateRatio, 700);
+    }
+  }
+  vid.addEventListener("loadedmetadata", () => { ratioTries = 0; updateRatio(); });
+  vid.addEventListener("resize", updateRatio);
+  vid.addEventListener("timeupdate", function onFirst(){ vid.removeEventListener("timeupdate", onFirst); updateRatio(); });
+  updateRatio();
+  return true;
+}
+
+/* ============================================================
+   PLAYER CONFIG BUILDER (Shaka)
+   ============================================================ */
+function buildCfg(){
+  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const effMaxH = thermalApplied && mobile ? Math.min(PROF.maxH, 720) : PROF.maxH;
+  const restr = {};
+  if(!restrictionsRelaxed){
+    if(effMaxH < 1080) restr.maxHeight = effMaxH;
+    if(PROF.maxBw > 0) restr.maxBandwidth = PROF.maxBw;
+  }
+  return {
+    manifest:{ defaultPresentationDelay:4, ignoreTextStreamFailures:true, retryParameters:{ maxAttempts:5, baseDelay:500, backoffFactor:2, fuzzFactor:.5, timeout:30000 } },
+    streaming:{ lowLatencyMode:false, bufferingGoal:PROF.buf, rebufferingGoal:PROF.reBuf, bufferBehind:PROF.behind, safeSeekOffset:4, stallEnabled:true, stallThreshold:1, stallSkip:.3, inaccurateManifestTolerance:0, retryParameters:{ maxAttempts:5, baseDelay:500, backoffFactor:2, fuzzFactor:.5, timeout:30000 } },
+    abr:{ enabled:true, defaultBandwidthEstimate:PROF.bwEst, switchInterval:4, restrictions:restr }
+  };
+}
+
+/* ============================================================
+   DESTROY
+   ============================================================ */
+async function destroyPlayer(){
+  if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
+  if(thermalTimer){ clearInterval(thermalTimer); thermalTimer = null; }
+  if(jwInstance){ try{ jwInstance.remove(); }catch(e){} jwInstance = null; }
+  if(overlay){ try{ overlay.destroy(); }catch(e){} overlay = null; }
+  if(player){ try{ await player.destroy(); }catch(e){} player = null; }
+  const c = $("player-container");
+  if(c) c.innerHTML = "";
+  currentStreamInfo = null;
+  sessionStart = 0; thermalApplied = false; restrictionsRelaxed = false;
+  refreshing = false; retries = 0; edgeTried = false; started = false;
+  jwFitMode = 0;
+}
+
+async function stopPlayback(){
+  playbackToken++;
+  await destroyPlayer();
+}
+
+/* ============================================================
+   JW PLAYER (HLS) — popup fires from "play" event
+   ============================================================ */
+async function mountJWPlayer(record, token){
+  if(!window.jwplayer){
+    $("player-container").innerHTML = `<div class="screen-msg">JW Player failed to load.</div>`;
+    return;
+  }
+  const container = $("player-container");
+  container.innerHTML = "";
+  const root = document.createElement("div");
+  root.id = "jw-root";
+  container.appendChild(root);
+  const statusEl = document.createElement("div");
+  statusEl.id = "status";
+  container.appendChild(statusEl);
+  const loadEl = makeLoadingEl();
+  container.appendChild(loadEl);
+  jwInstance = window.jwplayer(root);
+  toast("Loading Stream…", "warn", 0);
+  jwInstance.setup({
+    file: record.link, autostart: true, mute: true,
+    primary: "html5", hlshtml: true,
+    width: "100%", height: "100%",
+    crossorigin: "anonymous",
+    stretching: "uniform",
+    playbackRateControls: false,
+    displaytitle: false
+  });
+
+  jwInstance.on("ready", () => {
+    if(token !== playbackToken) return;
+    loadEl.hidden = true;
+    toast("Ready — Tap ▶ To Play", "ok", 5000);
+    try{
+      const fitSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>`;
+      const fitIcon = "data:image/svg+xml," + encodeURIComponent(fitSvg);
+      jwInstance.addButton(fitIcon, "Fit", cycleJwFit, "sp-jw-fit");
+    }catch(e){}
+  });
+
+  jwInstance.on("play", () => {
+    if(token !== playbackToken) return;
+    started = true;
+    retries = 0;
+    toast("Live", "live", 3000);
+    /* ★ SHOW TG POPUP AFTER PLAYING */
+    showPlayerTGPopup();
+  });
+
+  jwInstance.on("buffer", () => {
+    if(token !== playbackToken) return;
+    toast("Buffering…", "warn", 0);
+  });
+
+  jwInstance.on("error", (e) => {
+    if(token !== playbackToken) return;
+    ERR("JW Player error:", e);
+    if(retries >= 5){ toast("Stream Unavailable. Please Try Again Later.", "err", 0); return; }
+    retries++;
+    const attempt = retries;
+    toast(`Reconnecting… (${attempt}/5)`, "warn", 0);
+    const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+    setTimeout(() => {
+      if(token !== playbackToken) return;
+      try{ jwInstance.load(record.link); jwInstance.play(); }catch(err){ ERR("JW reload failed:", err); }
+    }, delay);
+  });
+
+  jwInstance.on("setupError", (e) => {
+    if(token !== playbackToken) return;
+    ERR("JW setupError:", e);
+    loadEl.hidden = true;
+    toast("Invalid stream URL", "err", 6000);
+  });
+
+  const unmuteOnce = () => { try{ jwInstance.setMute(false); }catch(_){} };
+  container.addEventListener("pointerdown", unmuteOnce, {capture:true, once:true});
+  container.addEventListener("click", unmuteOnce, {capture:true, once:true});
+  container.addEventListener("keydown", unmuteOnce, {capture:true, once:true});
+}
+
+function cycleJwFit(){
+  const modes  = ["uniform", "exactfit", "fill"];
+  const labels = ["Fit", "Fill", "Zoom"];
+  jwFitMode = (jwFitMode + 1) % modes.length;
+  try{ jwInstance.setStretching(modes[jwFitMode]); }catch(e){}
+  toast("Fit: " + labels[jwFitMode], "ok", 1500);
+}
+
+/* ============================================================
+   SHAKA PLAYER (DASH + ClearKey) — popup fires from "playing" event
+   ============================================================ */
+async function mountShaka(record, token){
+  shaka.polyfill.installAll();
+  if(!shaka.Player.isBrowserSupported()) throw new Error("Browser not supported.");
+
+  const container = $("player-container");
+  container.innerHTML = "";
+
+  const vid = document.createElement("video");
+  vid.id = "shaka-video";
+  vid.playsInline = true;
+  vid.setAttribute("playsinline","");
+  vid.setAttribute("webkit-playsinline","");
+  vid.preload = "none";
+  vid.muted = true;
+  vid.autoplay = true;
+  container.appendChild(vid);
+
+  const statusEl = document.createElement("div");
+  statusEl.id = "status";
+  container.appendChild(statusEl);
+
+  const loadEl = makeLoadingEl();
+  container.appendChild(loadEl);
+
+  player = new shaka.Player();
+  await player.attach(vid);
+
+  overlay = new shaka.ui.Overlay(player, container, vid);
+  overlay.configure({
+    controlPanelElements: ["play_pause","mute","volume","time_and_duration","spacer","picture_in_picture","fullscreen","overflow_menu"],
+    seekBarColors: { base:"#828282", buffered:"#ffc336", played:"#1fc7ff" }
+  });
+
+  let tries = 0;
+  (function tryInject(){
+    if(injectFitButton(container, vid)) return;
+    if(++tries < 10) setTimeout(tryInject, 150);
+  })();
+
+  const key = getClearKey(record);
+  if(key){ player.configure({ drm:{ clearKeys:{ [key.keyId]: key.key } } }); LOG("ClearKey applied:", key.keyId); }
+  else { player.configure({ drm: {} }); }
+
+  player.configure(buildCfg());
+
+  sessionStart = Date.now();
+  thermalTimer = setInterval(() => {
+    if(Date.now() - sessionStart < 60 * 60 * 1000) return;
+    clearInterval(thermalTimer); thermalTimer = null;
+    if(thermalApplied) return;
+    thermalApplied = true;
+    try{
+      player.configure("streaming.bufferBehind", 8);
+      if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+        player.configure("abr.restrictions.maxHeight", Math.min(PROF.maxH, 720));
+      }
+    }catch(_){}
+  }, 60000);
+
+  const streamInfo = { url: record.link, type: record.type };
+  currentStreamInfo = streamInfo;
+
+  async function reload(){
+    if(refreshing || token !== playbackToken || !player) return;
+    if(retries >= 5){ toast("Stream Unavailable. Please Try Again Later.", "err", 0); return; }
+    refreshing = true; retries++;
+    const attempt = retries;
+    toast(`Reconnecting… (${attempt}/5)`, "warn", 0);
+    try{
+      player.configure(buildCfg());
+      await player.load(streamInfo.url);
+      if(token !== playbackToken){ refreshing = false; return; }
+      vid.play().catch(()=>{});
+      retries = 0; edgeTried = false;
+      toast("Live", "live", 4000);
+      refreshing = false;
+    }catch(err){
+      LOG(`Reload attempt ${attempt} failed:`, err);
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+      setTimeout(() => { refreshing = false; reload(); }, delay);
+    }
+  }
+
+  function goLiveEdge(){
+    if(refreshing || token !== playbackToken || !player) return;
+    try{ player.goToLive(); edgeTried = true; toast("Syncing To Live Edge…", "warn", 2000); }
+    catch(_){ reload(); }
+  }
+
+  const RECOVERABLE = [1001,1002,1003,4012,6006,6007,7000,7001,7002];
+  player.addEventListener("error", (ev) => {
+    if(token !== playbackToken) return;
+    const err = ev.detail, code = err && err.code;
+    if(code === 4014 && !restrictionsRelaxed){
+      restrictionsRelaxed = true; refreshing = true;
+      toast("Adjusting Quality…", "warn", 2000);
+      player.configure(buildCfg());
+      player.load(streamInfo.url)
+        .then(() => { if(token !== playbackToken) return; vid.play().catch(()=>{}); retries = 0; toast("Live","live",4000); })
+        .catch(() => { if(token === playbackToken) setTimeout(reload, 500); })
+        .finally(() => { refreshing = false; });
+      return;
+    }
+    if(RECOVERABLE.includes(code)){
+      toast("Buffering…", "warn", 0);
+      setTimeout(() => { if(!refreshing) reload(); }, 500);
+    } else {
+      toast(shakaErrStr(err), "err", 6000);
+    }
+  });
+
+  vid.addEventListener("waiting", () => {
+    if(stallTmr) return;
+    toast("Buffering…", "warn", 0);
+    if(!started || refreshing) return;
+    stallTmr = setTimeout(() => {
+      stallTmr = null;
+      if(!edgeTried) goLiveEdge(); else reload();
+    }, 5000);
+  });
+  vid.addEventListener("stalled", () => {
+    if(!stallTmr) vid.dispatchEvent(new Event("waiting"));
+  });
+
+  /* ★ SHOW TG POPUP AFTER PLAYING */
+  vid.addEventListener("playing", () => {
+    started = true;
+    if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
+    if(!refreshing) toast("Live", "live", 3000);
+    showPlayerTGPopup();
+  });
+
+  vid.addEventListener("error", () => {
+    if(refreshing) return;
+    toast("Buffering…", "warn", 0);
+    setTimeout(() => { if(!refreshing) reload(); }, 500);
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden){
+      setTimeout(() => {
+        if(started && vid.paused && !refreshing) vid.play().catch(()=>{});
+      }, 400);
+    }
+  });
+
+  const unmuteOnce = () => { vid.muted = false; };
+  container.addEventListener("pointerdown", unmuteOnce, {capture:true, once:true});
+  container.addEventListener("click", unmuteOnce, {capture:true, once:true});
+  container.addEventListener("keydown", unmuteOnce, {capture:true, once:true});
+
+  const netConn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if(netConn){
+    netConn.addEventListener("change", () => {
+      if(!player || restrictionsRelaxed) return;
+      const t = netConn.effectiveType || "4g";
+      const h = (t === "slow-2g" || t === "2g") ? 240 : t === "3g" ? 480 : PROF.maxH;
+      try{ player.configure("abr.restrictions.maxHeight", h); }catch(_){}
+      if(h < PROF.maxH) toast("Slow Network — Reducing Quality", "warn", 3000);
+    });
+  }
+
+  if("wakeLock" in navigator){ navigator.wakeLock.request("screen").catch(()=>{}); }
+
+  try{
+    toast("Loading Stream…", "warn", 0);
+    await player.load(streamInfo.url);
+    if(token !== playbackToken) return;
+    loadEl.hidden = true;
+    toast("Ready — Tap ▶ To Play", "ok", 5000);
+    vid.muted = true;
+    vid.play().catch(() => LOG("Autoplay blocked"));
+  }catch(e){
+    ERR("Initial load failed:", e);
+    loadEl.hidden = true;
+    toast("Connection Error — Retrying…", "warn", 0);
+    setTimeout(reload, 800);
+  }
+}
+
+/* ============================================================
+   DISPATCH
+   ============================================================ */
+async function mountPlayer(record, token){
+  if(record.type === "HLS"){ LOG("Mounting JW Player for HLS:", record.link); return mountJWPlayer(record, token); }
+  LOG("Mounting Shaka for DASH:", record.link);
+  return mountShaka(record, token);
+}
+
+async function playRecord(record, index){
+  if(!record) return;
+  document.querySelectorAll("[data-player-stream]").forEach((btn, i) => btn.classList.toggle("active", i === index));
+  const token = ++playbackToken;
+  await destroyPlayer();
+  const rawUrl = String(record.link || "").split("|")[0].trim();
+  if(!/^https?:\/\//i.test(rawUrl)){
+    $("player-container").innerHTML = `<div class="screen-msg">Invalid stream link.</div>`;
+    return;
+  }
+  try{
+    await mountPlayer({...record, link: rawUrl}, token);
+  }catch(error){
+    if(token === playbackToken){
+      $("player-container").innerHTML = `<div class="screen-msg">Could not play this stream.<small>${esc(error.message || "")}</small></div>`;
+      ERR("Playback error:", error);
+    }
+  }
+}
+
+function renderPlayerStreams(activeIndex){
+  const box = $("streams");
+  if(!state.currentStreams.length){
+    box.innerHTML = `<div class="state" style="padding:40px 20px"><p>No streams were found for this event.</p></div>`;
+    return;
+  }
+  box.innerHTML = state.currentStreams.map((s, i) =>
+    `<button class="stream-btn ${i === activeIndex ? "active" : ""}" data-player-stream="${i}" type="button">
+       <span class="title">${esc(s.title)}</span>
+       <span class="tags"><span class="type-badge ${s.type.toLowerCase()}">${esc(s.type)}</span></span>
+     </button>`
+  ).join("");
+}
+
+/* ============================================================
+   ROTATION
+   ============================================================ */
+function onViewportChange(){
+  if(overlay && overlay.getControls){ try{ overlay.getControls().dispatchEvent(new Event("resize")); }catch(_){} }
+  if(jwInstance && typeof jwInstance.resize === "function"){ try{ jwInstance.resize("100%","100%"); }catch(_){} }
+}
+let rotationAttached = false;
+function setupRotation(){
+  if(rotationAttached) return;
+  rotationAttached = true;
+  window.addEventListener("resize", onViewportChange, {passive:true});
+  window.addEventListener("orientationchange", () => { setTimeout(onViewportChange, 200); setTimeout(onViewportChange, 450); });
+  document.addEventListener("fullscreenchange", () => {
+    if(document.fullscreenElement){
+      if(screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(()=>{});
+    } else {
+      if(screen.orientation && screen.orientation.unlock){ try{ screen.orientation.unlock(); }catch(_){} }
+    }
+    setTimeout(onViewportChange, 120);
+  });
+}
+
+/* ============================================================
+   DOM EVENTS
+   ============================================================ */
+$("list").addEventListener("click", e => {
+  const card = e.target.closest("[data-watch-event]");
+  if(!card) return;
+  location.hash = `#watch?id=${encodeURIComponent(card.dataset.watchEvent)}&stream=0`;
+});
+
+$("sports").addEventListener("click", e => {
+  const btn = e.target.closest("[data-sport]"); if(!btn) return;
+  state.sport = btn.dataset.sport; renderHub();
+});
+
+$("tabs").addEventListener("click", e => {
+  const btn = e.target.closest("[data-tab]"); if(!btn) return;
+  state.tab = btn.dataset.tab; renderHub();
+});
+
+$("streams").addEventListener("click", e => {
+  const btn = e.target.closest("[data-player-stream]");
+  if(!btn || !state.currentEvent) return;
+  const index = Number(btn.dataset.playerStream);
+  if(!state.currentStreams[index]) return;
+  state.currentIndex = index;
+  history.replaceState(null, "", `#watch?id=${encodeURIComponent(state.currentEvent.id)}&stream=${index}`);
+  playRecord(state.currentStreams[index], index);
+});
+
+$("backHub").onclick = () => { location.hash = "#/"; };
+window.addEventListener("hashchange", route);
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+setupRotation();
+loadData();
+setInterval(() => { if(window.__booted) renderHub(); }, 30000);
+setInterval(() => { if(window.__booted && !location.hash.includes("watch")) loadData(); }, 120000);
+</script>
+<script async src="https://pl31358401.profitableratecpmnetwork.com/a3/81/41/a38141b4ff99f6ef8dbf9dc5f76bd86b.js"></script>
+</body>
+</html>
