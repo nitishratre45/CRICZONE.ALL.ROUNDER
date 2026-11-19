@@ -621,7 +621,36 @@
     
 /* ===== CRICZONE UI POLISH v1 ===== */
 html{scroll-behavior:smooth}button,a,input,select{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid rgba(52,211,153,.9)!important;outline-offset:3px!important}.header,.nav,#ch-header,.list-header{backdrop-filter:blur(18px) saturate(1.15);-webkit-backdrop-filter:blur(18px) saturate(1.15);box-shadow:0 8px 30px rgba(0,0,0,.12)}.search-box,.search input,.cc-search input,#cc-sort{border-radius:12px!important;transition:border-color .2s,box-shadow .2s,background .2s!important}.search-box:focus-within,.search input:focus,.cc-search input:focus{border-color:rgba(52,211,153,.55)!important;box-shadow:0 0 0 4px rgba(52,211,153,.09),0 10px 30px rgba(0,0,0,.14)!important}.filter-btn,.cc-chip{border-radius:999px!important;font-weight:700!important}.filter-btn:hover,.cc-chip:hover{transform:translateY(-1px);border-color:rgba(52,211,153,.45)!important}.channel-card,.ch-card{overflow:hidden;border-radius:18px!important;box-shadow:0 10px 28px rgba(0,0,0,.18)}.channel-card:hover,.ch-card:hover{transform:translateY(-5px);box-shadow:0 18px 42px rgba(0,0,0,.30),0 0 0 1px rgba(52,211,153,.14)}.channel-card img,.ch-card img{transition:transform .45s cubic-bezier(.2,.7,.2,1),filter .3s}.channel-card:hover img,.ch-card:hover img{transform:scale(1.045);filter:saturate(1.08) brightness(1.04)}#cc-hero{overflow:hidden;border-radius:22px!important;box-shadow:0 20px 55px rgba(0,0,0,.25)}*{scrollbar-width:thin;scrollbar-color:rgba(52,211,153,.35) transparent}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:rgba(52,211,153,.28);border-radius:999px}*::-webkit-scrollbar-thumb:hover{background:rgba(52,211,153,.5)}@media(max-width:700px){.channel-card,.ch-card{border-radius:15px!important}.search-box,.search input,.cc-search input,#cc-sort{min-height:44px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-</style>
+
+
+/* CRICZONE2 UI ALIGNMENT — inspired by criczone1, scoped to this folder */
+:root{--green:#10b981;--mint:#34d399;--cyan:#34d399;--blue:#10b981;--blue2:#059669;--border-blue:rgba(52,211,153,.35)}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(16,185,129,.13),transparent 55%),linear-gradient(180deg,#070b09 0%,#080d0a 100%)}
+.header{position:sticky;top:0;z-index:20;background:rgba(7,11,9,.88);backdrop-filter:blur(18px) saturate(1.15);-webkit-backdrop-filter:blur(18px) saturate(1.15);box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.brand-logo{background:linear-gradient(145deg,#10b981,#047857)!important;box-shadow:0 10px 35px rgba(16,185,129,.24),inset 0 1px rgba(255,255,255,.22)!important}
+.hero-label{color:#6ee7b7!important}.hero-line{background:var(--mint)!important}.gradient{background:linear-gradient(105deg,#fff 10%,#8af0c3 62%,#34d399)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.channels-count{background:rgba(16,185,129,.12)!important;color:#34d399!important;border-color:rgba(52,211,153,.28)!important}
+.channel-controls{grid-template-columns:minmax(0,1fr) auto;align-items:start}
+.channel-search input{background:#101712!important;border-color:#223129!important;border-radius:12px!important;transition:border-color .2s,box-shadow .2s,background .2s!important}
+.channel-search input:focus{border-color:rgba(52,211,153,.6)!important;box-shadow:0 0 0 4px rgba(52,211,153,.09),0 10px 30px rgba(0,0,0,.14)!important}
+.channel-filter{border-color:#223129!important;background:#101712!important;border-radius:999px!important;font-weight:800!important;transition:transform .18s,border-color .18s,background .18s!important}
+.channel-filter:hover{transform:translateY(-1px);border-color:rgba(52,211,153,.45)!important}
+.channel-filter[aria-pressed="true"]{background:linear-gradient(135deg,#10b981,#34d399)!important;color:#04130d!important;border-color:transparent!important;box-shadow:0 5px 18px rgba(16,185,129,.14)}
+.channels-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))!important;gap:15px!important}
+.channel-card{border-radius:15px!important;background:linear-gradient(160deg,#142019,#0c120e)!important;border-color:#223129!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important;transition:transform .18s,border-color .18s,box-shadow .18s,background .18s!important}
+.channel-card:hover{transform:translateY(-3px)!important;border-color:#27784f!important;background:linear-gradient(160deg,#17271e,#0c120e)!important;box-shadow:0 18px 42px rgba(0,0,0,.3),0 0 0 1px rgba(52,211,153,.1)!important}
+.channel-icon{border-radius:12px!important;background:rgba(16,185,129,.06)!important;border-color:rgba(52,211,153,.16)!important;color:#34d399!important}
+.channel-card:hover .channel-icon{color:#34d399!important;border-color:rgba(52,211,153,.4)!important;transform:scale(1.04)!important}
+.channel-fallback{background:linear-gradient(145deg,#145c3d,#0d2b1d)!important}
+.channel-tag{color:#8a9a90!important}.channel-empty{padding:24px 16px!important}
+.footer{border-top:1px solid #ffffff0c;padding-top:20px!important}
+button,a,input,select{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid rgba(52,211,153,.9)!important;outline-offset:3px!important}
+*{scrollbar-width:thin;scrollbar-color:rgba(52,211,153,.35) transparent}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:rgba(52,211,153,.28);border-radius:999px}*::-webkit-scrollbar-thumb:hover{background:rgba(52,211,153,.5)}
+@media(max-width:760px){.container{width:min(1180px,calc(100% - 28px))!important}.hero{padding:32px 0 20px!important}.channels-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))!important;gap:10px!important}.channel-card{padding:12px!important;gap:10px!important;border-radius:14px!important}.channel-icon{width:40px!important;height:40px!important;border-radius:11px!important}.channel-controls{grid-template-columns:1fr!important;gap:10px!important}.channel-filters{flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px!important;scrollbar-width:none}.channel-filters::-webkit-scrollbar{display:none}.channel-filter{flex:0 0 auto!important;min-height:40px!important;padding:8px 13px!important}.channels-header{margin-bottom:14px!important}}
+@media(max-width:380px){.channels-grid{grid-template-columns:1fr!important}.channel-card{padding:13px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+    </style>
     <link rel="stylesheet" href="../theme.css">
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
