@@ -1,0 +1,26 @@
+/* CRICZONE MATCH CENTER NAV — clean desktop + mobile dropdown */
+header{position:sticky!important;top:0!important;z-index:120!important;background:rgba(5,9,15,.88)!important;backdrop-filter:blur(22px) saturate(1.25)!important;border-bottom:1px solid rgba(255,255,255,.075)!important;box-shadow:0 8px 28px rgba(0,0,0,.2)!important;padding:14px clamp(16px,3.2vw,42px)!important;min-height:76px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important}
+header .logo{flex-shrink:0!important;font-size:clamp(25px,2.6vw,34px)!important;letter-spacing:-.055em!important;text-decoration:none!important;display:flex!important;align-items:center!important;gap:3px!important}
+header .logo .sport{color:#55aaff!important}
+header .logo .link{color:#f7f9fc!important}
+header .logo .live-dot{width:9px!important;height:9px!important;margin-left:5px!important;border-radius:50%!important;background:#32c7ee!important;box-shadow:0 0 14px rgba(50,199,238,.65)!important}
+.header-nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(12px,2.3vw,30px)!important;margin-left:auto!important}
+header .header-nav a{font-size:clamp(13px,1.2vw,16px)!important;font-weight:700!important;color:#9aa9bd!important;text-decoration:none!important;white-space:nowrap!important;transition:color .18s,background .18s,border .18s,transform .18s!important;padding:10px 3px!important}
+header .header-nav a:hover{color:#fff!important;transform:translateY(-1px)!important}
+header .header-nav .nav-live-pill{border:1px solid rgba(255,80,104,.32)!important;background:rgba(255,65,91,.09)!important;color:#ff7385!important;border-radius:999px!important;padding:10px 15px!important}
+header .header-nav .btn-telegram-nav{background:linear-gradient(120deg,#168de0,#4568e8)!important;color:#fff!important;border-radius:999px!important;padding:11px 17px!important;box-shadow:0 8px 22px rgba(34,115,219,.18)!important}
+.hamburger{display:none!important;width:44px!important;height:44px!important;flex-shrink:0!important;align-items:center!important;justify-content:center!important;border:1px solid #263443!important;border-radius:13px!important;background:#101722!important;padding:10px!important;gap:5px!important}
+.hamburger span{width:19px!important;height:2px!important;background:#f3f7fb!important;border-radius:5px!important;transition:transform .22s,opacity .22s!important}
+.hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)!important}
+.hamburger[aria-expanded="true"] span:nth-child(2){opacity:0!important}
+.hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)!important}
+.mobile-menu{position:fixed!important;top:84px!important;left:12px!important;right:12px!important;z-index:119!important;display:none!important;flex-direction:column!important;gap:5px!important;padding:10px!important;background:rgba(9,14,21,.97)!important;border:1px solid #283544!important;border-radius:19px!important;box-shadow:0 24px 60px rgba(0,0,0,.52)!important;backdrop-filter:blur(24px)!important;max-height:calc(100dvh - 100px)!important;overflow-y:auto!important}
+.mobile-menu.open{display:flex!important;animation:czMenuIn .18s ease-out!important}
+.mobile-menu a{display:flex!important;align-items:center!important;min-height:46px!important;padding:12px 14px!important;border-radius:12px!important;color:#a9b8ca!important;text-decoration:none!important;font-size:14px!important;font-weight:700!important;transition:background .16s,color .16s!important}
+.mobile-menu a:hover,.mobile-menu a:focus-visible{background:rgba(80,174,240,.11)!important;color:#fff!important;outline:none!important}
+.mobile-menu a[href="/matches/ind-nz.html"]{background:rgba(255,65,91,.08)!important;color:#ff7284!important}
+.mobile-menu a[href^="https://t.me"]{background:rgba(35,133,225,.1)!important;color:#52b9f6!important}
+@keyframes czMenuIn{from{opacity:0;transform:translateY(-6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:1050px){header .header-nav{display:none!important}.hamburger{display:flex!important}.mobile-menu{top:75px!important}}
+@media(max-width:620px){header{min-height:65px!important;padding:10px 14px!important}.mobile-menu{top:72px!important;left:10px!important;right:10px!important}.logo{font-size:27px!important}}
+@media(prefers-reduced-motion:reduce){.mobile-menu.open{animation:none!important}header .header-nav a,.hamburger span{transition:none!important}}
