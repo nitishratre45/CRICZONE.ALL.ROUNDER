@@ -30,3 +30,18 @@ body>header,header:not(.cz-watch-nav){position:relative!important;top:auto!impor
 @media(max-width:620px){
  #player-servers-bar,.player-servers-bar{margin-top:52px!important}
 }
+
+/* Requested extra clearance: move server selector and Back-to-Matches below shared nav */
+#player-servers-bar,.player-servers-bar{
+ margin-top:28px!important;
+ margin-bottom:14px!important;
+}
+#btn-close-player{
+ margin-top:24px!important;
+ position:relative!important;
+ z-index:2!important;
+}
+@media(max-width:620px){
+ #player-servers-bar,.player-servers-bar{margin-top:24px!important;margin-bottom:12px!important}
+ #btn-close-player{margin-top:18px!important}
+}
