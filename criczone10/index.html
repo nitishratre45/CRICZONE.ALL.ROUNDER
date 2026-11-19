@@ -163,6 +163,39 @@ html,body{width:100%;height:100%;background:#0a0a0f;font-family:'Segoe UI',sans-
   #tgCard p { font-size: 0.85rem; margin-bottom: 18px; }
   .tgBtn { height: 42px; font-size: 0.8rem; }
 }
+
+/* CRICZONE5 visual theme applied to CRICZONE10 — preserve existing channel/player logic */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--cz-bg:#080b12;--cz-panel:#101722;--cz-card:#111a25;--cz-line:rgba(255,255,255,.09);--cz-blue:#2aabee;--cz-cyan:#72f5dc;--cz-text:#f4f6fb;--cz-muted:#8e9bab}
+html,body{background:var(--cz-bg)!important;color:var(--cz-text)!important;font-family:Inter,system-ui,sans-serif!important}
+#picker{background:radial-gradient(ellipse at top,rgba(34,119,181,.13),transparent 48%),var(--cz-bg)!important}
+.picker-header{padding:22px 18px 12px!important;background:linear-gradient(180,rgba(8,11,18,.98),rgba(8,11,18,.88))!important;border-bottom:1px solid var(--cz-line)!important}
+.picker-title{font-family:Inter,sans-serif!important;font-size:clamp(20px,3vw,27px)!important;font-weight:800!important;letter-spacing:-.5px!important;color:#f5f8ff!important}
+.picker-title span{color:var(--cz-cyan)!important}
+.picker-links{gap:10px!important}
+.tg-link,.tg-badge{background:linear-gradient(135deg,#229ed9,#1675c9)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 6px 20px rgba(17,126,200,.22)!important;border-radius:12px!important}
+.search-bar{padding:8px 18px 16px!important}
+.search-bar input{background:#101722!important;border:1px solid rgba(114,245,220,.16)!important;border-radius:14px!important;padding:13px 15px!important;color:#f5f8ff!important;font-family:Inter,sans-serif!important;box-shadow:0 8px 24px rgba(0,0,0,.12)!important}
+.search-bar input:focus{border-color:rgba(114,245,220,.65)!important;box-shadow:0 0 0 3px rgba(114,245,220,.08)!important}
+.search-bar input::placeholder{color:#768395!important}
+.channel-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr))!important;gap:12px!important;padding:0 18px 28px!important}
+.channel-card{background:linear-gradient(145deg,#121c29,#0e141e)!important;border:1px solid var(--cz-line)!important;border-radius:16px!important;padding:13px!important;min-height:72px!important;gap:12px!important;box-shadow:0 5px 18px rgba(0,0,0,.12)!important;transition:transform .18s ease,border-color .18s ease,background .18s ease!important}
+.channel-card:hover{background:linear-gradient(145deg,#172635,#111923)!important;border-color:rgba(114,245,220,.38)!important;transform:translateY(-2px)!important}
+.channel-card:active{transform:scale(.98)!important}
+.channel-logo{width:42px!important;height:42px!important;border-radius:12px!important;background:#182432!important;border:1px solid rgba(255,255,255,.07)!important;object-fit:contain!important;padding:3px!important}
+.channel-dot{margin:0 5px!important;width:9px!important;height:9px!important;background:var(--cz-cyan)!important;box-shadow:0 0 10px rgba(114,245,220,.45)!important}
+.channel-name{font-size:13px!important;font-weight:700!important;line-height:1.35!important;color:#f0f5fc!important}
+.channel-cat{font-size:10px!important;color:#79c9e7!important;letter-spacing:.7px!important;font-weight:700!important}
+.no-results{color:var(--cz-muted)!important}
+#tgOverlay{background:rgba(3,7,12,.84)!important;backdrop-filter:blur(18px)!important}
+#tgCard{background:linear-gradient(145deg,#121c29,#080d14)!important;border:1px solid rgba(114,245,220,.18)!important;border-radius:24px!important;box-shadow:0 30px 80px rgba(0,0,0,.7)!important}
+#tgIcon{background:linear-gradient(135deg,#29b8e9,#167bd0)!important;box-shadow:0 0 30px rgba(42,171,238,.18)!important}
+#tgCard h2{font-family:Inter,sans-serif!important;font-weight:800!important}
+#joinNow{background:linear-gradient(135deg,#72f5dc,#25bda9)!important;color:#07171a!important;box-shadow:none!important}
+#joinedBtn{background:#121d29!important;border:1px solid rgba(255,255,255,.1)!important;color:#d3deeb!important}
+@media(max-width:520px){.picker-header{padding:16px 14px 10px!important}.picker-title{font-size:19px!important}.search-bar{padding:7px 14px 13px!important}.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding:0 14px 22px!important}.channel-card{padding:10px!important;min-height:65px!important;gap:9px!important;border-radius:13px!important}.channel-logo{width:35px!important;height:35px!important;border-radius:10px!important}.channel-name{font-size:12px!important}.channel-cat{font-size:9px!important}}
+@media(min-width:900px){.channel-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))!important;gap:14px!important;padding-left:24px!important;padding-right:24px!important}}
+
 </style>
 </head>
 <body>
