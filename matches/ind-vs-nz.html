@@ -188,6 +188,14 @@
       gap: clamp(14px, 2.2vw, 22px);
     }
 
+    .btn-header-primary {
+      display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+      padding: 10px 16px; margin: 0 0 2px; border: 1px solid var(--line-strong);
+      border-radius: 999px; background: var(--surface); color: var(--text); font: inherit;
+      font-weight: 700; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .btn-header-primary:hover { background: var(--surface-2); transform: translateY(-1px); }
+
     .player-shell {
       width: 100%;
       max-width: min(100%, calc(70vh * 16 / 9));
@@ -830,6 +838,10 @@
   </header>
 
   <main class="main">
+
+    <button class="btn-header-primary" id="btn-close-player" type="button" onclick="window.location.href='index.html'">
+      <span>Back to Matches ✕</span>
+    </button>
 
     <div class="player-shell">
       <div class="player-wrapper">
