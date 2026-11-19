@@ -58,3 +58,6 @@ html,body{background:radial-gradient(ellipse at 50% -20%,rgba(65,230,179,.10),tr
 .cz-watch-logo{background:none!important;border:0!important;box-shadow:none!important;color:#52adff!important;padding:0!important;border-radius:0!important}
 .cz-watch-logo span{color:#f4f8ff!important}
 .cz-watch-logo i{background:#39c5f2!important}
+
+/* Remove floating Telegram brand badge shown above the navbar */
+#tgBadge{display:none!important}
