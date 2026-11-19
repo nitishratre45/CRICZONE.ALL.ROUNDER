@@ -1,0 +1,11 @@
+/* CRICZONE Matches CSS Health Layer — safe responsive defaults */
+:root{color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden;scroll-behavior:smooth}
+body{width:100%;max-width:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img,svg,canvas,iframe,video{max-width:100%}
+button,a,[role="button"]{-webkit-tap-highlight-color:transparent}
+button,a,[role="button"],input,select,textarea{touch-action:manipulation}
+:focus-visible{outline:2px solid #60a5fa;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(max-width:600px){video,iframe{max-width:100%}button,input,select,textarea{font-size:16px}}
