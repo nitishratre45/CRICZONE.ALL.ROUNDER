@@ -1,0 +1,9 @@
+/* Willow: keep every page/player section below unified navbar */
+:root{--cz-willow-nav-height:62px}
+html,body{scroll-padding-top:var(--cz-willow-nav-height)!important}
+body>header,header:not(.cz-watch-nav){position:relative!important;top:auto!important;z-index:2!important}
+#main-view,main{position:relative!important;top:auto!important;margin-top:0!important;padding-top:12px!important}
+.player-servers-bar,#player-servers-bar{position:relative!important;top:auto!important;z-index:3!important;margin-top:8px!important}
+#player-modal,#player-view,.player-view,.player-layout,.player-wrapper{scroll-margin-top:var(--cz-willow-nav-height)!important}
+.cz-watch-nav{position:sticky!important;top:0!important;z-index:1500!important}
+@media(max-width:620px){#main-view,main{padding-top:9px!important}.player-servers-bar,#player-servers-bar{margin-top:5px!important}}
