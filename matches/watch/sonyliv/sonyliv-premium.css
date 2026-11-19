@@ -1,0 +1,42 @@
+/* CRICZONE SonyLIV — Premium OTT skin */
+:root{--sl-accent:#41e6b3;--sl-bg:#070a10;--sl-surface:#111722;--sl-border:#263344}
+html,body{background:radial-gradient(ellipse at 50% -20%,rgba(65,230,179,.10),transparent 56%),#070a10!important;color:#f3f6fb!important}
+#listing,#player{max-width:1440px!important;margin-inline:auto!important;padding-inline:clamp(12px,3vw,32px)!important}
+#hdr,.hdr{background:rgba(10,14,20,.88)!important;border-bottom:1px solid rgba(255,255,255,.07)!important;backdrop-filter:blur(18px)!important}
+.brand,.logo,.pBrand{border-radius:14px!important}
+.title{letter-spacing:-.025em!important}
+.searchWrap,#searchWrap{border:1px solid #283445!important;background:#111722!important;border-radius:14px!important}
+#searchInput{color:#f4f7fb!important}
+.filters{gap:9px!important}
+.filters button,.filters .pill,.filter-btn{border-radius:999px!important;border:1px solid #293547!important;background:#111722!important;color:#a8b7ca!important;padding:9px 14px!important;transition:.18s ease}
+.filters button:hover,.filters .pill:hover,.filter-btn:hover{border-color:#41e6b3!important;color:#fff!important}
+.filters .active,.filters button.active,.filters .pill.active,.filter-btn.active{background:rgba(65,230,179,.11)!important;border-color:#41e6b3!important;color:#41e6b3!important}
+#grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,285px),1fr))!important;gap:16px!important}
+.card,.card-event{background:linear-gradient(145deg,#151d29,#0e141d)!important;border:1px solid #253244!important;border-radius:19px!important;overflow:hidden!important;box-shadow:0 10px 26px rgba(0,0,0,.16)!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important}
+.card:hover,.card-event:hover{transform:translateY(-3px)!important;border-color:rgba(65,230,179,.42)!important;box-shadow:0 18px 34px rgba(0,0,0,.3)!important}
+.thumb{background:#1a2330!important;overflow:hidden!important}
+.thumb img{transition:transform .35s ease!important}
+.card:hover .thumb img,.card-event:hover .thumb img{transform:scale(1.04)!important}
+.card-body{padding:15px!important}
+.card-title{font-weight:700!important;color:#f4f7fb!important;line-height:1.35!important}
+.card-time{color:#8da0b6!important}
+.watch-btn{border-radius:11px!important;background:linear-gradient(135deg,#41e6b3,#35b8e9)!important;color:#06120d!important;font-weight:800!important;border:0!important;box-shadow:0 6px 18px rgba(65,230,179,.12)!important}
+.watch-btn:hover{filter:brightness(1.06)!important;transform:translateY(-1px)!important}
+.badge-live{background:rgba(255,70,99,.14)!important;color:#ff5c77!important;border:1px solid rgba(255,70,99,.25)!important;border-radius:7px!important}
+.badge-upcoming{background:rgba(255,181,60,.13)!important;color:#ffbe55!important;border-radius:7px!important}
+.badge-completed{background:rgba(130,145,165,.13)!important;color:#9aaabd!important;border-radius:7px!important}
+.badge-cat{background:#1b2533!important;color:#8ca1b8!important;border:1px solid #29384a!important;border-radius:7px!important}
+#player{background:#070a10!important}
+#vid,.screen,#player video{background:#000!important;border:1px solid #263345!important;border-radius:18px!important;overflow:hidden!important}
+#pOverlay{background:rgba(0,0,0,.6)!important;backdrop-filter:blur(6px)!important}
+#ctrls,.ctrls,.dock{background:linear-gradient(180,transparent,rgba(4,8,13,.92))!important}
+#qmenu,#qlist{background:#111722!important;border:1px solid #283547!important;border-radius:14px!important;color:#f3f6fb!important;box-shadow:0 14px 40px rgba(0,0,0,.4)!important}
+#qmenu button,#qlist button{border-radius:8px!important}
+#qmenu button:hover,#qlist button:hover{background:rgba(65,230,179,.1)!important;color:#41e6b3!important}
+#emptyState,#errorState{background:rgba(17,23,34,.6)!important;border:1px dashed #2a394b!important;border-radius:18px!important;color:#a5b4c7!important;padding:40px 18px!important}
+#loader{background:rgba(5,8,13,.94)!important;backdrop-filter:blur(12px)!important}
+#loadfill,.loadfill{background:linear-gradient(90deg,#41e6b3,#35b8e9)!important}
+#tgOverlay{backdrop-filter:blur(12px)!important}
+@media(max-width:650px){#listing,#player{padding-inline:12px!important}#grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.card,.card-event{border-radius:14px!important}.card-body{padding:10px!important}.card-title{font-size:13px!important}.card-time{font-size:11px!important}.watch-btn{padding:9px 11px!important;font-size:12px!important}.thumb{min-height:90px!important}#vid,.screen,#player video{border-radius:12px!important}}
+@media(max-width:370px){#grid{grid-template-columns:1fr!important}}
+@media(prefers-reduced-motion:reduce){.card,.card-event,.thumb img,.watch-btn{transition:none!important}}
