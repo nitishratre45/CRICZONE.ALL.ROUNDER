@@ -22,3 +22,65 @@ input,select,textarea{max-width:100%;min-width:0}
 @media(min-width:769px) and (max-width:1100px){
   .grid,.match-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* CRICZONE premium responsive refresh — Hotstar-inspired layout */
+:root{--cz-accent:#18b6ff;--cz-accent-2:#6a5cff;--cz-surface:#101722;--cz-line:rgba(255,255,255,.09)}
+body{background-color:#07090d;color:#f7f9fc}
+header{border-bottom:1px solid var(--cz-line);box-shadow:0 10px 35px rgba(0,0,0,.2)}
+main,.hero-container,.container{margin-inline:auto}
+.hero-container{width:min(100%,1440px)}
+.hero-card,.match-card,.card,.channel-card,.content-card{border-color:var(--cz-line);box-shadow:0 12px 32px rgba(0,0,0,.2);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.hero-card{background:linear-gradient(120deg,#121c2b,#0a0d14 72%);border-radius:22px}
+.hero-title,h1{letter-spacing:-.035em}
+button,.btn,.btn-header,.pill,.tab-btn,.filter-tab,.nav-link{min-height:40px}
+button,.btn,.btn-header,.pill,.tab-btn,.filter-tab{border-radius:12px}
+input,select,textarea{border-radius:12px}
+.card:hover,.match-card:hover,.channel-card:hover{border-color:rgba(24,182,255,.4);box-shadow:0 16px 36px rgba(0,0,0,.3)}
+@media(min-width:769px){.hero-card{border-radius:24px}.match-grid,.grid{gap:18px}}
+@media(max-width:768px){
+  html,body{overflow-x:clip}
+  header{height:auto;min-height:58px;padding-inline:12px}
+  .header-inner{height:auto;min-height:58px;padding:8px 12px;gap:10px}
+  .logo,.brand{max-width:calc(100vw - 120px)}
+  .logo{font-size:1.25rem}
+  .brand-name{font-size:1rem}
+  .header-actions{gap:6px}
+  .hamburger{padding:10px;min-width:42px;min-height:42px}
+  .mobile-menu{top:58px;max-height:calc(100dvh - 58px);padding:14px 12px}
+  .hero-container{margin-top:58px;padding:12px 12px 0}
+  .hero-card{min-height:0;grid-template-columns:minmax(0,1fr);border-radius:18px}
+  .hero-content{padding:20px 16px}
+  .hero-title{font-size:clamp(1.5rem,7vw,2rem);line-height:1.12}
+  .hero-subtitle{font-size:.9rem;margin-bottom:16px}
+  .hero-matchup{width:100%;justify-content:center;gap:clamp(8px,3vw,16px);padding:10px 8px;margin-bottom:18px}
+  .team-badge{font-size:.85rem;gap:6px}
+  .team-badge img{width:24px;height:24px}
+  .hero-actions{gap:8px}
+  .btn-watch-hero{width:100%;justify-content:center;padding:13px 16px}
+  .hero-media{padding:0 14px 16px;min-height:0}
+  .hero-media-preview{max-height:none;aspect-ratio:16/9}
+  main,.container{padding-inline:12px}
+  .grid,.match-grid{display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px}
+  .card,.match-card,.channel-card{padding:14px;border-radius:16px;min-width:0}
+  .card-body{gap:6px}
+  .crest{width:48px;height:48px}
+  .team-name{font-size:12px}
+  .kickoff-time{font-size:clamp(16px,5vw,20px)}
+  .filter-row,.filter-tabs,.tabs,.category-tabs{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;white-space:nowrap;padding-bottom:3px}
+  .filter-row::-webkit-scrollbar,.filter-tabs::-webkit-scrollbar,.tabs::-webkit-scrollbar,.category-tabs::-webkit-scrollbar{display:none}
+  .pill,.tab-btn,.filter-tab{min-height:40px;padding:9px 13px;font-size:13px}
+  .search-box,.search-wrap{width:100%;max-width:100%}
+  .controls,.controls-bar,.header-actions{gap:8px}
+  .player-top{gap:10px;padding:14px 0}
+  .screen{width:100%;max-width:100%;border-radius:12px;aspect-ratio:16/9}
+  iframe,video{max-width:100%}
+}
+@media(max-width:380px){
+  .hero-content{padding:18px 13px}
+  .hero-matchup{gap:6px}
+  .team-badge{font-size:.78rem}
+  .card,.match-card,.channel-card{padding:12px}
+  .pill,.tab-btn,.filter-tab{padding-inline:11px}
+}
+@media(prefers-reduced-motion:reduce){.hero-card,.match-card,.card,.channel-card{transition:none}}
