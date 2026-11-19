@@ -303,6 +303,11 @@
       badge.setAttribute("aria-label", "CRICZONE visitor statistics");
       (document.body || document.documentElement).appendChild(badge);
     }
+    // Legacy CRICZONE player pages placed the counter inside #pc.
+    // Move it outside the player so hiding/showing the player cannot hide the counter.
+    if (badge.parentElement && badge.parentElement.closest("#pc")) {
+      (document.body || document.documentElement).appendChild(badge);
+    }
     var total = document.getElementById("totalVisits");
     var live = document.getElementById("liveWatching");
     if (!total || !live) {
