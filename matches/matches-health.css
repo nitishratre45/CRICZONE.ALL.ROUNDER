@@ -84,3 +84,71 @@ input,select,textarea{border-radius:12px}
   .pill,.tab-btn,.filter-tab{padding-inline:11px}
 }
 @media(prefers-reduced-motion:reduce){.hero-card,.match-card,.card,.channel-card{transition:none}}
+
+/* ==========================================================
+   CRICZONE MATCH CENTER — COMPLETE UI POLISH (responsive v2)
+   Shared visual layer; keeps existing match feeds/player logic.
+   ========================================================== */
+:root{--cz-bg:#070a10;--cz-panel:#111722;--cz-panel2:#161e2a;--cz-text:#f4f7fb;--cz-muted:#9ba9bc;--cz-blue:#28aaff;--cz-cyan:#20d7ee;--cz-border:rgba(255,255,255,.085);--cz-radius:18px}
+body{background-color:var(--cz-bg)!important;color:var(--cz-text)!important}
+body::before,body::after{pointer-events:none}
+header,.header,.app-header,.topbar,#hdr{backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+header a,.header a,.app-header a,.topbar a{transition:color .18s ease,background .18s ease,border-color .18s ease}
+main, .container, .page, .page-content, .app-shell, .content-wrap{width:100%;margin-inline:auto}
+.card,.match-card,.stream-card,.channel-card,.tile,.server-btn,.server-card{border:1px solid var(--cz-border);background:linear-gradient(160deg,rgba(18,25,36,.96),rgba(10,14,21,.98));border-radius:var(--cz-radius);overflow:hidden}
+.card:hover,.match-card:hover,.stream-card:hover,.channel-card:hover,.tile:hover{border-color:rgba(40,170,255,.4);box-shadow:0 16px 40px rgba(0,0,0,.32)}
+.section-title,.title,.page-title,h1,h2{letter-spacing:-.025em}
+input,select,textarea{background:rgba(13,18,27,.96);color:var(--cz-text);border:1px solid var(--cz-border)}
+input:focus,select:focus,textarea:focus{border-color:rgba(40,170,255,.6);outline:2px solid rgba(40,170,255,.14)}
+button,.btn,.btn-header,.join-btn,.watch-btn,.watch-cta,.pill,.tab-btn,.filter-tab,.server-btn{transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+button:active,.btn:active,.join-btn:active,.watch-btn:active,.server-btn:active{transform:scale(.98)}
+img{height:auto}
+@media(max-width:768px){
+  body{font-size:14px;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  main,.container,.page,.page-content,.app-shell,.content-wrap{padding-left:12px!important;padding-right:12px!important}
+  header,.header,.app-header,.topbar,#hdr{padding-left:12px!important;padding-right:12px!important;gap:10px!important}
+  header{min-height:58px!important;height:auto!important}
+  .header-inner{min-height:58px;height:auto!important;padding:8px 12px!important}
+  .logo,.brand,.brand-text{min-width:0}
+  .brand-name,.logo{max-width:calc(100vw - 116px);overflow:hidden;text-overflow:ellipsis}
+  .header-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+  .header-actions>*{max-width:100%}
+  .join-btn,.btn-header,.watch-btn{min-height:42px;padding:10px 13px}
+  .filters,.controls,.controls-bar,.filter-bar{width:100%;min-width:0}
+  .filter-row,.filter-tabs,.tabs,.category-tabs,.nav-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+  .filter-row::-webkit-scrollbar,.filter-tabs::-webkit-scrollbar,.tabs::-webkit-scrollbar,.category-tabs::-webkit-scrollbar,.nav-tabs::-webkit-scrollbar{display:none}
+  .grid,.match-grid,.channel-grid,.card-grid{grid-template-columns:repeat(1,minmax(0,1fr))!important;gap:12px!important}
+  .stream-track{gap:12px;padding:8px 2px 18px;scroll-padding-inline:12px}
+  .stream-card{flex-basis:min(78vw,300px)!important;scroll-snap-align:start}
+  .card,.match-card,.channel-card,.tile{border-radius:16px!important}
+  .card-body{padding:13px!important}
+  .section-hd{align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .section-hd-left{gap:9px}
+  .section-title{font-size:clamp(18px,5.3vw,23px)}
+  .search-box,.search-wrap,.search-bar{width:100%!important;max-width:100%!important}
+  .player-top{flex-wrap:wrap;gap:10px;padding-block:14px}
+  .player-meta{flex:1 1 calc(100% - 58px)}
+  .screen,.player-wrap,.player-container,.video-wrap{width:100%!important;max-width:100%!important}
+  .screen{border-radius:12px!important}
+  .footer-inner{grid-template-columns:minmax(0,1fr)!important;gap:22px!important}
+  .footer-bottom{gap:8px;flex-direction:column;align-items:flex-start}
+  .mobile-menu{max-width:calc(100vw - 20px);overflow-y:auto}
+}
+@media(min-width:600px) and (max-width:1024px){
+  .grid,.match-grid,.channel-grid,.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .stream-card{flex-basis:clamp(260px,38vw,330px)}
+}
+@media(min-width:1025px){
+  .grid,.match-grid,.channel-grid,.card-grid{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+  main,.container,.page,.page-content,.app-shell,.content-wrap{max-width:1380px}
+}
+@media(max-width:420px){
+  .brand-tag{font-size:9px!important;letter-spacing:.05em!important}
+  .brand-name{font-size:15px!important}
+  .header-actions .clock{display:none}
+  .card-body{gap:5px!important}
+  .team-name{font-size:11px!important}
+  .crest,.card-crest{width:44px!important;height:44px!important}
+  .kickoff-time{font-size:17px!important}
+}
+@media(prefers-reduced-motion:reduce){.card,.match-card,.stream-card,.channel-card,button,.btn{transition:none!important}}
