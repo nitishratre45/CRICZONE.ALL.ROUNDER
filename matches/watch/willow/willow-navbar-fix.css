@@ -74,3 +74,53 @@
  #player-modal .cz-player-actions{gap:12px!important;margin:18px 0 22px!important}
  #player-modal .cz-community{max-width:1480px!important;margin:0 auto!important;padding:22px!important}
 }
+
+/* Desktop corrective override: the old 100vw/100vh video rule was forcing a wide player */
+@media(min-width:900px){
+ #player-modal{
+   padding:12px 18px 30px!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   align-items:stretch!important;
+ }
+ #player-modal .player-header,
+ #player-modal #player-servers-bar,
+ #player-modal .player-servers-bar,
+ #player-modal #video-wrapper,
+ #player-modal #cz-player-details{
+   width:min(100%,1160px)!important;max-width:1160px!important;
+   margin-left:auto!important;margin-right:auto!important;
+ }
+ #player-modal .player-header{
+   min-height:58px!important;padding:12px 16px!important;
+   border-radius:14px 14px 0 0!important;
+ }
+ #player-modal .player-title{
+   max-width:none!important;flex:1 1 auto!important;
+   font-size:clamp(15px,1.25vw,19px)!important;line-height:1.35!important;
+   white-space:normal!important;overflow:visible!important;text-overflow:unset!important;
+ }
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{
+   min-height:52px!important;margin:10px auto 12px!important;
+   padding:9px 12px!important;border-radius:13px!important;
+ }
+ #player-modal #video-wrapper{
+   width:min(100%,1160px)!important;max-width:1160px!important;
+   height:auto!important;aspect-ratio:16/9!important;
+   min-height:0!important;max-height:68vh!important;
+   flex:0 0 auto!important;margin:0 auto!important;
+   border-radius:16px!important;
+ }
+ #player-modal #player-video{
+   width:100%!important;height:100%!important;
+   max-width:100%!important;max-height:100%!important;
+   object-fit:contain!important;object-position:center!important;
+ }
+ #player-modal #cz-player-details{
+   padding:18px 16px 24px!important;margin:0 auto!important;
+ }
+ #player-modal #cz-player-details-title{
+   font-size:clamp(21px,1.7vw,27px)!important;line-height:1.3!important;
+   white-space:normal!important;overflow:visible!important;
+ }
+ #player-modal .cz-community{margin:12px auto 0!important}
+}
