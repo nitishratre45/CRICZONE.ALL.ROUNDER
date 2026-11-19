@@ -54,3 +54,28 @@ body::before{z-index:0!important}
   .ch-card{min-width:0!important}
 }
 @media(max-width:380px){#ch-grid{grid-template-columns:minmax(0,1fr)!important}}
+
+/* Prime compact header alignment to match Cricket/Football/Willow watch navbar */
+.app-header{position:relative!important;top:auto!important;padding:8px 14px!important;margin:0!important;background:#070c15!important;border-bottom:1px solid #1d2a3b!important;box-shadow:none!important}
+.header-inner{min-height:0!important;height:auto!important;max-width:1440px!important;padding:0!important;display:flex!important;align-items:center!important;gap:12px!important}
+.brand{display:none!important}
+.tab-strip{margin:0!important;display:flex!important;align-items:center!important;gap:7px!important;flex:1!important;flex-wrap:wrap!important}
+.tab-btn{background:#101a28!important;color:#9aaac0!important;border:1px solid #26354a!important;border-radius:11px!important;padding:9px 13px!important;white-space:nowrap!important}
+.tab-btn.active{background:#22203e!important;border-color:#7665df!important;color:#e9e5ff!important}
+.tab-count{background:#263348!important;color:#d5e1f1!important}
+.theme-btn{flex-shrink:0!important;background:#101a28!important;border-color:#26354a!important}
+.search-wrap{max-width:340px!important;flex:0 1 340px!important}
+.mobile-search-bar{display:none!important}
+.ch-scroll{padding-top:14px!important}
+#channel-list{background:#060a12!important}
+@media(max-width:760px){
+ .app-header{top:auto!important;padding:9px 12px!important}
+ .header-inner{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+ .tab-strip{width:100%!important;flex:1 1 100%!important;justify-content:flex-start!important;order:1!important}
+ .tab-btn{padding:8px 10px!important;font-size:12px!important}
+ .theme-btn{order:2!important;margin-left:auto!important}
+ .search-wrap{display:block!important;order:3!important;max-width:none!important;flex:1 1 100%!important}
+ .search-wrap input{background:#0d1725!important;color:#eaf2ff!important;border-color:#243348!important}
+ .mobile-search-bar{display:none!important}
+ .ch-scroll{padding:12px 11px 25px!important}
+}
