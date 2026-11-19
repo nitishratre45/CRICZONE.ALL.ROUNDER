@@ -24,3 +24,22 @@ header .header-nav .btn-telegram-nav{background:linear-gradient(120deg,#168de0,#
 @media(max-width:1050px){header .header-nav{display:none!important}.hamburger{display:flex!important}.mobile-menu{top:75px!important}}
 @media(max-width:620px){header{min-height:65px!important;padding:10px 14px!important}.mobile-menu{top:72px!important;left:10px!important;right:10px!important}.logo{font-size:27px!important}}
 @media(prefers-reduced-motion:reduce){.mobile-menu.open{animation:none!important}header .header-nav a,.hamburger span{transition:none!important}}
+
+/* NAVBAR COLOR / VISUAL THEME — styling only */
+header{background:linear-gradient(110deg,rgba(6,12,24,.97),rgba(10,15,29,.96) 55%,rgba(9,13,24,.97))!important;border-bottom:1px solid rgba(67,154,255,.17)!important;box-shadow:0 8px 30px rgba(0,0,0,.28),0 1px 0 rgba(72,155,255,.04)!important}
+header .logo .sport{background:linear-gradient(120deg,#67b8ff,#347cff)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+header .logo .link{color:#f5f8ff!important;text-shadow:0 0 22px rgba(77,151,255,.12)!important}
+header .logo .live-dot{background:#46c5ff!important;box-shadow:0 0 8px rgba(70,197,255,.8),0 0 20px rgba(70,197,255,.35)!important}
+header .header-nav a:not(.nav-live-pill):not(.btn-telegram-nav){color:#a5b3c9!important;border-radius:10px!important;position:relative!important}
+header .header-nav a:not(.nav-live-pill):not(.btn-telegram-nav):hover{color:#f8fbff!important;background:rgba(80,150,255,.08)!important}
+header .header-nav .nav-live-pill{background:linear-gradient(110deg,rgba(255,65,91,.12),rgba(255,65,91,.045))!important;border:1px solid rgba(255,85,112,.32)!important;color:#ff7185!important;box-shadow:inset 0 0 18px rgba(255,65,91,.035)!important}
+header .header-nav .nav-live-pill:hover{background:rgba(255,65,91,.17)!important;border-color:rgba(255,85,112,.5)!important}
+header .header-nav .btn-telegram-nav{background:linear-gradient(115deg,#168fe5,#386cf0)!important;color:#fff!important;border:1px solid rgba(119,190,255,.22)!important;box-shadow:0 7px 22px rgba(31,111,220,.23)!important}
+header .header-nav .btn-telegram-nav:hover{filter:brightness(1.1)!important;box-shadow:0 10px 28px rgba(31,111,220,.33)!important}
+.hamburger{background:linear-gradient(145deg,#141d2c,#0c1320)!important;border-color:rgba(86,154,255,.24)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important}
+.hamburger span{background:#dce9fa!important}
+.mobile-menu{background:linear-gradient(145deg,rgba(11,17,29,.98),rgba(8,12,21,.98))!important;border-color:rgba(74,148,255,.18)!important;box-shadow:0 24px 65px rgba(0,0,0,.58),0 0 28px rgba(45,121,255,.05)!important}
+.mobile-menu a{color:#a8b6cb!important}
+.mobile-menu a:hover,.mobile-menu a:focus-visible{background:linear-gradient(90deg,rgba(65,142,255,.12),rgba(65,142,255,.035))!important;color:#f4f8ff!important}
+.mobile-menu a[href="/matches/ind-nz.html"]{background:linear-gradient(90deg,rgba(255,67,94,.11),rgba(255,67,94,.035))!important;color:#ff7287!important;border:1px solid rgba(255,72,98,.13)!important}
+.mobile-menu a[href^="https://t.me"]{background:linear-gradient(90deg,rgba(26,143,228,.12),rgba(26,143,228,.035))!important;color:#61baff!important;border:1px solid rgba(44,148,231,.13)!important}
