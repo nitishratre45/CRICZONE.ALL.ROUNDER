@@ -48,3 +48,13 @@ html,body{background:radial-gradient(ellipse at 50% -20%,rgba(65,230,179,.10),tr
 .cz-watch-telegram{white-space:nowrap;text-decoration:none;padding:11px 17px;border-radius:999px;background:linear-gradient(115deg,#168fe5,#416cf0);color:#fff;font-size:13px;font-weight:800;box-shadow:0 8px 20px #1e72db25}.cz-watch-toggle{display:none;width:42px;height:42px;border:1px solid #29394b;border-radius:12px;background:#121b28;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}.cz-watch-toggle span{width:18px;height:2px;background:#e6f0fc;border-radius:3px;transition:.2s}.cz-watch-toggle[aria-expanded=true] span:first-child{transform:translateY(7px) rotate(45deg)}.cz-watch-toggle[aria-expanded=true] span:nth-child(2){opacity:0}.cz-watch-toggle[aria-expanded=true] span:last-child{transform:translateY(-7px) rotate(-45deg)}
 .cz-watch-mobile{display:none;position:absolute;top:calc(100% + 9px);right:12px;left:12px;padding:9px;background:rgba(8,13,22,.98);border:1px solid #29394b;border-radius:16px;box-shadow:0 20px 50px #0009;backdrop-filter:blur(18px);max-height:calc(100dvh - 90px);overflow:auto}.cz-watch-mobile a{display:block;text-decoration:none;color:#a9b8ca;padding:12px 13px;border-radius:11px;font-size:14px;font-weight:700}.cz-watch-mobile a.active{color:#4db7ff;background:#112033}.cz-watch-mobile a:hover{background:#162233;color:white}.cz-watch-mobile.open{display:block;animation:cz-watch-in .16s ease-out}@keyframes cz-watch-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:1020px){.cz-watch-links{display:none}.cz-watch-toggle{display:flex}.cz-watch-telegram{margin-left:auto}}@media(max-width:520px){.cz-watch-nav{min-height:60px;padding:0 12px;gap:10px}.cz-watch-logo{font-size:24px}.cz-watch-telegram{padding:9px 12px;font-size:12px}}@media(prefers-reduced-motion:reduce){.cz-watch-mobile.open{animation:none}.cz-watch-toggle span{transition:none}}
+
+/* Layout cleanup: single global navbar, no duplicate Sony header or image corner category */
+#hdr{display:none!important}
+#listing{padding-top:clamp(14px,2.5vw,24px)!important}
+.badge-cat{display:none!important}
+.card-event .badge-upcoming,.card-event .badge-live,.card-event .badge-completed{left:10px!important;right:auto!important}
+.cz-watch-nav{background:linear-gradient(110deg,#060a12 0%,#0b1422 100%)!important;border-color:rgba(63,170,255,.16)!important}
+.cz-watch-logo{background:none!important;border:0!important;box-shadow:none!important;color:#52adff!important;padding:0!important;border-radius:0!important}
+.cz-watch-logo span{color:#f4f8ff!important}
+.cz-watch-logo i{background:#39c5f2!important}
