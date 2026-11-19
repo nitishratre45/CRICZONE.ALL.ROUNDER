@@ -567,7 +567,7 @@ img{display:block;max-width:100%}
       <div class="header-actions">
         <div class="live-pill"><span class="dot"></span> Live</div>
         <div class="clock" id="clock">—</div>
-        <a class="join-btn" href="https://t.me/sportlink10" target="_blank" rel="noopener">
+        <a class="join-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
           </svg>
@@ -641,7 +641,7 @@ const TG = (function(){
   function wasSeen(){ try{ return sessionStorage.getItem("tg_popup_seen") === "1"; }catch(_){ return false; } }
 
   document.getElementById("joinNow").addEventListener("click", () => {
-    window.open("https://t.me/sportlink10","_blank","noopener");
+    window.open("https://t.me/+pN15_8gc54s2NDU1","_blank","noopener");
     markSeen(); close();
   });
   document.getElementById("joinedBtn").addEventListener("click", () => { markSeen(); close(); });
@@ -1536,7 +1536,7 @@ $("streams").addEventListener("click", e => {
   playRecord(state.currentStreams[index], index);
 });
 
-$("backHub").onclick = () => { location.hash = "#/"; };
+$("backHub").onclick = () => { window.location.href = "/matches/"; };
 window.addEventListener("hashchange", route);
 
 /* ============================================================
