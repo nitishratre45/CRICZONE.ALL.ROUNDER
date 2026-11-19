@@ -51,3 +51,26 @@
  #player-modal .cz-community{padding:13px!important}
 }
 @media(prefers-reduced-motion:reduce){#player-modal *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Desktop-only refinement: keep Willow player content in a centered broadcast layout */
+@media(min-width:900px){
+ #player-modal{padding:14px 20px 24px!important}
+ #player-modal .player-header,
+ #player-modal #player-servers-bar,
+ #player-modal .player-servers-bar,
+ #player-modal #video-wrapper,
+ #player-modal #cz-player-details{
+   width:min(100%,1480px)!important;max-width:1480px!important;margin-left:auto!important;margin-right:auto!important
+ }
+ #player-modal .player-header{padding:14px 18px!important;min-height:66px!important}
+ #player-modal .player-title{max-width:none!important;flex:1 1 auto!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:clamp(15px,1.2vw,21px)!important;line-height:1.35!important}
+ #player-modal .player-nav{gap:10px!important}
+ #player-modal .player-nav .btn-header{font-size:13px!important;padding:10px 16px!important}
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{min-height:56px!important;margin-top:10px!important;margin-bottom:12px!important;padding:10px 14px!important}
+ #player-modal #video-wrapper{flex:0 0 auto!important;width:min(100%,1480px)!important;aspect-ratio:16/9!important;max-height:calc(100dvh - 300px)!important;min-height:320px!important;margin-top:0!important;margin-bottom:0!important}
+ #player-modal #player-video{object-fit:contain!important}
+ #player-modal #cz-player-details{padding:20px 18px 24px!important}
+ #player-modal #cz-player-details-title{font-size:clamp(22px,1.7vw,30px)!important}
+ #player-modal .cz-player-actions{gap:12px!important;margin:18px 0 22px!important}
+ #player-modal .cz-community{max-width:1480px!important;margin:0 auto!important;padding:22px!important}
+}
