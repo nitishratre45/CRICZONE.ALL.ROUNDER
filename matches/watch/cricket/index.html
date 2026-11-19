@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080B10">
 <meta name="referrer" content="no-referrer">
-<title>SPORTLINK TV — Live Sports Streaming</title>
+<title>CRICZONE TV — Live Sports Streaming</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -560,7 +560,7 @@ img{display:block;max-width:100%}
       <div class="brand">
         <div class="brand-mark">⚡</div>
         <div class="brand-text">
-          <h1>SPORTLINK TV</h1>
+          <h1>CRICZONE TV</h1>
           <p>Live sports streaming hub</p>
         </div>
       </div>
@@ -589,7 +589,7 @@ img{display:block;max-width:100%}
     <header class="player-top">
       <button class="icon-btn" id="backHub" aria-label="Back to matches">←</button>
       <div class="player-meta">
-        <h2 class="player-title" id="playerTitle">SPORTLINK TV Player</h2>
+        <h2 class="player-title" id="playerTitle">CRICZONE TV Player</h2>
         <p class="player-sub" id="playerSub"></p>
       </div>
     </header>
@@ -613,9 +613,9 @@ img{display:block;max-width:100%}
    CONFIG — direct
    ============================================================ */
 const DATA_URL = "https://sonujson-v6.pages.dev/Data/events/cricket.json";
-const LOG  = (...a) => console.log("[SPORTLINK TV]", ...a);
-const WARN = (...a) => console.warn("[SPORTLINK TV]", ...a);
-const ERR  = (...a) => console.error("[SPORTLINK TV]", ...a);
+const LOG  = (...a) => console.log("[CRICZONE TV]", ...a);
+const WARN = (...a) => console.warn("[CRICZONE TV]", ...a);
+const ERR  = (...a) => console.error("[CRICZONE TV]", ...a);
 
 const $ = id => document.getElementById(id);
 
@@ -999,7 +999,7 @@ async function openPlayer(id, index){
   // Reset the flag — popup will show again after this match plays
   tgShownForMatch = false;
 
-  $("playerTitle").textContent = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "SPORTLINK TV Player");
+  $("playerTitle").textContent = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "CRICZONE TV Player");
   $("playerSub").textContent = [event.sport, event.comp].filter(Boolean).join(" · ");
 
   renderPlayerStreams(index);
