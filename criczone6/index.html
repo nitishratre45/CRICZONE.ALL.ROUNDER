@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <title>SPORTLINK · Sony Sports</title>
+  <title>criczone · Sony Sports</title>
 
   <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css"/>
@@ -357,7 +357,7 @@
 <!-- Channel List -->
 <div id="channel-list">
   <div class="header">
-    <h1>⚡ SPORTLINK</h1>
+    <h1>⚡ criczone</h1>
     <span class="subtitle">Sony Sports</span>
   </div>
   <div id="category-filter"></div>
@@ -377,7 +377,7 @@
 
 // ============ CONFIG ============
 var M3U_URL = "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/refs/heads/main/sony.m3u";
-var PROXY_BASE = "https://sportlink-proxy10.lovable.app/api/public/proxy?url=";
+var PROXY_BASE = "https://criczone-proxy10.lovable.app/api/public/proxy?url=";
 
 // ── Sony Sports filter ──────────────────────────────
 // Set to false to disable filtering and show every channel again.
@@ -516,9 +516,9 @@ async function loadData(){
       });
       if(sonyOnly.length){
         channels = sonyOnly;
-        console.warn("[SPORTLINK] No Sony *sports* match — showing all Sony channels.");
+        console.warn("[criczone] No Sony *sports* match — showing all Sony channels.");
       } else {
-        console.warn("[SPORTLINK] No Sony channels matched — showing full list.");
+        console.warn("[criczone] No Sony channels matched — showing full list.");
       }
     }
   }
@@ -894,7 +894,7 @@ async function main(){
     return;
   }
 
-  document.title = "SPORTLINK · " + ch.name;
+  document.title = "criczone · " + ch.name;
   renderList(data);
   setupHLSPlayer(ch.stream_url);
 }
