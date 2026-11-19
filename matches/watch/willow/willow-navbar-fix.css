@@ -1,70 +1,53 @@
-/* Willow: keep every page/player section below unified navbar */
-:root{--cz-willow-nav-height:62px}
-html,body{scroll-padding-top:var(--cz-willow-nav-height)!important}
-body>header,header:not(.cz-watch-nav){position:relative!important;top:auto!important;z-index:2!important}
-#main-view,main{position:relative!important;top:auto!important;margin-top:0!important;padding-top:12px!important}
-.player-servers-bar,#player-servers-bar{position:relative!important;top:auto!important;z-index:3!important;margin-top:8px!important}
-#player-modal,#player-view,.player-view,.player-layout,.player-wrapper{scroll-margin-top:var(--cz-willow-nav-height)!important}
-.cz-watch-nav{position:sticky!important;top:0!important;z-index:1500!important}
-@media(max-width:620px){#main-view,main{padding-top:9px!important}.player-servers-bar,#player-servers-bar{margin-top:5px!important}}
-
-
-/* Restore server bar and place it clearly below the shared navbar */
-#player-servers-bar,.player-servers-bar{display:flex!important;visibility:visible!important;height:auto!important;min-height:0!important;margin:10px 12px 8px!important;padding:8px 10px!important;border:1px solid rgba(255,184,0,.22)!important;overflow:visible!important;position:relative!important;top:auto!important;z-index:5!important}
-#player-servers-bar:empty,.player-servers-bar:empty{display:none!important}
-
-/* Final Willow server bar placement: add more separation from navbar */
-#player-servers-bar,.player-servers-bar{margin-top:24px!important;margin-bottom:10px!important;transform:translateY(0)!important;clear:both!important}
-
-/* Stronger vertical clearance: server selector must sit well below navbar */
-#player-servers-bar,.player-servers-bar{
- margin-top:58px!important;
- padding-top:12px!important;
- padding-bottom:12px!important;
- position:relative!important;
- inset:auto!important;
- transform:none!important;
- clear:both!important
-}
-#player-servers-bar{width:calc(100% - 24px)!important}
-@media(max-width:620px){
- #player-servers-bar,.player-servers-bar{margin-top:52px!important}
-}
-
-/* Requested extra clearance: move server selector and Back-to-Matches below shared nav */
-#player-servers-bar,.player-servers-bar{
- margin-top:28px!important;
- margin-bottom:14px!important;
-}
-#btn-close-player{
- margin-top:24px!important;
- position:relative!important;
- z-index:2!important;
-}
-@media(max-width:620px){
- #player-servers-bar,.player-servers-bar{margin-top:24px!important;margin-bottom:12px!important}
- #btn-close-player{margin-top:18px!important}
-}
-
-/* Root cause fix: player modal started at viewport top and sat behind sticky shared nav.
-   Offset the entire modal below the nav so header, server selector, back button, and video are visible. */
+/* Willow player UI polish — clean layout under shared navbar */
+:root{--cz-willow-nav-height:68px}
 #player-modal{
- inset:68px 0 0!important;
- top:68px!important;
- height:auto!important;
- max-height:calc(100dvh - 68px)!important;
- z-index:1400!important;
+ position:fixed!important;top:68px!important;left:0!important;right:0!important;bottom:0!important;
+ height:auto!important;max-height:calc(100dvh - 68px)!important;z-index:1400!important;
+ display:none!important;flex-direction:column!important;overflow-y:auto!important;overflow-x:hidden!important;
+ background:#03070c!important;box-sizing:border-box!important
 }
-#player-modal .player-header{position:relative!important;top:auto!important;flex-shrink:0!important;min-height:58px!important}
+#player-modal.active{display:flex!important}
+#player-modal *{box-sizing:border-box}
+#player-modal .player-header{
+ position:relative!important;flex:0 0 auto!important;min-height:60px!important;height:auto!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
+ padding:10px 14px!important;background:linear-gradient(110deg,#0b1421,#101b2a)!important;
+ border-bottom:1px solid rgba(120,170,230,.16)!important
+}
+#player-modal .player-title{min-width:0!important;max-width:55%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#f2f7ff!important;font-size:clamp(12px,2vw,15px)!important;font-weight:800!important}
+#player-modal .player-nav{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;flex:0 0 auto!important}
+#player-modal .player-nav .btn-header{min-height:34px!important;padding:8px 11px!important;border-radius:999px!important;font-size:11px!important;white-space:nowrap!important}
+#player-modal #btn-close-player{margin:0!important;border:1px solid rgba(176,255,38,.25)!important;background:linear-gradient(120deg,#a8f526,#d2ff42)!important;color:#142000!important;font-weight:900!important}
 #player-modal #player-servers-bar,#player-modal .player-servers-bar{
- margin:10px 12px 10px!important;
- flex-shrink:0!important;
+ display:flex!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;
+ align-items:center!important;gap:8px!important;width:auto!important;height:auto!important;min-height:46px!important;
+ margin:8px 10px!important;padding:7px 10px!important;overflow-x:auto!important;overflow-y:visible!important;
+ border:1px solid rgba(174,220,58,.18)!important;border-radius:12px!important;
+ background:linear-gradient(110deg,#0b121c,#111b27)!important;box-shadow:0 4px 14px rgba(0,0,0,.2)!important
 }
-#player-modal #video-wrapper{min-height:0!important;flex:1 1 auto!important}
-#player-modal #cz-player-details{flex:0 0 auto!important}
-#player-modal #btn-close-player{margin:0!important}
+#player-modal #player-servers-bar:empty,#player-modal .player-servers-bar:empty{display:none!important}
+#player-modal #video-wrapper{position:relative!important;flex:1 1 auto!important;min-height:180px!important;margin:0 10px!important;overflow:hidden!important;border:1px solid rgba(174,220,58,.16)!important;border-radius:14px!important;background:#000!important}
+#player-modal #player-video{width:100%!important;height:100%!important;object-fit:contain!important}
+#player-modal #cz-player-details{flex:0 0 auto!important;margin:0!important;padding:16px 14px 20px!important;background:#03070c!important}
+#player-modal .cz-player-kicker{font-size:11px!important;letter-spacing:.12em!important;color:#b6f62d!important;font-weight:900!important}
+#player-modal #cz-player-details-title{margin:7px 0!important;font-size:clamp(17px,3vw,22px)!important;line-height:1.28!important;font-weight:900!important;color:#f2f6ff!important}
+#player-modal .cz-player-meta{font-size:11px!important;line-height:1.5!important;color:#91a08e!important;letter-spacing:.06em!important}
+#player-modal .cz-player-actions{display:flex!important;flex-wrap:wrap!important;gap:9px!important;margin:14px 0 18px!important}
+#player-modal .cz-player-actions a{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:40px!important;padding:10px 15px!important;border-radius:999px!important;font-size:11px!important;font-weight:900!important;text-decoration:none!important}
+#player-modal .cz-community{display:flex!important;flex-direction:column!important;gap:12px!important;padding:16px!important;border:1px solid rgba(176,255,38,.14)!important;border-radius:18px!important;background:linear-gradient(145deg,#0c120b,#0b1013)!important}
+#player-modal .cz-community strong{display:block!important;color:#f0f4ff!important;font-size:15px!important}
+#player-modal .cz-community span{display:block!important;margin-top:5px!important;color:#a1a9a0!important;font-size:12px!important;line-height:1.5!important}
+#player-modal .cz-community a{display:flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;border-radius:999px!important;text-decoration:none!important;font-size:11px!important;font-weight:900!important}
 @media(max-width:620px){
- #player-modal{inset:68px 0 0!important;top:68px!important;max-height:calc(100dvh - 68px)!important}
- #player-modal .player-header{min-height:56px!important}
- #player-modal #player-servers-bar,#player-modal .player-servers-bar{margin:8px 8px 8px!important}
+ #player-modal{top:68px!important;max-height:calc(100dvh - 68px)!important}
+ #player-modal .player-header{min-height:54px!important;padding:8px 10px!important;gap:6px!important}
+ #player-modal .player-title{max-width:43%!important;font-size:11px!important}
+ #player-modal .player-nav{gap:5px!important}
+ #player-modal .player-nav .btn-header{min-height:31px!important;padding:7px 8px!important;font-size:9px!important}
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{margin:7px 8px!important;padding:7px 8px!important;min-height:40px!important}
+ #player-modal #video-wrapper{margin:0 8px!important;min-height:170px!important}
+ #player-modal #cz-player-details{padding:13px 10px 16px!important}
+ #player-modal .cz-player-actions{gap:7px!important;margin:12px 0 15px!important}
+ #player-modal .cz-community{padding:13px!important}
 }
+@media(prefers-reduced-motion:reduce){#player-modal *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
