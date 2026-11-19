@@ -1220,6 +1220,15 @@ async function main(){
 
   var channels = data.channels || [];
 
+  // External iframe channel: SONY - TELEVISION NAME (ID 291).
+  channels.unshift({
+    id: "sony-television-iframe",
+    name: "SONY - TELEVISION NAME",
+    logo: "",
+    url: "https://sflexzio.pages.dev/p?id=291",
+    source: "iframe"
+  });
+
   // External iframe channel: S-3 HD (ID 892).
   channels.unshift({
     id: "s-3-hd-iframe",
