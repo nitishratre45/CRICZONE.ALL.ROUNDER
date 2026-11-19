@@ -12,3 +12,6 @@ body>header,header:not(.cz-watch-nav){position:relative!important;top:auto!impor
 /* Restore server bar and place it clearly below the shared navbar */
 #player-servers-bar,.player-servers-bar{display:flex!important;visibility:visible!important;height:auto!important;min-height:0!important;margin:10px 12px 8px!important;padding:8px 10px!important;border:1px solid rgba(255,184,0,.22)!important;overflow:visible!important;position:relative!important;top:auto!important;z-index:5!important}
 #player-servers-bar:empty,.player-servers-bar:empty{display:none!important}
+
+/* Final Willow server bar placement: add more separation from navbar */
+#player-servers-bar,.player-servers-bar{margin-top:24px!important;margin-bottom:10px!important;transform:translateY(0)!important;clear:both!important}
