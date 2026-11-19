@@ -1,0 +1,29 @@
+/* CRICZONE WATCH — responsive premium sports OTT polish */
+:root{--cz-bg:#07090e;--cz-panel:#10151f;--cz-panel2:#161e2b;--cz-border:rgba(255,255,255,.09);--cz-text:#f4f7fb;--cz-muted:#98a6ba;--cz-accent:#22d3ee;--cz-lime:#c7f464}
+html{scrollbar-color:#293342 #080b11;scrollbar-width:thin}
+body{overflow-x:hidden!important}
+img,video,iframe{max-width:100%}
+button,a,[role=button]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--cz-accent);outline-offset:3px}
+@media(max-width:680px){
+  body{font-size:14px}
+  header,.header,.header-inner,#hdr{gap:10px!important}
+  main,.container,#listing{width:100%!important;max-width:100%!important;padding-left:14px!important;padding-right:14px!important}
+  nav,.nav,.nav-links,.header-actions,.controls-bar,.filter-tabs{flex-wrap:wrap!important;max-width:100%;min-width:0}
+  .brand,.logo,.brand-mark{flex-shrink:0}
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .match-card,.channel-card,.card{min-width:0!important;border-radius:14px!important}
+  .card-body,.match-card-body{padding:12px!important}
+  .card-title,.match-title{font-size:clamp(13px,3.7vw,16px)!important;overflow-wrap:anywhere}
+  .search-box,input[type=search],input[type=text]{width:100%;max-width:100%;min-width:0}
+  .player-wrap,.player-container,.video-wrap,.video-container,#player-container,#player{width:100%!important;max-width:100%!important;min-width:0!important}
+  video,iframe{display:block;width:100%!important;max-width:100%!important}
+}
+@media(max-width:380px){
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:minmax(0,1fr)!important}
+  .header-inner,.header,#hdr{padding-inline:12px!important}
+}
+@media(min-width:681px) and (max-width:1024px){
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
