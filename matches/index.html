@@ -798,6 +798,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
 @media(max-width:900px){header{padding:12px 16px!important}.header-nav{display:none!important}.hamburger{display:flex!important}.mobile-menu{background:rgba(7,11,19,.96)!important;backdrop-filter:blur(16px)!important;border:1px solid rgba(56,189,248,.15)!important;border-radius:18px!important;margin:10px 14px!important;padding:12px!important}.mobile-menu a{padding:13px 15px!important;border-radius:12px!important}.mobile-menu a:hover{background:rgba(56,189,248,.08)!important}#match-quicknav{padding:0 14px;gap:8px}#match-quicknav a{padding:10px 12px;font-size:12px}}
 @media(prefers-reduced-motion:reduce){#match-quicknav a,header .header-nav a{transition:none!important}}
 </style><link rel="stylesheet" href="matches-health.css" data-criczone-matches-health>
+<link rel="stylesheet" href="matches-navbar.css">
 </head>
 <body id="top">
 
@@ -1148,6 +1149,24 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           mobileMenu.classList.remove('open');
           hamburger.setAttribute('aria-expanded', 'false');
         });
+      });
+    }
+
+    
+    // Mobile navigation: close on outside tap or Escape.
+    if (hamburger && mobileMenu) {
+      document.addEventListener('click', (event) => {
+        if (mobileMenu.classList.contains('open') && !mobileMenu.contains(event.target) && !hamburger.contains(event.target)) {
+          mobileMenu.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+          mobileMenu.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.focus();
+        }
       });
     }
 
