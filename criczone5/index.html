@@ -641,6 +641,47 @@ body:has(#playerView:not([hidden])) #viewerBadge{top:95px!important;right:14px!i
  }
 }
 
+/* CRICZONE5 HOME: restore the normal compact horizontal visitor badge.
+   Player view styles are intentionally untouched. */
+body:has(#home:not([hidden])) #viewerBadge{
+ position:fixed!important;display:inline-flex!important;flex-direction:row!important;
+ align-items:center!important;justify-content:center!important;gap:0!important;
+ width:auto!important;height:auto!important;min-width:0!important;
+ left:auto!important;right:12px!important;top:auto!important;bottom:14px!important;
+ padding:3px 5px!important;border:1px solid rgba(70,235,210,.48)!important;
+ border-radius:8px!important;background:linear-gradient(145deg,rgba(8,31,39,.97),rgba(3,12,21,.96))!important;
+ box-shadow:0 4px 14px rgba(0,0,0,.35)!important;
+ overflow:visible!important;white-space:nowrap!important;
+}
+body:has(#home:not([hidden])) #viewerBadge .watching-total-label,
+body:has(#home:not([hidden])) #viewerBadge .watching-live-label{
+ width:auto!important;height:auto!important;min-width:0!important;
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:3px!important;padding:2px 4px!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ font-size:7px!important;line-height:1.2!important;letter-spacing:.3px!important;
+}
+body:has(#home:not([hidden])) #viewerBadge .watching-live-label{
+ border-left:1px solid rgba(70,235,210,.25)!important;
+}
+body:has(#home:not([hidden])) #viewerBadge .watching-total-label:before,
+body:has(#home:not([hidden])) #viewerBadge .watching-live-label:before{display:none!important}
+body:has(#home:not([hidden])) #viewerBadge #totalVisits,
+body:has(#home:not([hidden])) #viewerBadge #liveWatching{
+ display:inline-block!important;min-width:14px!important;width:auto!important;height:auto!important;
+ padding:1px 3px!important;border:0!important;border-radius:4px!important;
+ background:linear-gradient(135deg,#8fffea,#2bd9b7)!important;
+ color:#071b20!important;box-shadow:none!important;font-size:8px!important;
+ font-weight:950!important;line-height:1.1!important;text-align:center!important;
+}
+body:has(#home:not([hidden])) #viewerBadge #counterServer{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ margin-left:4px!important;padding:2px 4px!important;min-width:19px!important;
+ border-left:1px solid rgba(70,235,210,.25)!important;border-radius:3px!important;
+ background:rgba(70,235,210,.12)!important;color:#8fffea!important;
+ font:900 7px/1.1 Inter,system-ui,sans-serif!important;
+}
+
 /* Active counter server indicator: S1=Primary, S2-S5=Backups. */
 #viewerBadge #counterServer{
  display:inline-flex!important;align-items:center!important;justify-content:center!important;
