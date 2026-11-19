@@ -530,6 +530,20 @@ img{display:block;max-width:100%}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* Global CRICZONE watch navbar */
+.cz-watch-nav{position:sticky;top:0;z-index:150;width:100%;min-height:70px;padding:0 clamp(14px,3.2vw,42px);display:flex;align-items:center;gap:clamp(16px,2vw,30px);background:linear-gradient(110deg,rgba(5,10,18,.97),rgba(10,17,29,.96));border-bottom:1px solid rgba(70,155,255,.14);box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(18px)}
+.cz-watch-logo{display:flex;align-items:center;gap:3px;white-space:nowrap;text-decoration:none;font-family:var(--font-d);font-size:clamp(23px,2.5vw,30px);font-weight:800;letter-spacing:-.06em;color:#f7f9fd}
+.cz-watch-logo{color:#51aaff}.cz-watch-logo span{color:#f7f9fd}.cz-watch-logo i{width:8px;height:8px;border-radius:50%;background:#35c7f4;box-shadow:0 0 14px #35c7f477;margin-left:4px}
+.cz-watch-links{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1.7vw,24px);margin-left:auto}
+.cz-watch-links a{color:#91a2b8;text-decoration:none;font-size:14px;font-weight:700;padding:9px 3px;white-space:nowrap;transition:color .18s ease}
+.cz-watch-links a:hover,.cz-watch-links a.active{color:#f4f8ff}.cz-watch-links a.active{position:relative}.cz-watch-links a.active:after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:4px;background:#3dbdff;box-shadow:0 0 9px #3dbdff55}
+.cz-watch-telegram{white-space:nowrap;text-decoration:none;padding:11px 17px;border-radius:999px;background:linear-gradient(115deg,#168fe5,#416cf0);color:#fff;font-size:13px;font-weight:800;box-shadow:0 8px 20px #1e72db25}
+.cz-watch-toggle{display:none;width:42px;height:42px;border:1px solid #29394b;border-radius:12px;background:#121b28;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}.cz-watch-toggle span{width:18px;height:2px;background:#e6f0fc;border-radius:3px;transition:.2s}.cz-watch-toggle[aria-expanded=true] span:first-child{transform:translateY(7px) rotate(45deg)}.cz-watch-toggle[aria-expanded=true] span:nth-child(2){opacity:0}.cz-watch-toggle[aria-expanded=true] span:last-child{transform:translateY(-7px) rotate(-45deg)}
+.cz-watch-mobile{display:none;position:absolute;top:calc(100% + 9px);right:12px;left:12px;padding:9px;background:rgba(8,13,22,.98);border:1px solid #29394b;border-radius:16px;box-shadow:0 20px 50px #0009;backdrop-filter:blur(18px);max-height:calc(100dvh - 90px);overflow:auto}.cz-watch-mobile a{display:block;text-decoration:none;color:#a9b8ca;padding:12px 13px;border-radius:11px;font-size:14px;font-weight:700}.cz-watch-mobile a.active{color:#4db7ff;background:#112033}.cz-watch-mobile a:hover{background:#162233;color:white}.cz-watch-mobile.open{display:block;animation:cz-watch-in .16s ease-out}@keyframes cz-watch-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1020px){.cz-watch-links{display:none}.cz-watch-toggle{display:flex}.cz-watch-telegram{margin-left:auto}}
+@media(max-width:520px){.cz-watch-nav{min-height:60px;padding:0 12px;gap:10px}.cz-watch-logo{font-size:24px}.cz-watch-telegram{padding:9px 12px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.cz-watch-mobile.open{animation:none}.cz-watch-toggle span{transition:none}}
 </style>
 <style id="cz-header-refresh">.header{position:sticky!important;top:0!important;z-index:500!important;background:rgba(7,11,18,.92)!important;backdrop-filter:blur(18px)!important;border-bottom:1px solid rgba(56,189,248,.14)!important;box-shadow:0 10px 30px rgba(0,0,0,.2)!important;padding:12px clamp(14px,3vw,30px)!important}.brand-mark{box-shadow:0 0 22px rgba(0,229,176,.22)!important;border-radius:13px!important}.join-btn{border-radius:999px!important;background:linear-gradient(135deg,#0797df,#5368e8)!important;box-shadow:0 8px 22px rgba(30,130,230,.22)!important}@media(max-width:700px){.header{padding:10px 12px!important}.brand-text h1{font-size:18px!important}}</style><link rel="stylesheet" href="../../matches-health.css" data-criczone-matches-health>
 <link rel="stylesheet" href="../watch-premium.css" data-criczone-watch-premium>
@@ -537,6 +551,7 @@ img{display:block;max-width:100%}
 </head>
 
 <body>
+<nav class="cz-watch-nav" aria-label="CRICZONE navigation"><a class="cz-watch-logo" href="/matches/">CRIC<span>ZONE</span><i></i></a><div class="cz-watch-links"><a href="/matches/">Home</a><a href="/matches/watch/football/">Football</a><a href="/matches/watch/cricket/" class="active">Cricket</a><a href="/matches/watch/fancode/">FanCode</a><a href="/matches/watch/willow/">Willow</a><a href="/matches/watch/sonyliv/">SonyLIV</a><a href="/matches/watch/prime/">Prime</a></div><a class="cz-watch-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Telegram ↗</a><button class="cz-watch-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button><div class="cz-watch-mobile"><a href="/matches/">Home</a><a href="/matches/watch/football/">Football</a><a href="/matches/watch/cricket/" class="active">Cricket</a><a href="/matches/watch/fancode/">FanCode</a><a href="/matches/watch/willow/">Willow</a><a href="/matches/watch/sonyliv/">SonyLIV</a><a href="/matches/watch/prime/">Prime</a><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Telegram ↗</a></div></nav>
 
 <!-- ==================== TELEGRAM POPUP ==================== -->
 <div id="tgOverlay">
@@ -1551,5 +1566,6 @@ setInterval(() => { if(window.__booted) renderHub(); }, 30000);
 setInterval(() => { if(window.__booted && !location.hash.includes("watch")) loadData(); }, 120000);
 </script>
 <script async src=""></script>
+<script>(()=>{const t=document.querySelector('.cz-watch-toggle'),m=document.querySelector('.cz-watch-mobile');if(!t||!m)return;const close=()=>{m.classList.remove('open');t.setAttribute('aria-expanded','false')};t.addEventListener('click',()=>{const open=!m.classList.contains('open');m.classList.toggle('open',open);t.setAttribute('aria-expanded',String(open))});document.addEventListener('click',e=>{if(m.classList.contains('open')&&!m.contains(e.target)&&!t.contains(e.target))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});m.querySelectorAll('a').forEach(a=>a.addEventListener('click',close))})();</script>
 </body>
 </html>
