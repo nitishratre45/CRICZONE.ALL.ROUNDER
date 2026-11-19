@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from https://sflexzio.pages.dev/ by HTTrack Website Copier/3.x [XR&CO], Thu, 19 Nov 2026 06:24:26 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+  <meta charset="UTF-8">
+  <title>StreamFlexTv — Live Channels</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --surface2: #1e1e1e;
+      --border: rgba(255,255,255,0.08); --accent: #e50914; --accent2: #ff3a3a;
+      --text: #ffffff; --text2: #a0a0a0; --text3: #6b6b6b;
+      --radius: 14px; --glow: rgba(229,9,20,0.3);
+    }
+    [data-theme="ocean"]  { --accent:#00b4d8; --accent2:#90e0ef; --glow:rgba(0,180,216,0.3); }
+    [data-theme="purple"] { --accent:#9b5de5; --accent2:#c77dff; --glow:rgba(155,93,229,0.3); }
+    [data-theme="gold"]   { --accent:#f4a261; --accent2:#ffd166; --glow:rgba(244,162,97,0.3); }
+    [data-theme="mint"]   { --accent:#06d6a0; --accent2:#80ffdb; --glow:rgba(6,214,160,0.3); }
+    [data-theme="cyber"]  { --accent:#ff00ff; --accent2:#ff80ff; --glow:rgba(255,0,255,0.3); }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh; overflow-x:hidden; }
+
+    .bg-layer { position:fixed; inset:0; background-image:url('https://postimg.cc/xJFs7rnw'); background-size:cover; background-position:center; opacity:0.06; z-index:0; pointer-events:none; }
+
+    /* LOADING */
+    #page-loading {
+      position:fixed; inset:0; background:var(--bg); z-index:9999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+    }
+    #page-loading.done { opacity:0; pointer-events:none; transition:opacity 0.5s ease; }
+    #page-loading.gone { display:none; }
+
+    /* SVG logo animation */
+    .sf-logo-wrap {
+      position:relative; display:flex; align-items:center; justify-content:center;
+      width:120px; height:120px; margin-bottom:28px;
+    }
+    .sf-ring {
+      position:absolute; inset:0; border-radius:50%;
+      border:3px solid transparent;
+      border-top-color:var(--accent);
+      border-right-color:rgba(229,9,20,0.4);
+      animation:ring-spin 1.2s linear infinite;
+    }
+    .sf-ring-2 {
+      position:absolute; inset:8px; border-radius:50%;
+      border:1.5px solid transparent;
+      border-bottom-color:rgba(229,9,20,0.3);
+      border-left-color:rgba(229,9,20,0.15);
+      animation:ring-spin-rev 2s linear infinite;
+    }
+    @keyframes ring-spin { to{transform:rotate(360deg);} }
+    @keyframes ring-spin-rev { to{transform:rotate(-360deg);} }
+
+    .sf-icon-svg {
+      animation:logo-pop 0.6s cubic-bezier(.34,1.56,.64,1) both;
+      filter:drop-shadow(0 0 16px rgba(229,9,20,0.5));
+    }
+    @keyframes logo-pop { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
+
+    /* TV screen glow pulse */
+    .sf-screen-fill {
+      animation:screen-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes screen-pulse {
+      0%,100%{opacity:0.08} 50%{opacity:0.22}
+    }
+    /* Play triangle draw */
+    .sf-play-path {
+      stroke-dasharray:100;
+      stroke-dashoffset:100;
+      animation:draw-play 0.8s 0.4s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes draw-play { to{stroke-dashoffset:0;} }
+
+    /* Brand name */
+    .sf-brand {
+      font-size:22px; font-weight:800; letter-spacing:-0.5px;
+      color:var(--text); margin-bottom:6px;
+      animation:fade-up 0.5s 0.3s both;
+    }
+    .sf-brand span { color:var(--accent); }
+    .sf-tagline {
+      font-size:12px; color:var(--text3); letter-spacing:1px;
+      animation:fade-up 0.5s 0.5s both; margin-bottom:20px;
+    }
+    @keyframes fade-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .sf-tag-hl { color:var(--accent); font-weight:800; letter-spacing:0; }
+
+    /* Progress bar */
+    .sf-progress-bar {
+      width:160px; height:2px; background:rgba(255,255,255,0.08);
+      border-radius:2px; overflow:hidden;
+      animation:fade-up 0.4s 0.6s both;
+    }
+    .sf-progress-fill {
+      height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2));
+      border-radius:2px; transition:width 0.3s ease;
+      animation:progress-auto 2.5s 0.6s ease-out forwards;
+    }
+    @keyframes progress-auto {
+      0%{width:0%} 30%{width:40%} 60%{width:70%} 90%{width:88%} 100%{width:92%}
+    }
+
+    /* HEADER */
+    header { position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);padding:0 8px 0 4px; }
+    .header-inner { max-width:1400px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px; }
+    .logo { display:flex;align-items:center;gap:4px;text-decoration:none;flex-shrink:0; }
+    .logo-text { font-size:1.25rem;font-weight:800;color:var(--text);letter-spacing:-0.5px; }
+    .logo-text span { color:var(--accent); }
+    .header-search { flex:1;max-width:380px;position:relative; }
+    .header-search svg { position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text3);pointer-events:none; }
+    .header-search input { width:100%;padding:10px 14px 10px 40px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s,box-shadow 0.2s; }
+    .header-search input:focus { border-color:var(--accent);box-shadow:0 0 0 3px var(--glow); }
+    .header-search input::placeholder { color:var(--text3); }
+    .header-actions { display:flex;align-items:center;gap:8px;flex-shrink:0; }
+    .icon-btn { width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all 0.2s; }
+    .icon-btn:hover { border-color:var(--accent);color:var(--accent); }
+    .icon-btn svg { width:20px;height:20px; }
+    .theme-btn { padding:0 8px;height:32px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text2);font-size:11px;font-weight:500;font-family:inherit;transition:all 0.2s;white-space:nowrap; }
+    .theme-btn:hover { border-color:var(--accent);color:var(--text); }
+    .theme-btn svg { width:13px;height:13px; }
+
+    /* HERO */
+    .hero { position:relative;z-index:1;text-align:center;padding:28px 20px 32px; }
+    .hero-eyebrow { display:inline-flex;align-items:center;gap:8px;background:rgba(229,9,20,0.18);border:1px solid rgba(229,9,20,0.4);border-radius:50px;padding:7px 20px;font-size:13px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px; }
+    .live-dot-sm { width:8px;height:8px;background:#e50914;border-radius:50%;animation:blink 1.2s ease-in-out infinite;flex-shrink:0; }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.7)} }
+    .hero h1 { font-size:clamp(2.8rem,9vw,5rem);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px;color:#fff; }
+    .hero h1 em { font-style:normal;color:var(--accent); }
+    .hero p { font-size:1.05rem;color:rgba(255,255,255,0.5);max-width:520px;margin:0 auto 36px;line-height:1.65; }
+    .hero-stats { display:flex;justify-content:center;gap:0;flex-wrap:nowrap; }
+    .stat { text-align:center;flex:1; }
+    .stat-num { font-size:clamp(1.6rem,5vw,2.2rem);font-weight:900;color:var(--accent);line-height:1; }
+    .stat-label { font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:6px; }
+
+    /* PAGE SLIDE TRANSITION */
+    #sf-slide-overlay { position:fixed;inset:0;background:var(--bg);z-index:99990;transform:translateX(100%);transition:transform 0.32s cubic-bezier(.4,0,.2,1);pointer-events:none; }
+    #sf-slide-overlay.slide-in { transform:translateX(0);pointer-events:auto; }
+
+    /* CONTROLS */
+    .controls-bar { position:relative;z-index:1;max-width:1400px;margin:0 auto 12px;padding:14px 12px 0;display:flex;gap:10px;align-items:center; }
+    .select-wrap { position:relative;flex:1; }
+    .select-wrap svg { position:absolute;right:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:rgba(255,255,255,0.4);pointer-events:none; }
+    .ctrl-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:rgba(255,255,255,0.55);pointer-events:none; }
+    .select-wrap select { width:100%;padding:11px 36px 11px 40px;background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:var(--text);font-size:13px;font-weight:600;font-family:inherit;outline:none;appearance:none;cursor:pointer;transition:border-color 0.2s; }
+    .select-wrap select:focus,.select-wrap select:hover { border-color:rgba(229,9,20,0.5); }
+    .select-wrap option { background:#1e1e1e; }
+
+    /* TABS */
+    .tab-bar { position:relative;z-index:1;max-width:1400px;margin:0 auto 16px;padding:0 12px;display:flex;gap:8px; }
+    .tab { padding:10px 20px;background:#1e1e1e;border:1.5px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;display:flex;align-items:center;gap:7px;flex:1;justify-content:center; }
+    .tab svg { width:15px;height:15px; }
+    .tab:hover { border-color:rgba(229,9,20,0.4);color:#fff; }
+    .tab.active { background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(229,9,20,0.35); }
+
+    /* GRID */
+    .grid-wrap { position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 12px 60px; }
+    .channel-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
+    @media(min-width:600px){ .channel-grid{grid-template-columns:repeat(3,1fr);} }
+    @media(min-width:900px){ .channel-grid{grid-template-columns:repeat(4,1fr);} }
+    @media(min-width:1200px){ .channel-grid{grid-template-columns:repeat(5,1fr);} }
+
+    /* CARD — horizontal layout matching screenshot */
+    .card {
+      background:#1a1a1a;
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px;
+      padding:14px 12px 12px;
+      position:relative;
+      cursor:pointer;
+      transition:border-color 0.2s,box-shadow 0.2s;
+      overflow:hidden;
+      animation:fadeUp 0.35s ease forwards;
+      display:flex;
+      flex-direction:column;
+      gap:0;
+    }
+    .card::before {
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:40%;
+      background:linear-gradient(180deg,rgba(229,9,20,0.07) 0%,transparent 100%);
+      border-radius:16px 16px 0 0;
+      pointer-events:none;
+    }
+    .card:hover { border-color:rgba(229,9,20,0.5);box-shadow:0 8px 24px rgba(229,9,20,0.15); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
+
+    /* card top row: LIVE badge left, star right */
+    .card-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;position:relative;z-index:2; }
+    .badge-live { display:flex;align-items:center;gap:4px;background:rgba(229,9,20,0.92);padding:3px 9px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase; }
+    .fav-btn { width:28px;height:28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0; }
+    .fav-btn svg { width:14px;height:14px;fill:none;stroke:rgba(255,255,255,0.5);stroke-width:2;transition:all 0.2s; }
+    .fav-btn:hover svg,.fav-btn.active svg { fill:#ffd700;stroke:#ffd700; }
+    .fav-btn.active { background:rgba(255,215,0,0.12);border-color:rgba(255,215,0,0.4); }
+
+    /* card body row: logo left, info right */
+    .card-body { display:flex;align-items:center;gap:12px;margin-bottom:12px;position:relative;z-index:2; }
+    .ch-logo { width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1);background:#222;padding:4px;flex-shrink:0;transition:all 0.25s; }
+    .card:hover .ch-logo { border-color:var(--accent); }
+    .ch-info { flex:1;min-width:0; }
+    .ch-name { font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff; }
+    .ch-group { font-size:11px;color:rgba(255,255,255,0.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+
+    /* watch button */
+    .watch-btn { display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 0;background:var(--accent);color:#fff;font-size:12px;font-weight:700;border-radius:20px;text-decoration:none;transition:all 0.2s;box-shadow:0 3px 12px rgba(229,9,20,0.35);position:relative;z-index:2;width:100%; }
+    .watch-btn svg { width:12px;height:12px; }
+    .watch-btn:hover { opacity:0.9;box-shadow:0 5px 18px rgba(229,9,20,0.5); }
+
+    /* EMPTY / FOOTER */
+    .empty { text-align:center;padding:60px 20px;color:var(--text3); }
+    .empty svg { width:48px;height:48px;margin-bottom:16px;color:var(--text3); }
+    .empty h3 { font-size:18px;color:var(--text2);margin-bottom:6px; }
+    footer { position:relative;z-index:1;text-align:center;padding:24px 20px;color:var(--text3);border-top:1px solid var(--border);font-size:13px; }
+    footer strong { color:var(--accent); }
+    .hidden { display:none !important; }
+
+    /* THEME MODAL */
+    .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s; }
+    .modal-overlay.open { opacity:1;pointer-events:auto; }
+    .modal { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;padding:24px 20px 32px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.34,1.12,.64,1); }
+    .modal-overlay.open .modal { transform:translateY(0); }
+    .modal-title { font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between; }
+    .modal-close { width:30px;height:30px;border-radius:50%;background:var(--surface2);border:none;color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+    .theme-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+    .theme-option { padding:14px 10px;background:var(--surface2);border:2px solid transparent;border-radius:10px;cursor:pointer;text-align:center;transition:all 0.2s;font-family:inherit;color:var(--text); }
+    .theme-option:hover { border-color:var(--border); }
+    .theme-option.selected { border-color:var(--accent); }
+    .theme-swatch { width:32px;height:32px;border-radius:50%;margin:0 auto 8px; }
+    .theme-name { font-size:12px;font-weight:600;color:var(--text2); }
+
+    /* DRAWER */
+    .ch-drawer { position:fixed;top:0;right:-320px;width:300px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:500;transition:right 0.3s cubic-bezier(.34,1.12,.64,1);display:flex;flex-direction:column;overflow:hidden; }
+    .ch-drawer.open { right:0; }
+    .drawer-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:499;opacity:0;pointer-events:none;transition:opacity 0.3s; }
+    .drawer-overlay.open { opacity:1;pointer-events:auto; }
+    .drawer-header { padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+    .drawer-title { font-size:15px;font-weight:700; }
+    .drawer-close { width:32px;height:32px;background:var(--surface2);border:none;color:var(--text2);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+    .drawer-close svg { width:18px;height:18px; }
+    .drawer-search { padding:12px;border-bottom:1px solid var(--border); }
+    .drawer-search input { width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none; }
+    .drawer-search input:focus { border-color:var(--accent); }
+    .drawer-cats { display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none; }
+    .drawer-cats::-webkit-scrollbar { display:none; }
+    .cat-chip { padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all 0.15s; }
+    .cat-chip.active { background:var(--accent);border-color:var(--accent);color:#fff; }
+    .drawer-list { flex:1;overflow-y:auto;padding:8px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent; }
+    .drawer-list::-webkit-scrollbar { width:4px; }
+    .drawer-list::-webkit-scrollbar-thumb { background:var(--border);border-radius:2px; }
+    .drawer-item { display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:var(--text); }
+    .drawer-item:hover { background:var(--surface2); }
+    .drawer-item img { width:38px;height:38px;border-radius:8px;object-fit:cover;background:var(--surface2);flex-shrink:0; }
+    .drawer-ch-info { flex:1;min-width:0; }
+    .drawer-ch-name { font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .drawer-ch-cat { font-size:10px;color:var(--text3);margin-top:2px; }
+    .drawer-play-icon { width:28px;height:28px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity 0.2s; }
+    .drawer-item:hover .drawer-play-icon { opacity:1; }
+    .drawer-play-icon svg { width:12px;height:12px;fill:white; }
+
+
+    /* TELEGRAM POPUP — center overlay */
+    #tg-popup { position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px); }
+    #tg-popup.show { display:flex; }
+    .tg-card { background:#1a2535;border:1px solid rgba(41,182,246,0.3);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:0;box-shadow:0 16px 48px rgba(0,0,0,0.7);width:300px;max-width:90vw;position:relative;animation:tg-pop 0.4s cubic-bezier(.34,1.12,.64,1) forwards; }
+    @keyframes tg-pop { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+    .tg-icon { width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#29b6f6,#0288d1);display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 8px 24px rgba(41,182,246,0.35); }
+    .tg-icon svg { width:34px;height:34px;fill:white; }
+    .tg-title { font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;text-align:center; }
+    .tg-sub { font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;text-align:center;line-height:1.5; }
+    .tg-btns { display:flex;flex-direction:column;gap:10px;width:100%; }
+    .tg-join-btn { display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;background:linear-gradient(135deg,#29b6f6,#0288d1);color:#fff;font-size:14px;font-weight:700;border-radius:12px;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 16px rgba(41,182,246,0.4);font-family:inherit; }
+    .tg-join-btn:hover { transform:scale(1.03);box-shadow:0 6px 24px rgba(41,182,246,0.55); }
+    .tg-already-btn { display:flex;align-items:center;justify-content:center;padding:11px 20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;border-radius:12px;cursor:pointer;transition:all 0.2s;font-family:inherit; }
+    .tg-already-btn:hover { background:rgba(255,255,255,0.1);color:#fff; }
+    .tg-close { position:absolute;top:12px;right:12px;width:28px;height:28px;background:rgba(255,255,255,0.08);border:none;border-radius:50%;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s; }
+    .tg-close:hover { background:rgba(255,255,255,0.15);color:#fff; }
+    @media(max-width:768px){.header-inner{gap:10px;}.logo-text{font-size:1.1rem;}.hero h1{font-size:2.2rem;letter-spacing:-1px;}.hero-stats{gap:20px;}}
+    @media(max-width:500px){.controls-bar{flex-direction:row;}.select-wrap{min-width:0;}}
+
+
+  </style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div id="sf-slide-overlay"></div>
+
+
+<!-- PAGE LOADING -->
+<div id="page-loading">
+  <div class="sf-logo-wrap">
+    <div class="sf-ring"></div>
+    <div class="sf-ring-2"></div>
+    <svg class="sf-icon-svg" width="72" height="72" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- TV screen glow -->
+      <rect class="sf-screen-fill" x="8" y="22" width="84" height="64" rx="14" fill="#e50914"/>
+      <!-- Antenna left -->
+      <line x1="38" y1="18" x2="26" y2="4" stroke="url(#lg_load)" stroke-width="6" stroke-linecap="round"/>
+      <!-- Antenna right -->
+      <line x1="62" y1="18" x2="74" y2="4" stroke="url(#lg_load)" stroke-width="6" stroke-linecap="round"/>
+      <!-- TV body -->
+      <rect x="8" y="22" width="84" height="64" rx="14" stroke="url(#lg_load)" stroke-width="6" fill="none"/>
+      <!-- Play triangle (animated draw) -->
+      <path class="sf-play-path" d="M38 42 L38 68 L68 55 Z" stroke="url(#lg_load)" stroke-width="5" stroke-linejoin="round" fill="none"/>
+      <defs>
+        <linearGradient id="lg_load" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#e50914"/>
+          <stop offset="100%" stop-color="#ff3a3a"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="sf-brand">Stream<span>Flex</span>Tv</div>
+  <div class="sf-tagline"><span class="sf-tag-hl">100% AdsFree</span> &#x25CF; Smooth &amp; Faster</div>
+  <div class="sf-progress-bar"><div class="sf-progress-fill" id="sf-prog"></div></div>
+</div>
+
+<!-- Channel Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- Channel Drawer -->
+<div class="ch-drawer" id="chDrawer">
+  <div class="drawer-header">
+    <span class="drawer-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px;color:var(--accent)"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      All Channels
+    </span>
+    <button class="drawer-close" onclick="closeDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-search">
+    <input type="text" placeholder="Search channels..." id="drawerSearch" oninput="filterDrawer()" autocomplete="off">
+  </div>
+  <div class="drawer-cats" id="drawerCats">
+    <button class="cat-chip active" onclick="setDrawerCat('all',this)">All</button>
+  </div>
+  <div class="drawer-list" id="drawerList"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <svg class="logo-svg" width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Antenna left -->
+        <line x1="38" y1="18" x2="26" y2="4" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
+        <!-- Antenna right -->
+        <line x1="62" y1="18" x2="74" y2="4" stroke="url(#lg)" stroke-width="6" stroke-linecap="round"/>
+        <!-- TV body -->
+        <rect x="8" y="22" width="84" height="64" rx="14" stroke="url(#lg)" stroke-width="6" fill="none"/>
+        <!-- Play triangle -->
+        <path d="M38 42 L38 68 L68 55 Z" stroke="url(#lg)" stroke-width="5" stroke-linejoin="round" fill="none"/>
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="var(--accent)"/>
+            <stop offset="100%" stop-color="var(--accent2)"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-text">Stream<span>Flex</span>Tv</span>
+    </a>
+    <div class="header-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchBox" placeholder="Search channels..." oninput="filterChannels()" autocomplete="off">
+    </div>
+    <div class="header-actions">
+      <a class="icon-btn" href="https://t.me/+lgXvNYoyzhI2YWM1" target="_blank" rel="noopener" title="Join Telegram">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.223l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.978.336z"/></svg>
+      </a>
+      <button class="theme-btn" onclick="openThemeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        Theme
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <div class="live-dot-sm"></div>
+    Live Now — <span id="stat-count">...</span> Channels
+  </div>
+  <h1>Watch <em>Live TV</em><br><em>Anywhere</em> Anytime</h1>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num" id="s-channels">—</div><div class="stat-label">Channels</div></div>
+    <div class="stat"><div class="stat-num" id="s-categories">—</div><div class="stat-label">Categories</div></div>
+    <div class="stat"><div class="stat-num" id="s-languages">—</div><div class="stat-label">Languages</div></div>
+    <div class="stat"><div class="stat-num">HD</div><div class="stat-label">Quality</div></div>
+  </div>
+</div>
+
+<!-- CONTROLS BAR -->
+<div class="controls-bar">
+  <div class="select-wrap">
+    <svg class="ctrl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <select id="groupSelect" onchange="filterChannels()"><option value="all">All Categories</option></select>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="select-wrap">
+    <svg class="ctrl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+    <select id="langSelect" onchange="filterChannels()"><option value="all">All Languages</option></select>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('all',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    All Channels
+  </button>
+  <button class="tab" onclick="showTab('favorites',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+    Favorites
+  </button>
+</div>
+
+<!-- GRIDS -->
+<div class="grid-wrap">
+  <div class="channel-grid hidden" id="favGrid"></div>
+  <div class="channel-grid" id="allGrid"></div>
+  <div class="empty hidden" id="emptyState">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <h3>No channels found</h3>
+    <p>Try adjusting your filters</p>
+  </div>
+</div>
+
+<footer>
+  <p>Powered by <strong>StreamFlexTv</strong> &nbsp;•&nbsp; <strong id="footer-count">0</strong> Live Channels</p>
+</footer>
+
+<!-- THEME MODAL -->
+<div class="modal-overlay" id="themeModal" onclick="closeThemeModal(event)">
+  <div class="modal">
+    <div class="modal-title">Choose Theme<button class="modal-close" onclick="closeThemeModal()">✕</button></div>
+    <div class="theme-grid">
+      <button class="theme-option selected" data-theme="default" onclick="setTheme('default',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#e50914,#ff3a3a)"></div><div class="theme-name">Default</div></button>
+      <button class="theme-option" data-theme="ocean" onclick="setTheme('ocean',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#00b4d8,#90e0ef)"></div><div class="theme-name">Ocean</div></button>
+      <button class="theme-option" data-theme="purple" onclick="setTheme('purple',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#9b5de5,#c77dff)"></div><div class="theme-name">Purple</div></button>
+      <button class="theme-option" data-theme="gold" onclick="setTheme('gold',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#f4a261,#ffd166)"></div><div class="theme-name">Gold</div></button>
+      <button class="theme-option" data-theme="mint" onclick="setTheme('mint',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#06d6a0,#80ffdb)"></div><div class="theme-name">Mint</div></button>
+      <button class="theme-option" data-theme="cyber" onclick="setTheme('cyber',this)"><div class="theme-swatch" style="background:linear-gradient(135deg,#ff00ff,#ff80ff)"></div><div class="theme-name">Cyber</div></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const _e=atob,_u=_e('aHR0cHM6Ly9saXR0bGVjb2Rlci5kZXYvV2ViL3BsLnBocA=='),_k=_e('c2Z4X3cwcmszcl9zM2NyM3RfMjAyNA==');
+const _ta=atob('aHR0cHM6Ly9saXR0bGVjb2Rlci5kZXYvV2ViL3NmYXBpLnBocA==');
+function sfTrack(ch){fetch(_ta+'?track=1'+(ch?'&ch='+encodeURIComponent(ch):'')).catch(()=>{});}
+
+const PLAYER_PAGE = 'p.html';
+
+let allChannels = [], allGroups = [], allLanguages = [];
+let favs = JSON.parse(localStorage.getItem('sf_favs') || '[]');
+let currentTab = 'all';
+let drawerCat = 'all';
+
+// ── Parse M3U8 ──────────────────────────────────
+function parseM3U(text) {
+  const lines = text.split('\n');
+  const channels = [];
+  let cur = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line.startsWith('#EXTINF:')) {
+      const getId   = line.match(/tvg-id="([^"]*)"/);
+      const getGrp  = line.match(/group-title="([^"]*)"/);
+      const getLogo = line.match(/tvg-logo="([^"]*)"/);
+      const getLang = line.match(/tvg-language="([^"]*)"/);
+      const parts   = line.split(',');
+      const name    = parts.length > 1 ? parts[parts.length - 1].trim() : 'Unknown';
+      cur = {
+        id:    getId   ? getId[1]   : '',
+        group: getGrp  ? getGrp[1]  : '',
+        logo:  getLogo ? getLogo[1] : '',
+        lang:  getLang ? getLang[1] : 'Unknown',
+        name:  name || 'Unknown'
+      };
+    } else if (line.startsWith('http') && cur) {
+      cur.url = line;
+      channels.push(cur);
+      cur = null;
+    }
+  }
+  return channels;
+}
+
+function cardHTML(ch) {
+  const isFav = favs.includes(ch.id);
+  const noLogo = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect fill='%231e1e1e' width='72' height='72' rx='36'/%3E%3Ctext x='50%25' y='50%25' font-size='11' fill='%23555' text-anchor='middle' dy='.35em' font-family='sans-serif'%3ENo Logo%3C/text%3E%3C/svg%3E`;
+  return `<div class="card"
+    data-id="${esc(ch.id)}"
+    data-name="${esc(ch.name.toLowerCase())}"
+    data-group="${esc(ch.group.toLowerCase())}"
+    data-lang="${esc(ch.lang.toLowerCase())}">
+    <div class="card-top">
+      <div class="badge-live"><div class="live-dot-sm"></div>LIVE</div>
+      <button class="fav-btn${isFav?' active':''}" onclick="event.stopPropagation();toggleFav(this,'${esc(ch.id)}')" title="Favorite">
+        <svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      </button>
+    </div>
+    <div class="card-body">
+      <img class="ch-logo" src="${esc(ch.logo)}" alt="${esc(ch.name)}" onerror="this.src='${noLogo}'">
+      <div class="ch-info">
+        <div class="ch-name" title="${esc(ch.name)}">${esc(ch.name)}</div>
+        <div class="ch-group" title="${esc(ch.group)}">${esc(ch.group)}</div>
+      </div>
+    </div>
+    <a class="watch-btn" href="${PLAYER_PAGE}?id=${encodeURIComponent(ch.id)}" onclick="sfSlideGo(event,this);sfTrack('${esc(ch.name)}')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch
+    </a>
+  </div>`;
+}
+
+function drawerItemHTML(ch) {
+  const noLogo = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%231e1e1e' width='40' height='40' rx='8'/%3E%3C/svg%3E`;
+  return `<a class="drawer-item" href="${PLAYER_PAGE}?id=${encodeURIComponent(ch.id)}"
+    data-name="${esc(ch.name.toLowerCase())}"
+    data-group="${esc(ch.group.toLowerCase())}">
+    <img src="${esc(ch.logo)}" alt="" onerror="this.src='${noLogo}'">
+    <div class="drawer-ch-info">
+      <div class="drawer-ch-name">${esc(ch.name)}</div>
+      <div class="drawer-ch-cat">${esc(ch.group)}</div>
+    </div>
+    <div class="drawer-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+  </a>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Render grid ─────────────────────────────────
+function renderGrid() {
+  document.getElementById('allGrid').innerHTML = allChannels.map(cardHTML).join('');
+  document.getElementById('footer-count').textContent = allChannels.length;
+  document.getElementById('stat-count').textContent = allChannels.length;
+  document.getElementById('s-channels').textContent = allChannels.length + '+';
+  document.getElementById('s-categories').textContent = allGroups.length + '+';
+  document.getElementById('s-languages').textContent = allLanguages.length + '+';
+
+  // Category filter
+  const grpSel = document.getElementById('groupSelect');
+  grpSel.innerHTML = '<option value="all">All Categories</option>' +
+    allGroups.map(g => `<option value="${esc(g.toLowerCase())}">${esc(g)}</option>`).join('');
+
+  // Language filter
+  const langSel = document.getElementById('langSelect');
+  langSel.innerHTML = '<option value="all">All Languages</option>' +
+    allLanguages.map(l => `<option value="${esc(l.toLowerCase())}">${esc(l)}</option>`).join('');
+
+  // Drawer cats
+  const cats = document.getElementById('drawerCats');
+  cats.innerHTML = '<button class="cat-chip active" onclick="setDrawerCat(\'all\',this)">All</button>' +
+    allGroups.map(g => `<button class="cat-chip" onclick="setDrawerCat('${esc(g)}',this)">${esc(g)}</button>`).join('');
+
+  // Drawer list
+  document.getElementById('drawerList').innerHTML = allChannels.map(drawerItemHTML).join('');
+
+  // Apply saved favs styling
+  document.querySelectorAll('.card').forEach(c => {
+    if (favs.includes(c.dataset.id)) c.querySelector('.fav-btn').classList.add('active');
+  });
+}
+
+// ── Fetch & init ────────────────────────────────
+const CACHE_KEY = 'sf_m3u_cache';
+const CACHE_TTL = 15 * 60 * 1000; // 15 min
+
+function processChannels(text) {
+  allChannels = parseM3U(text);
+  const grpSet = new Set(), langSet = new Set();
+  allChannels.forEach(c => { if(c.group) grpSet.add(c.group); if(c.lang) langSet.add(c.lang); });
+  allGroups = [...grpSet].sort();
+  allLanguages = [...langSet].sort();
+  renderGrid();
+  const loader = document.getElementById('page-loading');
+  loader.classList.add('done');
+  setTimeout(() => loader.classList.add('gone'), 500);
+}
+
+async function fetchM3U(){const r=await fetch(_u,{signal:AbortSignal.timeout(8000),headers:{'X-SF-Worker-Auth':_k}});if(!r.ok)throw new Error('Playlist '+r.status);return await r.text();}
+
+async function init() {
+  sfTrack('');
+  // Restore theme FIRST so page looks right immediately
+  const t = localStorage.getItem('sf_theme') || 'default';
+  if (t && t !== 'default') {
+    document.body.dataset.theme = t;
+    document.querySelector(`[data-theme="${t}"]`)?.classList.add('selected');
+    document.querySelector('[data-theme="default"]')?.classList.remove('selected');
+  }
+
+  // Try cache first — instant load
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { text, ts } = JSON.parse(cached);
+      if (Date.now() - ts < CACHE_TTL) {
+        processChannels(text);
+        // Silently refresh in background
+        fetchM3U().then(t=>{
+          try { localStorage.setItem(CACHE_KEY, JSON.stringify({text:t, ts:Date.now()})); } catch(_){}
+        }).catch(()=>{});
+        return;
+      }
+    }
+  } catch(_) {}
+
+  // No cache — fetch fresh
+  /* fetching */
+  try {
+    const text = await fetchM3U();
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({text, ts:Date.now()})); } catch(_){}
+    processChannels(text);
+  } catch(e) {
+    // Try stale cache as fallback
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) { const {text} = JSON.parse(cached); processChannels(text); return; }
+    } catch(_) {}
+    /* failed — show UI anyway */
+    console.error(e);
+    const loader2 = document.getElementById('page-loading');
+    if (loader2) { loader2.classList.add('done'); setTimeout(() => loader2.classList.add('gone'), 500); }
+  }
+}
+
+// ── Favorites ───────────────────────────────────
+function toggleFav(btn, id) {
+  if (favs.includes(id)) { favs = favs.filter(f=>f!==id); btn.classList.remove('active'); }
+  else { favs.push(id); btn.classList.add('active'); }
+  localStorage.setItem('sf_favs', JSON.stringify(favs));
+  if (currentTab === 'favorites') renderFavs();
+}
+function renderFavs() {
+  const grid = document.getElementById('favGrid');
+  const favChannels = allChannels.filter(c => favs.includes(c.id));
+  if (favChannels.length === 0) {
+    grid.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg><h3>No favorites yet</h3><p>Tap ★ on any channel to add it here</p></div>';
+  } else {
+    grid.innerHTML = favChannels.map(cardHTML).join('');
+  }
+}
+
+// ── Tabs ────────────────────────────────────────
+function showTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'favorites') {
+    renderFavs();
+    document.getElementById('favGrid').classList.remove('hidden');
+    document.getElementById('allGrid').classList.add('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+  } else {
+    document.getElementById('favGrid').classList.add('hidden');
+    document.getElementById('allGrid').classList.remove('hidden');
+    filterChannels();
+  }
+}
+
+// ── Filter ──────────────────────────────────────
+function filterChannels() {
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  const grp = document.getElementById('groupSelect').value.toLowerCase();
+  const lang = document.getElementById('langSelect').value.toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('#allGrid .card').forEach(c => {
+    const ok = (grp==='all'||c.dataset.group===grp) && (lang==='all'||c.dataset.lang===lang) && c.dataset.name.includes(search);
+    c.style.display = ok ? '' : 'none';
+    if (ok) visible++;
+  });
+  document.getElementById('emptyState').classList.toggle('hidden', visible>0);
+}
+
+// ── Theme ───────────────────────────────────────
+function setTheme(name, btn) {
+  if (!name || name==='default') delete document.body.dataset.theme;
+  else document.body.dataset.theme = name;
+  document.querySelectorAll('.theme-option').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  localStorage.setItem('sf_theme', name);
+}
+function openThemeModal() { document.getElementById('themeModal').classList.add('open'); }
+function closeThemeModal(e) { if(!e||e.target===document.getElementById('themeModal')) document.getElementById('themeModal').classList.remove('open'); }
+
+// ── Drawer ──────────────────────────────────────
+function openDrawer() { document.getElementById('chDrawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('open'); }
+function closeDrawer() { document.getElementById('chDrawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
+function setDrawerCat(cat, btn) {
+  drawerCat = cat;
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  filterDrawer();
+}
+function filterDrawer() {
+  const search = document.getElementById('drawerSearch').value.toLowerCase();
+  document.querySelectorAll('.drawer-item').forEach(item => {
+    const mc = drawerCat==='all' || item.dataset.group===drawerCat.toLowerCase();
+    const ms = item.dataset.name.includes(search);
+    item.style.display = (mc&&ms) ? '' : 'none';
+  });
+}
+
+// ── Slide page transition ────────────────────────
+function sfSlideGo(e, el) {
+  e.preventDefault();
+  const href = el.href;
+  const overlay = document.getElementById('sf-slide-overlay');
+  overlay.classList.add('slide-in');
+  setTimeout(() => { window.location.href = href; }, 320);
+}
+
+init();
+
+// ── Fix black screen on back-navigation ──
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted || (window.performance && window.performance.getEntriesByType('navigation')[0]?.type === 'back_forward')) {
+    const ov = document.getElementById('sf-slide-overlay');
+    if (ov) { ov.classList.remove('slide-in'); }
+    const loader = document.getElementById('page-loading');
+    if (loader) { loader.classList.add('done'); loader.classList.add('gone'); }
+  }
+});
+
+// ══ SF SYSTEM: Maintenance, Announcements, Categories, Reports ══
+
+
+</script>
+<!-- TELEGRAM POPUP -->
+<div id="tg-popup">
+  <div class="tg-card">
+    <button class="tg-close" onclick="closeTgPopup()">✕</button>
+    <div class="tg-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.223l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.978.336z"/>
+      </svg>
+    </div>
+    <div class="tg-title">Join StreamFlex</div>
+    <div class="tg-sub">Get updates, new channels & support<br>directly on Telegram</div>
+    <div class="tg-btns">
+      <a class="tg-join-btn" href="https://t.me/+lgXvNYoyzhI2YWM1" target="_blank" rel="noopener" onclick="closeTgPopup()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.223l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.978.336z"/></svg>
+        Join Telegram Channel
+      </a>
+      <button class="tg-already-btn" onclick="alreadyJoined()">✓ Already Joined</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TG_KEY = 'tg_joined';
+// Show after 5 sec if not already dismissed permanently
+if (!localStorage.getItem(TG_KEY)) {
+  setTimeout(() => {
+    document.getElementById('tg-popup').classList.add('show');
+  }, 5000);
+}
+function closeTgPopup() {
+  document.getElementById('tg-popup').classList.remove('show');
+}
+function alreadyJoined() {
+  localStorage.setItem(TG_KEY, '1'); // Never show again
+  closeTgPopup();
+}
+// Close on backdrop click
+document.getElementById('tg-popup').addEventListener('click', function(e) {
+  if (e.target === this) closeTgPopup();
+});
+</script>
+
+
+<script>
+// ══ PAGE STUCK FIX: force-dismiss loading screen after 12 seconds ══
+(function() {
+  const MAX_WAIT = 12000;
+  const loader = document.getElementById('page-loading');
+  if (!loader) return;
+  const failTimer = setTimeout(() => {
+    if (!loader.classList.contains('done') && !loader.classList.contains('gone')) {
+      loader.classList.add('done');
+      setTimeout(() => loader.classList.add('gone'), 500);
+      console.warn('StreamFlex: page load timed out, showing UI anyway');
+    }
+  }, MAX_WAIT);
+  // If normal load fires, clear the timeout
+  const origProcess = window.processChannels;
+  if (typeof origProcess === 'function') {
+    window.processChannels = function(text) {
+      clearTimeout(failTimer);
+      return origProcess(text);
+    };
+  }
+})();
+</script>
+</body>
+
+<!-- Mirrored from https://sflexzio.pages.dev/ by HTTrack Website Copier/3.x [XR&CO], Thu, 19 Nov 2026 06:24:26 GMT -->
+</html>
+
