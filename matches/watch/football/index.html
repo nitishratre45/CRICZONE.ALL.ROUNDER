@@ -537,6 +537,7 @@ img{display:block;max-width:100%}
 </head>
 
 <body>
+<nav class="cz-watch-nav" aria-label="CRICZONE navigation"><a class="cz-watch-logo" href="/matches/">CRIC<span>ZONE</span><i></i></a><div class="cz-watch-links"><a href="/matches/">Home</a><a href="/matches/watch/football/" class="active">Football</a><a href="/matches/watch/cricket/">Cricket</a><a href="/matches/watch/fancode/">FanCode</a><a href="/matches/watch/willow/">Willow</a><a href="/matches/watch/sonyliv/">SonyLIV</a><a href="/matches/watch/prime/">Prime</a></div><a class="cz-watch-telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Telegram ↗</a><button class="cz-watch-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button><div class="cz-watch-mobile"><a href="/matches/">Home</a><a href="/matches/watch/football/" class="active">Football</a><a href="/matches/watch/cricket/">Cricket</a><a href="/matches/watch/fancode/">FanCode</a><a href="/matches/watch/willow/">Willow</a><a href="/matches/watch/sonyliv/">SonyLIV</a><a href="/matches/watch/prime/">Prime</a><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">Telegram ↗</a></div></nav>
 
 <!-- ==================== TELEGRAM POPUP ==================== -->
 <div id="tgOverlay">
@@ -1551,5 +1552,6 @@ setInterval(() => { if(window.__booted) renderHub(); }, 30000);
 setInterval(() => { if(window.__booted && !location.hash.includes("watch")) loadData(); }, 120000);
 </script>
 <script async src=""></script>
+<script>(()=>{const t=document.querySelector('.cz-watch-toggle'),m=document.querySelector('.cz-watch-mobile');if(!t||!m)return;const close=()=>{m.classList.remove('open');t.setAttribute('aria-expanded','false')};t.addEventListener('click',()=>{const open=!m.classList.contains('open');m.classList.toggle('open',open);t.setAttribute('aria-expanded',String(open))});document.addEventListener('click',e=>{if(m.classList.contains('open')&&!m.contains(e.target)&&!t.contains(e.target))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});m.querySelectorAll('a').forEach(a=>a.addEventListener('click',close))})();</script>
 </body>
 </html>
