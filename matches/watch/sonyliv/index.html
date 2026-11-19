@@ -1226,7 +1226,7 @@ function renderGrid(){
       : (m.status==='COMPLETED' ? 'Ended' : 'Not Started');
 
     card.innerHTML =
-      '<div class="thumb">'+thumb+statusBadge+catBadge+'</div>'+
+      '<div class="thumb">'+thumb+'</div>'+ '<div class="card-status">'+statusBadge+'</div>'+
       '<div class="card-body">'+
         (m.tournament ? '<div class="card-event">'+esc(m.tournament)+'</div>' : '')+
         '<div class="card-title">'+esc(m.title)+'</div>'+
