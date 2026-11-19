@@ -46,3 +46,6 @@ button,a,[role=button]{touch-action:manipulation;-webkit-tap-highlight-color:tra
 .cz-watch-logo{background:none!important;border:0!important;box-shadow:none!important;color:#52adff!important;padding:0!important;border-radius:0!important}
 .cz-watch-logo span{color:#f4f8ff!important}
 .cz-watch-logo i{background:#39c5f2!important}
+
+/* Remove floating Telegram brand badge on Prime */
+#tgBadge{display:none!important}
