@@ -141,3 +141,42 @@ body::before,body::after{pointer-events:none!important}
  #playerView .stream-btn{min-height:52px!important;padding:13px 14px!important;border-radius:12px!important}
 }
 @media(max-width:430px){#playerView .player-title{font-size:18px!important}#playerView .player-top{gap:9px!important}}
+
+/* FINAL WATCH PLAYER UI — desktop + mobile premium layout */
+html,body{min-height:100%!important;background:#05080d!important;color:#eaf1f8!important}
+body{overflow-x:hidden!important}
+#playerView{width:100%!important;max-width:1480px!important;margin:0 auto!important;padding:0 clamp(14px,3.4vw,52px) 42px!important;box-sizing:border-box!important;background:radial-gradient(ellipse at 50% 0%,rgba(24,69,52,.19),transparent 48%),transparent!important}
+#playerView .player-top{width:100%!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:18px!important;padding:22px 0 20px!important;margin:0 auto 20px!important;border-bottom:1px solid rgba(255,255,255,.08)!important;position:relative!important}
+#playerView .player-top:after{content:"CRICZONE  /  LIVE SPORTS";position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:10px;font-weight:800;letter-spacing:.17em;color:#6d8196;opacity:.78}
+#playerView .icon-btn,#backHub{width:48px!important;height:48px!important;min-width:48px!important;border-radius:15px!important;border:1px solid rgba(110,140,165,.2)!important;background:linear-gradient(145deg,#17212d,#0e151e)!important;color:#dce9f5!important;font-size:22px!important;display:grid!important;place-items:center!important;box-shadow:0 6px 18px rgba(0,0,0,.22)!important;transition:transform .2s ease,border-color .2s ease,background .2s ease!important}
+#playerView .icon-btn:hover,#backHub:hover{transform:translateX(-2px)!important;border-color:rgba(0,229,176,.42)!important;background:linear-gradient(145deg,#1c2b36,#101923)!important}
+#playerView .player-meta{min-width:0!important;flex:1!important}
+#playerView .player-title{font-family:var(--font-d)!important;font-size:clamp(21px,2.35vw,32px)!important;font-weight:700!important;line-height:1.16!important;letter-spacing:-.045em!important;color:#f4f7fb!important;margin:0!important;max-width:calc(100% - 260px)!important}
+#playerView .player-sub{margin:6px 0 0!important;font-size:13px!important;line-height:1.4!important;color:#8ea2b7!important}
+#playerView .screen{width:100%!important;max-width:1120px!important;margin:0 auto!important;aspect-ratio:16/9!important;position:relative!important;overflow:hidden!important;border-radius:clamp(12px,1.5vw,21px)!important;background:#000!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 25px 75px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.25)!important}
+#playerView #player-container{width:100%!important;height:100%!important;min-height:0!important;background:#000!important}
+#playerView .section-title{max-width:1120px!important;margin:28px auto 13px!important;padding:0 2px!important;font-size:11px!important;font-weight:800!important;letter-spacing:.2em!important;text-transform:uppercase!important;color:#8094a9!important}
+#playerView .streams{max-width:1120px!important;width:100%!important;margin:0 auto!important;display:grid!important;grid-template-columns:1fr!important;gap:11px!important}
+#playerView .stream-btn{width:100%!important;min-height:66px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;padding:17px 20px!important;border-radius:16px!important;background:linear-gradient(110deg,#111922,#0c1219)!important;border:1px solid #263240!important;color:#e8eef6!important;box-shadow:0 5px 15px rgba(0,0,0,.15)!important;transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease!important}
+#playerView .stream-btn:hover{transform:translateY(-1px)!important;border-color:rgba(0,229,176,.45)!important;box-shadow:0 9px 22px rgba(0,0,0,.23)!important}
+#playerView .stream-btn.active{border-color:#a5e83d!important;background:linear-gradient(110deg,rgba(154,220,57,.1),rgba(14,20,26,.92))!important;box-shadow:inset 0 0 0 1px rgba(165,232,61,.06),0 0 24px rgba(165,232,61,.045)!important}
+#playerView .stream-btn .title{font-size:14px!important;font-weight:800!important;letter-spacing:-.015em!important;color:#e9eff7!important}
+#playerView .stream-btn .badge,#playerView .stream-btn .type-badge{font-size:10px!important;font-weight:800!important;letter-spacing:.08em!important;border-radius:8px!important;padding:6px 10px!important;background:#192331!important;color:#94a9bf!important}
+#playerView .stream-btn.active .title{color:#eff8e7!important}
+@media(min-width:900px){#playerView .screen{max-width:min(1120px,92%)!important}#playerView .streams{padding:0 4px!important}}
+@media(max-width:760px){
+ #playerView{padding:0 12px 28px!important}
+ #playerView .player-top{padding:15px 2px 15px!important;margin-bottom:13px!important;gap:12px!important;min-height:62px!important}
+ #playerView .player-top:after{display:none!important}
+ #playerView .icon-btn,#backHub{width:42px!important;height:42px!important;min-width:42px!important;border-radius:13px!important;font-size:20px!important}
+ #playerView .player-title{max-width:100%!important;font-size:clamp(17px,5vw,21px)!important;line-height:1.2!important}
+ #playerView .player-sub{font-size:11px!important;margin-top:4px!important}
+ #playerView .screen{width:100%!important;max-width:none!important;aspect-ratio:16/9!important;border-radius:12px!important}
+ #playerView .section-title{margin:20px 2px 11px!important;font-size:10px!important}
+ #playerView .streams{gap:9px!important}
+ #playerView .stream-btn{min-height:58px!important;padding:14px 15px!important;border-radius:13px!important}
+ #playerView .stream-btn .title{font-size:12px!important}
+ #playerView .stream-btn .badge,#playerView .stream-btn .type-badge{padding:5px 8px!important;font-size:9px!important}
+}
+@media(max-width:390px){#playerView{padding-inline:10px!important}#playerView .player-top{gap:9px!important}#playerView .player-title{font-size:17px!important}#playerView .stream-btn{min-height:54px!important;padding:12px!important}}
+@media(prefers-reduced-motion:reduce){#playerView .icon-btn,#playerView .stream-btn{transition:none!important}}
