@@ -15,3 +15,18 @@ body>header,header:not(.cz-watch-nav){position:relative!important;top:auto!impor
 
 /* Final Willow server bar placement: add more separation from navbar */
 #player-servers-bar,.player-servers-bar{margin-top:24px!important;margin-bottom:10px!important;transform:translateY(0)!important;clear:both!important}
+
+/* Stronger vertical clearance: server selector must sit well below navbar */
+#player-servers-bar,.player-servers-bar{
+ margin-top:58px!important;
+ padding-top:12px!important;
+ padding-bottom:12px!important;
+ position:relative!important;
+ inset:auto!important;
+ transform:none!important;
+ clear:both!important
+}
+#player-servers-bar{width:calc(100% - 24px)!important}
+@media(max-width:620px){
+ #player-servers-bar,.player-servers-bar{margin-top:52px!important}
+}
