@@ -9,3 +9,16 @@ button,a,[role="button"],input,select,textarea{touch-action:manipulation}
 :focus-visible{outline:2px solid #60a5fa;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 @media(max-width:600px){video,iframe{max-width:100%}button,input,select,textarea{font-size:16px}}
+
+/* Layout stability / overflow hardening */
+main,section,article,header,footer,nav,aside,.container,.content,.content-wrap,.page,.page-content,.app,.app-shell,.layout,.grid,.card,.match-card,.match-grid,.player-wrap,.player-container,.controls,.controls-bar{min-width:0;max-width:100%}
+iframe,video{display:block;width:100%;border:0}
+input,select,textarea{max-width:100%;min-width:0}
+@media(max-width:768px){
+  .container,.content,.content-wrap,.page,.page-content,.app-shell{width:100%;max-width:100%;margin-left:auto;margin-right:auto}
+  .grid,.match-grid{grid-template-columns:minmax(0,1fr)!important}
+  .controls,.controls-bar,.header-actions{flex-wrap:wrap;min-width:0}
+}
+@media(min-width:769px) and (max-width:1100px){
+  .grid,.match-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
