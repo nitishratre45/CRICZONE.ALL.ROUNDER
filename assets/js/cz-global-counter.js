@@ -303,10 +303,32 @@
       badge.setAttribute("aria-label", "CRICZONE visitor statistics");
       (document.body || document.documentElement).appendChild(badge);
     }
-    // Legacy CRICZONE player pages placed the counter inside #pc.
-    // Move it outside the player so hiding/showing the player cannot hide the counter.
+    // Keep the badge inside CRICZONE's player panel so it appears only while
+    // a channel is playing. When Shaka enters Fullscreen API mode, place it
+    // inside the actual fullscreen container so it remains visible there too.
+    function placeBadgeInPlayerLayer() {
+      var pc = document.getElementById("pc");
+      if (!pc || !pc.contains(badge)) return;
+      var full = document.fullscreenElement || document.webkitFullscreenElement;
+      if (full && (full === pc || pc.contains(full)) &&
+          full.nodeType === 1 && !/^(VIDEO|IFRAME|AUDIO)$/.test(full.tagName)) {
+        if (badge.parentElement !== full) full.appendChild(badge);
+        return;
+      }
+      var shakaContainer = pc.querySelector(".shaka-video-container");
+      var target = shakaContainer || pc;
+      if (badge.parentElement !== target) target.appendChild(badge);
+    }
     if (badge.parentElement && badge.parentElement.closest("#pc")) {
-      (document.body || document.documentElement).appendChild(badge);
+      placeBadgeInPlayerLayer();
+      ["fullscreenchange", "webkitfullscreenchange"].forEach(function (eventName) {
+        document.addEventListener(eventName, placeBadgeInPlayerLayer);
+      });
+      var playerPanel = document.getElementById("pc");
+      if (playerPanel && !badge.__czPlayerLayerObserver && window.MutationObserver) {
+        badge.__czPlayerLayerObserver = new MutationObserver(placeBadgeInPlayerLayer);
+        badge.__czPlayerLayerObserver.observe(playerPanel, { childList: true, subtree: true });
+      }
     }
     var total = document.getElementById("totalVisits");
     var live = document.getElementById("liveWatching");
