@@ -1220,6 +1220,15 @@ async function main(){
 
   var channels = data.channels || [];
 
+  // External iframe channel: S-3 HD (ID 892).
+  channels.unshift({
+    id: "s-3-hd-iframe",
+    name: "S-3 HD",
+    logo: LOGO_MAP["892"] || "",
+    url: "https://sflexzio.pages.dev/p?id=892",
+    source: "iframe"
+  });
+
   // Dedicated iOS-compatible Sony Sports 3 HD channel via the existing iframe player.
   var iosSonyChannels = [
     {
