@@ -821,6 +821,30 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
 @media(max-width:700px){.hero-card{border-radius:22px!important}.hero-content{padding:22px 20px 18px!important}.hero-title{font-size:clamp(1.65rem,7.2vw,2.25rem)!important}.hero-matchup{width:100%;justify-content:center;flex-wrap:nowrap;padding:10px 9px!important}.hero-matchup .team-badge{font-size:.95rem;white-space:nowrap}.hero-matchup .team-badge img{width:30px!important;height:30px!important}.hero-media{padding:10px 16px 18px!important}.hero-media-preview{aspect-ratio:16/9}.btn-watch-hero{width:100%;box-sizing:border-box}}
 @media(prefers-reduced-motion:reduce){.btn-watch-hero{transition:none!important}}
 </style>
+<style id="hero-premium-v2">
+.hero-container{padding-top:8px!important}
+.hero-card{border:1px solid rgba(113,178,255,.28)!important;background:radial-gradient(ellipse at 85% 5%,rgba(29,91,170,.22),transparent 38%),linear-gradient(145deg,#101a2d,#070c15 58%,#111c31)!important;border-radius:28px!important;box-shadow:0 28px 75px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.025),inset 0 1px rgba(255,255,255,.08)!important}
+.hero-card:before{content:"";position:absolute;z-index:3;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#43c8ff,#7377ff,#e0b55c,transparent);opacity:.85}
+.hero-card:after{background:linear-gradient(100deg,rgba(3,8,17,.96) 0%,rgba(3,8,17,.84) 38%,rgba(3,8,17,.32) 76%,rgba(3,8,17,.1) 100%),linear-gradient(0deg,rgba(3,7,14,.62),transparent 58%)!important}
+.hero-bg-overlay{opacity:.3!important;filter:blur(0px)!important;transform:scale(1.04)!important;transition:transform 1s ease,opacity .5s ease}
+.hero-card:hover .hero-bg-overlay{transform:scale(1.08)!important;opacity:.36!important}
+.hero-content{gap:2px!important}
+.hero-badge{background:linear-gradient(120deg,rgba(248,69,92,.18),rgba(248,69,92,.08))!important;border:1px solid rgba(255,100,117,.38)!important;box-shadow:inset 0 1px rgba(255,255,255,.06),0 8px 24px rgba(255,55,80,.08);letter-spacing:.09em!important;padding:8px 15px!important}
+.hero-title{max-width:760px!important;font-weight:900!important;letter-spacing:-.055em!important}
+.hero-subtitle{color:#a9b8ce!important;font-weight:500!important}
+.hero-matchup{background:linear-gradient(135deg,rgba(10,19,35,.82),rgba(8,12,23,.7))!important;border-color:rgba(110,170,240,.2)!important;box-shadow:inset 0 1px rgba(255,255,255,.04),0 12px 30px rgba(0,0,0,.18);backdrop-filter:blur(16px)!important}
+.hero-matchup .team-badge img{border:1px solid rgba(255,255,255,.15)!important}
+.vs-pill{background:linear-gradient(135deg,rgba(12,155,226,.22),rgba(91,99,245,.2))!important;border:1px solid rgba(56,189,248,.24)!important;color:#7bdcff!important}
+.btn-watch-hero{position:relative;overflow:hidden;background:linear-gradient(105deg,#087ec2 0%,#2578ed 48%,#6158ed 100%)!important;border:1px solid rgba(255,255,255,.16)!important;box-shadow:0 12px 34px rgba(32,119,226,.26),inset 0 1px rgba(255,255,255,.18)!important;font-size:1.02rem!important;letter-spacing:.055em!important;min-height:58px!important}
+.btn-watch-hero:before{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.2),transparent 70%);transition:transform .7s ease}
+.btn-watch-hero:hover:before{transform:translateX(120%)}
+.hero-media-preview{border:1px solid rgba(142,183,255,.3)!important;border-radius:22px!important;background:#080e19;box-shadow:0 22px 44px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.1)!important}
+.hero-media-preview img{transition:transform .7s cubic-bezier(.2,.8,.2,1)!important}
+.hero-card:hover .hero-media-preview img{transform:scale(1.025)!important}
+@media(min-width:701px){.hero-card{min-height:430px!important}.hero-media{padding:30px!important}.hero-content{padding:clamp(30px,4vw,54px)!important}.hero-media-preview{aspect-ratio:16/10}}
+@media(max-width:700px){.hero-container{margin-top:36px!important}.hero-card{border-radius:24px!important}.hero-content{padding:24px 20px 16px!important}.hero-title{font-size:clamp(1.7rem,7.4vw,2.3rem)!important}.hero-badge{margin-bottom:14px!important}.hero-matchup{border-radius:16px!important;margin-bottom:18px!important}.hero-media{padding:10px 14px 20px!important}.hero-media-preview{border-radius:18px!important}.btn-watch-hero{min-height:56px!important;font-size:.94rem!important}}
+@media(prefers-reduced-motion:reduce){.hero-bg-overlay,.hero-media-preview img,.btn-watch-hero:before{transition:none!important}}
+</style>
 </head>
 <body id="top">
 
