@@ -825,12 +825,15 @@
 <body>
 
   <header class="header">
-    <a href="/matches/" class="logo">
+    <div class="header-left">
+      <button class="back-btn" type="button" aria-label="Back" onclick="if(history.length>1){history.back()}else{location.href='/matches/'}"><span class="material-icons">arrow_back</span></button>
+      <a href="/matches/" class="logo">
       <span class="logo-mark"><span class="material-icons">catching_pokemon</span></span>
       <span class="logo-text">
         <span class="accent">CRIC</span><span>ZONE</span><span class="dot">.</span>
       </span>
     </a>
+    </div>
     <span class="live-pill"><i></i>LIVE</span>
   </header>
 
