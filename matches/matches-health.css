@@ -152,3 +152,16 @@ img{height:auto}
   .kickoff-time{font-size:17px!important}
 }
 @media(prefers-reduced-motion:reduce){.card,.match-card,.stream-card,.channel-card,button,.btn{transition:none!important}}
+
+/* Smooth UI polish — native feel across Matches */
+:root{--cz-smooth-ease:cubic-bezier(.2,.75,.25,1);--cz-smooth-duration:260ms}
+html{scroll-behavior:smooth;scrollbar-gutter:stable}
+body{animation:czPageIn .36s var(--cz-smooth-ease) both}
+@keyframes czPageIn{from{opacity:.94}to{opacity:1}}
+button,a,[role=button],input,select,.btn,.tab-btn,.filter-tab,.pill,.nav-link,.section-link{transition:color .2s var(--cz-smooth-ease),background .2s var(--cz-smooth-ease),border-color .2s var(--cz-smooth-ease),box-shadow .24s var(--cz-smooth-ease),transform .2s var(--cz-smooth-ease)!important}
+button:active,a:active,[role=button]:active,.btn:active,.tab-btn:active,.filter-tab:active,.pill:active{transform:scale(.97)!important}
+:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card){transform:translateZ(0);backface-visibility:hidden}
+@media(hover:hover) and (pointer:fine){:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card):hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,.28)}:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card) img{transition:transform .42s var(--cz-smooth-ease),filter .3s var(--cz-smooth-ease)}:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card):hover img{transform:scale(1.025)}}
+:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card){animation:czCardIn .42s var(--cz-smooth-ease) both}
+@keyframes czCardIn{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){body{animation:none!important}:where(.match-card,.channel-card,.content-card,.card,.stream-card,.sport-card,.event-card){animation:none!important;transform:none!important}}
