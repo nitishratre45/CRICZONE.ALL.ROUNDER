@@ -55,3 +55,29 @@
 @media(max-width:768px){.section-hd-right,.carousel-controls{gap:5px!important}.section-link{padding:8px 11px!important;min-height:34px!important}.stream-section{animation-duration:.42s}}
 @media(max-width:460px){.section-hd{align-items:flex-start!important}.section-hd-right,.carousel-controls{flex-shrink:0!important}.section-link{font-size:10px!important;padding:7px 9px!important}.section-link .material-icons{font-size:13px!important}.nav-arrow{width:33px!important;height:33px!important}}
 @media(prefers-reduced-motion:reduce){.stream-section{animation:none!important}.stream-card,.section-link,.nav-arrow,.stream-card .card-media img{transition:none!important}}
+
+
+/* Football Live — compact mobile-first carousel refinement */
+#football-live .stream-track{padding:12px 3px 20px!important;gap:14px!important;scroll-padding-inline:12px!important}
+#football-live .stream-card{flex-basis:clamp(260px,34vw,360px)!important;min-height:390px!important;border-radius:20px!important;background:linear-gradient(155deg,#111d2d 0%,#0b121b 78%)!important;border-color:rgba(116,164,205,.18)!important}
+#football-live .card-media.team-vs{padding-top:0!important;aspect-ratio:16/9!important;min-height:170px!important}
+#football-live .card-media.team-vs>.team-vs-inner{padding:18px!important;gap:14px!important;background:radial-gradient(ellipse at 50% 50%,rgba(28,151,220,.13),transparent 70%)}
+#football-live .card-crest{width:68px!important;height:68px!important;background:#162334!important;border-color:rgba(255,255,255,.15)!important;box-shadow:0 8px 22px rgba(0,0,0,.25)}
+#football-live .card-team-name{max-width:110px!important;font-size:12px!important;color:#b9c9dc!important}
+#football-live .vs-badge{padding:5px 11px!important;background:rgba(35,167,234,.12)!important;border-color:rgba(35,167,234,.25)!important}
+#football-live .card-body{padding:18px!important;gap:12px!important}
+#football-live .card-title{font-size:clamp(16px,2vw,19px)!important;line-height:1.35!important;min-height:2.7em}
+#football-live .card-meta{margin-top:auto!important;padding-top:14px!important}
+@media(max-width:768px){
+ #football-live .section-hd{align-items:center!important;flex-wrap:nowrap!important}
+ #football-live .section-hd-left{flex-wrap:nowrap!important;gap:8px!important}
+ #football-live .section-title{font-size:clamp(19px,5.5vw,23px)!important;white-space:nowrap!important}
+ #football-live .section-badge{padding:5px 9px!important;font-size:9px!important;white-space:nowrap!important}
+ #football-live .stream-track{padding:10px 2px 18px!important;gap:12px!important}
+ #football-live .stream-card{flex-basis:min(72vw,340px)!important;min-height:370px!important}
+ #football-live .card-crest{width:58px!important;height:58px!important}
+ #football-live .card-team-name{font-size:11px!important;max-width:94px!important}
+ #football-live .card-body{padding:15px!important}
+}
+@media(max-width:420px){#football-live .stream-card{flex-basis:78vw!important}#football-live .card-crest{width:52px!important;height:52px!important}}
+@media(prefers-reduced-motion:reduce){#football-live .stream-card,#football-live .card-crest{transition:none!important}}
