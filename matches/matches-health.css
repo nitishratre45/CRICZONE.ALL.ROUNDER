@@ -152,15 +152,3 @@ img{height:auto}
   .kickoff-time{font-size:17px!important}
 }
 @media(prefers-reduced-motion:reduce){.card,.match-card,.stream-card,.channel-card,button,.btn{transition:none!important}}
-
-/* CRICZONE smoothness pass — shared matches pages */
-:root{--cz-motion-fast:160ms;--cz-motion:240ms;--cz-motion-slow:420ms;--cz-ease:cubic-bezier(.22,.61,.36,1)}
-html{scroll-padding-top:88px}
-body{overscroll-behavior-y:contain}
-button,a,[role=button],.btn,.section-link,.nav-arrow,.quick-link,.channel-card,.match-card,.stream-card,.card,.content-card,.stream-section{transition:color var(--cz-motion) var(--cz-ease),background-color var(--cz-motion) var(--cz-ease),border-color var(--cz-motion) var(--cz-ease),box-shadow var(--cz-motion) var(--cz-ease),transform var(--cz-motion) var(--cz-ease),opacity var(--cz-motion) var(--cz-ease)!important}
-button:active,a:active,[role=button]:active,.btn:active{transform:scale(.985)}
-:where(.match-card,.channel-card,.content-card,.card){overflow:hidden}
-:where(.match-card,.channel-card,.content-card,.card) img{transition:transform .45s var(--cz-ease),filter .3s var(--cz-ease)!important}
-@media(hover:hover) and (pointer:fine){:where(.match-card,.channel-card,.content-card,.card):hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.28)}:where(.match-card,.channel-card,.content-card,.card):hover img{transform:scale(1.018)}}
-@media(max-width:680px){.stream-section,.match-card,.channel-card,.content-card,.card{border-radius:18px!important}.stream-section{margin-bottom:24px!important}.section-hd{gap:10px!important}.section-title{letter-spacing:-.035em!important}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button,a,[role=button],.btn,.section-link,.nav-arrow,.quick-link,.channel-card,.match-card,.stream-card,.card,.content-card,.stream-section,:where(.match-card,.channel-card,.content-card,.card) img{transition:none!important}button:active,a:active,[role=button]:active,.btn:active{transform:none!important}}
