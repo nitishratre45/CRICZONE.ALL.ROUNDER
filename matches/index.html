@@ -1048,12 +1048,13 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
   const isLive=(m)=>m._live===true||m.isLive===true||/^(LIVE|INPLAY|IN PLAY|ONGOING)$/i.test(String(m.status||m.state||''));
   const getImage=(m)=>m.image||m.src||m.cover_image||m.poster||m.thumbnail||m.image_url||m.banner||m.images?.boxArtImageFragments?.mediaCentralUrl||m.images?.coverImageFragments?.mediaCentralUrl||m.catalogMetadata?.images?.coverImage||'';
   function makeSlide(m,source,category,link){
-    const ev=m.event||{},titleText=safe(m.title||m.match_name||m.event_name||m.eventTitle||m.name||ev.teamA&&ev.teamB&&ev.teamA+' vs '+ev.teamB)||category+' Event';
+    const ev=m.event||{},matchId=m.id??m.eventId??m.contentId??m.matchId??ev.id??ev.eventId,titleText=safe(m.title||m.match_name||m.event_name||m.eventTitle||m.name||ev.teamA&&ev.teamB&&ev.teamA+' vs '+ev.teamB)||category+' Event';
     const teamA=safe(m.teamA||ev.teamA||m.team_a||m.homeTeam||''),teamB=safe(m.teamB||ev.teamB||m.team_b||m.awayTeam||'');
     const live=isLive(m),image=getImage(m); if(!image)return null;
     let flags=[m.teamAFlag||ev.teamAFlag||m.flagA||'',m.teamBFlag||ev.teamBFlag||m.flagB||''];
     if(!flags[0]&&/india|indian/i.test(teamA))flags[0]=INDIA;if(!flags[1]&&/pakistan|pak/i.test(teamB))flags[1]=PAK;if(!flags[1]&&/new zealand|nz/i.test(teamB))flags[1]=NZ;
-    return {badge:(live?'LIVE NOW':'UPCOMING')+' · '+category,title:titleText,subtitle:safe(m.subtitle||m.tournament||m.tournament_name||m.event_category||m.meta||m.synopsis||m.time||m.broadcast_channel||source),teamA:teamA||category,teamB:teamB||'Event',flagA:flags[0],flagB:flags[1],image,bg:image,link,imageLink:link,watch:live?'WATCH LIVE':'VIEW EVENT',live,source};
+    const idForPlayer=matchId!=null&&String(matchId).trim()!==''?String(matchId):null,playLink=idForPlayer&&/Football/i.test(category)?'/matches/watch/football/index.html#watch?id='+encodeURIComponent(idForPlayer)+'&stream=0':idForPlayer&&/Cricket/i.test(category)?'/matches/watch/cricket/index.html#watch?id='+encodeURIComponent(idForPlayer)+'&stream=0':link;
+    return {badge:(live?'LIVE NOW':'UPCOMING')+' · '+category,title:titleText,subtitle:safe(m.subtitle||m.tournament||m.tournament_name||m.event_category||m.meta||m.synopsis||m.time||m.broadcast_channel||source),teamA:teamA||category,teamB:teamB||'Event',flagA:flags[0],flagB:flags[1],image,bg:image,link:playLink,imageLink:playLink,watch:live?'WATCH LIVE':'VIEW EVENT',live,source,matchId:idForPlayer};
   }
   function drawDots(){
     if(!dots)return;const count=slides.length,windowSize=Math.min(5,count),start=Math.max(0,Math.min(index-Math.floor(windowSize/2),count-windowSize));
