@@ -866,11 +866,26 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
   </nav>
 
   <style id="hero-auto-slider">
-    .hero-card.hero-changing .hero-content,.hero-card.hero-changing .hero-media{opacity:0;transform:translateY(8px)}
-    .hero-content,.hero-media{transition:opacity .35s ease,transform .35s ease}
-    .hero-media-preview img{transition:opacity .35s ease,transform .65s cubic-bezier(.2,.8,.2,1)!important}
-    .hero-card{touch-action:pan-y}
-    @media(prefers-reduced-motion:reduce){.hero-content,.hero-media,.hero-media-preview img{transition:none!important}}
+    #featuredMatchCarousel{position:relative;overflow:hidden}
+    #featuredMatchHero{position:relative;overflow:hidden}
+    #featuredMatchHero .hero-content,#featuredMatchHero .hero-media{transition:opacity .28s ease,transform .65s cubic-bezier(.22,.75,.25,1)}
+    #featuredMatchHero.hero-enter-left .hero-content,#featuredMatchHero.hero-enter-left .hero-media{animation:heroEnterFromLeft .7s cubic-bezier(.22,.75,.25,1) both}
+    #featuredMatchHero.hero-enter-right .hero-content,#featuredMatchHero.hero-enter-right .hero-media{animation:heroEnterFromRight .7s cubic-bezier(.22,.75,.25,1) both}
+    @keyframes heroEnterFromLeft{from{opacity:0;transform:translateX(-64px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes heroEnterFromRight{from{opacity:0;transform:translateX(64px)}to{opacity:1;transform:translateX(0)}}
+    #featuredMatchHero.hero-changing .hero-content,#featuredMatchHero.hero-changing .hero-media{opacity:0}
+    #featuredMatchHero .hero-media-preview img{transition:transform .9s cubic-bezier(.2,.8,.2,1)!important}
+    #featuredMatchHero:hover .hero-media-preview img{transform:scale(1.025)}
+    .hero-slider-controls{position:absolute;z-index:10;top:50%;left:0;right:0;display:flex;justify-content:space-between;align-items:center;transform:translateY(-50%);padding:0 14px;pointer-events:none}
+    .hero-slider-arrow{pointer-events:auto;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(8,15,30,.58);backdrop-filter:blur(12px);color:#fff;display:grid;place-items:center;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.22);transition:transform .22s ease,background .22s ease,border-color .22s ease}
+    .hero-slider-arrow:hover{transform:scale(1.08);background:rgba(32,117,235,.82);border-color:rgba(255,255,255,.55)}
+    .hero-slider-arrow:active{transform:scale(.94)}
+    .hero-slider-dots{position:absolute;z-index:10;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+    .hero-slider-dot{width:9px;height:9px;border-radius:99px;border:0;background:rgba(255,255,255,.4);padding:0;cursor:pointer;transition:width .25s ease,background .25s ease}
+    .hero-slider-dot.active{width:26px;background:#fff}
+    #featuredMatchHero{touch-action:pan-y}
+    @media(max-width:600px){.hero-slider-arrow{width:36px;height:36px;font-size:20px}.hero-slider-controls{padding:0 8px}.hero-slider-dots{bottom:10px}}
+    @media(prefers-reduced-motion:reduce){#featuredMatchHero .hero-content,#featuredMatchHero .hero-media,#featuredMatchHero .hero-media-preview img{transition:none!important;animation:none!important}}
   </style>
   <div class="hero-container" id="featuredMatchCarousel">
     <div class="hero-card" id="featuredMatchHero">
@@ -887,31 +902,40 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
         <div class="hero-actions"><a href="/matches/ind-nz.html" class="btn-watch-hero" id="heroWatchLink"><span class="material-icons">play_circle_filled</span><span id="heroWatchText">WATCH STREAM NOW</span></a></div>
       </div>
       <div class="hero-media"><a href="/matches/ind-vs-nz.html" class="hero-media-preview" id="heroImageLink"><img id="heroImage" src="https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg" alt="India vs New Zealand live match" referrerpolicy="no-referrer"></a></div>
+      <div class="hero-slider-controls" aria-label="Featured match navigation"><button type="button" class="hero-slider-arrow" id="heroPrev" aria-label="Previous featured match">&#10094;</button><button type="button" class="hero-slider-arrow" id="heroNext" aria-label="Next featured match">&#10095;</button></div>
+      <div class="hero-slider-dots" id="heroSliderDots" aria-label="Choose featured match"></div>
     </div>
   </div>
   <script id="hero-auto-slider-script">
   (function(){
     const slides=[
-      {badge:'LIVE STREAMING NOW',title:'India Tour of New Zealand 2026',subtitle:'T20I Series · Multi-Audio Hindi, English, Tamil, Telugu & Kannada',teamA:'India',teamB:'New Zealand',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/nz.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',link:'/matches/ind-nz.html',imageLink:'/matches/ind-vs-nz.html',watch:'WATCH STREAM NOW',status:'LIVE'},
-      {eventCategory:'Cricket',isLive:false,contentId:1090554767,broadcastChannel:'Sony Sports Ten 5',audioLanguageName:'HIN',eventName:'Upcoming - India A vs Pakistan Shaheens - DP World Asia Cup Rising Stars Men\'s 2026',badge:'UPCOMING · ASIA CUP RISING STARS',title:'India A vs Pakistan Shaheens',subtitle:'DP World Asia Cup Rising Stars Men’s 2026 · Sony Sports Ten 5 · Hindi',teamA:'India A',teamB:'Pakistan Shaheens',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/pk.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',link:'/matches/ind-pak.html',imageLink:'/matches/ind-pak.html',watch:'WATCH LIVE',status:'UPCOMING'}
+      {badge:'LIVE STREAMING NOW',title:'India Tour of New Zealand 2026',subtitle:'T20I Series · Multi-Audio Hindi, English, Tamil, Telugu & Kannada',teamA:'India',teamB:'New Zealand',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/nz.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',link:'/matches/ind-nz.html',imageLink:'/matches/ind-vs-nz.html',watch:'WATCH STREAM NOW'},
+      {eventCategory:'Cricket',isLive:false,contentId:1090554767,broadcastChannel:'Sony Sports Ten 5',audioLanguageName:'HIN',eventName:'Upcoming - India A vs Pakistan Shaheens - DP World Asia Cup Rising Stars Men\'s 2026',badge:'UPCOMING · ASIA CUP RISING STARS',title:'India A vs Pakistan Shaheens',subtitle:'DP World Asia Cup Rising Stars Men’s 2026 · Sony Sports Ten 5 · Hindi',teamA:'India A',teamB:'Pakistan Shaheens',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/pk.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',link:'/matches/ind-pak.html',imageLink:'/matches/ind-pak.html',watch:'WATCH LIVE'}
     ];
-    let index=0,timer=null,touchStartX=0;
-    const hero=document.getElementById('featuredMatchHero'),title=document.getElementById('heroTitle'),subtitle=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge'),bg=document.getElementById('heroBgOverlay'),img=document.getElementById('heroImage'),imgLink=document.getElementById('heroImageLink'),watch=document.getElementById('heroWatchLink'),watchText=document.getElementById('heroWatchText'),matchup=document.getElementById('heroMatchup');
+    let index=0,timer=null,transitionTimer=null,touchStartX=0,paused=false;
+    const hero=document.getElementById('featuredMatchHero'),title=document.getElementById('heroTitle'),subtitle=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge'),bg=document.getElementById('heroBgOverlay'),img=document.getElementById('heroImage'),imgLink=document.getElementById('heroImageLink'),watch=document.getElementById('heroWatchLink'),watchText=document.getElementById('heroWatchText'),matchup=document.getElementById('heroMatchup'),dots=document.getElementById('heroSliderDots');
     if(!hero||!title||!img)return;
+    function drawDots(){if(!dots)return;dots.innerHTML=slides.map((_,i)=>'<button type="button" class="hero-slider-dot'+(i===index?' active':'')+'" aria-label="Show featured match '+(i+1)+'" data-slide="'+i+'"></button>').join('');dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{showSlide(Number(b.dataset.slide));restart()}));}
     function showSlide(next){
+      if(transitionTimer)clearTimeout(transitionTimer);
       index=(next+slides.length)%slides.length;const s=slides[index];
-      hero.classList.add('hero-changing');
-      window.setTimeout(()=>{
+      hero.classList.remove('hero-enter-left','hero-enter-right');hero.classList.add('hero-changing');
+      transitionTimer=setTimeout(()=>{
         title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
         bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
         matchup.innerHTML='<div class="team-badge"><img src="'+s.flagA+'" alt="'+s.teamA+'"><span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge"><img src="'+s.flagB+'" alt="'+s.teamB+'"><span>'+s.teamB+'</span></div>';
-        hero.classList.remove('hero-changing');
-      },220);
+        hero.classList.remove('hero-changing');hero.classList.add('hero-enter-left');
+        setTimeout(()=>hero.classList.remove('hero-enter-left'),720);drawDots();
+      },180);
     }
-    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>showSlide(index+1),6500);}
+    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!paused)showSlide(index+1)},7500);}
+    document.getElementById('heroPrev')?.addEventListener('click',()=>{showSlide(index-1);restart()});
+    document.getElementById('heroNext')?.addEventListener('click',()=>{showSlide(index+1);restart()});
+    hero.addEventListener('mouseenter',()=>paused=true);hero.addEventListener('mouseleave',()=>paused=false);
+    hero.addEventListener('focusin',()=>paused=true);hero.addEventListener('focusout',()=>paused=false);
     hero.addEventListener('touchstart',e=>{if(e.changedTouches.length)touchStartX=e.changedTouches[0].clientX},{passive:true});
-    hero.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>50){showSlide(index+(dx<0?1:-1));restart()}},{passive:true});
-    restart();
+    hero.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>50){showSlide(index+(dx>0?-1:1));restart()}},{passive:true});
+    drawDots();restart();
   })();
   </script>
 
