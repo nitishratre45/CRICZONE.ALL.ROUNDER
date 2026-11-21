@@ -885,6 +885,34 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     .hero-slider-dot.active{width:26px;background:#fff}
     #featuredMatchHero{touch-action:pan-y}
     @media(max-width:600px){.hero-slider-arrow{width:36px;height:36px;font-size:20px}.hero-slider-controls{padding:0 8px}.hero-slider-dots{bottom:10px}}
+    /* Responsive featured carousel refinement */
+    @media(min-width:761px){
+      #featuredMatchHero .hero-slider-controls{left:calc(50% + 12px);right:20px;padding:0 8px}
+      #featuredMatchHero .hero-slider-arrow{width:42px;height:42px;background:rgba(4,10,20,.72);border-color:rgba(255,255,255,.16)}
+      #featuredMatchHero .hero-slider-dots{bottom:16px}
+    }
+    @media(max-width:760px){
+      #featuredMatchHero{display:flex!important;flex-direction:column!important;gap:0!important}
+      #featuredMatchHero .hero-content{width:100%;padding:22px 18px 14px!important}
+      #featuredMatchHero .hero-title{font-size:clamp(1.55rem,7.2vw,2.1rem)!important;line-height:1.12!important}
+      #featuredMatchHero .hero-subtitle{font-size:.9rem!important;line-height:1.42!important}
+      #featuredMatchHero .hero-matchup{width:100%!important;justify-content:center!important;flex-wrap:nowrap!important;margin-bottom:14px!important}
+      #featuredMatchHero .hero-matchup .team-badge{min-width:0!important}
+      #featuredMatchHero .hero-matchup .team-badge span{white-space:nowrap!important}
+      #featuredMatchHero .hero-actions{width:100%!important}
+      #featuredMatchHero .btn-watch-hero{width:100%!important;justify-content:center!important}
+      #featuredMatchHero .hero-media{width:100%!important;padding:8px 14px 12px!important}
+      #featuredMatchHero .hero-media-preview{aspect-ratio:16/9!important;max-height:none!important}
+      #featuredMatchHero .hero-slider-controls{position:relative!important;top:auto!important;left:auto!important;right:auto!important;transform:none!important;display:flex!important;justify-content:center!important;gap:14px!important;padding:4px 0 8px!important}
+      #featuredMatchHero .hero-slider-arrow{width:40px;height:40px;font-size:20px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+      #featuredMatchHero .hero-slider-dots{position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;justify-content:center!important;padding:0 0 14px!important}
+    }
+    @media(max-width:390px){
+      #featuredMatchHero .hero-matchup{gap:7px!important;padding:10px 7px!important}
+      #featuredMatchHero .hero-matchup .team-badge{font-size:.82rem!important;gap:5px!important}
+      #featuredMatchHero .hero-matchup .team-badge img{width:25px!important;height:25px!important}
+      #featuredMatchHero .vs-pill{min-width:28px!important}
+    }
     @media(prefers-reduced-motion:reduce){#featuredMatchHero .hero-content,#featuredMatchHero .hero-media,#featuredMatchHero .hero-media-preview img{transition:none!important;animation:none!important}}
   </style>
   <div class="hero-container" id="featuredMatchCarousel">
