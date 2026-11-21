@@ -913,6 +913,20 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
       #featuredMatchHero .hero-matchup .team-badge img{width:25px!important;height:25px!important}
       #featuredMatchHero .vs-pill{min-width:28px!important}
     }
+    /* Slider controls: clean, balanced and clearly clickable */
+    #featuredMatchHero .hero-slider-arrow{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;border-radius:50%!important;display:grid!important;place-items:center!important;padding:0!important;color:#f7fbff!important;background:linear-gradient(145deg,rgba(20,36,58,.92),rgba(7,13,25,.86))!important;border:1px solid rgba(150,190,255,.25)!important;box-shadow:0 5px 18px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.08)!important;backdrop-filter:blur(12px)!important;font-size:22px!important;font-weight:700!important;line-height:1!important}
+    #featuredMatchHero .hero-slider-arrow:hover{background:linear-gradient(145deg,#287fe8,#4e61dc)!important;box-shadow:0 7px 22px rgba(40,115,230,.35)!important;transform:translateY(-1px)!important}
+    #featuredMatchHero .hero-slider-arrow:active{transform:scale(.92)!important}
+    #featuredMatchHero .hero-slider-dots{display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important}
+    #featuredMatchHero .hero-slider-dot{box-sizing:border-box!important;width:8px!important;height:8px!important;min-width:8px!important;max-width:8px!important;border-radius:50%!important;padding:0!important;margin:0!important;background:rgba(205,220,242,.42)!important;border:1px solid rgba(255,255,255,.18)!important;display:block!important;transition:width .3s ease,background .3s ease,transform .3s ease!important}
+    #featuredMatchHero .hero-slider-dot.active{width:23px!important;min-width:23px!important;max-width:23px!important;height:8px!important;border-radius:99px!important;background:linear-gradient(90deg,#39b8f4,#6277ff)!important;border-color:transparent!important;transform:scale(1.02)!important}
+    @media(max-width:760px){
+      #featuredMatchHero .hero-slider-controls{gap:12px!important;padding:5px 0 10px!important}
+      #featuredMatchHero .hero-slider-arrow{width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;font-size:21px!important}
+      #featuredMatchHero .hero-slider-dots{gap:8px!important;padding:3px 0 15px!important}
+      #featuredMatchHero .hero-slider-dot{width:8px!important;height:8px!important;min-width:8px!important;max-width:8px!important}
+      #featuredMatchHero .hero-slider-dot.active{width:22px!important;height:8px!important;min-width:22px!important;max-width:22px!important}
+    }
     @media(prefers-reduced-motion:reduce){#featuredMatchHero .hero-content,#featuredMatchHero .hero-media,#featuredMatchHero .hero-media-preview img{transition:none!important;animation:none!important}}
   </style>
   <div class="hero-container" id="featuredMatchCarousel">
