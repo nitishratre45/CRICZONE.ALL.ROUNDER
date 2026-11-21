@@ -865,45 +865,55 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">Join Telegram Channel</a>
   </nav>
 
-  <div class="hero-container">
-    <div class="hero-card">
-      <div class="hero-bg-overlay" style="background-image: url('https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg');"></div>
-
+  <style id="hero-auto-slider">
+    .hero-card.hero-changing .hero-content,.hero-card.hero-changing .hero-media{opacity:0;transform:translateY(8px)}
+    .hero-content,.hero-media{transition:opacity .35s ease,transform .35s ease}
+    .hero-media-preview img{transition:opacity .35s ease,transform .65s cubic-bezier(.2,.8,.2,1)!important}
+    .hero-card{touch-action:pan-y}
+    @media(prefers-reduced-motion:reduce){.hero-content,.hero-media,.hero-media-preview img{transition:none!important}}
+  </style>
+  <div class="hero-container" id="featuredMatchCarousel">
+    <div class="hero-card" id="featuredMatchHero">
+      <div class="hero-bg-overlay" id="heroBgOverlay" style="background-image:url('https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg');"></div>
       <div class="hero-content">
-        <div class="hero-badge">
-          <span class="live-indicator"></span>
-          LIVE STREAMING NOW
-        </div>
-        <h1 class="hero-title">India Tour of New Zealand 2026</h1>
-        <p class="hero-subtitle">T20I Series · Multi-Audio Hindi, English, Tamil, Telugu &amp; Kannada</p>
-
-        <div class="hero-matchup">
-          <div class="team-badge">
-            <img src="https://flagpedia.net/data/flags/w1160/in.webp" alt="India">
-            <span>India</span>
-          </div>
+        <div class="hero-badge" id="heroBadge"><span class="live-indicator"></span> LIVE STREAMING NOW</div>
+        <h1 class="hero-title" id="heroTitle">India Tour of New Zealand 2026</h1>
+        <p class="hero-subtitle" id="heroSubtitle">T20I Series · Multi-Audio Hindi, English, Tamil, Telugu &amp; Kannada</p>
+        <div class="hero-matchup" id="heroMatchup">
+          <div class="team-badge"><img src="https://flagpedia.net/data/flags/w1160/in.webp" alt="India"><span>India</span></div>
           <span class="vs-pill">VS</span>
-          <div class="team-badge">
-            <img src="https://flagpedia.net/data/flags/w1160/nz.webp" alt="New Zealand">
-            <span>New Zealand</span>
-          </div>
+          <div class="team-badge"><img src="https://flagpedia.net/data/flags/w1160/nz.webp" alt="New Zealand"><span>New Zealand</span></div>
         </div>
-
-        <div class="hero-actions">
-          <a href="/matches/ind-nz.html" class="btn-watch-hero">
-            <span class="material-icons">play_circle_filled</span>
-            WATCH STREAM NOW
-          </a>
-        </div>
+        <div class="hero-actions"><a href="/matches/ind-nz.html" class="btn-watch-hero" id="heroWatchLink"><span class="material-icons">play_circle_filled</span><span id="heroWatchText">WATCH STREAM NOW</span></a></div>
       </div>
-
-      <div class="hero-media">
-        <a href="/matches/ind-vs-nz.html" class="hero-media-preview">
-          <img src="https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg" alt="Live Match" referrerpolicy="no-referrer">
-        </a>
-      </div>
+      <div class="hero-media"><a href="/matches/ind-vs-nz.html" class="hero-media-preview" id="heroImageLink"><img id="heroImage" src="https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg" alt="India vs New Zealand live match" referrerpolicy="no-referrer"></a></div>
     </div>
   </div>
+  <script id="hero-auto-slider-script">
+  (function(){
+    const slides=[
+      {badge:'LIVE STREAMING NOW',title:'India Tour of New Zealand 2026',subtitle:'T20I Series · Multi-Audio Hindi, English, Tamil, Telugu & Kannada',teamA:'India',teamB:'New Zealand',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/nz.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',link:'/matches/ind-nz.html',imageLink:'/matches/ind-vs-nz.html',watch:'WATCH STREAM NOW',status:'LIVE'},
+      {badge:'UPCOMING · ASIA CUP RISING STARS',title:'India A vs Pakistan Shaheens',subtitle:'DP World Asia Cup Rising Stars Men’s 2026 · Sony Sports Ten 5 · Hindi',teamA:'India A',teamB:'Pakistan Shaheens',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/pk.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',link:'/matches/ind-pak.html',imageLink:'/matches/ind-pak.html',watch:'WATCH LIVE',status:'UPCOMING'}
+    ];
+    let index=0,timer=null,touchStartX=0;
+    const hero=document.getElementById('featuredMatchHero'),title=document.getElementById('heroTitle'),subtitle=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge'),bg=document.getElementById('heroBgOverlay'),img=document.getElementById('heroImage'),imgLink=document.getElementById('heroImageLink'),watch=document.getElementById('heroWatchLink'),watchText=document.getElementById('heroWatchText'),matchup=document.getElementById('heroMatchup');
+    if(!hero||!title||!img)return;
+    function showSlide(next){
+      index=(next+slides.length)%slides.length;const s=slides[index];
+      hero.classList.add('hero-changing');
+      window.setTimeout(()=>{
+        title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
+        bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
+        matchup.innerHTML='<div class="team-badge"><img src="'+s.flagA+'" alt="'+s.teamA+'"><span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge"><img src="'+s.flagB+'" alt="'+s.teamB+'"><span>'+s.teamB+'</span></div>';
+        hero.classList.remove('hero-changing');
+      },220);
+    }
+    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>showSlide(index+1),6500);}
+    hero.addEventListener('touchstart',e=>{if(e.changedTouches.length)touchStartX=e.changedTouches[0].clientX},{passive:true});
+    hero.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>50){showSlide(index+(dx<0?1:-1));restart()}},{passive:true});
+    restart();
+  })();
+  </script>
 
   <main id="sports" role="main">
 <nav id="match-quicknav" aria-label="Quick match categories"><a href="#footballSection">⚽ Football Live</a><a href="#cricketSection">🏏 Cricket</a><a href="#fancodeSection">📺 FanCode</a><a href="#willowSection">🏟️ Willow</a><a href="#sonylivSection">🎬 SonyLIV</a><a href="#primeSection">▶ Prime Sports</a></nav>
