@@ -1859,7 +1859,7 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
  const nav=document.getElementById('match-quicknav');if(!nav)return;
  const links=[...nav.querySelectorAll('a[href^="#"]')];
  const pairs=links.map(a=>({a,section:document.querySelector(a.getAttribute('href'))})).filter(x=>x.section);
- const setActive=section=>{pairs.forEach(({a,section:s})=>a.classList.toggle('is-active',s===section));pairs.find(x=>x.section===section)?.a.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});};
+ let activeSection=null;\n const setActive=section=>{if(section===activeSection)return;activeSection=section;pairs.forEach(({a,section:s})=>a.classList.toggle('is-active',s===section));const link=pairs.find(x=>x.section===section)?.a;if(link&&nav.scrollWidth>nav.clientWidth)link.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});};
  if('IntersectionObserver' in window){const io=new IntersectionObserver(entries=>{const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(visible)setActive(visible.target);},{rootMargin:'-18% 0px -62% 0px',threshold:[0,.1,.3,.6]});pairs.forEach(x=>io.observe(x.section));}
  const top=document.createElement('button');top.id='criczone-top-button';top.type='button';top.setAttribute('aria-label','Back to top');top.innerHTML='<span class="material-icons" aria-hidden="true">keyboard_arrow_up</span>';document.body.appendChild(top);top.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
  const update=()=>top.classList.toggle('visible',window.scrollY>500);window.addEventListener('scroll',update,{passive:true});update();
