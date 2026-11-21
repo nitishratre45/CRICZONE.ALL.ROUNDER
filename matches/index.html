@@ -928,7 +928,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
         setTimeout(()=>hero.classList.remove('hero-enter-left'),720);drawDots();
       },180);
     }
-    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!paused)showSlide(index+1)},7500);}
+    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!paused)showSlide(index+1)},5000);}
     document.getElementById('heroPrev')?.addEventListener('click',()=>{showSlide(index-1);restart()});
     document.getElementById('heroNext')?.addEventListener('click',()=>{showSlide(index+1);restart()});
     hero.addEventListener('mouseenter',()=>paused=true);hero.addEventListener('mouseleave',()=>paused=false);
