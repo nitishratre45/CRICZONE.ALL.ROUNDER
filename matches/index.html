@@ -949,37 +949,70 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     </div>
   </div>
   <script id="hero-auto-slider-script">
-  (function(){
-    const slides=[
-      {badge:'LIVE STREAMING NOW',title:'India Tour of New Zealand 2026',subtitle:'T20I Series · Multi-Audio Hindi, English, Tamil, Telugu & Kannada',teamA:'India',teamB:'New Zealand',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/nz.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',link:'/matches/ind-nz.html',imageLink:'/matches/ind-vs-nz.html',watch:'WATCH STREAM NOW'},
-      {eventCategory:'Cricket',isLive:false,contentId:1090554767,broadcastChannel:'Sony Sports Ten 5',audioLanguageName:'HIN',eventName:'Upcoming - India A vs Pakistan Shaheens - DP World Asia Cup Rising Stars Men\'s 2026',badge:'UPCOMING · ASIA CUP RISING STARS',title:'India A vs Pakistan Shaheens',subtitle:'DP World Asia Cup Rising Stars Men’s 2026 · Sony Sports Ten 5 · Hindi',teamA:'India A',teamB:'Pakistan Shaheens',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/pk.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',link:'/matches/ind-pak.html',imageLink:'/matches/ind-pak.html',watch:'WATCH LIVE'}
+(function(){
+  const fallbackSlides=[
+    {badge:'LIVE STREAMING NOW',title:'India Tour of New Zealand 2026',subtitle:'T20I Series · Multi-Audio Hindi, English, Tamil, Telugu & Kannada',teamA:'India',teamB:'New Zealand',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/nz.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029344/1795027876381725_NZvsIND_1st_test_day1_today_landscape_thumb.jpg',link:'/matches/ind-vs-nz.html',imageLink:'/matches/ind-vs-nz.html',watch:'WATCH STREAM NOW',live:true,source:'Fallback'},
+    {badge:'UPCOMING · ASIA CUP RISING STARS',title:'India A vs Pakistan Shaheens',subtitle:'DP World Asia Cup Rising Stars Men’s 2026 · Sony Sports Ten 5 · Hindi',teamA:'India A',teamB:'Pakistan Shaheens',flagA:'https://flagpedia.net/data/flags/w1160/in.webp',flagB:'https://flagpedia.net/data/flags/w1160/pk.webp',image:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',bg:'https://origin-staticv2.sonyliv.com/videoasset_images/manage_file/1000029492/1795181314712618_ACRS26_INDvsPAK_dated_landscape_thumb.jpg',link:'/matches/ind-pak.html',imageLink:'/matches/ind-pak.html',watch:'WATCH LIVE',live:false,source:'Fallback'}
+  ];
+  let slides=fallbackSlides.slice(),index=0,timer=null,transitionTimer=null,touchStartX=0,paused=false;
+  const hero=document.getElementById('featuredMatchHero'),title=document.getElementById('heroTitle'),subtitle=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge'),bg=document.getElementById('heroBgOverlay'),img=document.getElementById('heroImage'),imgLink=document.getElementById('heroImageLink'),watch=document.getElementById('heroWatchLink'),watchText=document.getElementById('heroWatchText'),matchup=document.getElementById('heroMatchup'),dots=document.getElementById('heroSliderDots');
+  if(!hero||!title||!img)return;
+  const INDIA='https://flagpedia.net/data/flags/w1160/in.webp',PAK='https://flagpedia.net/data/flags/w1160/pk.webp',NZ='https://flagpedia.net/data/flags/w1160/nz.webp';
+  const safe=(v)=>String(v||'').trim();
+  const isLive=(m)=>m._live===true||m.isLive===true||/^(LIVE|INPLAY|IN PLAY|ONGOING)$/i.test(String(m.status||m.state||''));
+  const getImage=(m)=>m.image||m.src||m.cover_image||m.poster||m.thumbnail||m.image_url||m.banner||m.images?.boxArtImageFragments?.mediaCentralUrl||m.images?.coverImageFragments?.mediaCentralUrl||m.catalogMetadata?.images?.coverImage||'';
+  function makeSlide(m,source,category,link){
+    const ev=m.event||{},titleText=safe(m.title||m.match_name||m.event_name||m.eventTitle||m.name||ev.teamA&&ev.teamB&&ev.teamA+' vs '+ev.teamB)||category+' Event';
+    const teamA=safe(m.teamA||ev.teamA||m.team_a||m.homeTeam||''),teamB=safe(m.teamB||ev.teamB||m.team_b||m.awayTeam||'');
+    const live=isLive(m),image=getImage(m); if(!image)return null;
+    let flags=[m.teamAFlag||ev.teamAFlag||m.flagA||'',m.teamBFlag||ev.teamBFlag||m.flagB||''];
+    if(!flags[0]&&/india|indian/i.test(teamA))flags[0]=INDIA;if(!flags[1]&&/pakistan|pak/i.test(teamB))flags[1]=PAK;if(!flags[1]&&/new zealand|nz/i.test(teamB))flags[1]=NZ;
+    return {badge:(live?'LIVE NOW':'UPCOMING')+' · '+category,title:titleText,subtitle:safe(m.subtitle||m.tournament||m.tournament_name||m.event_category||m.meta||m.synopsis||m.time||m.broadcast_channel||source),teamA:teamA||category,teamB:teamB||'Event',flagA:flags[0],flagB:flags[1],image,bg:image,link,imageLink:link,watch:live?'WATCH LIVE':'VIEW EVENT',live,source};
+  }
+  function drawDots(){
+    if(!dots)return;const count=slides.length,windowSize=Math.min(5,count),start=Math.max(0,Math.min(index-Math.floor(windowSize/2),count-windowSize));
+    dots.innerHTML=slides.slice(start,start+windowSize).map((_,j)=>{const i=start+j;return '<button type="button" class="hero-slider-dot'+(i===index?' active':'')+'" aria-label="Show event '+(i+1)+' of '+count+'" data-slide="'+i+'"></button>'}).join('');
+    dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{showSlide(Number(b.dataset.slide),1);restart()}));
+  }
+  function showSlide(next,direction){
+    if(!slides.length)return;if(transitionTimer)clearTimeout(transitionTimer);const old=index;index=(next+slides.length)%slides.length;const s=slides[index],dir=direction||(index>=old?1:-1);
+    hero.classList.remove('hero-enter-left','hero-enter-right');hero.classList.add('hero-changing');
+    transitionTimer=setTimeout(()=>{
+      title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
+      bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
+      matchup.innerHTML='<div class="team-badge"><img src="'+(s.flagA||INDIA)+'" alt="'+s.teamA+'"><span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge"><img src="'+(s.flagB||NZ)+'" alt="'+s.teamB+'"><span>'+s.teamB+'</span></div>';
+      hero.classList.remove('hero-changing');hero.classList.add(dir<0?'hero-enter-right':'hero-enter-left');setTimeout(()=>hero.classList.remove('hero-enter-left','hero-enter-right'),720);drawDots();
+    },160);
+  }
+  function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!paused)showSlide(index+1,1)},5000);}
+  document.getElementById('heroPrev')?.addEventListener('click',()=>{showSlide(index-1,-1);restart()});
+  document.getElementById('heroNext')?.addEventListener('click',()=>{showSlide(index+1,1);restart()});
+  hero.addEventListener('mouseenter',()=>paused=true);hero.addEventListener('mouseleave',()=>paused=false);hero.addEventListener('focusin',()=>paused=true);hero.addEventListener('focusout',()=>paused=false);
+  hero.addEventListener('touchstart',e=>{if(e.changedTouches.length)touchStartX=e.changedTouches[0].clientX},{passive:true});
+  hero.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>50){showSlide(index+(dx>0?-1:1),dx>0?-1:1);restart()}},{passive:true});
+  drawDots();restart();
+  async function loadFeed(url,source,category,link,mapper){
+    try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();return mapper(data).map(m=>makeSlide(m,source,category,link)).filter(Boolean)}catch(e){console.warn('[Hero '+source+'] feed unavailable',e);return []}
+  }
+  async function refreshSlides(){
+    const feeds=[
+      loadFeed('https://sonujson-v6.pages.dev/Data/events/football.json','Football','Football','/matches/watch/football/index.html',d=>{const a=d.events||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
+      loadFeed('https://sonujson-v6.pages.dev/Data/events/cricket.json','Cricket','Cricket','/matches/watch/cricket/index.html',d=>{const a=d.events||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
+      loadFeed('https://sportlink-fancode10.pages.dev/fan.json','FanCode','FanCode','/watch/fancode',d=>{const a=d.matches||d.events||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
+      loadFeed('https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json','Willow','Willow','/matches/watch/willow/index.html',d=>{const a=d.Matches||d.matches||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
+      loadFeed('https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.json','SonyLIV','SonyLIV','/matches/watch/sonyliv/',d=>{const a=d.events||d.matches||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
+      loadFeed('https://raw.githubusercontent.com/doctor-8trange/tekzya9/refs/heads/main/data/primevideoindia.json','Prime Video','Prime Video','/matches/watch/prime/',d=>{const a=[];if(Array.isArray(d.live))d.live.forEach(m=>{m._live=true;a.push(m)});if(Array.isArray(d.upcoming))d.upcoming.forEach(m=>{m._live=false;a.push(m)});return a})
     ];
-    let index=0,timer=null,transitionTimer=null,touchStartX=0,paused=false;
-    const hero=document.getElementById('featuredMatchHero'),title=document.getElementById('heroTitle'),subtitle=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge'),bg=document.getElementById('heroBgOverlay'),img=document.getElementById('heroImage'),imgLink=document.getElementById('heroImageLink'),watch=document.getElementById('heroWatchLink'),watchText=document.getElementById('heroWatchText'),matchup=document.getElementById('heroMatchup'),dots=document.getElementById('heroSliderDots');
-    if(!hero||!title||!img)return;
-    function drawDots(){if(!dots)return;dots.innerHTML=slides.map((_,i)=>'<button type="button" class="hero-slider-dot'+(i===index?' active':'')+'" aria-label="Show featured match '+(i+1)+'" data-slide="'+i+'"></button>').join('');dots.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{showSlide(Number(b.dataset.slide));restart()}));}
-    function showSlide(next){
-      if(transitionTimer)clearTimeout(transitionTimer);
-      index=(next+slides.length)%slides.length;const s=slides[index];
-      hero.classList.remove('hero-enter-left','hero-enter-right');hero.classList.add('hero-changing');
-      transitionTimer=setTimeout(()=>{
-        title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
-        bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
-        matchup.innerHTML='<div class="team-badge"><img src="'+s.flagA+'" alt="'+s.teamA+'"><span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge"><img src="'+s.flagB+'" alt="'+s.teamB+'"><span>'+s.teamB+'</span></div>';
-        hero.classList.remove('hero-changing');hero.classList.add('hero-enter-left');
-        setTimeout(()=>hero.classList.remove('hero-enter-left'),720);drawDots();
-      },180);
-    }
-    function restart(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!paused)showSlide(index+1)},5000);}
-    document.getElementById('heroPrev')?.addEventListener('click',()=>{showSlide(index-1);restart()});
-    document.getElementById('heroNext')?.addEventListener('click',()=>{showSlide(index+1);restart()});
-    hero.addEventListener('mouseenter',()=>paused=true);hero.addEventListener('mouseleave',()=>paused=false);
-    hero.addEventListener('focusin',()=>paused=true);hero.addEventListener('focusout',()=>paused=false);
-    hero.addEventListener('touchstart',e=>{if(e.changedTouches.length)touchStartX=e.changedTouches[0].clientX},{passive:true});
-    hero.addEventListener('touchend',e=>{if(!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>50){showSlide(index+(dx>0?-1:1));restart()}},{passive:true});
-    drawDots();restart();
-  })();
-  </script>
+    const groups=await Promise.all(feeds),dynamic=groups.flat();
+    if(dynamic.length){
+      const seen=new Set(),unique=dynamic.filter(s=>{const key=s.title.toLowerCase().replace(/[^a-z0-9]/g,'');if(seen.has(key))return false;seen.add(key);return true});
+      slides=unique.sort((a,b)=>Number(b.live)-Number(a.live)).concat(fallbackSlides.filter(f=>!seen.has(f.title.toLowerCase().replace(/[^a-z0-9]/g,''))));
+      index=0;showSlide(0,1);drawDots();
+    }else console.info('[Hero] all JSON feeds unavailable; fallback carousel retained');
+  }
+  refreshSlides();setInterval(refreshSlides,300000);
+})();
+</script>
 
   <main id="sports" role="main">
 <nav id="match-quicknav" aria-label="Quick match categories"><a href="#footballSection">⚽ Football Live</a><a href="#cricketSection">🏏 Cricket</a><a href="#fancodeSection">📺 FanCode</a><a href="#willowSection">🏟️ Willow</a><a href="#sonylivSection">🎬 SonyLIV</a><a href="#primeSection">▶ Prime Sports</a></nav>
