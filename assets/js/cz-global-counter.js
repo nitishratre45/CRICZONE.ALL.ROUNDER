@@ -303,32 +303,10 @@
       badge.setAttribute("aria-label", "CRICZONE visitor statistics");
       (document.body || document.documentElement).appendChild(badge);
     }
-    // Keep the badge inside CRICZONE's player panel so it appears only while
-    // a channel is playing. When Shaka enters Fullscreen API mode, place it
-    // inside the actual fullscreen container so it remains visible there too.
-    function placeBadgeInPlayerLayer() {
-      var pc = document.getElementById("pc");
-      if (!pc || !pc.contains(badge)) return;
-      var full = document.fullscreenElement || document.webkitFullscreenElement;
-      if (full && (full === pc || pc.contains(full)) &&
-          full.nodeType === 1 && !/^(VIDEO|IFRAME|AUDIO)$/.test(full.tagName)) {
-        if (badge.parentElement !== full) full.appendChild(badge);
-        return;
-      }
-      var shakaContainer = pc.querySelector(".shaka-video-container");
-      var target = shakaContainer || pc;
-      if (badge.parentElement !== target) target.appendChild(badge);
-    }
+    // Legacy CRICZONE player pages placed the counter inside #pc.
+    // Move it outside the player so hiding/showing the player cannot hide the counter.
     if (badge.parentElement && badge.parentElement.closest("#pc")) {
-      placeBadgeInPlayerLayer();
-      ["fullscreenchange", "webkitfullscreenchange"].forEach(function (eventName) {
-        document.addEventListener(eventName, placeBadgeInPlayerLayer);
-      });
-      var playerPanel = document.getElementById("pc");
-      if (playerPanel && !badge.__czPlayerLayerObserver && window.MutationObserver) {
-        badge.__czPlayerLayerObserver = new MutationObserver(placeBadgeInPlayerLayer);
-        badge.__czPlayerLayerObserver.observe(playerPanel, { childList: true, subtree: true });
-      }
+      (document.body || document.documentElement).appendChild(badge);
     }
     var total = document.getElementById("totalVisits");
     var live = document.getElementById("liveWatching");
@@ -379,7 +357,6 @@
         "@media(max-width:480px){#viewerBadge{top:8px!important;right:8px!important;padding:2px 4px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:6px!important}}";
       style.textContent += "@keyframes czCounterSweep{from{transform:translateX(0)}to{transform:translateX(calc(-1 * (100vw - 100% - 24px)))}}";
       style.textContent += "#viewerBadge{padding:2.7px 4.5px!important;border-radius:7px!important;font-size:7.2px!important;letter-spacing:.315px!important;box-shadow:0 3px 11px rgba(0,0,0,.32)!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{gap:2.7px!important;padding:.9px 2.7px!important;font-size:6.3px!important}#viewerBadge #totalVisits,#viewerBadge #liveWatching{min-width:12.6px!important;padding:.9px 2.7px!important;border-radius:3.6px!important;font-size:7.2px!important}@media(max-width:480px){#viewerBadge{padding:1.8px 3.6px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:5.4px!important}}";
-      style.textContent += "#viewerBadge{box-sizing:border-box!important;width:132px!important;min-width:132px!important;max-width:132px!important;justify-content:space-between!important;overflow:hidden!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{flex:0 0 auto!important;white-space:nowrap!important}#viewerBadge #totalVisits{box-sizing:border-box!important;width:48px!important;min-width:48px!important;max-width:48px!important;font-variant-numeric:tabular-nums!important}#viewerBadge #liveWatching{box-sizing:border-box!important;width:34px!important;min-width:34px!important;max-width:34px!important;font-variant-numeric:tabular-nums!important}@media(max-width:480px){#viewerBadge{width:124px!important;min-width:124px!important;max-width:124px!important}#viewerBadge #totalVisits{width:45px!important;min-width:45px!important;max-width:45px!important}#viewerBadge #liveWatching{width:32px!important;min-width:32px!important;max-width:32px!important}} #viewerBadge{width:auto!important;min-width:0!important;max-width:calc(100vw - 16px)!important;box-sizing:border-box!important;overflow:visible!important;flex-wrap:nowrap!important;justify-content:flex-start!important;gap:2px!important;padding:4px 5px!important;border-radius:8px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{flex:0 1 auto!important;gap:3px!important;padding:2px 4px!important;font-size:7px!important;white-space:nowrap!important}#viewerBadge #totalVisits{width:42px!important;min-width:42px!important;max-width:42px!important;padding:1px 3px!important;font-size:8px!important}#viewerBadge #liveWatching{width:30px!important;min-width:30px!important;max-width:30px!important;padding:1px 3px!important;font-size:8px!important}#viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;min-width:20px!important;height:16px!important;margin-left:2px!important;padding:0 4px!important;border-radius:5px!important;background:rgba(42,90,112,.72)!important;border:1px solid rgba(95,188,226,.25)!important;color:#a9d9ff!important;font:900 7px/1 system-ui,sans-serif!important;letter-spacing:.2px!important;white-space:nowrap!important}
       document.head.appendChild(style);
     }
     // Auto-sweep horizontally every 10 seconds until the user manually places it.
