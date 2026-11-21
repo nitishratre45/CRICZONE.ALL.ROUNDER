@@ -1070,7 +1070,8 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     let flags=[m.teamAFlag||ev.teamAFlag||m.flagA||'',m.teamBFlag||ev.teamBFlag||m.flagB||''];
     if(!flags[0]&&/india|indian/i.test(teamA))flags[0]=INDIA;if(!flags[1]&&/pakistan|pak/i.test(teamB))flags[1]=PAK;if(!flags[1]&&/new zealand|nz/i.test(teamB))flags[1]=NZ;
     const idForPlayer=matchId!=null&&String(matchId).trim()!==''?String(matchId):null;
-    let playLink=link;\n    if(idForPlayer){const enc=encodeURIComponent(idForPlayer);if(/Football/i.test(category))playLink='/matches/watch/football/index.html#watch?id='+enc+'&stream=0';else if(/Cricket/i.test(category))playLink='/matches/watch/cricket/index.html#watch?id='+enc+'&stream=0';else playLink=link+(link.includes('?')?'&':'?')+'id='+enc;}
+    let playLink=link;
+    if(idForPlayer){const enc=encodeURIComponent(idForPlayer);if(/Football/i.test(category))playLink='/matches/watch/football/index.html#watch?id='+enc+'&stream=0';else if(/Cricket/i.test(category))playLink='/matches/watch/cricket/index.html#watch?id='+enc+'&stream=0';else playLink=link+(link.includes('?')?'&':'?')+'id='+enc;}
     return {badge:(live?'LIVE NOW':'UPCOMING')+' · '+category,title:titleText,subtitle:safe(m.subtitle||m.tournament||m.tournament_name||m.event_category||m.meta||m.synopsis||m.time||m.broadcast_channel||source),teamA:teamA||category,teamB:teamB||'Event',flagA:flags[0],flagB:flags[1],image,bg:image,link:playLink,imageLink:playLink,watch:live?'WATCH LIVE':'VIEW EVENT',live,source,matchId:idForPlayer};
   }
   function drawDots(){
