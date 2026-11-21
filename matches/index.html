@@ -1356,8 +1356,12 @@ main#sports{max-width:1280px!important;margin:0 auto!important;padding:0 clamp(1
 
         /* ---------- TEAM vs TEAM THUMBNAIL ---------- */
         if (m.teamVs) {
-          const initialsA = String(m.teamA || '?').replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).filter(Boolean).map(x => x[0]).join('').slice(0, 3).toUpperCase() || '?';
-          const initialsB = String(m.teamB || '?').replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).filter(Boolean).map(x => x[0]).join('').slice(0, 3).toUpperCase() || '?';
+          const rawA=String(m.teamA||'').trim(),rawB=String(m.teamB||'').trim();
+          const genericA=!/[a-z0-9]/i.test(rawA)||/^(willow|fancode|sonyliv|prime|event|team a|tbd)$/i.test(rawA);
+          const genericB=!/[a-z0-9]/i.test(rawB)||/^(event|team b|tbd)$/i.test(rawB);
+          const displayA=genericA?'LIVE':rawA,displayB=genericB?'EVENT':rawB;
+          const initialsA = displayA.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).filter(Boolean).map(x => x[0]).join('').slice(0, 3).toUpperCase() || 'L';
+          const initialsB = displayB.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).filter(Boolean).map(x => x[0]).join('').slice(0, 3).toUpperCase() || 'E';
 
           return `
             <a class="stream-card" href="${escapeHtml(link)}" title="${escapeHtml(m.title)}">
@@ -1370,7 +1374,7 @@ main#sports{max-width:1280px!important;margin:0 auto!important;padding:0 clamp(1
                       <span>${escapeHtml(initialsA)}</span>
                       ${m.flagA ? `<img src="${escapeHtml(m.flagA)}" alt="${escapeHtml(m.teamA)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
                     </div>
-                    <div class="card-team-name">${escapeHtml(m.teamA || 'TBD')}</div>
+                    <div class="card-team-name">${escapeHtml(displayA)}</div>
                   </div>
                   <span class="vs-badge">VS</span>
                   <div class="card-team">
@@ -1378,7 +1382,7 @@ main#sports{max-width:1280px!important;margin:0 auto!important;padding:0 clamp(1
                       <span>${escapeHtml(initialsB)}</span>
                       ${m.flagB ? `<img src="${escapeHtml(m.flagB)}" alt="${escapeHtml(m.teamB)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
                     </div>
-                    <div class="card-team-name">${escapeHtml(m.teamB || 'TBD')}</div>
+                    <div class="card-team-name">${escapeHtml(displayB)}</div>
                   </div>
                 </div>
               </div>
