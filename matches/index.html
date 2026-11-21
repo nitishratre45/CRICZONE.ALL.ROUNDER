@@ -913,6 +913,22 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
 @media(max-width:760px){.hero-container{margin:24px auto 30px!important;padding:0 12px!important}.hero-card{grid-template-columns:1fr!important;border-radius:23px!important}.hero-content{padding:23px 20px 14px!important}.hero-badge{margin-bottom:14px!important;padding:7px 11px!important;font-size:.72rem!important}.hero-title{font-size:clamp(1.72rem,7.4vw,2.3rem)!important;margin-bottom:11px!important}.hero-subtitle{font-size:.96rem!important;line-height:1.45!important;margin-bottom:18px!important}.hero-matchup{padding:11px 9px!important;gap:9px!important;margin-bottom:17px!important;border-radius:15px!important}.hero-matchup .team-badge{font-size:.91rem!important;gap:7px!important}.hero-matchup .team-badge img{width:29px!important;height:29px!important}.vs-pill{min-width:32px!important;height:28px!important;border-radius:9px!important}.btn-watch-hero{min-height:54px!important;border-radius:14px!important;font-size:.93rem!important}.hero-media{padding:10px 14px 19px!important}.hero-media-preview{border-radius:17px!important;aspect-ratio:16/9!important}}
 @media(prefers-reduced-motion:reduce){.hero-bg-overlay,.hero-media-preview img,.btn-watch-hero,.btn-watch-hero:before{transition:none!important}}
 </style>
+
+<style id="criczone-home-compact-unified">
+/* Compact hero controls and unified match card sizing */
+#featuredMatchHero .hero-slider-controls{gap:6px!important;right:14px!important}
+#featuredMatchHero .hero-slider-arrow{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;border-radius:11px!important;font-size:16px!important}
+#featuredMatchHero .hero-slider-dots{gap:5px!important;padding:5px 8px!important;bottom:12px!important}
+#featuredMatchHero .hero-slider-dot{width:5px!important;height:5px!important;min-width:5px!important;max-width:5px!important}
+#featuredMatchHero .hero-slider-dot.active{width:15px!important;height:5px!important;min-width:15px!important;max-width:15px!important}
+.hero-container,main,#match-quicknav{width:100%!important;max-width:1280px!important;margin-left:auto!important;margin-right:auto!important}
+.stream-track{gap:12px!important;padding:8px 2px 18px!important}
+.stream-card{flex:0 0 270px!important;width:270px!important;max-width:270px!important;min-width:270px!important}
+.stream-card .card-media{aspect-ratio:16/9!important;padding-top:0!important;height:auto!important}
+.stream-card .card-media.team-vs{aspect-ratio:16/9!important;padding-top:0!important}
+@media(max-width:600px){.stream-card{flex-basis:245px!important;width:245px!important;max-width:245px!important;min-width:245px!important}.stream-track{gap:10px!important}}
+@media(prefers-reduced-motion:reduce){#featuredMatchHero .hero-slider-arrow{transition:none!important}}
+</style>
 </head>
 <body id="top">
 
@@ -1091,7 +1107,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
       loadFeed('https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.json','SonyLIV','SonyLIV','/matches/watch/sonyliv/',d=>{const a=d.events||d.matches||d;return(Array.isArray(a)?a:[]).filter(m=>!/^finished$/i.test(m.status||''))}),
       loadFeed('https://raw.githubusercontent.com/doctor-8trange/tekzya9/refs/heads/main/data/primevideoindia.json','Prime Video','Prime Video','/matches/watch/prime/',d=>{const a=[];if(Array.isArray(d.live))d.live.forEach(m=>{m._live=true;a.push(m)});if(Array.isArray(d.upcoming))d.upcoming.forEach(m=>{m._live=false;a.push(m)});return a})
     ];
-    const groups=await Promise.all(feeds),dynamic=groups.flat();
+    const groups=await Promise.all(feeds),dynamic=groups.flat().sort((a,b)=>homeImportance({title:b.title,status:b.live?'LIVE':'UPCOMING'})-homeImportance({title:a.title,status:a.live?'LIVE':'UPCOMING'}));
     if(dynamic.length){
       const seen=new Set(),unique=dynamic.filter(s=>{const key=s.title.toLowerCase().replace(/[^a-z0-9]/g,'');if(!key||seen.has(key))return false;seen.add(key);return true});
       const liveEvents=unique.filter(s=>s.live).slice(0,3);
@@ -1297,13 +1313,24 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
 
+
+    // Homepage relevance ranking: live events first, then major tournaments/teams.
+    function homeImportance(item){
+      const text=String(item.title||item.match_name||item.event_name||item.tournament||item.tournament_name||item.event_category||'').toLowerCase();
+      const live=String(item.status||item.state||'').toLowerCase();
+      let score=/live|inplay|in play|ongoing/.test(live)?100:0;
+      if(/world cup|champions league|championship|premier league|ipl|international|test match|t20i|odi|ashes|asia cup|wimbledon|grand slam|nba|nfl|fifa|uefa|fa cup|league cup|final|semi.?final|qualifier|india|england|australia|pakistan|new zealand|south africa|west indies/.test(text))score+=35;
+      return score;
+    }
+    function compactHomeList(list,limit=5){return (Array.isArray(list)?list:[]).slice().sort((a,b)=>homeImportance(b)-homeImportance(a)).slice(0,limit);}
+
     function renderStreamCards(track, list) {
       if (!track) return;
       if (!list || !list.length) {
         track.innerHTML = '<div class="track-empty">No events scheduled right now.</div>';
         return;
       }
-      track.innerHTML = list.map(m => {
+      track.innerHTML = compactHomeList(list,5).map(m => {
         const status  = String(m.status || 'LIVE').toUpperCase();
         const isLive  = status === 'LIVE';
         const link    = m.link  || '#';
@@ -1464,7 +1491,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           const list = raw
             .filter(m => m && String(m.status || '').toLowerCase() !== 'finished')
             .map(toCard);
-          renderStreamCards(track, list);
+          renderStreamCards(track, compactHomeList(list,5));
         })
         .catch(err => {
           console.warn('[Football] load failed:', err);
@@ -1505,7 +1532,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           const list = raw
             .filter(m => m && String(m.status || '').toLowerCase() !== 'finished')
             .map(toCard);
-          renderStreamCards(track, list);
+          renderStreamCards(track, compactHomeList(list,5));
         })
         .catch(err => {
           console.warn('[Cricket] load failed:', err);
@@ -1527,14 +1554,14 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           const list = raw
             .filter(m => m && String(m.status || '').toUpperCase() !== 'FINISHED')
             .filter(m => m.match_id || m.id)
-            .slice(0, 20);
+            .slice(0, 5);
 
           if (!list.length) {
             track.innerHTML = '<div class="track-empty">No FanCode events scheduled right now.</div>';
             return;
           }
 
-          track.innerHTML = list.map(m => {
+          track.innerHTML = compactHomeList(list,5).map(m => {
             const id     = m.match_id || m.id || '';
             const title  = m.title || m.match_name || m.event_name || 'FanCode Match';
             const img    = m.image || m.src || FALLBACK_BANNER;
@@ -1589,17 +1616,17 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
         .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(data => {
           const raw = data.Matches || data.matches || (Array.isArray(data) ? data : []);
-          const list = raw
+          const list = compactHomeList(raw
             .filter(m => m && String(m.status || '').toUpperCase() !== 'FINISHED')
             .map(normalize)
-            .filter(m => m.id);
+            .filter(m => m.id),5);
 
           if (!list.length) {
             track.innerHTML = '<div class="track-empty">No Willow events scheduled right now.</div>';
             return;
           }
 
-          track.innerHTML = list.map(m => {
+          track.innerHTML = compactHomeList(list,5).map(m => {
             const link = `${WATCH_PAGE}?id=${encodeURIComponent(m.id)}`;
             const badge = m.status === 'LIVE' ? 'card-live-tag is-live' : 'card-live-tag is-upcoming';
 
@@ -1690,7 +1717,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           const raw = data.matches || (Array.isArray(data) ? data : []);
 
           /* Normalise the drmlive/sliv feed schema into the card model */
-          const list = raw
+          const list = compactHomeList(raw
             .filter(m => m && m.contentId != null)
             .map(m => ({
               id:     String(m.contentId),
@@ -1700,7 +1727,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
               meta:   m.event_name || m.event_category || 'SonyLIV HD',
               isFree: true
             }))
-            .filter(m => m.id);
+            .filter(m => m.id),5);
 
           if (!list.length) throw new Error('empty feed');
           paint(list);
@@ -1724,7 +1751,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
           let list = [];
           if (Array.isArray(d.live)) d.live.forEach(m => { m._live = true; list.push(m); });
           if (Array.isArray(d.upcoming)) d.upcoming.forEach(m => { m._live = false; list.push(m); });
-          list.sort((a, b) => (a._live === b._live ? 0 : a._live ? -1 : 1));
+          list.sort((a, b) => (a._live === b._live ? homeImportance({title:b.title,status:b._live?'LIVE':'UPCOMING'})-homeImportance({title:a.title,status:a._live?'LIVE':'UPCOMING'}):a._live ? -1 : 1)).slice(0,5);
 
           if (!list.length) {
             track.innerHTML = '<div class="track-empty">No Prime streams currently active</div>';
