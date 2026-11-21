@@ -1091,11 +1091,16 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     ];
     const groups=await Promise.all(feeds),dynamic=groups.flat();
     if(dynamic.length){
-      const seen=new Set(),unique=dynamic.filter(s=>{const key=s.title.toLowerCase().replace(/[^a-z0-9]/g,'');if(seen.has(key))return false;seen.add(key);return true});
-      slides=unique.sort((a,b)=>Number(b.live)-Number(a.live)).concat(fallbackSlides.filter(f=>!seen.has(f.title.toLowerCase().replace(/[^a-z0-9]/g,''))));
-      index=0;showSlide(0,1);drawDots();
-    }else console.info('[Hero] all JSON feeds unavailable; fallback carousel retained');
-  }
+      const seen=new Set(),unique=dynamic.filter(s=>{const key=s.title.toLowerCase().replace(/[^a-z0-9]/g,'');if(!key||seen.has(key))return false;seen.add(key);return true});
+      const liveEvents=unique.filter(s=>s.live).slice(0,3);
+      const upcomingEvents=unique.filter(s=>!s.live).slice(0,5);
+      const limited=[...liveEvents,...upcomingEvents].slice(0,8);
+      const keys=new Set(limited.map(s=>s.title.toLowerCase().replace(/[^a-z0-9]/g,'')));
+      const nextSlides=limited.concat(fallbackSlides.filter(f=>!keys.has(f.title.toLowerCase().replace(/[^a-z0-9]/g,'')))).slice(0,8);
+      const currentKey=slides[index]?.title?.toLowerCase().replace(/[^a-z0-9]/g,'');
+      const nextIndex=Math.max(0,nextSlides.findIndex(s=>s.title.toLowerCase().replace(/[^a-z0-9]/g,'')===currentKey));
+      slides=nextSlides;index=nextIndex;showSlide(index,1);drawDots();
+    }else console.info('[Hero] feeds empty/unavailable; fallback carousel retained');  }
   refreshSlides();setInterval(refreshSlides,300000);
 })();
 </script>
