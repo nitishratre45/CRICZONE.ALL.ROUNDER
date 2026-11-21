@@ -1111,7 +1111,12 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
   const getImage=(m)=>m.image||m.src||m.cover_image||m.poster||m.thumbnail||m.image_url||m.banner||m.images?.boxArtImageFragments?.mediaCentralUrl||m.images?.coverImageFragments?.mediaCentralUrl||m.catalogMetadata?.images?.coverImage||'';
   function makeSlide(m,source,category,link){
     const ev=m.event||{},matchId=m.id??m.eventId??m.contentId??m.matchId??ev.id??ev.eventId,titleText=safe(m.title||m.match_name||m.event_name||m.eventTitle||m.name||ev.teamA&&ev.teamB&&ev.teamA+' vs '+ev.teamB)||category+' Event';
-    const teamA=safe(m.teamA||ev.teamA||m.team_a||m.homeTeam||''),teamB=safe(m.teamB||ev.teamB||m.team_b||m.awayTeam||'');
+    let teamA=safe(m.teamA||ev.teamA||m.team_a||m.homeTeam||''),teamB=safe(m.teamB||ev.teamB||m.team_b||m.awayTeam||'');
+    const genericTeam=v=>/^(willow|fancode|sonyliv|prime|prime video|event|live|team a|team b|tbd)$/i.test(String(v||'').trim());
+    if(!teamA||!teamB||genericTeam(teamA)||genericTeam(teamB)){
+      const titleMatch=String(titleText).split(/[-–—]/).pop().trim().match(/^(.+?)\\s+(?:vs\\.?|v\\.?|versus)\\s+(.+)$/i);
+      if(titleMatch){teamA=titleMatch[1].trim();teamB=titleMatch[2].trim();}
+    }
     const live=isLive(m),image=getImage(m); if(!image)return null;
     let flags=[m.teamAFlag||ev.teamAFlag||m.flagA||'',m.teamBFlag||ev.teamBFlag||m.flagB||''];
     if(!flags[0]&&/india|indian/i.test(teamA))flags[0]=INDIA;if(!flags[1]&&/pakistan|pak/i.test(teamB))flags[1]=PAK;if(!flags[1]&&/new zealand|nz/i.test(teamB))flags[1]=NZ;
@@ -1131,7 +1136,7 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
     transitionTimer=setTimeout(()=>{
       title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
       bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
-      const badgeA=s.flagA?'<img src="'+s.flagA+'" alt="'+s.teamA+'">':'<span class="hero-team-icon">🏆</span>';const badgeB=s.flagB?'<img src="'+s.flagB+'" alt="'+s.teamB+'">':'<span class="hero-team-icon">🏆</span>';matchup.innerHTML='<div class="team-badge">'+badgeA+'<span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge">'+badgeB+'<span>'+s.teamB+'</span></div>';
+      const initials=(v)=>String(v||'').replace(/[^a-z0-9 ]/gi,'').split(/\\s+/).filter(Boolean).map(x=>x[0]).join('').slice(0,3).toUpperCase();const badgeA=s.flagA?'<img src="'+s.flagA+'" alt="'+s.teamA+'">':'<span class="hero-team-icon">'+initials(s.teamA)+'</span>';const badgeB=s.flagB?'<img src="'+s.flagB+'" alt="'+s.teamB+'">':'<span class="hero-team-icon">'+initials(s.teamB)+'</span>';matchup.innerHTML='<div class="team-badge">'+badgeA+'<span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge">'+badgeB+'<span>'+s.teamB+'</span></div>';
       hero.classList.remove('hero-changing');hero.classList.add(dir<0?'hero-enter-right':'hero-enter-left');setTimeout(()=>hero.classList.remove('hero-enter-left','hero-enter-right'),720);drawDots();
     },160);
   }
