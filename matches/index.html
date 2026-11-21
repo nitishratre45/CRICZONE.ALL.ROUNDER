@@ -1385,7 +1385,7 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
         const meta    = m.meta  || '';
 
         /* ---------- TEAM vs TEAM THUMBNAIL ---------- */
-        if (m.teamVs) {
+        if (m.teamVs && !(/^(willow|fancode|sonyliv|prime|prime video|event|live|team a|team b|tbd)$/i.test(String(m.teamA||'').trim()) || /^(event|live|team a|team b|tbd)$/i.test(String(m.teamB||'').trim()))) {
           const rawA=String(m.teamA||'').trim(),rawB=String(m.teamB||'').trim();
           const genericA=!/[a-z0-9]/i.test(rawA)||/^(willow|fancode|sonyliv|prime|event|team a|tbd)$/i.test(rawA);
           const genericB=!/[a-z0-9]/i.test(rawB)||/^(event|team b|tbd)$/i.test(rawB);
