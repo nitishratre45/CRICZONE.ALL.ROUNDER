@@ -929,6 +929,22 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
 @media(max-width:600px){.stream-card{flex-basis:245px!important;width:245px!important;max-width:245px!important;min-width:245px!important}.stream-track{gap:10px!important}}
 @media(prefers-reduced-motion:reduce){#featuredMatchHero .hero-slider-arrow{transition:none!important}}
 </style>
+
+<style id="criczone-home-final-polish">
+/* Match-center consistency and responsive polish */
+main#sports{max-width:1280px!important;margin:0 auto!important;padding:0 clamp(12px,2.2vw,26px)!important}
+#match-quicknav{max-width:1280px!important;padding-left:clamp(12px,2.2vw,26px)!important;padding-right:clamp(12px,2.2vw,26px)!important}
+.stream-section{margin:0 auto clamp(24px,3vw,38px)!important;padding:clamp(14px,1.6vw,20px)!important;border-radius:20px!important;background:linear-gradient(180deg,rgba(12,18,29,.58),rgba(8,12,19,.28))!important;border:1px solid rgba(148,163,184,.10)!important;overflow:hidden!important}
+.stream-section .section-hd{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;flex-wrap:wrap!important}
+.stream-track{scroll-behavior:smooth!important;overscroll-behavior-x:contain!important}
+.stream-card{flex:0 0 258px!important;width:258px!important;min-width:258px!important;max-width:258px!important;border-radius:16px!important;border-color:rgba(148,163,184,.16)!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+.stream-card:hover{transform:translateY(-4px)!important;box-shadow:0 14px 30px rgba(0,0,0,.3)!important}
+.stream-card .card-media img{transition:transform .45s cubic-bezier(.2,.7,.2,1),filter .35s ease!important}
+.stream-card:hover .card-media img{transform:scale(1.035)!important;filter:saturate(1.06)!important}
+.stream-card:focus-visible,.section-link:focus-visible,.nav-arrow:focus-visible,#featuredMatchHero .hero-slider-arrow:focus-visible{outline:2px solid #38bdf8!important;outline-offset:3px!important}
+@media(max-width:700px){main#sports{padding:0 10px!important}.stream-section{padding:12px!important;margin-bottom:20px!important;border-radius:16px!important}.stream-card{flex-basis:235px!important;width:235px!important;min-width:235px!important;max-width:235px!important}.stream-section .section-hd{align-items:flex-start!important}}
+@media(prefers-reduced-motion:reduce){.stream-track,.stream-card,.stream-card .card-media img{scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
 <body id="top">
 
