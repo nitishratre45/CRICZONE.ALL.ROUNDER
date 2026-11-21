@@ -980,7 +980,7 @@ header .logo{font-size:clamp(23px,2vw,30px)!important;letter-spacing:-1.2px!impo
     transitionTimer=setTimeout(()=>{
       title.textContent=s.title;subtitle.textContent=s.subtitle;badge.innerHTML='<span class="live-indicator"></span>'+s.badge;
       bg.style.backgroundImage="url('"+s.bg+"')";img.src=s.image;img.alt=s.title;imgLink.href=s.imageLink;watch.href=s.link;watchText.textContent=s.watch;
-      matchup.innerHTML='<div class="team-badge"><img src="'+(s.flagA||INDIA)+'" alt="'+s.teamA+'"><span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge"><img src="'+(s.flagB||NZ)+'" alt="'+s.teamB+'"><span>'+s.teamB+'</span></div>';
+      const badgeA=s.flagA?'<img src="'+s.flagA+'" alt="'+s.teamA+'">':'<span class="hero-team-icon">🏆</span>';const badgeB=s.flagB?'<img src="'+s.flagB+'" alt="'+s.teamB+'">':'<span class="hero-team-icon">🏆</span>';matchup.innerHTML='<div class="team-badge">'+badgeA+'<span>'+s.teamA+'</span></div><span class="vs-pill">VS</span><div class="team-badge">'+badgeB+'<span>'+s.teamB+'</span></div>';
       hero.classList.remove('hero-changing');hero.classList.add(dir<0?'hero-enter-right':'hero-enter-left');setTimeout(()=>hero.classList.remove('hero-enter-left','hero-enter-right'),720);drawDots();
     },160);
   }
