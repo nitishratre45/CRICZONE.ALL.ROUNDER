@@ -1004,21 +1004,27 @@ export async function onRequestPost({ request, env }) {
         let sent=0, failed=0, blocked=0;
         for (const row of (users.results || [])) {
           const target=String(row.user_id);
-          try {
-            const {response,result}=await telegramCall(env,'copyMessage',{chat_id:target,from_chat_id:callback.message.chat.id,message_id:state.source_message_id});
-            if(response.ok && result?.ok) sent++;
-            else {
-              failed++;
-              if(response.status===403 || /blocked|chat not found|user is deactivated/i.test(String(result?.description || ''))) {
-                blocked++;
-                await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_users SET active=0 WHERE user_id=?').bind(target).run();
-              }
-              if(response.status===429) {
+          let delivered=false, lastResult=null, lastStatus=0;
+          for (let attempt=0;attempt<4 && !delivered;attempt++) {
+            try {
+              const {response,result}=await telegramCall(env,'copyMessage',{chat_id:target,from_chat_id:callback.message.chat.id,message_id:state.source_message_id});
+              lastResult=result; lastStatus=response.status;
+              if(response.ok && result?.ok) { delivered=true; sent++; break; }
+              if(response.status===429 && attempt<3) {
                 const wait=Number(result?.parameters?.retry_after || 1);
                 await new Promise(resolve=>setTimeout(resolve,Math.min(wait,30)*1000));
+                continue;
               }
+              break;
+            } catch (error) { lastResult={description:String(error)}; break; }
+          }
+          if(!delivered) {
+            failed++;
+            if(lastStatus===403 || /blocked|chat not found|user is deactivated/i.test(String(lastResult?.description || ''))) {
+              blocked++;
+              await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_users SET active=0 WHERE user_id=?').bind(target).run();
             }
-          } catch { failed++; }
+          }
           await new Promise(resolve=>setTimeout(resolve,35));
         }
         await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
