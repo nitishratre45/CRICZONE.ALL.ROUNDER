@@ -127,6 +127,99 @@ async function send(env, chatId, text, replyTo, replyMarkup, parseMode) {
   return result;
 }
 
+
+
+// ---- Private audience collection and admin broadcast (isolated from group search) ----
+async function ensureBroadcastTables(db) {
+  await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_broadcast_users (
+    user_id TEXT PRIMARY KEY,
+    chat_id TEXT NOT NULL,
+    first_name TEXT NOT NULL DEFAULT '',
+    last_name TEXT NOT NULL DEFAULT '',
+    username TEXT NOT NULL DEFAULT '',
+    started_at INTEGER NOT NULL,
+    last_seen_at INTEGER NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1
+  )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_broadcast_states (
+    admin_id TEXT PRIMARY KEY,
+    step TEXT NOT NULL DEFAULT '',
+    source_message_id INTEGER,
+    updated_at INTEGER NOT NULL
+  )`).run();
+}
+
+function getAdminIds(env) {
+  return String(env.TELEGRAM_ADMIN_IDS || '').split(',').map(v => v.trim()).filter(Boolean);
+}
+
+async function registerPrivateUser(db, message) {
+  const user = message.from;
+  if (!user?.id || user.is_bot) return;
+  const now = Math.floor(Date.now() / 1000);
+  await db.prepare(`INSERT INTO telegram_broadcast_users
+    (user_id,chat_id,first_name,last_name,username,started_at,last_seen_at,active)
+    VALUES (?,?,?,?,?,?,?,1)
+    ON CONFLICT(user_id) DO UPDATE SET
+      chat_id=excluded.chat_id,first_name=excluded.first_name,last_name=excluded.last_name,
+      username=excluded.username,last_seen_at=excluded.last_seen_at,active=1`)
+    .bind(String(user.id),String(message.chat.id),String(user.first_name || ''),String(user.last_name || ''),
+      String(user.username || ''),now,now).run();
+}
+
+async function telegramCall(env, method, payload) {
+  const response = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+  });
+  const result = await response.json();
+  return { response, result };
+}
+
+async function handlePrivateMessage({ env, message }) {
+  await ensureBroadcastTables(env.TELEGRAM_DB);
+  await registerPrivateUser(env.TELEGRAM_DB, message);
+  const adminIds = getAdminIds(env);
+  const senderId = String(message.from?.id || '');
+  const isAdmin = adminIds.includes(senderId);
+  const chatId = message.chat.id;
+  const text = String(message.text || message.caption || '').trim();
+
+  if (/^\\/myid(?:@\\w+)?$/i.test(text)) {
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: `🆔 Your Telegram ID: ${senderId}\\n\\nAdmin broadcast setup requires this ID in TELEGRAM_ADMIN_IDS.` });
+    return;
+  }
+
+  if (/^\\/broadcast(?:@\\w+)?$/i.test(text)) {
+    if (!isAdmin) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
+      return;
+    }
+    await env.TELEGRAM_DB.prepare(`INSERT INTO telegram_broadcast_states (admin_id,step,source_message_id,updated_at)
+      VALUES (?, 'waiting_message', NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step='waiting_message',source_message_id=NULL,updated_at=excluded.updated_at`)
+      .bind(senderId,Math.floor(Date.now()/1000)).run();
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📢 Send the message, photo, video, or supported media you want to broadcast.\\n\\nAfter that, I’ll show a confirmation.' });
+    return;
+  }
+
+  if (isAdmin) {
+    const state = await env.TELEGRAM_DB.prepare('SELECT * FROM telegram_broadcast_states WHERE admin_id=?').bind(senderId).first();
+    if (state?.step === 'waiting_message') {
+      await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=?,source_message_id=?,updated_at=? WHERE admin_id=?')
+        .bind('confirm',message.message_id,Math.floor(Date.now()/1000),senderId).run();
+      const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
+      await telegramCall(env, 'sendMessage', {
+        chat_id: chatId,
+        text: `📢 Broadcast preview is ready.\\n\\n👥 Active registered users: ${Number(audience?.count || 0)}\\n\\nConfirm to send the message you just submitted to all registered users.`,
+        reply_markup: { inline_keyboard: [[
+          { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
+          { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
+        ]] }
+      });
+      return;
+    }
+  }
+}
+
 async function ensureTable(db) {
   await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_ai_conversations (
     chat_id TEXT NOT NULL,
@@ -884,6 +977,55 @@ export async function onRequestPost({ request, env }) {
 
   const callback = update?.callback_query;
   if (callback) {
+    const broadcastAction = String(callback.data || '');
+    if (broadcastAction.startsWith('broadcast:')) {
+      const adminIds = getAdminIds(env);
+      const adminId = String(callback.from?.id || '');
+      if (!adminIds.includes(adminId)) {
+        await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'Admins only.' });
+        return json({ ok: true, received: true });
+      }
+      await ensureBroadcastTables(env.TELEGRAM_DB);
+      if (broadcastAction === 'broadcast:cancel') {
+        await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
+        await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'Broadcast cancelled.' });
+        await telegramCall(env, 'sendMessage', { chat_id: callback.message.chat.id, text: '❌ Broadcast cancelled.' });
+        return json({ ok: true, received: true });
+      }
+      if (broadcastAction === 'broadcast:confirm') {
+        const state = await env.TELEGRAM_DB.prepare('SELECT * FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).first();
+        if (!state || state.step !== 'confirm' || !state.source_message_id) {
+          await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'No pending broadcast.' });
+          return json({ ok: true, received: true });
+        }
+        await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=? WHERE admin_id=?').bind('sending',adminId).run();
+        await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'Broadcast started.' });
+        const users = await env.TELEGRAM_DB.prepare('SELECT user_id FROM telegram_broadcast_users WHERE active=1 ORDER BY started_at').all();
+        let sent=0, failed=0, blocked=0;
+        for (const row of (users.results || [])) {
+          const target=String(row.user_id);
+          try {
+            const {response,result}=await telegramCall(env,'copyMessage',{chat_id:target,from_chat_id:callback.message.chat.id,message_id:state.source_message_id});
+            if(response.ok && result?.ok) sent++;
+            else {
+              failed++;
+              if(response.status===403 || /blocked|chat not found|user is deactivated/i.test(String(result?.description || ''))) {
+                blocked++;
+                await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_users SET active=0 WHERE user_id=?').bind(target).run();
+              }
+              if(response.status===429) {
+                const wait=Number(result?.parameters?.retry_after || 1);
+                await new Promise(resolve=>setTimeout(resolve,Math.min(wait,30)*1000));
+              }
+            }
+          } catch { failed++; }
+          await new Promise(resolve=>setTimeout(resolve,35));
+        }
+        await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
+        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ Broadcast finished.\\n\\n📨 Sent: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
+        return json({ ok: true, received: true });
+      }
+    }
     const callbackData = String(callback.data || "");
     try {
       await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/answerCallbackQuery", {
@@ -908,6 +1050,14 @@ export async function onRequestPost({ request, env }) {
   }
 
   const message = update?.message || update?.edited_message;
+  if (message?.chat?.type === "private") {
+    try {
+      await handlePrivateMessage({ env, message });
+    } catch (error) {
+      console.error("CRICZONE private registration/broadcast flow error", error);
+      return json({ ok: false, error: "Private message processing failed" }, 500);
+    }
+  }
   if (message?.chat?.type && message.chat.type !== "private") {
     try {
       await handleText({ request, env, message });
