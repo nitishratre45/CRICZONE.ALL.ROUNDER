@@ -183,13 +183,14 @@ async function handlePrivateMessage({ env, message }) {
   const isAdmin = adminIds.includes(senderId);
   const chatId = message.chat.id;
   const text = String(message.text || message.caption || '').trim();
+  const command = text.split(/\s+/)[0].toLowerCase().replace(/@[\w]+$/, '');
 
-  if (/^\\/start(?:@\\w+)?$/i.test(text)) {
+  if (command === '/start') {
     await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👋 Welcome to CRICZONE! 🏏\\n\\nSend me a private message anytime to stay registered for CRICZONE announcements.' });
     return;
   }
 
-  if (/^\\/cancelbroadcast(?:@\\w+)?$/i.test(text)) {
+  if (command === '/cancelbroadcast') {
     if (!isAdmin) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
       return;
@@ -199,12 +200,12 @@ async function handlePrivateMessage({ env, message }) {
     return;
   }
 
-  if (/^\\/myid(?:@\\w+)?$/i.test(text)) {
+  if (command === '/myid') {
     await telegramCall(env, 'sendMessage', { chat_id: chatId, text: `🆔 Your Telegram ID: ${senderId}\\n\\nAdmin broadcast setup requires this ID in TELEGRAM_ADMIN_IDS.` });
     return;
   }
 
-  if (/^\\/broadcast(?:@\\w+)?$/i.test(text)) {
+  if (command === '/broadcast') {
     if (!isAdmin) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
       return;
