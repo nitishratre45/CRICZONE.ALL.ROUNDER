@@ -913,7 +913,7 @@ export async function onRequestPost({ request, env }) {
             reply_markup: {
               inline_keyboard: [[{
                 text: "📢 REJOIN CRICZONE",
-                url: "https://t.me/+zAubvy7Li2VmMWY9"
+                url: "https://t.me/+OQY3uyqoCoYwY2I1"
               }]]
             }
           })
@@ -967,7 +967,7 @@ export async function onRequestPost({ request, env }) {
               inline_keyboard: [
                 [{
                   text: "📢 JOIN CRICZONE CHANNEL",
-                  url: "https://t.me/+zAubvy7Li2VmMWY9"
+                  url: "https://t.me/+OQY3uyqoCoYwY2I1"
                 }],
                 [{
                   text: "💙 JOIN CRICZONE HUB",
