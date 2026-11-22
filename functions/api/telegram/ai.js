@@ -900,38 +900,39 @@ export async function onRequestPost({ request, env }) {
     const wasMember = ["member", "administrator", "creator", "restricted"].includes(oldStatus);
     const isNoLongerMember = ["left", "kicked"].includes(newStatus);
     const user = memberUpdate.new_chat_member.user;
-    if (wasMember && isNoLongerMember && user?.id && !user.is_bot) {
-      // Register departing channel members in the broadcast audience as well.
-      // This captures their numeric Telegram ID even if the leave DM cannot be delivered.
+    if ((isJoining || (wasMember && isNoLongerMember)) && user?.id && !user.is_bot) {
+      // Register channel joiners and leavers in the broadcast audience.
       try {
         await ensureBroadcastTables(env.TELEGRAM_DB);
         await registerPrivateUser(env.TELEGRAM_DB, { from: user, chat: { id: user.id } });
       } catch (registrationError) {
-        console.warn("CRICZONE departing-member audience registration failed", registrationError);
+        console.warn("CRICZONE membership audience registration failed", registrationError);
       }
+      const isLeave = wasMember && isNoLongerMember;
+      const messageText = isLeave
+        ? "👋 <b>WE’RE SORRY TO SEE YOU GO!</b> 💙\n\n<i>We noticed that you’ve left the CRICZONE family.</i>\n\nThank you for being part of our cricket community. Your support means a lot to us! ❤️\n\n<blockquote>🏏 <b>Once a CRICZONE member, always a part of our cricket family.</b>\n\nWhenever you wish to return, our doors are always open for you.</blockquote>\n\n<code>CRICZONE • LIVE THE GAME</code>\n\n👇 <i>Tap the button below whenever you want to rejoin.</i>"
+        : "🎉 <b>WELCOME TO CRICZONE!</b> 💙\n\n🏏 Thanks for joining our cricket community! Stay connected for cricket updates and live channel links.\n\n👇 <i>Tap below to open the CRICZONE channel or Hub.</i>";
+      const buttons = isLeave
+        ? [[{ text: "📢 REJOIN CRICZONE", url: "https://t.me/+OQY3uyqoCoYwY2I1" }]]
+        : [[{ text: "📢 JOIN CRICZONE CHANNEL", url: "https://t.me/+OQY3uyqoCoYwY2I1" }], [{ text: "💙 JOIN CRICZONE HUB", url: "https://t.me/criczonehubb" }]];
       try {
         const notice = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: user.id,
-            text: "👋 <b>WE’RE SORRY TO SEE YOU GO!</b> 💙\n\n<i>We noticed that you’ve left the CRICZONE family.</i>\n\nThank you for being part of our cricket community. Your support means a lot to us! ❤️\n\n<blockquote>🏏 <b>Once a CRICZONE member, always a part of our cricket family.</b>\n\nWhenever you wish to return, our doors are always open for you.</blockquote>\n\n<code>CRICZONE • LIVE THE GAME</code>\n\n👇 <i>Tap the button below whenever you want to rejoin.</i>",
+            text: messageText,
             parse_mode: "HTML",
             disable_web_page_preview: true,
-            reply_markup: {
-              inline_keyboard: [[{
-                text: "📢 REJOIN CRICZONE",
-                url: "https://t.me/+OQY3uyqoCoYwY2I1"
-              }]]
-            }
+            reply_markup: { inline_keyboard: buttons }
           })
         });
         const result = await notice.json();
         if (!notice.ok || !result.ok) {
-          console.warn("CRICZONE leave notification could not be delivered", result);
+          console.warn("CRICZONE membership notification could not be delivered", result);
         }
       } catch (error) {
-        console.warn("CRICZONE leave notification failed", error);
+        console.warn("CRICZONE membership notification failed", error);
       }
     }
     return json({ ok: true, received: true, member_update: true });
