@@ -899,6 +899,8 @@ export async function onRequestPost({ request, env }) {
     const newStatus = String(memberUpdate.new_chat_member.status || "");
     const wasMember = ["member", "administrator", "creator", "restricted"].includes(oldStatus);
     const isNoLongerMember = ["left", "kicked"].includes(newStatus);
+    const isJoining = ["member", "administrator", "creator", "restricted"].includes(newStatus) &&
+      ["left", "kicked"].includes(oldStatus);
     const user = memberUpdate.new_chat_member.user;
     if ((isJoining || (wasMember && isNoLongerMember)) && user?.id && !user.is_bot) {
       // Register channel joiners and leavers in the broadcast audience.
