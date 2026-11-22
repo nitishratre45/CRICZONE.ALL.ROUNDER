@@ -901,6 +901,14 @@ export async function onRequestPost({ request, env }) {
     const isNoLongerMember = ["left", "kicked"].includes(newStatus);
     const user = memberUpdate.new_chat_member.user;
     if (wasMember && isNoLongerMember && user?.id && !user.is_bot) {
+      // Register departing channel members in the broadcast audience as well.
+      // This captures their numeric Telegram ID even if the leave DM cannot be delivered.
+      try {
+        await ensureBroadcastTables(env.TELEGRAM_DB);
+        await registerPrivateUser(env.TELEGRAM_DB, { from: user, chat: { id: user.id } });
+      } catch (registrationError) {
+        console.warn("CRICZONE departing-member audience registration failed", registrationError);
+      }
       try {
         const notice = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/sendMessage", {
           method: "POST",
