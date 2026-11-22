@@ -205,6 +205,64 @@ async function handlePrivateMessage({ env, message }) {
     return;
   }
 
+  if (command === '/userstats' || command === '/users' || command === '/exportusers') {
+    if (!isAdmin) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
+      return;
+    }
+
+    if (command === '/userstats') {
+      const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
+      const active = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
+      const inactive = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=0').first();
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\\n\\n📋 Total registered: ' + Number(total?.count || 0) + '\\n✅ Active: ' + Number(active?.count || 0) + '\\n🚫 Inactive/blocked: ' + Number(inactive?.count || 0) });
+      return;
+    }
+
+    if (command === '/exportusers') {
+      const result = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,last_seen_at,active FROM telegram_broadcast_users ORDER BY started_at').all();
+      const rows = result.results || [];
+      if (!rows.length) {
+        await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📭 No registered users found to export.' });
+        return;
+      }
+      const csvEscape = (value) => '"' + String(value ?? '').replace(/"/g, '""') + '"';
+      const csv = ['user_id,first_name,last_name,username,registered_at,last_seen_at,active'].concat(rows.map(row => [
+        row.user_id, row.first_name, row.last_name, row.username,
+        row.started_at, row.last_seen_at, row.active
+      ].map(csvEscape).join(','))).join('\\n');
+      const form = new FormData();
+      form.append('chat_id', String(chatId));
+      form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)');
+      form.append('document', new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'criczone_registered_users.csv');
+      const response = await fetch('https://api.telegram.org/bot' + env.BOT_TOKEN + '/sendDocument', { method: 'POST', body: form });
+      const result = await response.json();
+      if (!response.ok || !result.ok) console.error('CRICZONE user export failed', result);
+      return;
+    }
+
+    const parts = text.split(/\\s+/);
+    const page = Math.max(1, parseInt(parts[1] || '1', 10) || 1);
+    const perPage = 10;
+    const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
+    const count = Number(total?.count || 0);
+    const users = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,active FROM telegram_broadcast_users ORDER BY started_at DESC LIMIT ? OFFSET ?').bind(perPage, (page-1)*perPage).all();
+    const list = users.results || [];
+    if (!list.length) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: page === 1 ? '📭 No registered users found.' : '❌ Page not found. Total pages: ' + Math.max(1, Math.ceil(count/perPage)) });
+      return;
+    }
+    const lines = list.map((u, i) => {
+      const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || 'No name';
+      const username = u.username ? '@' + u.username : 'No username';
+      const registered = u.started_at ? new Date(Number(u.started_at)*1000).toISOString().slice(0,10) : 'Unknown';
+      return (i+1+(page-1)*perPage) + '. ' + name + '\\n   ' + username + '\\n   ID: ' + u.user_id + '\\n   Registered: ' + registered + '\\n   Status: ' + (Number(u.active) ? 'Active' : 'Inactive');
+    });
+    const pages = Math.max(1, Math.ceil(count/perPage));
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE REGISTERED USERS\\nPage ' + page + '/' + pages + ' • Total: ' + count + '\\n\\n' + lines.join('\\n\\n') + '\\n\\nNext page: /users ' + (page+1) });
+    return;
+  }
+
   if (command === '/broadcast') {
     if (!isAdmin) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
