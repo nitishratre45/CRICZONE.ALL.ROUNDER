@@ -215,7 +215,7 @@ async function handlePrivateMessage({ env, message }) {
       const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
       const active = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
       const inactive = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=0').first();
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\\n\\n📋 Total registered: ' + Number(total?.count || 0) + '\\n✅ Active: ' + Number(active?.count || 0) + '\\n🚫 Inactive/blocked: ' + Number(inactive?.count || 0) });
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + Number(total?.count || 0) + '\n✅ Active: ' + Number(active?.count || 0) + '\n🚫 Inactive/blocked: ' + Number(inactive?.count || 0) });
       return;
     }
 
@@ -230,7 +230,7 @@ async function handlePrivateMessage({ env, message }) {
       const csv = ['user_id,first_name,last_name,username,registered_at,last_seen_at,active'].concat(rows.map(row => [
         row.user_id, row.first_name, row.last_name, row.username,
         row.started_at, row.last_seen_at, row.active
-      ].map(csvEscape).join(','))).join('\\n');
+      ].map(csvEscape).join(','))).join('\n');
       const form = new FormData();
       form.append('chat_id', String(chatId));
       form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)');
@@ -241,7 +241,7 @@ async function handlePrivateMessage({ env, message }) {
       return;
     }
 
-    const parts = text.split(/\\s+/);
+    const parts = text.split(/\s+/);
     const page = Math.max(1, parseInt(parts[1] || '1', 10) || 1);
     const perPage = 10;
     const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
@@ -256,10 +256,10 @@ async function handlePrivateMessage({ env, message }) {
       const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || 'No name';
       const username = u.username ? '@' + u.username : 'No username';
       const registered = u.started_at ? new Date(Number(u.started_at)*1000).toISOString().slice(0,10) : 'Unknown';
-      return (i+1+(page-1)*perPage) + '. ' + name + '\\n   ' + username + '\\n   ID: ' + u.user_id + '\\n   Registered: ' + registered + '\\n   Status: ' + (Number(u.active) ? 'Active' : 'Inactive');
+      return (i+1+(page-1)*perPage) + '. ' + name + '\n   ' + username + '\n   ID: ' + u.user_id + '\n   Registered: ' + registered + '\n   Status: ' + (Number(u.active) ? 'Active' : 'Inactive');
     });
     const pages = Math.max(1, Math.ceil(count/perPage));
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE REGISTERED USERS\\nPage ' + page + '/' + pages + ' • Total: ' + count + '\\n\\n' + lines.join('\\n\\n') + '\\n\\nNext page: /users ' + (page+1) });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE REGISTERED USERS\nPage ' + page + '/' + pages + ' • Total: ' + count + '\n\n' + lines.join('\n\n') + '\n\nNext page: /users ' + (page+1) });
     return;
   }
 
