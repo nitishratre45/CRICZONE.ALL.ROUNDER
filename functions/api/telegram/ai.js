@@ -220,8 +220,8 @@ async function handlePrivateMessage({ env, message }) {
     }
 
     if (command === '/exportusers') {
-      const result = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,last_seen_at,active FROM telegram_broadcast_users ORDER BY started_at').all();
-      const rows = result.results || [];
+      const usersExportResult = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,last_seen_at,active FROM telegram_broadcast_users ORDER BY started_at').all();
+      const rows = usersExportResult.results || [];
       if (!rows.length) {
         await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📭 No registered users found to export.' });
         return;
