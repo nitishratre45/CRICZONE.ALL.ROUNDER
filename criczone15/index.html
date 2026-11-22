@@ -3,42 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CRICZONE15 · Live Player</title>
-<meta name="description" content="CRICZONE15 live player for authorized HLS sources.">
+<title>CRICZONE15 · Iframe Player</title>
+<meta name="description" content="Simple responsive iframe player for authorized embed sources.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--bg:#080e0c;--panel:#101915;--line:#25352c;--text:#eef6f0;--muted:#91a399;--mint:#78e1ab;--lime:#d4f17b}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 20% -10%,#163326 0,transparent 42%),var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif}
-.shell{max-width:1050px;width:calc(100% - 32px);margin:auto;padding:26px 0 44px}.top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:17px}
-.brand{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:800;letter-spacing:.06em}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--mint),var(--lime));color:#07110c;font-weight:900}
-.status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:#69786f}
-.hero{padding:28px 0 18px}.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);font-weight:800}.hero h1{font:800 clamp(28px,5vw,44px)/1.05 "Space Grotesk",sans-serif;margin:9px 0}.hero p{color:var(--muted);margin:0;font-size:14px}
-.player-wrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#030504;box-shadow:0 24px 70px #0007}.screen{position:relative;aspect-ratio:16/9;display:grid;place-items:center;background:radial-gradient(ellipse at center,#15241b,#030504 70%);overflow:hidden}
-video{width:100%;height:100%;display:none;background:#000;object-fit:contain}.empty{text-align:center;padding:24px;max-width:430px}.play-icon{width:62px;height:62px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;border:1px solid #3b5c49;color:var(--mint);font-size:22px;background:#12231a}.empty h2{font-size:17px;margin:0 0 8px}.empty p{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
-.playerbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid #1c2922;background:#0b110e}.live-tag{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.1em}.live-tag .dot{background:#e85f63;box-shadow:0 0 10px #e85f6366}.controls{display:flex;align-items:center;gap:10px}.btn{border:1px solid var(--line);background:#132019;color:var(--text);padding:9px 13px;border-radius:10px;font:700 12px Manrope;cursor:pointer}.btn:hover{border-color:#527a61}.btn.primary{background:var(--mint);color:#06110a;border:0}
-.panel{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#111b15,#0c130f);padding:18px}.panel h3{font-size:14px;margin:0 0 12px}.inputrow{display:flex;gap:10px}.inputrow input{min-width:0;flex:1;background:#080e0b;border:1px solid #2a3a30;color:#eaf5ed;border-radius:10px;padding:12px;font:13px Manrope;outline:none}.inputrow input:focus{border-color:var(--mint)}.note{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 0}.footer{padding-top:18px;text-align:center;color:#68776d;font-size:11px}
+:root{color-scheme:dark;--bg:#080e0c;--line:#25352c;--text:#eef6f0;--muted:#91a399;--mint:#78e1ab;--lime:#d4f17b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 20% -10%,#163326 0,transparent 42%),var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif}
+.shell{max-width:1050px;width:calc(100% - 32px);margin:auto;padding:26px 0 44px}
+.top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:17px}
+.brand{display:flex;align-items:center;gap:12px;font-family:"Space Grotesk",sans-serif;font-weight:800;letter-spacing:.06em}
+.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--mint),var(--lime));color:#07110c;font-weight:900}
+.status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px #78e1ab66}
+.hero{padding:28px 0 18px}.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);font-weight:800}
+.hero h1{font:800 clamp(28px,5vw,44px)/1.05 "Space Grotesk",sans-serif;margin:9px 0}.hero p{color:var(--muted);margin:0;font-size:14px}
+.player-wrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#030504;box-shadow:0 24px 70px #0007}
+.screen{position:relative;aspect-ratio:16/9;background:#030504;overflow:hidden}
+iframe{width:100%;height:100%;border:0;display:block;background:#000}
+.empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted);pointer-events:none}
+.empty h2{font-size:17px;color:var(--text);margin:0 0 8px}.empty p{font-size:13px;line-height:1.65;margin:0;max-width:430px}
+.playerbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid #1c2922;background:#0b110e}
+.live-tag{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.1em}.controls{display:flex;align-items:center;gap:10px}
+.btn{border:1px solid var(--line);background:#132019;color:var(--text);padding:9px 13px;border-radius:10px;font:700 12px Manrope;cursor:pointer}.btn:hover{border-color:#527a61}
+.panel{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#111b15,#0c130f);padding:18px}
+.panel h3{font-size:14px;margin:0 0 12px}.inputrow{display:flex;gap:10px}
+.inputrow input{min-width:0;flex:1;background:#080e0b;border:1px solid #2a3a30;color:#eaf5ed;border-radius:10px;padding:12px;font:13px Manrope;outline:none}
+.inputrow input:focus{border-color:var(--mint)}.btn.primary{background:var(--mint);color:#06110a;border:0}
+.note{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 0}.footer{padding-top:18px;text-align:center;color:#68776d;font-size:11px}
 @media(max-width:600px){.shell{width:calc(100% - 22px);padding-top:16px}.playerbar{padding:10px}.controls{gap:6px}.btn{padding:8px 10px}.panel{padding:14px}.inputrow{flex-direction:column}.inputrow .btn{align-self:flex-start}}
 </style>
 </head>
 <body>
 <div class="shell">
-<header class="top"><div class="brand"><span class="mark">CZ</span><span>CRICZONE<span style="color:var(--mint)">15</span></span></div><div class="status"><span class="dot"></span><span>PLAYER READY</span></div></header>
-<section class="hero"><div class="eyebrow">Live Sports · Player</div><h1>Stay in the game.</h1><p>Responsive HLS player for streams you’re authorized to watch.</p></section>
-<div class="player-wrap"><div class="screen"><div class="empty" id="empty"><div class="play-icon">▶</div><h2>Ready for live playback</h2><p>Add an authorized HLS (.m3u8) stream URL below and press Play Stream.</p></div><video id="video" controls playsinline></video></div><div class="playerbar"><div class="live-tag"><span class="dot"></span><span>LIVE PLAYER</span></div><div class="controls"><button class="btn" id="fullscreen">Fullscreen</button><button class="btn" id="stop">Stop</button></div></div></div>
-<section class="panel"><h3>Stream source</h3><div class="inputrow"><input id="source" type="url" placeholder="Paste an authorized HLS .m3u8 URL" autocomplete="off"><button class="btn primary" id="play">Play Stream</button></div><p class="note">Playback depends on the source provider’s access permissions, browser support, and CORS settings. This player does not bypass DRM, subscriptions, or access controls.</p></section>
-<footer class="footer">CRICZONE15 · Built for authorized streaming sources</footer>
+<header class="top"><div class="brand"><span class="mark">CZ</span><span>CRICZONE<span style="color:var(--mint)">15</span></span></div><div class="status"><span class="dot"></span><span>IFRAME READY</span></div></header>
+<section class="hero"><div class="eyebrow">Live Sports · Embed</div><h1>Simple. Fullscreen. Live.</h1><p>Clean, responsive iframe layout with no extra player interface.</p></section>
+<div class="player-wrap"><div class="screen" id="screen"><div class="empty" id="empty"><div><h2>Embed player ready</h2><p>Paste an authorized embeddable webpage URL below. Some providers block iframe embedding or require sign-in.</p></div></div><iframe id="frame" title="CRICZONE15 embedded player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer" loading="lazy" style="display:none"></iframe></div><div class="playerbar"><div class="live-tag"><span class="dot"></span><span>IFRAME PLAYER</span></div><div class="controls"><button class="btn" id="fullscreen">Fullscreen</button><button class="btn" id="clear">Clear</button></div></div></div>
+<section class="panel"><h3>Embed source</h3><div class="inputrow"><input id="source" type="url" placeholder="Paste an authorized iframe/embed page URL" autocomplete="off"><button class="btn primary" id="load">Load Embed</button></div><p class="note">Use an embed webpage URL (not a raw .m3u8 playlist). Playback is subject to the provider’s embed permissions, sign-in requirements, and browser restrictions. This page does not bypass subscriptions, DRM, or access controls.</p></section>
+<footer class="footer">CRICZONE15 · Simple iframe player</footer>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
 <script>
-(()=>{const video=document.getElementById('video'),empty=document.getElementById('empty'),source=document.getElementById('source'),playBtn=document.getElementById('play'),stopBtn=document.getElementById('stop'),fullBtn=document.getElementById('fullscreen');let hls=null;
-function cleanup(){if(hls){hls.destroy();hls=null}video.pause();video.removeAttribute('src');video.load();video.style.display='none';empty.style.display='grid'}
-function play(){const url=source.value.trim();if(!url){source.focus();return}if(!/^https:\/\//i.test(url)){alert('Please enter a valid HTTPS stream URL.');return}cleanup();empty.style.display='none';video.style.display='block';
-if(video.canPlayType('application/vnd.apple.mpegurl')){video.src=url;video.play().catch(()=>{})}
-else if(window.Hls&&Hls.isSupported()){hls=new Hls({liveSyncDurationCount:3,maxLiveSyncPlaybackRate:1.05});hls.loadSource(url);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>{}));hls.on(Hls.Events.ERROR,(_,data)=>{if(data.fatal){if(data.type===Hls.ErrorTypes.NETWORK_ERROR)hls.startLoad();else if(data.type===Hls.ErrorTypes.MEDIA_ERROR)hls.recoverMediaError();else cleanup()}})}
-else{alert('HLS playback is not supported in this browser. Try Safari or a supported browser.');cleanup()}}
-playBtn.addEventListener('click',play);source.addEventListener('keydown',e=>{if(e.key==='Enter')play()});stopBtn.addEventListener('click',cleanup);fullBtn.addEventListener('click',()=>{const target=document.querySelector('.player-wrap');if(target.requestFullscreen)target.requestFullscreen()});})();
+(()=>{const frame=document.getElementById('frame'),empty=document.getElementById('empty'),source=document.getElementById('source'),load=document.getElementById('load'),clear=document.getElementById('clear'),fullscreen=document.getElementById('fullscreen'),screen=document.getElementById('screen');
+function setEmbed(){const url=source.value.trim();if(!url){source.focus();return}try{const parsed=new URL(url);if(parsed.protocol!=='https:'){alert('Please use a secure HTTPS embed URL.');return}if(parsed.pathname.toLowerCase().endsWith('.m3u8')){alert('A raw HLS playlist is not an iframe webpage. Use an authorized embed page URL.');return}frame.src=parsed.href;frame.style.display='block';empty.style.display='none'}catch{alert('Please enter a valid HTTPS URL.')}} 
+function reset(){frame.src='about:blank';frame.style.display='none';empty.style.display='grid';source.value=''}
+load.addEventListener('click',setEmbed);source.addEventListener('keydown',e=>{if(e.key==='Enter')setEmbed()});clear.addEventListener('click',reset);fullscreen.addEventListener('click',()=>{if(screen.requestFullscreen)screen.requestFullscreen()});
+})();
 </script>
 </body>
 </html>
