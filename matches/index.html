@@ -1874,5 +1874,77 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
  const update=()=>top.classList.toggle('visible',window.scrollY>500);window.addEventListener('scroll',update,{passive:true});update();
 })();
 </script>
+<style id="criczone-matchcenter-refresh">
+/* Match Center refresh — screenshot-inspired mobile layout */
+#match-quicknav{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding:4px 0 12px;position:sticky;top:70px;z-index:40;background:rgba(7,9,14,.88);backdrop-filter:blur(14px)}
+#match-quicknav::-webkit-scrollbar{display:none}
+#match-quicknav a{flex:0 0 auto;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:#111722;padding:10px 13px;color:#aab8cb;text-decoration:none;font-weight:700;font-size:12px;transition:.2s}
+#match-quicknav a:hover,#match-quicknav a.is-active{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.35);color:#eaf7ff}
+#criczone-match-toolbar{display:grid;gap:12px;margin:0 0 -12px;padding:0 12px}
+#criczone-match-search{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:#121821;color:#f8fafc;padding:14px 16px;font:600 14px inherit;outline:none;box-shadow:0 8px 22px rgba(0,0,0,.16)}
+#criczone-match-search:focus{border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+#criczone-match-filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+#criczone-match-filters::-webkit-scrollbar{display:none}
+#criczone-match-filters button{flex:0 0 auto;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:#111722;color:#aab8cb;padding:10px 15px;font:700 12px inherit;cursor:pointer}
+#criczone-match-filters button.active{background:linear-gradient(135deg,#263c2f,#183143);border-color:rgba(56,189,248,.3);color:#e9fff2}
+.stream-track{gap:14px;padding:8px 2px 22px;scroll-padding-inline:4px}
+.stream-card{flex-basis:clamp(260px,78vw,340px);border-radius:19px;border-color:rgba(255,255,255,.09);background:linear-gradient(160deg,#151b26,#10151d);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.stream-card:hover{border-color:rgba(56,189,248,.38)}
+.card-media{padding-top:56.25%;border-radius:14px}
+.card-body{padding:14px 15px 16px}
+.card-title{line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-live-tag{border-radius:8px!important;letter-spacing:.02em}
+.section-hd{margin-bottom:14px}
+.section-title{letter-spacing:-.035em}
+.stream-section[hidden]{display:none!important}
+@media(max-width:600px){
+ main{padding:18px 14px!important;gap:30px!important}
+ #match-quicknav{top:64px;margin-inline:-14px;padding-inline:14px}
+ #criczone-match-toolbar{margin:0 -4px;padding:0 4px}
+ .section-hd{align-items:flex-start}
+ .section-hd-left{gap:9px}
+ .section-title{font-size:1.16rem}
+ .section-badge{font-size:.65rem;padding:4px 8px}
+ .section-hd-right{gap:5px}
+ .section-link{padding:6px 9px;font-size:.7rem}
+ .carousel-controls{gap:5px}
+ .nav-arrow{width:38px;height:38px}
+ .stream-track{gap:12px;padding-bottom:18px}
+ .stream-card{flex-basis:min(84vw,350px)}
+ .card-body{padding:12px}
+ .card-title{font-size:1rem}
+}
+</style>
+<script id="criczone-match-search-filter">
+(function(){
+ const nav=document.getElementById('match-quicknav');if(!nav)return;
+ const toolbar=document.createElement('div');toolbar.id='criczone-match-toolbar';
+ toolbar.innerHTML='<input id="criczone-match-search" type="search" placeholder="🔎 Search matches, teams or providers..." aria-label="Search matches"><div id="criczone-match-filters" role="group" aria-label="Match filters"><button type="button" class="active" data-filter="all">All</button><button type="button" data-filter="live">🔴 Live</button><button type="button" data-filter="upcoming">Upcoming</button></div>';
+ nav.insertAdjacentElement('afterend',toolbar);
+ const input=toolbar.querySelector('input'),buttons=[...toolbar.querySelectorAll('button')];let mode='all';
+ function apply(){
+  const query=input.value.trim().toLowerCase();
+  document.querySelectorAll('.stream-section').forEach(section=>{
+   let visible=0;
+   section.querySelectorAll('.stream-card').forEach(card=>{
+    const text=card.innerText.toLowerCase();
+    const tag=card.querySelector('.card-live-tag');
+    const status=(tag?tag.innerText:'').toLowerCase();
+    const live=status.includes('live')||card.classList.contains('is-live')||!!card.querySelector('.is-live');
+    const upcoming=status.includes('upcoming')||status.includes('soon')||(!live&&status!=='finished');
+    const matchText=!query||text.includes(query);
+    const matchMode=mode==='all'||(mode==='live'&&live)||(mode==='upcoming'&&upcoming);
+    const show=matchText&&matchMode;
+    card.hidden=!show;if(show)visible++;
+   });
+   section.hidden=!!(query||mode!=='all')&&visible===0;
+  });
+ }
+ input.addEventListener('input',apply);
+ buttons.forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.filter;buttons.forEach(b=>b.classList.toggle('active',b===btn));apply();}));
+ const observer=new MutationObserver(apply);document.querySelectorAll('.stream-track').forEach(t=>observer.observe(t,{childList:true,subtree:true}));
+ apply();
+})();
+</script>
 </body>
 </html>
