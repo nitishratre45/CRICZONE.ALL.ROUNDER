@@ -1899,7 +1899,7 @@ main#sports .stream-card .card-meta{margin-top:6px!important;padding-top:10px!im
 .cz-card-tools button{border:1px solid rgba(255,255,255,.11);border-radius:10px;background:#1b2432;color:#cbd5e1;padding:7px 10px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
 .cz-card-tools .cz-save{color:#f0a9b8}
 .cz-card-tools .cz-save.is-saved{color:#fb7185;background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.3)}
-.cz-thumb{position:absolute;right:10px;bottom:10px;z-index:4;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(9,13,20,.88);backdrop-filter:blur(8px);color:#eaf3ff;padding:7px 10px;font:800 11px inherit;cursor:pointer}
+.cz-thumb{position:absolute;right:10px;bottom:10px;z-index:4;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(9,13,20,.88);backdrop-filter:blur(8px);color:#eaf3ff;padding:7px 10px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}
 .cz-card-tools button:focus-visible,.cz-thumb:focus-visible,#cz-match-filters button:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
 main#sports .stream-card[hidden]{display:none!important}
 @media(max-width:600px){
@@ -1935,9 +1935,12 @@ main#sports .stream-card[hidden]{display:none!important}
   const media=card.querySelector('.card-media');
   const title=card.querySelector('.card-title')?.textContent?.trim()||card.getAttribute('title')||'Match';
   if(media){
-   const thumb=document.createElement('button');thumb.type='button';thumb.className='cz-thumb';thumb.textContent='▣ Thumb';thumb.setAttribute('aria-label','Open match thumbnail for '+title);
-   thumb.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const img=media.querySelector('img');if(img&&img.src&&img.src!==location.href)window.open(img.src,'_blank','noopener,noreferrer');else alert('Thumbnail image is not available for this match.');});
-   media.appendChild(thumb);
+   const image=media.querySelector('img');
+   if(image&&image.src){
+    const thumb=document.createElement('button');thumb.type='button';thumb.className='cz-thumb';thumb.textContent='▣ Thumb';thumb.setAttribute('aria-label','Open match thumbnail for '+title);
+    thumb.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();window.open(image.src,'_blank','noopener,noreferrer');});
+    media.appendChild(thumb);
+   }
   }
   const body=card.querySelector('.card-body');if(body){
    const tools=document.createElement('div');tools.className='cz-card-tools';
