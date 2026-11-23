@@ -1975,5 +1975,56 @@ main#sports .stream-card[hidden]{display:none!important}
  apply();
 })();
 </script>
+<style id="criczone-matchcenter-visual-polish-v4">
+/* Visual refinement based on mobile screenshots: balanced card size, tighter hierarchy */
+:root{--cz-card-radius:20px}
+#cz-match-toolbar{max-width:1320px!important;margin:0 auto 18px!important;padding:0 clamp(12px,2.4vw,28px)!important;gap:12px!important}
+#cz-match-search{min-height:50px!important;border-radius:15px!important;background:linear-gradient(180deg,#111b2a,#0c1421)!important;border-color:rgba(130,174,222,.15)!important;box-shadow:0 8px 22px rgba(0,0,0,.14)!important}
+#cz-match-filters{gap:8px!important;padding:2px 0 5px!important}
+#cz-match-filters button{min-height:40px!important;border-radius:13px!important;padding:10px 14px!important;background:#111a28!important;transition:background .18s,border-color .18s,transform .18s!important}
+#cz-match-filters button.active{background:linear-gradient(135deg,rgba(24,108,152,.28),rgba(55,65,130,.25))!important;border-color:rgba(56,189,248,.38)!important;color:#e7f8ff!important}
+#cz-match-filters button:active{transform:scale(.97)!important}
+main#sports{gap:18px!important}
+main#sports>.stream-section{padding:clamp(12px,2vw,20px)!important;border-radius:22px!important;background:linear-gradient(145deg,rgba(12,19,31,.9),rgba(8,13,21,.82))!important;border-color:rgba(125,164,205,.12)!important;box-shadow:0 10px 30px rgba(0,0,0,.16)!important}
+main#sports .section-hd{margin-bottom:12px!important;min-height:38px!important}
+main#sports .section-title{font-size:clamp(1.05rem,2.1vw,1.45rem)!important;letter-spacing:-.04em!important}
+main#sports .section-bar{height:26px!important;width:3px!important}
+main#sports .section-badge{font-size:10px!important;padding:5px 9px!important;letter-spacing:.04em!important}
+main#sports .section-hd-right{gap:6px!important}
+main#sports .section-link{padding:8px 11px!important;font-size:11px!important}
+main#sports .nav-arrow{width:36px!important;height:36px!important}
+main#sports .stream-track{gap:12px!important;padding:5px 2px 15px!important}
+main#sports .stream-card{flex:0 0 clamp(290px,68vw,390px)!important;width:clamp(290px,68vw,390px)!important;min-width:clamp(290px,68vw,390px)!important;max-width:clamp(290px,68vw,390px)!important;border-radius:19px!important;background:linear-gradient(165deg,#121b29,#0d1420)!important;border:1px solid rgba(134,169,205,.15)!important;box-shadow:0 8px 24px rgba(0,0,0,.2)!important}
+main#sports .stream-card:hover{transform:translateY(-2px)!important;border-color:rgba(56,189,248,.3)!important;box-shadow:0 12px 26px rgba(0,0,0,.26)!important}
+main#sports .stream-card .card-media,main#sports .stream-card .card-media.team-vs{height:auto!important;aspect-ratio:16/9!important;padding-top:0!important;max-height:230px!important;min-height:170px!important;background:radial-gradient(circle at 50% 45%,rgba(34,80,122,.22),transparent 60%),#0b1320!important}
+main#sports .stream-card .card-media.team-vs>.team-vs-inner{padding:18px!important;gap:14px!important}
+main#sports .stream-card .card-crest{width:clamp(48px,12vw,66px)!important;height:clamp(48px,12vw,66px)!important;box-shadow:0 4px 14px rgba(0,0,0,.22)!important}
+main#sports .stream-card .card-team-name{max-width:110px!important;font-size:12px!important}
+main#sports .stream-card .vs-badge{padding:5px 11px!important;font-size:10px!important}
+main#sports .stream-card .card-live-tag{top:12px!important;left:12px!important;border-radius:8px!important;padding:5px 9px!important;font-size:10px!important;box-shadow:0 4px 12px rgba(0,0,0,.22)!important}
+main#sports .stream-card .card-free-tag{top:12px!important;right:12px!important}
+main#sports .stream-card .card-body{padding:15px 16px 14px!important;gap:8px!important}
+main#sports .stream-card .card-title{font-size:15px!important;line-height:1.42!important;min-height:unset!important;margin-bottom:4px!important}
+main#sports .stream-card .card-meta{margin-top:8px!important;padding-top:11px!important;font-size:12px!important;min-height:44px!important}
+.cz-thumb{right:11px!important;bottom:11px!important;border-radius:11px!important;padding:8px 10px!important;background:rgba(6,12,20,.78)!important;border-color:rgba(148,163,184,.17)!important;backdrop-filter:blur(12px)!important}
+.cz-card-tools{margin-top:4px!important;padding-top:10px!important;border-top:1px solid rgba(255,255,255,.055)!important}
+.cz-card-tools .cz-save{padding:9px 12px!important;border-radius:12px!important;font-size:12px!important;background:rgba(244,63,94,.055)!important}
+#cz-match-empty{margin:0 0 16px!important;padding:14px!important;border:1px solid rgba(148,163,184,.12)!important;border-radius:14px!important;background:rgba(12,18,28,.8)!important;color:#a9bad0!important}
+@media(max-width:700px){
+ #cz-match-toolbar{margin-bottom:12px!important;padding:0 12px!important}
+ main#sports{gap:14px!important;padding:0 12px!important}
+ main#sports>.stream-section{padding:12px!important;border-radius:18px!important}
+ main#sports .section-hd{align-items:center!important;gap:8px!important}
+ main#sports .section-title{font-size:1.12rem!important}
+ main#sports .section-hd-right{gap:5px!important}
+ main#sports .section-link{padding:7px 9px!important;font-size:10px!important}
+ main#sports .nav-arrow{width:34px!important;height:34px!important}
+ main#sports .stream-card{flex-basis:clamp(285px,68vw,390px)!important;width:clamp(285px,68vw,390px)!important;min-width:clamp(285px,68vw,390px)!important;max-width:clamp(285px,68vw,390px)!important}
+ main#sports .stream-card .card-media,main#sports .stream-card .card-media.team-vs{max-height:205px!important;min-height:165px!important}
+ main#sports .stream-card .card-body{padding:13px!important}
+ main#sports .stream-card .card-title{font-size:14px!important}
+}
+@media(prefers-reduced-motion:reduce){#cz-match-filters button,main#sports .stream-card{transition:none!important}}
+</style>
 </body>
 </html>
