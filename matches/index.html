@@ -1949,7 +1949,7 @@ main#sports .stream-card[hidden]{display:none!important}
    tools.appendChild(save);body.appendChild(tools);
   }
  }
- function syncSavedButtons(){document.querySelectorAll('main#sports .stream-card').forEach(card=>{const btn=card.querySelector('.cz-save');if(!btn)return;const yes=saved.has(keyFor(card));btn.classList.toggle('is-saved',yes);btn.textContent=yes?'♥ Saved':'♥ Save';btn.setAttribute('aria-pressed',String(yes));btn.setAttribute('aria-label',yes?'Remove from saved matches':'Save match');});}
+ function syncSavedButtons(){document.querySelectorAll('main#sports .stream-card').forEach(card=>{const btn=card.querySelector('.cz-save');if(!btn)return;const yes=saved.has(keyFor(card));btn.classList.toggle('is-saved',yes);const label=yes?'♥ Saved':'♥ Save';if(btn.textContent!==label)btn.textContent=label;btn.setAttribute('aria-pressed',String(yes));btn.setAttribute('aria-label',yes?'Remove from saved matches':'Save match');});}
  function apply(){
   const query=input.value.trim().toLowerCase();let globalCount=0;
   document.querySelectorAll('main#sports .stream-section').forEach(section=>{
