@@ -1547,5 +1547,46 @@ main#sports .nav-arrow:hover{transform:translateY(-1px)!important}
     *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
   }
 </style>
+
+<style id="criczone-all-sections-reference-layout">
+/* Match every feed section to the compact carousel/card layout in the reference */
+main#sports {display:flex!important;flex-direction:column!important;gap:22px!important;padding:18px clamp(12px,2.2vw,24px)!important}
+main#sports>.stream-section{
+  background:#10141c!important;border:1px solid rgba(148,163,184,.13)!important;
+  border-radius:20px!important;padding:16px!important;box-shadow:0 8px 28px rgba(0,0,0,.18)!important;
+}
+main#sports .section-hd{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important;margin-bottom:14px!important}
+main#sports .section-hd-left{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
+main#sports .section-title{font-size:clamp(16px,2.8vw,21px)!important;font-weight:800!important;white-space:nowrap!important}
+main#sports .section-badge{flex:0 0 auto!important;padding:5px 9px!important;border-radius:999px!important;font-size:11px!important}
+main#sports .section-hd-right{display:flex!important;align-items:center!important;gap:8px!important;flex:0 0 auto!important;margin-left:auto!important}
+main#sports .section-link{padding:8px 11px!important;border-radius:999px!important;font-size:12px!important;white-space:nowrap!important}
+main#sports .carousel-controls{display:flex!important;gap:6px!important}
+main#sports .nav-arrow{width:36px!important;height:36px!important;border-radius:50%!important}
+main#sports .stream-track{display:flex!important;gap:12px!important;overflow-x:auto!important;overscroll-behavior-x:contain!important;scroll-snap-type:x mandatory!important;scrollbar-width:thin!important;padding:4px 2px 14px!important}
+main#sports .stream-card{flex:0 0 clamp(280px,66vw,460px)!important;width:clamp(280px,66vw,460px)!important;min-width:clamp(280px,66vw,460px)!important;max-width:clamp(280px,66vw,460px)!important;background:#151a22!important;border:1px solid rgba(148,163,184,.17)!important;border-radius:17px!important;scroll-snap-align:start!important;overflow:hidden!important}
+main#sports .stream-card .card-media{border-radius:12px!important}
+main#sports .stream-card .card-body{padding:14px!important}
+main#sports .stream-card .card-title{font-size:15px!important;line-height:1.35!important}
+main#sports .stream-card .card-meta{font-size:12px!important}
+main#sports .skeleton-card{flex:0 0 clamp(280px,66vw,460px)!important;width:clamp(280px,66vw,460px)!important;min-width:clamp(280px,66vw,460px)!important;max-width:clamp(280px,66vw,460px)!important;border-radius:17px!important}
+@media(max-width:700px){
+ main#sports{padding:14px 12px!important;gap:18px!important}
+ main#sports>.stream-section{padding:13px!important;border-radius:17px!important}
+ main#sports .section-hd{gap:6px!important}
+ main#sports .section-hd-left{gap:7px!important}
+ main#sports .section-title{font-size:16px!important}
+ main#sports .section-badge{font-size:10px!important;padding:4px 7px!important}
+ main#sports .section-link{padding:7px 9px!important;font-size:11px!important}
+ main#sports .nav-arrow{width:34px!important;height:34px!important}
+ main#sports .stream-card,main#sports .skeleton-card{flex-basis:min(82vw,420px)!important;width:min(82vw,420px)!important;min-width:min(82vw,420px)!important;max-width:min(82vw,420px)!important}
+}
+@media(max-width:390px){
+ main#sports .section-badge{display:none!important}
+ main#sports .section-link{padding:6px 7px!important}
+ main#sports .nav-arrow{width:31px!important;height:31px!important}
+ main#sports .stream-card,main#sports .skeleton-card{flex-basis:84vw!important;width:84vw!important;min-width:84vw!important;max-width:84vw!important}
+}
+</style>
 </body>
 </html>
