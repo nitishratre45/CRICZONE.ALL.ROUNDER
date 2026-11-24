@@ -282,14 +282,8 @@
       // A probe may confirm that the same worker recovered. Retry the actual
       // request once against the selected worker instead of failing immediately.
       var targetIndex = activeIndex;
-      // A failed POST may have reached the old server even if its response was
-      // lost. Never replay a counted visit into a different independent D1 DB.
-      // This gives at-most-once counting across failover rather than duplicates.
-      if (path === "/api/visit" && options && options.method === "POST" && targetIndex !== attemptedIndex) {
-        var ambiguous = new Error("Visit was not replayed after switching counter servers");
-        ambiguous.counterVisitNotReplayed = true;
-        throw ambiguous;
-      }
+      // This path is for stats and uncounted heartbeats. Counted page views are
+      // persisted and retried by drainPendingVisits() against their original D1.
       return (await requestAPI(API_LIST[targetIndex], path, options)).response;
     }
   }
