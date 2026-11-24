@@ -452,9 +452,97 @@
       visitorId = createId();
     }
 
-    var pageVisitPending = true;
+    // Persist each page-view as a retryable item tied to the SAME worker.
+    // Never replay an ambiguous counted POST into another independent D1 database.
+    var PENDING_VISIT_PREFIX = "cz_counter_pending_visit_v2:";
     var pageVisitRequestId = createId();
+    var visitTargetIndex = activeIndex;
+    var pendingVisitKey = PENDING_VISIT_PREFIX + pageVisitRequestId;
+    var pendingVisitMemory = null;
     var busy = false;
+    var pendingDrainBusy = false;
+    var pendingVisitBody = {
+      visitor_id: visitorId,
+      count_visit: true,
+      request_id: pageVisitRequestId
+    };
+    var pendingVisitRecord = {
+      request_id: pageVisitRequestId,
+      target_index: visitTargetIndex,
+      created_at: Date.now(),
+      body: pendingVisitBody
+    };
+    try {
+      // Persist BEFORE sending so a reload can safely retry the same request ID.
+      localStorage.setItem(pendingVisitKey, JSON.stringify(pendingVisitRecord));
+    } catch (_) {
+      pendingVisitMemory = pendingVisitRecord;
+    }
+
+    async function drainPendingVisits() {
+      if (pendingDrainBusy || document.visibilityState !== "visible") return;
+      pendingDrainBusy = true;
+      try {
+        var pending = [];
+        var seen = {};
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (!key || key.indexOf(PENDING_VISIT_PREFIX) !== 0) continue;
+            try {
+              var item = JSON.parse(localStorage.getItem(key) || "null");
+              if (item && item.request_id && item.body && !seen[item.request_id]) {
+                item.storage_key = key;
+                pending.push(item);
+                seen[item.request_id] = true;
+              }
+            } catch (_) {
+              try { localStorage.removeItem(key); } catch (__) {}
+            }
+          }
+        } catch (_) {}
+        if (pendingVisitMemory && !seen[pendingVisitMemory.request_id]) {
+          pendingVisitMemory.storage_key = null;
+          pending.push(pendingVisitMemory);
+        }
+        pending.sort(function (a, b) { return Number(a.created_at) - Number(b.created_at); });
+
+        for (var p = 0; p < pending.length; p++) {
+          var item = pending[p];
+          var age = Date.now() - Number(item.created_at || 0);
+          // Worker request-id deduplication records are retained for seven days.
+          // Expire locally at six days so an old retry cannot become a duplicate.
+          if (!Number.isFinite(age) || age < 0 || age > 6 * 24 * 60 * 60 * 1000) {
+            if (item.storage_key) {
+              try { localStorage.removeItem(item.storage_key); } catch (_) {}
+            }
+            if (pendingVisitMemory && pendingVisitMemory.request_id === item.request_id) pendingVisitMemory = null;
+            continue;
+          }
+          var target = Number(item.target_index);
+          if (!Number.isInteger(target) || target < 0 || target >= API_LIST.length) target = 0;
+          try {
+            // Retry only against the original worker/database. Its request_id
+            // makes retries idempotent even if the first response was lost.
+            await requestAPI(API_LIST[target], "/api/visit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(item.body)
+            });
+            if (item.storage_key) {
+              try { localStorage.removeItem(item.storage_key); } catch (_) {}
+            }
+            if (pendingVisitMemory && pendingVisitMemory.request_id === item.request_id) pendingVisitMemory = null;
+          } catch (_) {
+            // Keep this visit queued. A later heartbeat retries the same ID
+            // against the same D1; do not send it to a different backup DB.
+            break;
+          }
+        }
+      } finally {
+        pendingDrainBusy = false;
+      }
+    }
     var heartbeatLeaseKey = "cz_counter_live_heartbeat_lease_v1";
 
     function claimHeartbeatLease() {
@@ -484,25 +572,27 @@
 
     async function heartbeat() {
       if (busy || document.visibilityState !== "visible") return;
-      // Every new page load sends its own counted visit. Routine live heartbeats
-      // are sent by only one tab for this browser profile.
-      if (!pageVisitPending && !claimHeartbeatLease()) return;
       busy = true;
       try {
+        // Counted page views are drained independently from live heartbeats.
+        // A failover can change the stats server without moving a pending visit
+        // to another independent database.
+        await drainPendingVisits();
+
+        // Routine live heartbeats are sent by only one tab per browser profile.
+        if (!claimHeartbeatLease()) return;
         var response = await apiFetch("/api/visit", {
           method: "POST", mode: "cors", cache: "no-store", credentials: "omit",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             visitor_id: visitorId,
-            count_visit: pageVisitPending,
+            count_visit: false,
             request_id: pageVisitRequestId
           })
         });
         var data = await response.json();
-        pageVisitPending = false;
         paint(data);
       } catch (error) {
-        if (error && error.counterVisitNotReplayed) pageVisitPending = false;
         console.warn("[CRICZONE] Global visitor counter unavailable:", error);
       } finally { busy = false; }
     }
