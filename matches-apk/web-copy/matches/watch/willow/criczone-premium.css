@@ -1,0 +1,616 @@
+/* CRICZONE BUZZ premium black + neon-lime theme */
+:root{--carbon:#050605;--surface:#0d100c;--elevated:#141811;--elevated-hover:#1b2115;--border:rgba(214,255,70,.16);--border-highlight:rgba(214,255,70,.48);--gold:#d7ff3f;--gold-glow:rgba(215,255,63,.24);--gold-gradient:linear-gradient(115deg,#d7ff3f,#baff22);--signal:#d7ff3f;--ink:#f5f6ed;--dim:#a2a797;--live-red:#d7ff3f;--radius-card:22px;--radius-btn:999px}
+html,body{background:#050605!important;background-image:radial-gradient(ellipse at 50% -12%,rgba(215,255,63,.07),transparent 48%)!important;color:var(--ink)}
+header{background:rgba(5,6,5,.94)!important;border-bottom:1px solid var(--border)!important}
+.header-inner{max-width:1180px;height:68px;padding-inline:clamp(14px,3vw,30px)}
+.brand-badge{background:linear-gradient(145deg,#d7ff3f,#a9d91d)!important;box-shadow:0 0 24px #d7ff3f25!important}
+.brand-tag{color:var(--gold)!important}
+.btn-header{background:#10140c!important;border:1px solid #d7ff3f42!important;border-radius:999px!important;color:#e9eddf!important;padding:.62rem 1rem!important}
+.btn-header:hover,.btn-header-primary{background:var(--gold-gradient)!important;color:#111!important;border-color:transparent!important}
+main{max-width:1180px!important;padding:clamp(18px,3vw,34px) clamp(12px,3vw,28px) 4rem!important}
+#main-view>.hero{text-align:left!important;padding:1.4rem 0 1.2rem!important;margin-bottom:1.2rem!important}
+#main-view>.hero h1{font-size:clamp(1.8rem,5vw,3.25rem)!important;letter-spacing:-.045em!important;background:linear-gradient(100deg,#fff 12%,#d7ff3f 88%)!important;-webkit-background-clip:text!important}
+#main-view>.hero p{margin:0!important;max-width:600px!important;color:#aab09e!important}
+.controls-bar{background:#0c0f0a!important;border:1px solid var(--border)!important;border-radius:18px!important;padding:12px!important;gap:12px!important}
+.filter-tabs{gap:7px!important}.tab-btn{border-radius:999px!important;background:#151a11!important;border-color:#d7ff3f22!important;color:#b6bda9!important;padding:.58rem .95rem!important}
+.tab-btn.active{background:var(--gold-gradient)!important;color:#10130b!important;box-shadow:0 4px 18px #d7ff3f25!important}
+.search-box input{background:#12160f!important;border:1px solid #d7ff3f2b!important;border-radius:999px!important;padding:.72rem 1rem .72rem 2.4rem!important}
+.search-box input:focus{border-color:var(--gold)!important;box-shadow:0 0 0 3px #d7ff3f14!important}
+.matches-grid{gap:18px!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))!important}
+.match-card{background:linear-gradient(155deg,#11150e,#090b08 75%)!important;border:1px solid #d7ff3f25!important;border-radius:22px!important;box-shadow:0 14px 38px #0008!important}
+.match-card:hover{border-color:#d7ff3f78!important;box-shadow:0 18px 45px #000b,0 0 26px #d7ff3f0d!important}
+.card-poster{aspect-ratio:16/9!important;background:#10140c!important}.card-poster::after{background:linear-gradient(180deg,transparent 48%,rgba(5,6,5,.52))!important}
+.status-badge.live{background:#d7ff3f!important;color:#111!important;box-shadow:0 0 16px #d7ff3f55!important}.status-badge.live::before{background:#111!important}
+.status-badge.upcoming{background:#11170d!important;color:#d7ff3f!important;border:1px solid #d7ff3f44!important}
+.card-body{padding:17px 18px 19px!important;gap:13px!important}.card-title{font-size:1.12rem!important;line-height:1.28!important}.card-meta{color:#aab09e!important}
+.open-match-btn,.server-btn.highlight{background:var(--gold-gradient)!important;color:#111!important;border:1px solid transparent!important;border-radius:999px!important;font-weight:900!important}
+.card-share-btn,.server-btn{border:1px solid #d7ff3f38!important;border-radius:999px!important;background:#11160d!important;color:#e8ecd9!important}
+.card-share-btn:hover,.server-btn:hover{border-color:var(--gold)!important;color:var(--gold)!important}
+.favorite-toggle{background:#0c1009!important;border:1px solid #d7ff3f66!important;color:#d7ff3f!important;border-radius:999px!important}
+#player-modal{background:#050605!important;overflow-y:auto!important;overscroll-behavior:contain}
+.player-header{position:sticky!important;top:0!important;flex:0 0 58px!important;height:58px!important;background:rgba(5,6,5,.97)!important;border-bottom:1px solid #d7ff3f1e!important;padding:0 clamp(12px,3vw,28px)!important}
+.player-title{font-weight:800!important;letter-spacing:.01em!important}
+.player-servers-bar{position:sticky!important;top:58px!important;background:#090c07!important;border-bottom:1px solid #d7ff3f20!important;min-height:44px!important}
+.player-server-pill{border-radius:999px!important;background:#11160d!important;border-color:#d7ff3f2c!important}
+.player-server-pill.active{background:#d7ff3f!important;color:#10130b!important;border-color:#d7ff3f!important}
+#video-wrapper{flex:0 0 auto!important;width:min(100%,1160px)!important;aspect-ratio:16/9!important;height:auto!important;min-height:0!important;margin:14px auto 0!important;border:1px solid #d7ff3f2c!important;border-radius:18px!important;overflow:hidden!important;background:#000!important}
+#video-wrapper video,#video-wrapper iframe{width:100%!important;height:100%!important;object-fit:contain!important}
+#cz-player-details{width:min(100%,1160px);margin:0 auto;padding:18px clamp(14px,2vw,22px) 28px}
+#cz-player-details .cz-player-kicker{font-size:10px;font-weight:900;letter-spacing:.16em;color:#d7ff3f;text-transform:uppercase;margin-bottom:8px}
+#cz-player-details h2{font-size:clamp(19px,3vw,26px);line-height:1.2;margin:0 0 8px;color:#f5f6ed}
+#cz-player-details .cz-player-meta{font-size:11px;letter-spacing:.12em;font-weight:800;color:#a2a797;text-transform:uppercase}
+#cz-player-details .cz-player-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+#cz-player-details a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:999px;border:1px solid #d7ff3f42;background:#0e130a;color:#e9eddf;text-decoration:none;font-size:11px;font-weight:900;letter-spacing:.08em}
+#cz-player-details a.cz-primary,#cz-player-details .cz-community a{background:var(--gold-gradient);color:#111;border-color:transparent}
+#cz-player-details .cz-community{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:24px;padding:18px;border:1px solid #d7ff3f24;border-radius:18px;background:linear-gradient(120deg,#11160c,#0a0d08)}
+#cz-player-details .cz-community strong{display:block;font-size:17px;line-height:1.2}#cz-player-details .cz-community span{display:block;margin-top:4px;color:#a2a797;font-size:13px}#cz-player-details .cz-community a{white-space:nowrap}
+#toast{border:1px solid #d7ff3f35!important;background:#10150c!important;border-radius:999px!important}
+.wrap{max-width:920px!important}.wrap .top{padding-bottom:14px!important;border-bottom:1px solid #d7ff3f22!important}
+.wrap .back{border-radius:999px!important;border-color:#d7ff3f42!important;background:#10140c!important;color:#d7ff3f!important}
+.wrap .brand span{color:#d7ff3f!important}.wrap .hero{border-color:#d7ff3f2b!important;border-radius:22px!important;background:linear-gradient(155deg,#11150e,#090b08)!important;box-shadow:0 18px 48px #0009!important}
+.wrap .status.live{background:#d7ff3f!important;color:#111!important}.wrap .server{border-color:#d7ff3f2b!important;border-radius:16px!important;background:linear-gradient(145deg,#151a10,#0b0e09)!important}
+.wrap .server:hover{border-color:#d7ff3f!important}.wrap .play{background:var(--gold-gradient)!important;color:#111!important}
+@media(max-width:640px){.header-inner{height:60px;padding-inline:12px}.header-actions .btn-header span{display:none}main{padding:12px 12px 3rem!important}#main-view>.hero{padding:1rem 2px!important}#main-view>.hero h1{font-size:1.85rem!important}.controls-bar{align-items:stretch!important}.filter-tabs{width:100%;padding-bottom:3px}.search-box{min-width:0;max-width:none;width:100%}.matches-grid{grid-template-columns:1fr!important;gap:13px!important}.match-card{border-radius:18px!important}.player-header{height:54px!important;flex-basis:54px!important;padding:0 10px!important}.player-title{font-size:12px!important;max-width:38vw!important}.player-nav{gap:5px!important}.player-nav .btn-header{padding:.48rem .62rem!important;font-size:10px!important}.player-nav .btn-header svg{width:13px!important;height:13px!important}.player-servers-bar{top:54px!important}#video-wrapper{width:calc(100% - 16px)!important;margin-top:9px!important;border-radius:13px!important}#cz-player-details{padding:15px 13px 24px}#cz-player-details .cz-community{align-items:flex-start;flex-direction:column}#cz-player-details .cz-community a{width:100%}.wrap{padding:14px 12px 28px!important}.wrap .servers{gap:9px!important}.wrap .server{min-height:72px!important;padding:11px!important}.wrap .info{padding:14px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* =========================================================
+   CRICZONE BUZZ — unified premium neon-lime skin
+   Applied consistently to match centre, server chooser,
+   player controls and Telegram community components.
+   ========================================================= */
+:root{
+ --carbon:#050605!important;--surface:#0d100c!important;--elevated:#141811!important;
+ --elevated-hover:#1b2115!important;--border:rgba(214,255,70,.16)!important;
+ --border-highlight:rgba(214,255,70,.48)!important;--gold:#d7ff3f!important;
+ --gold-glow:rgba(215,255,63,.24)!important;
+ --gold-gradient:linear-gradient(115deg,#d7ff3f,#baff22)!important;
+ --signal:#d7ff3f!important;--ink:#f5f6ed!important;--dim:#a2a797!important;
+ --live-red:#d7ff3f!important;--bg:#050605!important;--panel:#0d100c!important;
+ --line:rgba(214,255,70,.2)!important;--muted:#a2a797!important;
+}
+html,body{background:#050605!important;background-color:#050605!important;color:#f5f6ed!important}
+body{background-image:radial-gradient(ellipse at 50% -12%,rgba(215,255,63,.075),transparent 48%)!important}
+header,.player-header{background:rgba(5,6,5,.96)!important;border-color:rgba(215,255,63,.16)!important}
+.hero,.match-card,.controls-bar,.wrap .hero,.wrap .server{
+ background:linear-gradient(155deg,#11150e,#090b08 78%)!important;
+ border-color:rgba(215,255,63,.22)!important;
+}
+#main-view>.hero{ text-align:left!important;border-radius:22px!important;padding:clamp(20px,4vw,38px)!important}
+#main-view>.hero h1,.hero h1{background:linear-gradient(100deg,#fff 12%,#d7ff3f 88%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+#main-view>.hero p,.hero p{color:#a2a797!important}
+.brand-badge,.brand-tag,.brand-name span,.wrap .brand span{color:#d7ff3f!important;border-color:#d7ff3f55!important}
+.btn-header,.wrap .back,.card-share-btn,.server-btn,.player-server-pill{
+ background:#11160d!important;color:#e9eddf!important;border:1px solid #d7ff3f38!important;border-radius:999px!important
+}
+.btn-header:hover,.card-share-btn:hover,.server-btn:hover,.wrap .server:hover{
+ border-color:#d7ff3f!important;color:#d7ff3f!important
+}
+.tab-btn{background:#151a11!important;color:#b6bda9!important;border-color:#d7ff3f24!important;border-radius:999px!important}
+.tab-btn.active,.open-match-btn,.server-btn.highlight,.favorite-toggle.is-saved,.player-server-pill.active,.wrap .play{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;border-color:transparent!important;
+ box-shadow:0 4px 18px rgba(215,255,63,.18)!important
+}
+.search-box input{background:#12160f!important;color:#f5f6ed!important;border:1px solid #d7ff3f30!important;border-radius:999px!important}
+.search-box input:focus{border-color:#d7ff3f!important;box-shadow:0 0 0 3px #d7ff3f18!important}
+.match-card{border-radius:22px!important;overflow:hidden!important}
+.card-poster{aspect-ratio:16/9!important}
+.status-badge.live,.wrap .status.live{background:#d7ff3f!important;color:#10130b!important;box-shadow:0 0 14px #d7ff3f44!important}
+.status-badge.live::before{background:#10130b!important}
+.status-badge.upcoming{background:#11170d!important;color:#d7ff3f!important;border-color:#d7ff3f44!important}
+.card-title,.player-title,.wrap .title{color:#f5f6ed!important}
+.card-meta,.wrap .sub,.wrap .hint,.wrap .server small{color:#a2a797!important}
+.server-btn{background:linear-gradient(145deg,#151a10,#0b0e09)!important;border-color:#d7ff3f2b!important}
+.server-btn.highlight{color:#10130b!important}
+.player-servers-bar{background:#090c07!important;border-color:#d7ff3f20!important}
+.player-server-pill.active{background:#d7ff3f!important;color:#10130b!important}
+#player-modal{background:#050605!important}
+#video-wrapper{border-color:#d7ff3f2c!important}
+#toast{background:#10150c!important;border:1px solid #d7ff3f40!important;color:#f5f6ed!important}
+.wrap{color:#f5f6ed!important}
+.wrap .hero{border-radius:22px!important}
+.wrap .status{background:#141a10!important;color:#d7ff3f!important}
+.wrap .server{background:linear-gradient(145deg,#151a10,#0b0e09)!important;color:#f5f6ed!important}
+.wrap .empty{border-color:#d7ff3f38!important;color:#a2a797!important}
+
+/* Telegram banner and popup: remove the leftover blue skin */
+#cz-tg-local-bar{
+ border:1px solid #d7ff3f55!important;
+ background:linear-gradient(110deg,#11170c,#090c07 70%)!important;
+ box-shadow:0 0 24px #d7ff3f12,0 10px 28px #0008!important;
+}
+#cz-tg-local-bar .cz-tg-logo{background:#d7ff3f!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-left{color:#f5f6ed!important}
+#cz-tg-local-bar small{color:#a2a797!important}
+#cz-tg-local-bar .cz-tg-tap{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;
+ border-radius:999px!important;box-shadow:0 5px 16px #d7ff3f20!important
+}
+#cz-tg-local-modal{background:rgba(0,0,0,.84)!important}
+#cz-tg-local-modal .cz-tg-card{
+ border:1px solid #d7ff3f55!important;border-radius:24px!important;
+ background:radial-gradient(circle at 50% 0,#d7ff3f18,transparent 48%),linear-gradient(150deg,#151a10,#080b07 78%)!important;
+ color:#f5f6ed!important;box-shadow:0 28px 90px #000b,0 0 32px #d7ff3f12!important
+}
+#cz-tg-local-modal .cz-tg-x{border-color:#d7ff3f44!important;background:#d7ff3f12!important;color:#f5f6ed!important}
+#cz-tg-local-modal .cz-tg-kicker{color:#d7ff3f!important}
+#cz-tg-local-modal p{color:#a2a797!important}
+#cz-tg-local-modal .cz-tg-join{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;
+ border-radius:999px!important;box-shadow:0 9px 25px #d7ff3f20!important
+}
+#cz-tg-local-modal .cz-tg-foot{color:#a2a797!important}
+@media(max-width:700px){
+ .matches-grid{grid-template-columns:1fr!important;gap:14px!important}
+ .match-card{border-radius:19px!important}
+ .card-poster{aspect-ratio:16/9!important}
+ .card-body{padding:14px!important}
+ .card-title{font-size:1rem!important}
+ .card-actions{gap:8px!important}
+ .open-match-btn{border-radius:999px!important}
+ .card-share-btn{border-radius:999px!important}
+ .player-server-pill{border-radius:999px!important}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   CRICZONE BUZZ HOME UPGRADE — rotating player hero + 2x2
+   ========================================================= */
+.cz-home-hero{
+ display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(210px,.75fr)!important;
+ align-items:center!important;gap:18px!important;text-align:left!important;
+ min-height:280px!important;padding:clamp(22px,4vw,42px)!important;
+ border:1px solid rgba(215,255,63,.26)!important;border-radius:26px!important;
+ background:radial-gradient(ellipse at 82% 48%,rgba(215,255,63,.13),transparent 35%),linear-gradient(115deg,#11170d 0%,#080c07 65%,#10170b 100%)!important;
+ box-shadow:0 22px 60px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+.cz-home-hero:before{content:"CRICZONE";right:1%;bottom:-30%;font-size:clamp(5rem,14vw,12rem);color:rgba(215,255,63,.025)!important}
+.cz-home-copy{position:relative;z-index:3;min-width:0}
+.cz-home-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:15px;color:#d7ff3f;font-size:10px;font-weight:900;letter-spacing:1.8px}
+.cz-home-kicker i{width:8px;height:8px;border-radius:50%;background:#d7ff3f;box-shadow:0 0 12px #d7ff3f;animation:cz-home-pulse 1.8s infinite}
+@keyframes cz-home-pulse{50%{opacity:.35;transform:scale(.72)}}
+.cz-home-copy h1{margin:0 0 12px!important;font-size:clamp(2rem,5vw,3.7rem)!important;line-height:1.02!important;letter-spacing:-.055em!important;text-align:left!important}
+.cz-home-copy h1 em{font-style:normal;color:#d7ff3f}
+.cz-home-copy p{max-width:560px!important;margin:0!important;color:#a2a797!important;font-size:clamp(.82rem,1.3vw,.98rem)!important;line-height:1.7!important;text-align:left!important}
+.cz-home-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.cz-home-pills span{padding:8px 11px;border:1px solid rgba(215,255,63,.2);border-radius:999px;background:rgba(215,255,63,.055);color:#dce8c0;font-size:9px;font-weight:850;letter-spacing:.55px}
+.cz-home-spotlight{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;min-width:0;height:236px;isolation:isolate}
+.cz-home-photo-glow{position:absolute;z-index:-1;left:50%;bottom:5px;width:min(88%,260px);height:190px;transform:translateX(-50%);border:1px solid rgba(215,255,63,.22);border-radius:48% 48% 25px 25px;background:radial-gradient(ellipse at 50% 30%,rgba(215,255,63,.18),rgba(215,255,63,.025) 58%,transparent 72%);box-shadow:0 0 50px rgba(215,255,63,.08)}
+.cz-home-spotlight>img{position:relative;z-index:1;display:block;width:100%;height:220px;max-width:250px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));transition:opacity .35s ease}
+.cz-home-player-caption{position:absolute;z-index:3;right:0;bottom:0;display:flex;flex-direction:column;gap:4px;min-width:155px;padding:10px 14px;border:1px solid rgba(215,255,63,.26);border-radius:13px;background:rgba(7,10,5,.88);backdrop-filter:blur(12px);box-shadow:0 8px 22px #0007}
+.cz-home-player-caption span{color:#a2a797;font-size:8px;font-weight:900;letter-spacing:1.4px}
+.cz-home-player-caption strong{color:#d7ff3f;font-size:13px;font-weight:950;letter-spacing:.5px}
+.cz-home-hero-orbit{position:absolute;right:23%;top:10%;width:160px;height:160px;border:1px solid rgba(215,255,63,.08);border-radius:50%;pointer-events:none}
+.brand-badge{width:48px!important;height:48px!important;flex:0 0 48px!important;padding:0!important;overflow:hidden!important;border-radius:50%!important;background:#11160d!important;border:2px solid rgba(215,255,63,.72)!important;box-shadow:0 0 0 3px rgba(215,255,63,.09),0 5px 20px rgba(0,0,0,.45)!important}
+.brand-badge .brand-logo{width:100%!important;height:100%!important;padding:0!important;border-radius:50%!important;object-fit:cover!important;object-position:center 18%!important;background:#10150c!important;transition:opacity .35s ease!important}
+.brand-badge .brand-logo.cz-rotating-player{display:block!important}
+#matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:clamp(10px,1.4vw,18px)!important}
+#matches-container .match-card{min-width:0!important}
+#matches-container .card-poster{aspect-ratio:16/10!important}
+#matches-container .card-body{min-width:0!important}
+#matches-container .card-title{overflow-wrap:anywhere}
+@media(max-width:700px){
+ .cz-home-hero{grid-template-columns:minmax(0,1fr) 125px!important;gap:5px!important;min-height:220px!important;padding:19px 13px!important;border-radius:19px!important}
+ .cz-home-kicker{font-size:8px!important;letter-spacing:1px!important;margin-bottom:11px!important}
+ .cz-home-copy h1{font-size:clamp(1.45rem,6.2vw,2.15rem)!important;line-height:1.05!important}
+ .cz-home-copy p{font-size:.73rem!important;line-height:1.5!important}
+ .cz-home-pills{gap:5px!important;margin-top:13px!important}
+ .cz-home-pills span{padding:6px 7px!important;font-size:7px!important;letter-spacing:.25px!important}
+ .cz-home-spotlight{height:190px!important;align-self:end!important}
+ .cz-home-spotlight>img{height:178px!important;max-width:145px!important}
+ .cz-home-photo-glow{width:100%!important;height:145px!important}
+ .cz-home-player-caption{right:-2px!important;bottom:0!important;min-width:0!important;padding:7px 8px!important;border-radius:9px!important}
+ .cz-home-player-caption span{font-size:6px!important;letter-spacing:.8px!important}
+ .cz-home-player-caption strong{font-size:9px!important}
+ .cz-home-hero-orbit{right:6%!important;top:4%!important;width:90px!important;height:90px!important}
+ .brand-badge{width:42px!important;height:42px!important;flex-basis:42px!important}
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #matches-container .card-poster{aspect-ratio:4/3!important}
+ #matches-container .card-body{padding:10px!important;gap:8px!important}
+ #matches-container .card-title{font-size:.82rem!important;line-height:1.28!important;min-height:2.5em}
+ #matches-container .card-meta{font-size:.65rem!important;gap:5px!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:1fr!important;gap:6px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{width:100%!important;min-height:35px!important;font-size:.68rem!important}
+ #matches-container .favorite-toggle{top:7px!important;right:7px!important;padding:5px 7px!important;font-size:.62rem!important}
+}
+@media(max-width:380px){
+ .cz-home-hero{grid-template-columns:minmax(0,1fr) 105px!important;padding:16px 10px!important}
+ .cz-home-spotlight{height:170px!important}
+ .cz-home-spotlight>img{height:160px!important}
+ .cz-home-copy h1{font-size:1.38rem!important}
+ .cz-home-copy p{font-size:.68rem!important}
+ .cz-home-pills span{font-size:6px!important;padding:5px 6px!important}
+ #matches-container .card-title{font-size:.76rem!important}
+ #matches-container .card-body{padding:8px!important}
+}
+@media(prefers-reduced-motion:reduce){.cz-home-kicker i{animation:none!important}.cz-home-spotlight>img,.brand-badge .brand-logo{transition:none!important}}
+/* ===== END CRICZONE BUZZ HOME UPGRADE ===== */
+
+
+/* CRICZONE BUZZ — compact in-player server selector and Watch Live CTA */
+#player-servers-bar{
+ display:flex!important;align-items:center!important;gap:10px!important;
+ min-height:52px!important;height:auto!important;padding:8px 14px!important;
+ overflow:visible!important;white-space:normal!important;
+ background:linear-gradient(90deg,#10170c,#0a0d08)!important;
+ border-bottom:1px solid rgba(215,255,63,.2)!important;
+}
+#player-servers-bar[style*="display: none"]{display:none!important}
+.cz-server-change-label{flex:0 0 auto;color:#d7ff3f;font:900 9px/1 Inter,system-ui,sans-serif;letter-spacing:1.1px}
+.cz-player-server-select{
+ min-width:0;max-width:min(65vw,340px);height:36px;padding:0 34px 0 12px;
+ border:1px solid rgba(215,255,63,.42);border-radius:10px;
+ background:#151d0d;color:#f5ffd9;font:800 12px Inter,system-ui,sans-serif;
+ outline:none;appearance:auto;cursor:pointer;
+}
+.cz-player-server-select:focus-visible{outline:2px solid #d7ff3f;outline-offset:2px}
+.cz-player-server-select option{background:#10170b;color:#f5ffd9}
+.cz-server-auto-note{margin-left:auto;color:#a7b38c;font:600 10px Inter,system-ui,sans-serif;white-space:nowrap}
+.poster-play-hint{opacity:1!important;background:linear-gradient(110deg,#d7ff3f,#baf51f)!important;border:0!important;color:#101507!important;box-shadow:0 8px 26px #0009,0 0 22px #d7ff3f35!important;font-size:12px!important;letter-spacing:.5px!important}
+.open-match-btn{background:linear-gradient(110deg,#d7ff3f,#baf51f)!important;color:#111707!important;border:1px solid rgba(215,255,63,.8)!important;border-radius:999px!important;box-shadow:0 6px 18px rgba(180,240,25,.13)!important;font-size:.82rem!important;letter-spacing:.35px!important}
+@media(max-width:600px){
+ #player-servers-bar{gap:7px!important;padding:8px 10px!important;min-height:48px!important}
+ .cz-server-change-label{font-size:8px!important;letter-spacing:.6px!important}
+ .cz-player-server-select{height:34px;max-width:52vw;font-size:11px;padding-left:8px}
+ .cz-server-auto-note{font-size:8px}
+ .poster-play-hint{opacity:1!important;font-size:10px!important;padding:8px 12px!important}
+}
+@media(max-width:360px){.cz-server-auto-note{display:none}}
+/* ===== END PLAYER SERVER UX ===== */
+
+
+/* CRICZONE BUZZ final polish: 2-column match grid and single Telegram popup */
+#matches-container .matches-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:clamp(9px,1.5vw,18px)!important}
+#matches-container .match-card{min-width:0!important}
+#matches-container .card-actions{align-items:stretch!important}
+#cz-tg-local-bar{
+ border:1px solid rgba(215,255,63,.38)!important;
+ background:linear-gradient(105deg,#18230c,#10180b 58%,#0b1108)!important;
+ box-shadow:0 0 22px rgba(215,255,63,.08),0 10px 28px #0006!important
+}
+#cz-tg-local-bar .cz-tg-logo{background:linear-gradient(145deg,#d7ff3f,#b9f526)!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-tap{background:linear-gradient(115deg,#d7ff3f,#baff22)!important;color:#10130b!important;border-radius:999px!important}
+#cz-tg-local-bar strong{color:#f5f6ed!important}
+#cz-tg-local-bar small{color:#aeb99a!important}
+@media(max-width:700px){
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #matches-container .card-poster{aspect-ratio:4/3!important}
+ #matches-container .card-body{padding:10px!important;gap:8px!important}
+ #matches-container .card-title{font-size:.82rem!important;line-height:1.28!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:1fr!important}
+}
+@media(max-width:360px){
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ #matches-container .card-body{padding:8px!important}
+ #matches-container .card-title{font-size:.75rem!important}
+}
+
+
+/* =========================================================
+   CRICZONE BUZZ — screenshot-driven final polish
+   ========================================================= */
+header{
+ background:linear-gradient(105deg,rgba(20,31,13,.98),rgba(10,17,8,.98) 62%,rgba(18,27,12,.98))!important;
+ border-bottom:1px solid rgba(215,255,63,.34)!important;
+ box-shadow:0 8px 26px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+header .header-inner{min-height:68px!important;height:auto!important}
+header .brand-name{color:#f6f8ee!important;letter-spacing:.055em!important}
+header .brand-tag{color:#d7ff3f!important}
+header .brand-badge{
+ border:2px solid rgba(215,255,63,.85)!important;
+ box-shadow:0 0 0 4px rgba(215,255,63,.08),0 0 22px rgba(215,255,63,.16)!important;
+}
+header .btn-header{
+ background:linear-gradient(145deg,#1a2612,#10180c)!important;
+ border:1px solid rgba(215,255,63,.45)!important;
+ color:#eaf2d9!important;
+}
+header .btn-header:hover,header .btn-header:focus-visible{
+ background:linear-gradient(115deg,#d7ff3f,#baff22)!important;
+ color:#10130b!important;border-color:transparent!important;
+}
+/* Poster is clickable; Watch Live exists only below match details. */
+.poster-play-hint{display:none!important}
+.card-poster{position:relative!important;overflow:hidden!important}
+.card-poster img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+.card-poster::after{pointer-events:none!important}
+.match-open-link:focus-visible{outline:2px solid #d7ff3f!important;outline-offset:3px!important}
+#matches-container .card-actions{display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)!important;gap:8px!important}
+#matches-container .open-match-btn,#matches-container .card-share-btn{
+ min-width:0!important;width:100%!important;min-height:42px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ white-space:nowrap!important;
+}
+#matches-container .open-match-btn{font-size:clamp(10px,2.5vw,13px)!important;letter-spacing:.1px!important}
+#matches-container .card-share-btn{padding-inline:7px!important;font-size:clamp(10px,2.4vw,12px)!important}
+#matches-container .favorite-toggle{z-index:5!important}
+@media(max-width:700px){
+ header .header-inner{min-height:68px!important;padding:9px 13px!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important}
+ #matches-container .card-poster{aspect-ratio:16/10!important}
+}
+@media(max-width:360px){
+ header .brand-name{font-size:1rem!important}
+ header .brand-tag{font-size:.58rem!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)!important;gap:5px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{font-size:9px!important;min-height:38px!important}
+}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+ outline:2px solid #d7ff3f!important;outline-offset:3px!important;
+}
+
+
+/* =========================================================
+   CRICZONE BUZZ — premium navigation + poster CTA cleanup
+   ========================================================= */
+:root{--cz-lime:#d7ff3f;--cz-deep:#0b140b;--cz-panel:#101a0e}
+html,body{background:#050705!important}
+header{
+ position:sticky!important;top:0!important;z-index:1000!important;
+ background:linear-gradient(112deg,rgba(24,39,17,.99) 0%,rgba(12,22,11,.99) 52%,rgba(7,15,9,.99) 100%)!important;
+ border-bottom:1px solid rgba(215,255,63,.48)!important;
+ box-shadow:0 9px 30px rgba(0,0,0,.48),0 1px 0 rgba(215,255,63,.08)!important;
+ isolation:isolate!important;
+}
+header:after{
+ content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+ background:linear-gradient(90deg,transparent 0%,rgba(215,255,63,.12) 12%,#d7ff3f 50%,rgba(215,255,63,.12) 88%,transparent 100%);
+ pointer-events:none;
+}
+header .header-inner{position:relative;z-index:1;min-height:72px!important}
+header .brand{gap:12px!important}
+header .brand-badge{
+ border-radius:50%!important;background:#0a1209!important;
+ border:2px solid #d7ff3f!important;
+ box-shadow:0 0 0 4px rgba(215,255,63,.09),0 0 24px rgba(215,255,63,.24)!important;
+}
+header .brand-name{font-size:clamp(1.02rem,2vw,1.25rem)!important;color:#fff!important;text-shadow:0 2px 12px #0008}
+header .brand-tag{color:#d7ff3f!important;font-weight:900!important;letter-spacing:.09em!important}
+header .btn-header{
+ min-height:44px!important;border-radius:999px!important;
+ background:linear-gradient(145deg,#26391a,#142311)!important;
+ border:1px solid rgba(215,255,63,.55)!important;color:#eff8df!important;
+ box-shadow:inset 0 1px 0 #ffffff0c,0 5px 15px #0004!important;
+}
+header .btn-header svg{fill:#d7ff3f!important}
+header .btn-header:hover,header .btn-header:focus-visible{
+ background:linear-gradient(110deg,#d7ff3f,#b9f52b)!important;color:#101507!important;
+ box-shadow:0 0 22px rgba(215,255,63,.24)!important;
+}
+.player-header{
+ background:linear-gradient(110deg,#192815,#0d160d 60%,#101b0f)!important;
+ border-bottom:1px solid rgba(215,255,63,.34)!important;
+ box-shadow:0 7px 22px #0005!important;
+}
+.player-header .btn-header{
+ background:linear-gradient(145deg,#1b2a15,#101a0e)!important;
+ border:1px solid rgba(215,255,63,.42)!important;color:#eff8df!important;
+}
+.player-header .btn-header-primary{background:linear-gradient(110deg,#d7ff3f,#b9f52b)!important;color:#101507!important}
+.poster-play-hint,.match-card .poster-play-hint{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+.card-poster .poster-play-hint{display:none!important}
+#matches-container .card-poster{position:relative!important;display:block!important;overflow:hidden!important;border-radius:16px 16px 0 0!important;background:#10170d!important}
+#matches-container .card-poster img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+#matches-container .card-poster:after{pointer-events:none!important}
+#matches-container .card-body{background:linear-gradient(180deg,#10150d,#0b100a)!important}
+#matches-container .card-title{color:#f4f7eb!important}
+#matches-container .card-meta{color:#aab49c!important}
+#matches-container .open-match-btn{
+ background:linear-gradient(105deg,#d7ff3f,#b8f326)!important;color:#101507!important;
+ border:0!important;border-radius:999px!important;font-weight:950!important;
+ box-shadow:0 5px 18px rgba(215,255,63,.13)!important;
+}
+#matches-container .card-share-btn{
+ background:linear-gradient(145deg,#172313,#10180e)!important;
+ border:1px solid rgba(215,255,63,.28)!important;color:#e7efda!important;border-radius:999px!important;
+}
+#cz-tg-local-bar{
+ border-color:rgba(215,255,63,.42)!important;
+ background:linear-gradient(105deg,#1b2a13,#10190d 60%,#0b1209)!important;
+ box-shadow:0 0 24px rgba(215,255,63,.1),0 10px 28px #0006!important;
+}
+#cz-tg-local-bar .cz-tg-logo{background:linear-gradient(145deg,#d7ff3f,#b9f526)!important;color:#10130b!important}
+#cz-tg-local-bar .cz-tg-tap{background:linear-gradient(110deg,#d7ff3f,#b9f526)!important;color:#10130b!important;border-radius:999px!important}
+#cz-tg-local-bar strong{color:#f5f8ed!important}
+#cz-tg-local-bar small{color:#b4c0a5!important}
+#cz-tg-local-modal{background:rgba(2,6,2,.84)!important}
+#cz-tg-local-modal .cz-tg-card{
+ border:1px solid rgba(215,255,63,.4)!important;
+ background:radial-gradient(circle at 50% 0,rgba(215,255,63,.16),transparent 48%),linear-gradient(150deg,#1b2b14,#0b1209 78%)!important;
+ box-shadow:0 28px 90px #000b,0 0 32px rgba(215,255,63,.12)!important;color:#f5f8ed!important;
+}
+#cz-tg-local-modal .cz-tg-kicker{color:#d7ff3f!important}
+#cz-tg-local-modal p{color:#c2cdb7!important}
+#cz-tg-local-modal .cz-tg-x{border-color:#d7ff3f55!important;background:#d7ff3f12!important;color:#eff8df!important}
+#cz-tg-local-modal .cz-tg-join{background:linear-gradient(105deg,#d7ff3f,#b9f526)!important;color:#101507!important;box-shadow:0 9px 25px #d7ff3f30!important}
+#cz-tg-local-modal .cz-tg-foot{color:#aebc9e!important}
+@media(max-width:700px){
+ header .header-inner{min-height:68px!important;padding:8px 12px!important}
+ header .brand{gap:10px!important}
+ header .brand-badge{width:44px!important;height:44px!important;flex-basis:44px!important}
+ header .brand-name{font-size:1.03rem!important}
+ header .brand-tag{font-size:.59rem!important}
+ #matches-container .matches-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ #matches-container .card-poster{aspect-ratio:16/10!important}
+ #matches-container .card-body{padding:10px!important}
+ #matches-container .card-title{font-size:clamp(.78rem,3.2vw,.92rem)!important;line-height:1.3!important;min-height:3.5em!important}
+ #matches-container .card-actions{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important;gap:6px!important}
+ #matches-container .open-match-btn,#matches-container .card-share-btn{min-height:39px!important;font-size:clamp(9px,2.5vw,11px)!important;padding:6px 5px!important}
+}
+@media(max-width:360px){
+ header .brand-tag{font-size:.52rem!important}
+ #matches-container .card-title{font-size:.74rem!important}
+ #matches-container .card-actions{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)!important}
+}
+@media(prefers-reduced-motion:reduce){header .btn-header,#matches-container .open-match-btn{transition:none!important}}
+
+
+/* Native Android select replacement: fully themed custom server picker */
+#player-servers-bar{position:relative!important;z-index:80!important;overflow:visible!important}
+.cz-server-picker{position:relative;flex:0 1 270px;min-width:145px;max-width:min(52vw,320px);z-index:100}
+.cz-player-server-select{
+ width:100%!important;min-width:0!important;max-width:none!important;height:42px!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;
+ padding:0 13px!important;border:1px solid rgba(215,255,63,.58)!important;border-radius:12px!important;
+ background:linear-gradient(145deg,#1c2a14,#10190d)!important;color:#f4f8e9!important;
+ font:800 13px/1 Inter,system-ui,sans-serif!important;text-align:left!important;
+ box-shadow:inset 0 1px 0 #ffffff0c,0 4px 14px #0004!important;
+ appearance:none!important;-webkit-appearance:none!important;cursor:pointer!important;
+}
+.cz-player-server-select:focus-visible{outline:2px solid #d7ff3f!important;outline-offset:3px!important}
+.cz-player-server-select svg{width:17px;height:17px;flex:0 0 auto;color:#d7ff3f;transition:transform .18s ease}
+.cz-player-server-select[aria-expanded="true"] svg{transform:rotate(180deg)}
+.cz-server-current{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cz-server-menu{
+ position:absolute!important;top:calc(100% + 9px)!important;left:0!important;right:0!important;
+ z-index:2147482000!important;max-height:min(56vh,390px)!important;overflow-y:auto!important;
+ padding:6px!important;border:1px solid rgba(215,255,63,.42)!important;border-radius:15px!important;
+ background:linear-gradient(160deg,#1a2714 0%,#0d150b 100%)!important;
+ box-shadow:0 18px 48px rgba(0,0,0,.78),0 0 22px rgba(215,255,63,.12)!important;
+ overscroll-behavior:contain!important;scrollbar-width:thin;scrollbar-color:#718b36 #11190e;
+}
+.cz-server-menu[hidden]{display:none!important}
+.cz-server-option{
+ width:100%!important;min-height:53px!important;display:flex!important;align-items:center!important;gap:11px!important;
+ padding:8px 10px!important;border:1px solid transparent!important;border-radius:10px!important;
+ background:transparent!important;color:#eaf1df!important;text-align:left!important;cursor:pointer!important;
+}
+.cz-server-option+.cz-server-option{margin-top:3px!important}
+.cz-server-option:hover,.cz-server-option:focus-visible{background:rgba(215,255,63,.09)!important;border-color:rgba(215,255,63,.22)!important;outline:none!important}
+.cz-server-option.is-active{background:linear-gradient(100deg,rgba(215,255,63,.16),rgba(215,255,63,.055))!important;border-color:rgba(215,255,63,.35)!important}
+.cz-server-option-dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#78836b;box-shadow:0 0 0 3px #ffffff0b}
+.cz-server-option.is-active .cz-server-option-dot{background:#d7ff3f;box-shadow:0 0 0 4px rgba(215,255,63,.13),0 0 12px #d7ff3f88}
+.cz-server-option-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cz-server-option-copy strong{font:800 12px/1.2 Inter,system-ui,sans-serif;color:#f5f8ee}
+.cz-server-option-copy small{font:600 10px/1.25 Inter,system-ui,sans-serif;color:#a8b59a;white-space:normal}
+.cz-server-option-check{margin-left:auto;color:#d7ff3f;font-weight:950;font-size:17px}
+@media(max-width:600px){
+ #player-servers-bar{gap:7px!important;padding:8px 10px!important;min-height:52px!important}
+ .cz-server-picker{flex:0 1 180px;min-width:116px;max-width:46vw}
+ .cz-player-server-select{height:40px!important;padding-inline:10px!important;font-size:12px!important}
+ .cz-server-menu{max-height:52vh!important;min-width:174px;left:0!important;right:auto!important;width:max(100%,174px)!important}
+ .cz-server-option{min-height:49px!important}
+}
+@media(max-width:360px){
+ .cz-server-picker{max-width:43vw;min-width:108px}
+ .cz-server-auto-note{display:none!important}
+}
+
+
+/* Compact live connection indicator inside the video viewport */
+#video-wrapper{position:relative!important}
+.cz-player-live-status{
+ position:absolute!important;top:12px!important;right:12px!important;z-index:60!important;
+ display:none!important;align-items:center!important;gap:7px!important;
+ min-height:25px!important;padding:5px 9px!important;border-radius:999px!important;
+ background:rgba(5,12,7,.82)!important;border:1px solid rgba(215,255,63,.34)!important;
+ color:#eff8e6!important;box-shadow:0 4px 14px rgba(0,0,0,.32)!important;
+ backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;
+ font:800 9px/1 Inter,system-ui,sans-serif!important;letter-spacing:.09em!important;
+ pointer-events:none!important;white-space:nowrap!important;
+}
+.cz-player-live-status.is-visible{display:inline-flex!important}
+.cz-player-live-dot{width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;background:#d7ff3f!important;box-shadow:0 0 9px rgba(215,255,63,.9)!important}
+.cz-player-live-status.is-live{border-color:rgba(215,255,63,.48)!important;color:#e8ff9b!important}
+.cz-player-live-status.is-live .cz-player-live-dot{animation:czLivePulse 1.5s ease-in-out infinite}
+.cz-player-live-status.is-connecting{color:#f1e5a6!important;border-color:rgba(244,196,77,.4)!important}
+.cz-player-live-status.is-connecting .cz-player-live-dot{background:#f4c44d!important;box-shadow:0 0 8px #f4c44d88!important}
+.cz-player-live-status.is-buffering{color:#d5e1ff!important;border-color:rgba(113,157,255,.4)!important}
+.cz-player-live-status.is-buffering .cz-player-live-dot{background:#83aaff!important;box-shadow:0 0 8px #83aaff88!important}
+@keyframes czLivePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.78)}}
+@media(max-width:600px){
+ .cz-player-live-status{top:9px!important;right:9px!important;min-height:23px!important;padding:4px 8px!important;font-size:8px!important}
+ .cz-player-live-dot{width:6px!important;height:6px!important;flex-basis:6px!important}
+}
+@media(prefers-reduced-motion:reduce){.cz-player-live-status.is-live .cz-player-live-dot{animation:none!important}}
+
+
+/* Player view: reclaim header space and compact the server strip */
+body.cz-player-open>header{display:none!important}
+body.cz-player-open{overflow:hidden!important}
+#player-modal{inset:0!important;top:0!important;padding-top:0!important;gap:0!important}
+#player-modal .player-header{
+ position:relative!important;top:auto!important;flex:0 0 48px!important;height:48px!important;min-height:48px!important;
+ padding:0 10px!important;margin:0!important;background:linear-gradient(100deg,#10190d,#070b06)!important;
+ border-bottom:1px solid rgba(215,255,63,.2)!important;
+}
+#player-modal .player-title{font-size:clamp(10px,2.7vw,13px)!important;max-width:42vw!important}
+#player-modal .player-nav{gap:5px!important}
+#player-modal .player-nav .btn-header{min-height:34px!important;padding:5px 9px!important;font-size:10px!important}
+#player-modal .player-nav .btn-header svg{width:13px!important;height:13px!important}
+#player-modal .player-servers-bar{
+ position:relative!important;top:auto!important;flex:0 0 40px!important;height:40px!important;min-height:40px!important;
+ padding:3px 9px!important;margin:0!important;gap:6px!important;overflow:visible!important;
+ background:linear-gradient(100deg,#0c1209,#080b07)!important;border-bottom:1px solid rgba(215,255,63,.16)!important;
+}
+#player-modal .player-servers-bar::before{font-size:9px!important;letter-spacing:.09em!important;margin-right:0!important}
+#player-modal .cz-server-change-label{font-size:9px!important;letter-spacing:.05em!important;white-space:nowrap!important}
+#player-modal .cz-server-picker{flex:0 1 138px!important;min-width:105px!important;max-width:38vw!important}
+#player-modal .cz-player-server-select{height:32px!important;min-height:32px!important;padding:0 9px!important;border-radius:9px!important;font-size:11px!important;gap:7px!important}
+#player-modal .cz-player-server-select svg{width:14px!important;height:14px!important;flex-basis:14px!important}
+#player-modal .cz-server-auto-note{font-size:8px!important;letter-spacing:0!important;white-space:nowrap!important}
+#video-wrapper{margin-top:5px!important}
+@media(max-width:600px){
+ #player-modal .player-header{flex-basis:46px!important;height:46px!important;min-height:46px!important;padding:0 8px!important}
+ #player-modal .player-title{max-width:36vw!important;font-size:10px!important}
+ #player-modal .player-nav .btn-header{min-height:31px!important;padding:4px 7px!important;font-size:9px!important}
+ #player-modal .player-servers-bar{flex-basis:38px!important;height:38px!important;min-height:38px!important;padding:3px 7px!important;gap:5px!important}
+ #player-modal .player-servers-bar::before{font-size:8px!important}
+ #player-modal .cz-server-change-label{font-size:8px!important}
+ #player-modal .cz-server-picker{flex-basis:118px!important;min-width:94px!important;max-width:36vw!important}
+ #player-modal .cz-player-server-select{height:30px!important;min-height:30px!important;font-size:10px!important;padding-inline:8px!important}
+ #player-modal .cz-server-auto-note{font-size:7px!important}
+ #video-wrapper{width:calc(100% - 12px)!important;margin:4px auto 0!important;border-radius:11px!important}
+}
+
+
+/* Mobile player toast: keep playback guidance away from the match title/video. */
+@media (max-width: 640px) {
+  #toast {
+    top: auto !important;
+    right: 12px !important;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 12px !important;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    margin-inline: auto;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.35;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    z-index: 2147483000;
+  }
+}
+
+
+/* Refined Willow Live by CRICZONE navbar signature */
+header .brand-tag{
+ display:block!important;
+ color:#d7ff3f!important;
+ font-size:clamp(.56rem,1.3vw,.68rem)!important;
+ font-weight:900!important;
+ letter-spacing:.105em!important;
+ line-height:1.35!important;
+ text-transform:uppercase!important;
+ white-space:nowrap!important;
+ text-shadow:0 0 12px rgba(215,255,63,.14)!important;
+}
+header .brand-tag-separator{color:#f5f8e9!important;padding:0 .22em!important}
+@media(max-width:360px){
+ header .brand-tag{font-size:.51rem!important;letter-spacing:.065em!important}
+}
+/* Same responsive CRICZONE navbar used by Cricket and Football watch pages */
+.cz-watch-nav{position:sticky;top:0;z-index:150;width:100%;min-height:70px;padding:0 clamp(14px,3.2vw,42px);display:flex;align-items:center;gap:clamp(16px,2vw,30px);background:linear-gradient(110deg,rgba(5,10,18,.97),rgba(10,17,29,.96));border-bottom:1px solid rgba(70,155,255,.14);box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(18px)}
+.cz-watch-logo{display:flex;align-items:center;gap:3px;white-space:nowrap;text-decoration:none;font-size:clamp(23px,2.5vw,30px);font-weight:800;letter-spacing:-.06em;color:#51aaff}.cz-watch-logo span{color:#f7f9fd}.cz-watch-logo i{width:8px;height:8px;border-radius:50%;background:#35c7f4;box-shadow:0 0 14px #35c7f477;margin-left:4px}
+.cz-watch-links{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1.7vw,24px);margin-left:auto}.cz-watch-links a{color:#91a2b8;text-decoration:none;font-size:14px;font-weight:700;padding:9px 3px;white-space:nowrap;transition:color .18s ease}.cz-watch-links a:hover,.cz-watch-links a.active{color:#f4f8ff}.cz-watch-links a.active{position:relative}.cz-watch-links a.active:after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:4px;background:#3dbdff;box-shadow:0 0 9px #3dbdff55}
+.cz-watch-telegram{white-space:nowrap;text-decoration:none;padding:11px 17px;border-radius:999px;background:linear-gradient(115deg,#168fe5,#416cf0);color:#fff;font-size:13px;font-weight:800;box-shadow:0 8px 20px #1e72db25}
+.cz-watch-toggle{display:none;width:42px;height:42px;border:1px solid #29394b;border-radius:12px;background:#121b28;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}.cz-watch-toggle span{width:18px;height:2px;background:#e6f0fc;border-radius:3px;transition:.2s}.cz-watch-toggle[aria-expanded=true] span:first-child{transform:translateY(7px) rotate(45deg)}.cz-watch-toggle[aria-expanded=true] span:nth-child(2){opacity:0}.cz-watch-toggle[aria-expanded=true] span:last-child{transform:translateY(-7px) rotate(-45deg)}
+.cz-watch-mobile{display:none;position:absolute;top:calc(100% + 9px);right:12px;left:12px;padding:9px;background:rgba(8,13,22,.98);border:1px solid #29394b;border-radius:16px;box-shadow:0 20px 50px #0009;backdrop-filter:blur(18px);max-height:calc(100dvh - 90px);overflow:auto}.cz-watch-mobile a{display:block;text-decoration:none;color:#a9b8ca;padding:12px 13px;border-radius:11px;font-size:14px;font-weight:700}.cz-watch-mobile a.active{color:#4db7ff;background:#112033}.cz-watch-mobile a:hover{background:#162233;color:white}.cz-watch-mobile.open{display:block;animation:cz-watch-in .16s ease-out}@keyframes cz-watch-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1020px){.cz-watch-links{display:none}.cz-watch-toggle{display:flex}.cz-watch-telegram{margin-left:auto}}
+@media(max-width:520px){.cz-watch-nav{min-height:60px;padding:0 12px;gap:10px}.cz-watch-logo{font-size:24px}.cz-watch-telegram{padding:9px 12px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.cz-watch-mobile.open{animation:none}.cz-watch-toggle span{transition:none}}

@@ -1,0 +1,94 @@
+/* CRICZONE HOME FEED — premium OTT cards and carousel refresh */
+#match-quicknav{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 4px 16px;margin:0 auto 18px;max-width:1440px;white-space:nowrap;scroll-snap-type:x proximity}
+#match-quicknav::-webkit-scrollbar{display:none}
+#match-quicknav a{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:999px;background:linear-gradient(145deg,#111b29,#0b111a);border:1px solid rgba(120,160,200,.18);color:#bdcbe0;text-decoration:none;font:700 12px/1.1 Inter,system-ui,sans-serif;transition:all .2s ease}
+#match-quicknav a:hover,#match-quicknav a:focus-visible{color:#fff;border-color:#35b9ff;background:linear-gradient(145deg,#172b40,#101c2b);box-shadow:0 5px 22px #28aaff22;transform:translateY(-1px)}
+.stream-section{position:relative;isolation:isolate;margin:0 auto clamp(28px,4vw,48px)!important;padding:clamp(14px,2.5vw,24px)!important;border:1px solid rgba(255,255,255,.07)!important;border-radius:22px!important;background:linear-gradient(145deg,rgba(16,24,36,.92),rgba(7,11,17,.96))!important;box-shadow:0 18px 48px rgba(0,0,0,.22)!important;overflow:hidden}
+.stream-section:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 0 0,rgba(32,174,255,.08),transparent 55%)}
+.section-hd{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;flex-wrap:wrap!important;margin:0 0 12px!important;padding:2px 0 14px!important;border-bottom:1px solid rgba(255,255,255,.07)!important}
+.section-hd-left{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important;flex-wrap:wrap!important}
+.section-bar{width:4px!important;height:30px!important;border-radius:999px!important;box-shadow:0 0 15px rgba(56,189,248,.25)!important}
+.section-title{font-size:clamp(20px,2vw,28px)!important;letter-spacing:-.04em!important;line-height:1.05!important;margin:0!important;font-weight:850!important}
+.section-title em{font-style:normal!important;color:#36c6ff!important}
+.section-badge{border-radius:999px!important;padding:6px 11px!important;background:rgba(25,177,255,.08)!important;border:1px solid rgba(25,177,255,.2)!important;color:#82d9ff!important;font-size:10px!important;font-weight:800!important;letter-spacing:.06em!important;text-transform:uppercase!important}
+.section-hd-right{display:flex!important;align-items:center!important;gap:8px!important}
+.section-link{border-radius:999px!important;padding:9px 14px!important;font-size:12px!important;background:rgba(25,177,255,.08)!important;border-color:rgba(25,177,255,.25)!important}
+.nav-arrow{width:38px!important;height:38px!important;border-radius:50%!important;background:#111b27!important;border:1px solid rgba(255,255,255,.1)!important;color:#dce8f6!important}
+.stream-track{gap:14px!important;padding:8px 2px 16px!important;scroll-padding:10px!important;scroll-snap-type:x mandatory!important;overscroll-behavior-inline:contain!important}
+.stream-card{flex:0 0 clamp(250px,26vw,340px)!important;min-height:0!important;border-radius:18px!important;border:1px solid rgba(128,158,193,.16)!important;background:linear-gradient(160deg,#121c2b,#0b1119 72%)!important;box-shadow:0 10px 28px rgba(0,0,0,.2)!important}
+.stream-card:hover{transform:translateY(-4px)!important;border-color:rgba(43,186,255,.42)!important;box-shadow:0 18px 36px rgba(0,0,0,.34),0 0 20px rgba(32,174,255,.08)!important}
+.card-media{padding-top:56.25%!important;background:linear-gradient(135deg,#101b2a,#07101a)!important}
+.card-media img{object-fit:cover!important}
+.card-content,.stream-card-content{padding:14px 15px 16px!important}
+.stream-card h3,.card-title{font-weight:800!important;letter-spacing:-.02em!important;line-height:1.35!important}
+.stream-card p,.card-meta{color:#91a2b8!important}
+.stream-card .live-badge,.live-badge{border-radius:8px!important;box-shadow:0 4px 14px rgba(255,55,75,.2)!important}
+@media(min-width:900px){.stream-section{padding:22px 24px!important}.stream-card{flex-basis:clamp(280px,24vw,360px)!important}.stream-track{gap:16px!important}}
+@media(max-width:768px){
+ #match-quicknav{margin-bottom:12px!important;padding:10px 2px 14px!important}
+ #match-quicknav a{padding:10px 13px!important;font-size:11px!important}
+ .stream-section{padding:14px 12px!important;border-radius:17px!important;margin-bottom:24px!important}
+ .section-hd{gap:10px!important;padding-bottom:12px!important}
+ .section-title{font-size:21px!important}
+ .section-hd-right{gap:6px!important}
+ .section-link{padding:8px 10px!important;font-size:11px!important}
+ .nav-arrow{width:36px!important;height:36px!important}
+ .stream-track{gap:12px!important;padding:7px 1px 14px!important}
+ .stream-card{flex:0 0 min(78vw,310px)!important;border-radius:16px!important}
+}
+@media(max-width:380px){.stream-card{flex-basis:84vw!important}.section-hd-right{width:100%;justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){.stream-section,.stream-card,#match-quicknav a{transition:none!important}}
+
+/* === Feed premium polish: header controls, View All, motion === */
+.stream-section{animation:czFeedEnter .55s cubic-bezier(.2,.7,.25,1) both}
+.stream-section:nth-of-type(2){animation-delay:.05s}.stream-section:nth-of-type(3){animation-delay:.1s}.stream-section:nth-of-type(4){animation-delay:.15s}.stream-section:nth-of-type(5){animation-delay:.2s}.stream-section:nth-of-type(6){animation-delay:.25s}
+@keyframes czFeedEnter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.section-hd-right,.carousel-controls{display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;flex-wrap:nowrap!important}
+.carousel-controls{margin:0!important;padding:0!important}
+.section-link,.section-link-willow,.section-link-prime{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-height:36px!important;white-space:nowrap!important;text-decoration:none!important;color:#45caff!important;border:1px solid rgba(55,192,255,.25)!important;background:linear-gradient(135deg,rgba(23,54,77,.7),rgba(10,22,33,.8))!important;border-radius:999px!important;font-weight:800!important;transition:transform .22s ease,box-shadow .22s ease,background .22s ease!important}
+.section-link:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(45,190,255,.18)!important;background:linear-gradient(135deg,#163a54,#102437)!important}
+.section-link .material-icons{font-size:15px!important;transition:transform .2s ease!important}.section-link:hover .material-icons{transform:translateX(3px)!important}
+.nav-arrow{transition:transform .2s ease,background .2s ease,border-color .2s ease!important}.nav-arrow:hover{transform:scale(1.06)!important;background:#1c2b3d!important;border-color:rgba(55,192,255,.32)!important}
+.stream-track{scroll-behavior:smooth!important}
+.stream-card{transition:transform .26s cubic-bezier(.2,.7,.25,1),border-color .26s,box-shadow .26s!important;will-change:transform}
+.stream-card .card-media{overflow:hidden!important}.stream-card .card-media img{transition:transform .45s cubic-bezier(.2,.7,.25,1)!important}.stream-card:hover .card-media img{transform:scale(1.035)!important}
+@media(max-width:768px){.section-hd-right,.carousel-controls{gap:5px!important}.section-link{padding:8px 11px!important;min-height:34px!important}.stream-section{animation-duration:.42s}}
+@media(max-width:460px){.section-hd{align-items:flex-start!important}.section-hd-right,.carousel-controls{flex-shrink:0!important}.section-link{font-size:10px!important;padding:7px 9px!important}.section-link .material-icons{font-size:13px!important}.nav-arrow{width:33px!important;height:33px!important}}
+@media(prefers-reduced-motion:reduce){.stream-section{animation:none!important}.stream-card,.section-link,.nav-arrow,.stream-card .card-media img{transition:none!important}}
+
+
+/* Football Live — compact mobile-first carousel refinement */
+#football-live .stream-track{padding:12px 3px 20px!important;gap:14px!important;scroll-padding-inline:12px!important}
+#football-live .stream-card{flex-basis:clamp(260px,34vw,360px)!important;min-height:390px!important;border-radius:20px!important;background:linear-gradient(155deg,#111d2d 0%,#0b121b 78%)!important;border-color:rgba(116,164,205,.18)!important}
+#football-live .card-media.team-vs{padding-top:0!important;aspect-ratio:16/9!important;min-height:170px!important}
+#football-live .card-media.team-vs>.team-vs-inner{padding:18px!important;gap:14px!important;background:radial-gradient(ellipse at 50% 50%,rgba(28,151,220,.13),transparent 70%)}
+#football-live .card-crest{width:68px!important;height:68px!important;background:#162334!important;border-color:rgba(255,255,255,.15)!important;box-shadow:0 8px 22px rgba(0,0,0,.25)}
+#football-live .card-team-name{max-width:110px!important;font-size:12px!important;color:#b9c9dc!important}
+#football-live .vs-badge{padding:5px 11px!important;background:rgba(35,167,234,.12)!important;border-color:rgba(35,167,234,.25)!important}
+#football-live .card-body{padding:18px!important;gap:12px!important}
+#football-live .card-title{font-size:clamp(16px,2vw,19px)!important;line-height:1.35!important;min-height:2.7em}
+#football-live .card-meta{margin-top:auto!important;padding-top:14px!important}
+@media(max-width:768px){
+ #football-live .section-hd{align-items:center!important;flex-wrap:nowrap!important}
+ #football-live .section-hd-left{flex-wrap:nowrap!important;gap:8px!important}
+ #football-live .section-title{font-size:clamp(19px,5.5vw,23px)!important;white-space:nowrap!important}
+ #football-live .section-badge{padding:5px 9px!important;font-size:9px!important;white-space:nowrap!important}
+ #football-live .stream-track{padding:10px 2px 18px!important;gap:12px!important}
+ #football-live .stream-card{flex-basis:min(72vw,340px)!important;min-height:370px!important}
+ #football-live .card-crest{width:58px!important;height:58px!important}
+ #football-live .card-team-name{font-size:11px!important;max-width:94px!important}
+ #football-live .card-body{padding:15px!important}
+}
+@media(max-width:420px){#football-live .stream-card{flex-basis:78vw!important}#football-live .card-crest{width:52px!important;height:52px!important}}
+@media(prefers-reduced-motion:reduce){#football-live .stream-card,#football-live .card-crest{transition:none!important}}
+
+
+/* Unified section rhythm — all feed sections use the same clean card system */
+.stream-section{margin-block:0 clamp(24px,3.5vw,38px)!important;padding:clamp(16px,2.5vw,24px)!important;border-radius:20px!important;border:1px solid rgba(255,255,255,.075)!important;background:linear-gradient(160deg,rgba(15,22,33,.94),rgba(8,12,18,.98))!important;box-shadow:0 12px 32px rgba(0,0,0,.18)!important}
+.stream-section:before{opacity:.55!important}.stream-section .section-hd{align-items:center!important;min-height:42px!important;margin-bottom:14px!important;padding-bottom:12px!important}.stream-section .section-hd-left{gap:10px!important}.stream-section .section-title{font-size:clamp(19px,2.1vw,25px)!important;line-height:1.15!important;font-weight:800!important;white-space:normal!important}.stream-section .section-badge{font-size:10px!important;padding:6px 10px!important}
+.stream-section .stream-track{gap:14px!important;padding:8px 2px 16px!important;scroll-snap-type:x mandatory!important;scroll-padding-inline:10px!important}
+.stream-section .stream-card{flex:0 0 clamp(270px,27vw,340px)!important;min-height:360px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;border-radius:17px!important;background:linear-gradient(160deg,#121d2c,#0b1119)!important;border:1px solid rgba(125,157,190,.15)!important;box-shadow:0 8px 22px rgba(0,0,0,.2)!important}
+.stream-section .card-media,.stream-section .card-media.team-vs{aspect-ratio:16/9!important;padding-top:0!important;min-height:0!important}.stream-section .card-body{padding:16px!important;gap:10px!important;flex:1!important}.stream-section .card-title{font-size:16px!important;line-height:1.38!important;min-height:2.7em!important}.stream-section .card-meta{margin-top:auto!important;padding-top:12px!important}
+@media(max-width:768px){.stream-section{margin-block:0 24px!important;padding:15px 13px!important;border-radius:18px!important}.stream-section .section-hd{min-height:0!important;gap:10px!important;margin-bottom:12px!important;padding-bottom:11px!important;flex-wrap:wrap!important}.stream-section .section-hd-left{gap:8px!important;flex-wrap:wrap!important}.stream-section .section-title{font-size:21px!important}.stream-section .section-badge{font-size:9px!important;padding:5px 9px!important}.stream-section .section-hd-right,.stream-section .carousel-controls{gap:6px!important}.stream-section .section-link{min-height:34px!important;padding:8px 10px!important;font-size:11px!important}.stream-section .nav-arrow{width:35px!important;height:35px!important}.stream-section .stream-track{gap:12px!important;padding:7px 1px 14px!important}.stream-section .stream-card{flex-basis:min(78vw,320px)!important;min-height:350px!important}.stream-section .card-body{padding:15px!important}.stream-section .card-title{font-size:16px!important}.stream-section .card-crest{width:56px!important;height:56px!important}}
+@media(max-width:420px){.stream-section .stream-card{flex-basis:82vw!important}.stream-section .section-title{font-size:19px!important}}
+@media(prefers-reduced-motion:reduce){.stream-section,.stream-section .stream-card{animation:none!important;transition:none!important}}

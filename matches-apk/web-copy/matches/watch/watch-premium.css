@@ -1,0 +1,55 @@
+/* CRICZONE WATCH — responsive premium sports OTT polish */
+:root{--cz-bg:#07090e;--cz-panel:#10151f;--cz-panel2:#161e2b;--cz-border:rgba(255,255,255,.09);--cz-text:#f4f7fb;--cz-muted:#98a6ba;--cz-accent:#22d3ee;--cz-lime:#c7f464}
+html{scrollbar-color:#293342 #080b11;scrollbar-width:thin}
+body{overflow-x:hidden!important}
+img,video,iframe{max-width:100%}
+button,a,[role=button]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--cz-accent);outline-offset:3px}
+@media(max-width:680px){
+  body{font-size:14px}
+  header,.header,.header-inner,#hdr{gap:10px!important}
+  main,.container,#listing{width:100%!important;max-width:100%!important;padding-left:14px!important;padding-right:14px!important}
+  nav,.nav,.nav-links,.header-actions,.controls-bar,.filter-tabs{flex-wrap:wrap!important;max-width:100%;min-width:0}
+  .brand,.logo,.brand-mark{flex-shrink:0}
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .match-card,.channel-card,.card{min-width:0!important;border-radius:14px!important}
+  .card-body,.match-card-body{padding:12px!important}
+  .card-title,.match-title{font-size:clamp(13px,3.7vw,16px)!important;overflow-wrap:anywhere}
+  .search-box,input[type=search],input[type=text]{width:100%;max-width:100%;min-width:0}
+  .player-wrap,.player-container,.video-wrap,.video-container,#player-container,#player{width:100%!important;max-width:100%!important;min-width:0!important}
+  video,iframe{display:block;width:100%!important;max-width:100%!important}
+}
+@media(max-width:380px){
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:minmax(0,1fr)!important}
+  .header-inner,.header,#hdr{padding-inline:12px!important}
+}
+@media(min-width:681px) and (max-width:1024px){
+  .matches-grid,.match-grid,.grid,.channels-grid,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+
+/* shared navbar copied for SonyLIV and Prime pages */
+.cz-watch-nav{position:sticky;top:0;z-index:150;width:100%;min-height:70px;padding:0 clamp(14px,3.2vw,42px);display:flex;align-items:center;gap:clamp(16px,2vw,30px);background:linear-gradient(110deg,rgba(5,10,18,.97),rgba(10,17,29,.96));border-bottom:1px solid rgba(70,155,255,.14);box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(18px)}
+.cz-watch-logo{display:flex;align-items:center;gap:3px;white-space:nowrap;text-decoration:none;font-size:clamp(23px,2.5vw,30px);font-weight:800;letter-spacing:-.06em;color:#51aaff}.cz-watch-logo span{color:#f7f9fd}.cz-watch-logo i{width:8px;height:8px;border-radius:50%;background:#35c7f4;box-shadow:0 0 14px #35c7f477;margin-left:4px}
+.cz-watch-links{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1.7vw,24px);margin-left:auto}.cz-watch-links a{color:#91a2b8;text-decoration:none;font-size:14px;font-weight:700;padding:9px 3px;white-space:nowrap;transition:color .18s ease}.cz-watch-links a:hover,.cz-watch-links a.active{color:#f4f8ff}.cz-watch-links a.active{position:relative}.cz-watch-links a.active:after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:4px;background:#3dbdff;box-shadow:0 0 9px #3dbdff55}
+.cz-watch-telegram{white-space:nowrap;text-decoration:none;padding:11px 17px;border-radius:999px;background:linear-gradient(115deg,#168fe5,#416cf0);color:#fff;font-size:13px;font-weight:800;box-shadow:0 8px 20px #1e72db25}.cz-watch-toggle{display:none;width:42px;height:42px;border:1px solid #29394b;border-radius:12px;background:#121b28;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}.cz-watch-toggle span{width:18px;height:2px;background:#e6f0fc;border-radius:3px;transition:.2s}.cz-watch-toggle[aria-expanded=true] span:first-child{transform:translateY(7px) rotate(45deg)}.cz-watch-toggle[aria-expanded=true] span:nth-child(2){opacity:0}.cz-watch-toggle[aria-expanded=true] span:last-child{transform:translateY(-7px) rotate(-45deg)}
+.cz-watch-mobile{display:none;position:absolute;top:calc(100% + 9px);right:12px;left:12px;padding:9px;background:rgba(8,13,22,.98);border:1px solid #29394b;border-radius:16px;box-shadow:0 20px 50px #0009;backdrop-filter:blur(18px);max-height:calc(100dvh - 90px);overflow:auto}.cz-watch-mobile a{display:block;text-decoration:none;color:#a9b8ca;padding:12px 13px;border-radius:11px;font-size:14px;font-weight:700}.cz-watch-mobile a.active{color:#4db7ff;background:#112033}.cz-watch-mobile a:hover{background:#162233;color:white}.cz-watch-mobile.open{display:block;animation:cz-watch-in .16s ease-out}@keyframes cz-watch-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1020px){.cz-watch-links{display:none}.cz-watch-toggle{display:flex}.cz-watch-telegram{margin-left:auto}}@media(max-width:520px){.cz-watch-nav{min-height:60px;padding:0 12px;gap:10px}.cz-watch-logo{font-size:24px}.cz-watch-telegram{padding:9px 12px;font-size:12px}}@media(prefers-reduced-motion:reduce){.cz-watch-mobile.open{animation:none}.cz-watch-toggle span{transition:none}}
+
+/* Layout cleanup: global navbar remains the only CRICZONE brand header */
+.app-header .brand{display:none!important}
+.app-header .header-inner{justify-content:flex-end!important;min-height:58px!important}
+.app-header{padding-top:0!important;background:rgba(7,11,17,.72)!important;border-color:rgba(255,255,255,.06)!important}
+.ch-card .card-badge.upcoming{left:10px!important;right:auto!important}
+.ch-card .card-badge.live{left:10px!important;right:auto!important}
+.cz-watch-nav{background:linear-gradient(110deg,#060a12 0%,#0b1422 100%)!important;border-color:rgba(63,170,255,.16)!important}
+.cz-watch-logo{background:none!important;border:0!important;box-shadow:none!important;color:#52adff!important;padding:0!important;border-radius:0!important}
+.cz-watch-logo span{color:#f4f8ff!important}
+.cz-watch-logo i{background:#39c5f2!important}
+
+/* Remove floating Telegram brand badge on Prime */
+#tgBadge{display:none!important}
+
+/* Upcoming/live labels sit below the poster, not on top of it */
+.card-status{position:relative!important;display:flex!important;align-items:center!important;padding:8px 12px 0!important;min-height:30px!important;z-index:1!important}
+.ch-card .card-badge{position:static!important;display:inline-flex!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;margin:0!important;transform:none!important;width:max-content!important}

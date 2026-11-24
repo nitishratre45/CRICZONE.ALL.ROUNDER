@@ -1,0 +1,126 @@
+/* Willow player UI polish — clean layout under shared navbar */
+:root{--cz-willow-nav-height:68px}
+#player-modal{
+ position:fixed!important;top:68px!important;left:0!important;right:0!important;bottom:0!important;
+ height:auto!important;max-height:calc(100dvh - 68px)!important;z-index:1400!important;
+ display:none!important;flex-direction:column!important;overflow-y:auto!important;overflow-x:hidden!important;
+ background:#03070c!important;box-sizing:border-box!important
+}
+#player-modal.active{display:flex!important}
+#player-modal *{box-sizing:border-box}
+#player-modal .player-header{
+ position:relative!important;flex:0 0 auto!important;min-height:60px!important;height:auto!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
+ padding:10px 14px!important;background:linear-gradient(110deg,#0b1421,#101b2a)!important;
+ border-bottom:1px solid rgba(120,170,230,.16)!important
+}
+#player-modal .player-title{min-width:0!important;max-width:55%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;color:#f2f7ff!important;font-size:clamp(12px,2vw,15px)!important;font-weight:800!important}
+#player-modal .player-nav{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;flex:0 0 auto!important}
+#player-modal .player-nav .btn-header{min-height:34px!important;padding:8px 11px!important;border-radius:999px!important;font-size:11px!important;white-space:nowrap!important}
+#player-modal #btn-close-player{margin:0!important;border:1px solid rgba(176,255,38,.25)!important;background:linear-gradient(120deg,#a8f526,#d2ff42)!important;color:#142000!important;font-weight:900!important}
+#player-modal #player-servers-bar,#player-modal .player-servers-bar{
+ display:flex!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;
+ align-items:center!important;gap:8px!important;width:auto!important;height:auto!important;min-height:46px!important;
+ margin:8px 10px!important;padding:7px 10px!important;overflow-x:auto!important;overflow-y:visible!important;
+ border:1px solid rgba(174,220,58,.18)!important;border-radius:12px!important;
+ background:linear-gradient(110deg,#0b121c,#111b27)!important;box-shadow:0 4px 14px rgba(0,0,0,.2)!important
+}
+#player-modal #player-servers-bar:empty,#player-modal .player-servers-bar:empty{display:none!important}
+#player-modal #video-wrapper{position:relative!important;flex:1 1 auto!important;min-height:180px!important;margin:0 10px!important;overflow:hidden!important;border:1px solid rgba(174,220,58,.16)!important;border-radius:14px!important;background:#000!important}
+#player-modal #player-video{width:100%!important;height:100%!important;object-fit:contain!important}
+#player-modal #cz-player-details{flex:0 0 auto!important;margin:0!important;padding:16px 14px 20px!important;background:#03070c!important}
+#player-modal .cz-player-kicker{font-size:11px!important;letter-spacing:.12em!important;color:#b6f62d!important;font-weight:900!important}
+#player-modal #cz-player-details-title{margin:7px 0!important;font-size:clamp(17px,3vw,22px)!important;line-height:1.28!important;font-weight:900!important;color:#f2f6ff!important}
+#player-modal .cz-player-meta{font-size:11px!important;line-height:1.5!important;color:#91a08e!important;letter-spacing:.06em!important}
+#player-modal .cz-player-actions{display:flex!important;flex-wrap:wrap!important;gap:9px!important;margin:14px 0 18px!important}
+#player-modal .cz-player-actions a{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:40px!important;padding:10px 15px!important;border-radius:999px!important;font-size:11px!important;font-weight:900!important;text-decoration:none!important}
+#player-modal .cz-community{display:flex!important;flex-direction:column!important;gap:12px!important;padding:16px!important;border:1px solid rgba(176,255,38,.14)!important;border-radius:18px!important;background:linear-gradient(145deg,#0c120b,#0b1013)!important}
+#player-modal .cz-community strong{display:block!important;color:#f0f4ff!important;font-size:15px!important}
+#player-modal .cz-community span{display:block!important;margin-top:5px!important;color:#a1a9a0!important;font-size:12px!important;line-height:1.5!important}
+#player-modal .cz-community a{display:flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;border-radius:999px!important;text-decoration:none!important;font-size:11px!important;font-weight:900!important}
+@media(max-width:620px){
+ #player-modal{top:68px!important;max-height:calc(100dvh - 68px)!important}
+ #player-modal .player-header{min-height:54px!important;padding:8px 10px!important;gap:6px!important}
+ #player-modal .player-title{max-width:43%!important;font-size:11px!important}
+ #player-modal .player-nav{gap:5px!important}
+ #player-modal .player-nav .btn-header{min-height:31px!important;padding:7px 8px!important;font-size:9px!important}
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{margin:7px 8px!important;padding:7px 8px!important;min-height:40px!important}
+ #player-modal #video-wrapper{margin:0 8px!important;min-height:170px!important}
+ #player-modal #cz-player-details{padding:13px 10px 16px!important}
+ #player-modal .cz-player-actions{gap:7px!important;margin:12px 0 15px!important}
+ #player-modal .cz-community{padding:13px!important}
+}
+@media(prefers-reduced-motion:reduce){#player-modal *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Desktop-only refinement: keep Willow player content in a centered broadcast layout */
+@media(min-width:900px){
+ #player-modal{padding:14px 20px 24px!important}
+ #player-modal .player-header,
+ #player-modal #player-servers-bar,
+ #player-modal .player-servers-bar,
+ #player-modal #video-wrapper,
+ #player-modal #cz-player-details{
+   width:min(100%,1480px)!important;max-width:1480px!important;margin-left:auto!important;margin-right:auto!important
+ }
+ #player-modal .player-header{padding:14px 18px!important;min-height:66px!important}
+ #player-modal .player-title{max-width:none!important;flex:1 1 auto!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:clamp(15px,1.2vw,21px)!important;line-height:1.35!important}
+ #player-modal .player-nav{gap:10px!important}
+ #player-modal .player-nav .btn-header{font-size:13px!important;padding:10px 16px!important}
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{min-height:56px!important;margin-top:10px!important;margin-bottom:12px!important;padding:10px 14px!important}
+ #player-modal #video-wrapper{flex:0 0 auto!important;width:min(100%,1480px)!important;aspect-ratio:16/9!important;max-height:calc(100dvh - 300px)!important;min-height:320px!important;margin-top:0!important;margin-bottom:0!important}
+ #player-modal #player-video{object-fit:contain!important}
+ #player-modal #cz-player-details{padding:20px 18px 24px!important}
+ #player-modal #cz-player-details-title{font-size:clamp(22px,1.7vw,30px)!important}
+ #player-modal .cz-player-actions{gap:12px!important;margin:18px 0 22px!important}
+ #player-modal .cz-community{max-width:1480px!important;margin:0 auto!important;padding:22px!important}
+}
+
+/* Desktop corrective override: the old 100vw/100vh video rule was forcing a wide player */
+@media(min-width:900px){
+ #player-modal{
+   padding:12px 18px 30px!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   align-items:stretch!important;
+ }
+ #player-modal .player-header,
+ #player-modal #player-servers-bar,
+ #player-modal .player-servers-bar,
+ #player-modal #video-wrapper,
+ #player-modal #cz-player-details{
+   width:min(100%,1160px)!important;max-width:1160px!important;
+   margin-left:auto!important;margin-right:auto!important;
+ }
+ #player-modal .player-header{
+   min-height:58px!important;padding:12px 16px!important;
+   border-radius:14px 14px 0 0!important;
+ }
+ #player-modal .player-title{
+   max-width:none!important;flex:1 1 auto!important;
+   font-size:clamp(15px,1.25vw,19px)!important;line-height:1.35!important;
+   white-space:normal!important;overflow:visible!important;text-overflow:unset!important;
+ }
+ #player-modal #player-servers-bar,#player-modal .player-servers-bar{
+   min-height:52px!important;margin:10px auto 12px!important;
+   padding:9px 12px!important;border-radius:13px!important;
+ }
+ #player-modal #video-wrapper{
+   width:min(100%,1160px)!important;max-width:1160px!important;
+   height:auto!important;aspect-ratio:16/9!important;
+   min-height:0!important;max-height:68vh!important;
+   flex:0 0 auto!important;margin:0 auto!important;
+   border-radius:16px!important;
+ }
+ #player-modal #player-video{
+   width:100%!important;height:100%!important;
+   max-width:100%!important;max-height:100%!important;
+   object-fit:contain!important;object-position:center!important;
+ }
+ #player-modal #cz-player-details{
+   padding:18px 16px 24px!important;margin:0 auto!important;
+ }
+ #player-modal #cz-player-details-title{
+   font-size:clamp(21px,1.7vw,27px)!important;line-height:1.3!important;
+   white-space:normal!important;overflow:visible!important;
+ }
+ #player-modal .cz-community{margin:12px auto 0!important}
+}
