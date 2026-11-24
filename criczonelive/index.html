@@ -1,2150 +1,1690 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#050817">
+<meta name="theme-color" content="#0D0E10">
 <meta name="referrer" content="no-referrer">
-<title>CRICZONE — Live Cricket Streaming</title>
-
+<title>CʀɪᴄxCʀᴀᴛᴇ Lɪᴠᴇ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
-<script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/controls.css">
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/shaka-player.ui.min.js"></script>
 <style>
-/* ============================================================
-   THEME — "Midnight Mint"
-   ============================================================ */
-:root{
-  --bg:#080B10; --surface:#0F141C; --surface-2:#151C26; --surface-3:#1C2531;
-  --border:#212B39; --border-2:#2C3848;
-  --text:#EDF2F9; --text-dim:#A3B3C6; --muted:#6E7E94;
-  --accent:#A855F7; --accent-2:#C084FC;
-  --accent-soft:rgba(168,85,247,.12); --accent-glow:rgba(168,85,247,.25);
-  --live:#FF4D6D; --live-soft:rgba(255,77,109,.12);
-  --soon:#FFB020; --soon-soft:rgba(255,176,32,.12);
-  --done:#6E7E94; --done-soft:rgba(110,126,148,.12);
-  --radius:18px; --radius-md:14px;
-  --shadow:0 4px 24px rgba(0,0,0,.35); --shadow-lg:0 24px 60px rgba(0,0,0,.5);
-  --font-d:'Space Grotesk','Inter',system-ui,sans-serif;
-  --font-b:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-}
+:root{--cream:#F8EFD4;--olive:#5F684C;--white:#FFFFFF;--ink:#141414;--muted:#595959;--accent:#0088cc;--border:rgba(0,0,0,.12);--surface2:#F0E4C3;--surface3:#E4D7B2;--live:#FF3355;--soon:#D48806;--done:#5C6B80;--radius:16px;--shadow:0 12px 35px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);--shadow-deep:0 20px 50px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);--display:'Space Grotesk','Inter',sans-serif;--body:'Inter',system-ui,sans-serif}
+[data-theme="dark"]{--cream:#0D0E10;--olive:#7E8F6A;--white:#17191C;--ink:#F4F6F8;--muted:#9FA6AD;--accent:#3399ff;--border:rgba(255,255,255,.1);--surface2:#202327;--surface3:#2A2E33;--shadow:0 12px 35px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);--shadow-deep:0 20px 50px rgba(0,0,0,.7),0 4px 12px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}body{font:400 15px/1.5 var(--body);color:var(--ink);background:var(--cream);min-height:100vh;padding-bottom:48px;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;position:relative}
+body:before{content:"";position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(95,104,76,.16),transparent 45%),radial-gradient(circle at 70% 70%,rgba(0,136,204,.12),transparent 50%),radial-gradient(circle at 50% 50%,rgba(255,51,85,.07),transparent 55%);animation:wateryFlow 16s ease infinite alternate;pointer-events:none;z-index:0}
+@keyframes wateryFlow{0%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(-30px,20px) rotate(3deg) scale(1.03)}100%{transform:translate(20px,-25px) rotate(-3deg) scale(0.97)}}
 
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  font:400 15px/1.5 var(--font-b); color:var(--text); background:var(--bg);
-  min-height:100vh; -webkit-font-smoothing:antialiased;
-  padding-bottom:40px; position:relative; overflow-x:hidden;
-}
-body::before{
-  content:""; position:fixed; top:-30%; left:50%; transform:translateX(-50%);
-  width:900px; height:900px;
-  background:radial-gradient(circle,rgba(168,85,247,.07),transparent 65%);
-  pointer-events:none; z-index:0;
-}
-body::after{
-  content:""; position:fixed; bottom:-40%; right:-10%; width:700px; height:700px;
-  background:radial-gradient(circle,rgba(192,132,252,.05),transparent 70%);
-  pointer-events:none; z-index:0;
-}
+button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;will-change:transform;transition:transform 0.18s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.18s ease}button:active{transform:scale(0.94)!important}a{color:var(--accent);text-decoration:none}img{display:block;max-width:100%}[hidden]{display:none!important}:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.container{max-width:1320px;margin:auto;padding:0 20px;position:relative;z-index:1}.view{display:none}.view.active{display:block;animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-button,input,select{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-a{color:var(--accent);text-decoration:none}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
-img{display:block;max-width:100%}
-[hidden]{display:none !important}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;background:var(--white);margin-left:-20px;margin-right:-20px;box-shadow:var(--shadow);flex-wrap:nowrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--olive),#0088cc);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:700;box-shadow:0 6px 20px rgba(0,136,204,.3);flex:none}
+.brand-text{min-width:0}
+.brand-text h1{font:700 19px/1.1 var(--display);letter-spacing:-0.3px;background:linear-gradient(135deg,var(--ink),var(--olive));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-text p{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-.container{max-width:1320px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
-.view{display:none}
-.view.active{display:block;animation:fade .3s ease}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.header-actions{display:flex;align-items:center;gap:8px;flex:none}
+.live-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.28);color:var(--live);font-size:12px;font-weight:600;white-space:nowrap}
+.live-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}@keyframes pulse{50%{opacity:.3}}
+.clock{font-size:12px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums;display:none}
+.icon-action-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);display:grid;place-items:center;font-size:15px;box-shadow:var(--shadow);cursor:pointer;flex:none;transition:all .22s ease}
+.icon-action-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.icon-action-btn.alert-active{border-color:var(--accent);color:var(--accent);background:rgba(0,136,204,.14)}
+.join-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:linear-gradient(135deg,#0088cc,#00aaff);color:#fff;font-size:12px;font-weight:700;transition:all .25s ease;box-shadow:0 6px 18px rgba(0,136,204,.35);white-space:nowrap;flex:none}
+.join-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.join-btn svg{width:14px;height:14px}
 
-/* ============================================================
-   HEADER
-   ============================================================ */
-.header{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:22px 0 20px;flex-wrap:wrap;
-}
-.brand{display:flex;align-items:center;gap:14px}
-.brand-mark{
-  width:46px;height:46px;border-radius:14px;
-  background:linear-gradient(135deg,#A855F7,#C084FC);
-  display:grid;place-items:center;font-size:22px;
-  box-shadow:0 6px 24px var(--accent-glow); flex:none;
-}
-.brand-text h1{
-  font:700 22px/1.1 var(--font-d); letter-spacing:-.01em;
-  background:linear-gradient(100deg,#fff 30%,#A855F7 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.brand-text p{font-size:12.5px;color:var(--muted);margin-top:2px;font-weight:500}
+.search-container{margin-bottom:18px;position:relative}.search-input{width:100%;padding:13px 18px 13px 46px;background:var(--white);color:var(--ink);border:1px solid var(--border);border-radius:12px;font-size:14.5px;font-weight:500;box-shadow:var(--shadow);transition:all .25s}.search-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(0,136,204,.18),var(--shadow-deep)}.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted);pointer-events:none}
 
-.header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.live-pill{
-  display:flex;align-items:center;gap:7px;
-  padding:7px 14px;border-radius:999px;
-  background:var(--live-soft);border:1px solid rgba(255,77,109,.25);
-  color:var(--live);font-size:12.5px;font-weight:600;
-}
-.live-pill .dot{
-  width:7px;height:7px;border-radius:50%;background:var(--live);
-  animation:pulse 1.3s infinite;
-}
-@keyframes pulse{50%{opacity:.3}}
-.clock{font-size:12.5px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
-.join-btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:8px 16px;border-radius:999px;
-  background:linear-gradient(135deg,#A855F7,#C084FC);
-  color:#04110D;font-size:13px;font-weight:700;
-  transition:transform .18s ease,box-shadow .18s ease;
-  box-shadow:0 4px 16px var(--accent-glow);
-}
-.join-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px var(--accent-glow)}
-.join-btn svg{width:15px;height:15px}
+.filters{display:flex;flex-direction:column;gap:10px;padding:4px 0 16px;border-bottom:1px solid var(--border);margin-bottom:24px}.filter-row{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.filter-row::-webkit-scrollbar{display:none}
+.pill{flex:none;display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--white);border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.03);transition:all .2s ease;white-space:nowrap}
+.pill:hover{color:var(--ink);background:var(--surface2);transform:translateY(-2px)}
+.pill.active{color:var(--cream);background:var(--olive);border-color:var(--olive);box-shadow:0 6px 18px rgba(95,104,76,.3)}
+.pill .count{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--surface3);color:var(--muted)}
+.pill.active .count{background:rgba(255,255,255,.22);color:var(--cream)}
+.pill[data-tab=live].active{color:var(--live);background:rgba(255,51,85,.15);border-color:var(--live)}
+.pill[data-tab=live].active .count{background:rgba(255,51,85,.25);color:var(--live)}
 
-/* ============================================================
-   FILTERS
-   ============================================================ */
-.filters{
-  display:flex;flex-direction:column;gap:10px;
-  padding:4px 0 22px;border-bottom:1px solid var(--border);margin-bottom:24px;
-}
-.filter-row{
-  display:flex;gap:8px;overflow-x:auto;padding:2px;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch;
-}
-.filter-row::-webkit-scrollbar{display:none}
+.section-block{margin-bottom:32px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.section-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+.section-heading{font:700 16px/1.2 var(--display);color:var(--ink);letter-spacing:-0.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.section-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);white-space:nowrap;flex:none}
+.slider-controls{display:flex;align-items:center;gap:6px;flex:none}
+.slider-nav-btn{width:34px;height:34px;border-radius:10px;background:var(--white);border:1px solid var(--border);color:var(--ink);display:grid;place-items:center;font-size:15px;box-shadow:var(--shadow)}
+.slider-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-.pill{
-  flex:none;display:inline-flex;align-items:center;gap:7px;
-  padding:9px 15px;border-radius:999px;
-  font-size:13.5px;font-weight:600;
-  color:var(--text-dim);background:var(--surface);
-  border:1px solid var(--border);transition:all .18s ease;white-space:nowrap;
-}
-.pill:hover{color:var(--text);border-color:var(--border-2);background:var(--surface-2)}
-.pill.active{color:var(--accent);background:var(--accent-soft);border-color:var(--accent)}
-.pill .count{
-  font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;
-  background:var(--surface-3);color:var(--muted);
-}
-.pill.active .count{background:rgba(168,85,247,.2);color:var(--accent)}
-.pill[data-tab="live"].active{color:var(--live);background:var(--live-soft);border-color:var(--live)}
-.pill[data-tab="live"].active .count{background:rgba(255,77,109,.2);color:var(--live)}
+.matches-slider{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+.matches-slider::-webkit-scrollbar{height:6px}
+.matches-slider::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:999px}
 
-/* ============================================================
-   MATCH GRID
-   ============================================================ */
-.grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
-  gap:16px;padding-bottom:48px;
-}
+.upcoming-blocks-stack{display:flex;flex-direction:column;gap:28px}
+.upcoming-list-stack{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 
-.card{
-  display:flex;flex-direction:column;gap:14px;padding:18px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);
-  text-align:left;font:inherit;color:inherit;
-  transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease,background .2s ease;
-  cursor:pointer;position:relative;overflow:hidden;
-}
-.card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  opacity:0;transition:opacity .25s ease;
-}
-.card:hover{border-color:var(--border-2);transform:translateY(-3px);box-shadow:var(--shadow);background:var(--surface-2)}
-.card:hover::before{opacity:.7}
-.card.is-live::before{background:linear-gradient(90deg,transparent,var(--live),transparent);opacity:.9}
-.card.is-live{border-color:rgba(255,77,109,.25)}
+.slider-card{flex:0 0 344px;max-width:86vw;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:12px;padding:16px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .25s ease}
+.upcoming-list-stack .slider-card{flex:none;max-width:none;width:100%}
 
-.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.sport-chip{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--muted);min-width:0;
-}
-.sport-chip .icon{font-size:14px;flex:none}
-.sport-chip .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slider-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow-deep);background:var(--surface2)}
+.slider-card.is-live{border-color:rgba(255,51,85,.4)}
 
-.status{
-  flex:none;font-size:10.5px;font-weight:700;letter-spacing:.06em;
-  padding:4px 10px;border-radius:999px;text-transform:uppercase;
-}
-.status.live{color:var(--live);background:var(--live-soft);border:1px solid rgba(255,77,109,.3)}
-.status.soon{color:var(--soon);background:var(--soon-soft);border:1px solid rgba(255,176,32,.3)}
-.status.done{color:var(--done);background:var(--done-soft);border:1px solid rgba(110,126,148,.25)}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sport-chip{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-width:0;flex:1}
+.sport-chip .name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status{flex:none;font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:6px;text-transform:uppercase}.status.live{color:var(--live);background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3)}.status.soon{color:var(--soon);background:rgba(212,136,6,.12);border:1px solid rgba(212,136,6,.3)}.status.done{color:var(--done);background:rgba(92,107,128,.12);border:1px solid rgba(92,107,128,.25)}
 
-.card-body{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:6px 0}
-.team{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
-.crest{
-  width:56px;height:56px;border-radius:50%;
-  background:var(--surface-3);border:1px solid var(--border);
-  display:grid;place-items:center;overflow:hidden;position:relative;
-  font-weight:700;font-size:15px;color:var(--muted);flex:none;
-}
-.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--surface-3);padding:4px}
-.team-name{
-  font-size:13px;font-weight:600;text-align:center;
-  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.versus{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 4px}
-.kickoff-time{font:700 20px/1 var(--font-d);color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
-.kickoff-date{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+.card-main-click{background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;padding:0}
 
-.card-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  padding-top:12px;border-top:1px solid var(--border);font-size:12px;
-}
-.stream-count{color:var(--muted);font-weight:500}
-.stream-count.empty{color:var(--live)}
-.watch-cta{display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;font-size:12.5px;transition:gap .18s ease}
-.card:hover .watch-cta{gap:8px}
-.watch-cta .arrow{transition:transform .18s ease}
-.card:hover .watch-cta .arrow{transform:translateX(2px)}
+.card-body-h2h{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;padding:4px 0}
+.card-body-single{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0}
+.single-event-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.single-event-title{font-size:13.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ============================================================
-   PLAYER VIEW
-   ============================================================ */
-.player-top{display:flex;align-items:center;gap:14px;padding:22px 0 20px;flex-wrap:wrap}
-.icon-btn{
-  width:44px;height:44px;border-radius:14px;
-  border:1px solid var(--border);background:var(--surface);
-  display:grid;place-items:center;font-size:18px;color:var(--text);
-  transition:all .18s ease;flex:none;
-}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface-2)}
-.player-meta{flex:1;min-width:0}
-.player-title{font:700 clamp(19px,3.5vw,26px)/1.15 var(--font-d);letter-spacing:-.01em;overflow-wrap:anywhere}
-.player-sub{color:var(--muted);font-size:13px;margin-top:3px;font-weight:500}
+.team-column{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;text-align:center}
+.team-row{display:flex;align-items:center;gap:4px;justify-content:center;max-width:100%;min-width:0}
+.team-name{font-size:13px;font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.fav-team-btn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13.5px;padding:1px;flex:none}
+.fav-team-btn.active{color:var(--live)}
+.crest{width:44px;height:44px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:grid;place-items:center;overflow:hidden;position:relative;font-weight:700;font-size:12px;color:var(--muted);flex:none}
+.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--surface3);padding:5px}
 
-.screen{
-  position:relative;background:#000;
-  border-radius:var(--radius);overflow:hidden;
-  aspect-ratio:16/9;width:100%;
-  max-width:min(980px, calc((100vh - 180px) * 16 / 9));
-  max-width:min(980px, calc((100dvh - 180px) * 16 / 9));
-  margin:0 auto;border:1px solid var(--border);box-shadow:var(--shadow-lg);
-}
-@media (max-height:520px){
-  .screen{
-    max-width:min(980px, calc((100vh - 100px) * 16 / 9));
-    max-width:min(980px, calc((100dvh - 100px) * 16 / 9));
-    border-radius:12px;
-  }
-  .player-top{padding:12px 0 12px}
-  .player-title{font-size:16px}
-  .player-sub{display:none}
-}
+.versus{display:flex;flex-direction:column;align-items:center;gap:2px;flex:none;padding:0 2px}
+.kickoff-time{font:700 14.5px/1.15 var(--display);color:var(--olive);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kickoff-date{font-size:10.5px;color:var(--muted);font-weight:500;white-space:nowrap}
 
-#player-container{position:absolute;inset:0;background:#000}
-#player-container video{
-  width:100%;height:100%;object-fit:contain;background:#000;display:block;
-}
-#player-container video.mode-fill{object-fit:fill}
-#player-container video.mode-cover{object-fit:cover}
+.poster-slider-wrap{position:relative;aspect-ratio:16/9;width:100%;border-radius:12px;overflow:hidden;background:var(--surface3);border:1px solid var(--border);display:grid;place-items:center}
+.poster-slider-wrap img{width:100%;height:100%;object-fit:cover;background:#08090b}
+.poster-slider-fallback{font:700 12px var(--display);color:var(--muted);padding:10px;text-align:center}
+.slider-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.slider-match-title{font:700 14px/1.3 var(--display);color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slider-time-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.lang-tags{display:flex;gap:5px;flex-wrap:wrap}
+.lang-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--surface3);color:var(--ink);border:1px solid var(--border)}
 
-#player-container:fullscreen{width:100%;height:100%;background:#000}
-#player-container:-webkit-full-screen{width:100%;height:100%;background:#000}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border);font-size:12px}
+.card-foot-left{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.card-foot-right{display:flex;align-items:center;gap:8px;flex:none}
+.stream-count{color:var(--muted);font-weight:500}.stream-count.empty{color:var(--live)}
+.thumb-dl-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 8px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--ink);font-size:11px;font-weight:600;flex:none}
+.thumb-dl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.watch-cta{display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;font-size:12px;cursor:pointer;background:none;border:0;flex:none}
 
-#jw-root,#jw-root .jw-wrapper,#jw-root video{width:100%!important;height:100%!important}
-#jw-root{position:absolute;inset:0}
+.fmt-tag{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:lowercase;padding:1px 5px;border-radius:4px;border:1px solid var(--border);line-height:1.2}
+.fmt-tag.android{color:#3ddc84;background:rgba(61,220,132,.12);border-color:rgba(61,220,132,.28)}
+.fmt-tag.ios{color:#5ac8fa;background:rgba(90,200,250,.12);border-color:rgba(90,200,250,.28)}
 
-/* ============================================================
-   STATUS TOAST
-   ============================================================ */
-#status{
-  position:absolute;top:12px;left:12px;
-  transform:translateY(-10px);
-  z-index:9998;
-  display:flex;align-items:center;gap:7px;
-  padding:6px 15px 6px 11px;
-  background:rgba(10,10,10,.92);
-  border:1px solid rgba(255,255,255,.07);
-  font-size:11.5px;font-weight:500;letter-spacing:.2px;
-  border-radius:24px;pointer-events:none;
-  opacity:0;transition:opacity .25s ease,transform .25s ease;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;
-  box-shadow:0 2px 14px rgba(0,0,0,.45);
-  color:#c0c0c0;
-}
-#status.show{opacity:1;transform:translateY(0)}
-#status.ok .st-dot{background:#60a5fa}
-#status.live{color:#c8c8c8}
-#status.live .st-dot{background:#22d3a0;animation:dot-pulse 2s ease-in-out infinite}
-#status.warn{color:#fcd34d}
-#status.warn .st-dot{background:#fb923c;animation:dot-pulse 1s ease-in-out infinite}
-#status.err{color:#fca5a5}
-#status.err .st-dot{background:#f87171}
-.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
-@keyframes dot-pulse{
-  0%,100%{opacity:1;transform:scale(1)}
-  50%{opacity:.35;transform:scale(.55)}
-}
+.empty-box{padding:26px 18px;text-align:center;background:var(--white);border:1px dashed var(--border);border-radius:var(--radius);color:var(--muted);font-size:13.5px}
 
-/* ============================================================
-   LOADING OVERLAY
-   ============================================================ */
-.loading-overlay{
-  position:absolute;inset:0;z-index:9997;
-  background:rgba(0,0,0,.85);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-}
-.loading-overlay svg{animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-overlay p{color:#8f9baa;font-size:12.5px;letter-spacing:.5px;text-align:center;padding:0 24px;font-weight:500}
+.hub-toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(15,17,21,.94);color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.hub-toast.show{opacity:1}
 
-/* ============================================================
-   SHAKA FIT BUTTON
-   ============================================================ */
-.sp-btn{
-  background:transparent!important;border:none!important;cursor:pointer!important;
-  padding:0 8px!important;opacity:.75;
-  display:flex;align-items:center;justify-content:center;
-  height:100%;min-width:36px;
-  transition:opacity .15s,color .15s;
-  color:#fff!important;-webkit-tap-highlight-color:transparent;
-}
-.sp-btn:hover{opacity:1}
-.sp-btn:active{opacity:1;transform:scale(.9)}
-.sp-btn:focus-visible{outline:2px solid #A855F7;outline-offset:2px;border-radius:6px}
-.sp-btn.active{opacity:1;color:#A855F7!important}
-.sp-fit-btn{padding:0 7px!important;min-width:auto!important}
-.fit-pill{
-  font-size:10px;font-weight:700;letter-spacing:.4px;
-  padding:3px 7px;border-radius:4px;line-height:1;
-  border:1.5px solid rgba(255,255,255,.28);
-  color:rgba(255,255,255,.8);
-  pointer-events:none;white-space:nowrap;
-  transition:border-color .2s,color .2s;
-}
-.sp-fit-btn:hover .fit-pill{border-color:rgba(255,255,255,.55);color:#fff}
-.sp-fit-btn.mode-fill .fit-pill{border-color:#A855F7;color:#A855F7}
-.sp-fit-btn.mode-cover .fit-pill{border-color:#a78bfa;color:#a78bfa}
+/* FULL-SCREEN SHAKA PLAYER WITH SHAKA UI */
+#playerView.active{display:block;position:fixed;inset:0;width:100vw;height:100dvh;background:#000;z-index:999;overflow:hidden;padding:0;margin:0}
+.pure-stage{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+#player-container{position:absolute;inset:0;width:100%;height:100%;background:#000;overflow:hidden}
+#player-container video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:block}
+#player-container .shaka-controls-button-panel{padding-bottom:env(safe-area-inset-bottom)}
 
-/* ============================================================
-   SHAKA UI OVERRIDES
-   ============================================================ */
-.shaka-controls-container button{color:#fff!important}
-.shaka-video-container{background-color:#000!important}
-.shaka-spinner-container{display:none!important}
-.shaka-video-container .shaka-scrim-container{
-  background:linear-gradient(180deg,
-    rgba(0,0,0,.5) 0%, transparent 25%, transparent 55%, rgba(0,0,0,.75) 100%) !important;
-}
-.shaka-video-container .shaka-bottom-controls{
-  padding-bottom:max(env(safe-area-inset-bottom,0px),6px) !important;
-}
-.shaka-overflow-menu,
-.shaka-settings-menu{
-  background-color:rgba(15,20,28,.97) !important;
-  border:1px solid #212B39 !important;
-  border-radius:14px !important;
-  padding:6px !important;
-  box-shadow:0 16px 40px rgba(0,0,0,.7) !important;
-}
-.shaka-overflow-menu li,
-.shaka-settings-menu li{padding:0 !important;margin:2px 0 !important}
-.shaka-overflow-menu button,
-.shaka-settings-menu button{
-  color:#EDF2F9 !important;padding:10px 14px !important;
-  border-radius:8px !important;font-size:13px !important;
-  transition:background .15s ease,color .15s ease !important;
-}
-.shaka-overflow-menu button:hover,
-.shaka-settings-menu button:hover{background-color:rgba(255,255,255,.06) !important}
-.shaka-settings-menu button.shaka-chosen-item{
-  color:#A855F7 !important;background-color:rgba(168,85,247,.12) !important;
-}
-.shaka-settings-menu .shaka-back-to-overflow-button{
-  color:#A855F7 !important;border-bottom:1px solid #212B39 !important;margin-bottom:4px !important;
-}
-.shaka-play-button{filter:drop-shadow(0 4px 16px rgba(168,85,247,.35)) !important}
-.shaka-video-container .shaka-range-element{accent-color:#A855F7}
+/* Top-Left Stream Selector */
+.top-left-stream-bar{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:1005;max-width:calc(55vw - 14px)}
+.tl-stream-wrap{position:relative;display:inline-block}
+.tl-stream-btn{height:28px;padding:0 10px;border-radius:999px;background:rgba(13,14,16,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-stream-btn:hover{border-color:var(--accent)}
+.tl-stream-menu{position:absolute;top:calc(100% + 5px);left:0;min-width:170px;max-width:min(270px,calc(100vw - 24px));max-height:58dvh;overflow-y:auto;background:rgba(15,17,21,.94);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:3px;box-shadow:0 14px 36px rgba(0,0,0,.65);display:none;z-index:1010}
+.tl-stream-menu.open{display:block}
+.tl-stream-item{width:100%;text-align:left;padding:6px 9px;border-radius:7px;color:#e9edf2;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tl-stream-item:hover{background:rgba(255,255,255,.08)}
+.tl-stream-item.active{background:rgba(0,136,204,.3);color:#fff;font-weight:700}
+.tl-stream-item-right{display:inline-flex;align-items:center;gap:4px;flex:none}
 
-/* ============================================================
-   STREAM LIST
-   ============================================================ */
-.section-title{
-  font:600 13px var(--font-b);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);max-width:980px;margin:28px auto 12px;
-}
-.streams{display:flex;flex-direction:column;gap:8px;max-width:980px;margin:0 auto}
-.stream-btn{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  width:100%;padding:14px 16px;border-radius:var(--radius-md);
-  text-align:left;color:var(--text);
-  border:1px solid var(--border);background:var(--surface);
-  transition:all .18s ease;
-}
-.stream-btn:hover{border-color:var(--border-2);background:var(--surface-2)}
-.stream-btn.active{
-  border-color:var(--accent);background:var(--accent-soft);
-  box-shadow:0 0 0 1px var(--accent) inset;
-}
-.stream-btn .title{
-  font-weight:600;font-size:14px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.stream-btn .tags{display:flex;align-items:center;gap:8px;flex:none}
-.type-badge{
-  font-size:10px;font-weight:700;letter-spacing:.06em;
-  padding:3px 9px;border-radius:999px;
-  background:var(--surface-3);color:var(--text-dim);
-}
-.type-badge.dash{color:#8B9DFF;background:rgba(139,157,255,.12)}
-.type-badge.hls{color:#FFB020;background:rgba(255,176,32,.12)}
-.stream-btn.active .type-badge{background:rgba(168,85,247,.18);color:var(--accent)}
+/* Top-Right Share & Get App (with Telegram icon) */
+.top-right-player-bar{position:fixed;top:calc(10px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));z-index:1005;display:flex;align-items:center;gap:6px}
+.tr-pill-btn{height:28px;padding:0 10px;border-radius:999px;background:rgba(13,14,16,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.tr-pill-btn:hover{border-color:var(--accent)}
+.tr-pill-btn.get-btn{background:rgba(0,136,204,.86);border-color:rgba(255,255,255,.18);color:#fff}
+.tr-pill-btn.get-btn:hover{filter:brightness(1.08)}
+.tr-pill-btn svg{width:12px;height:12px;fill:currentColor;flex:none}
 
-/* ============================================================
-   STATES
-   ============================================================ */
-.state{
-  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:80px 20px;gap:14px;text-align:center;
-}
-.state h3{font:600 18px var(--font-d);color:var(--text)}
-.state p{color:var(--muted);font-size:13.5px;max-width:400px}
-.err-icon{
-  width:48px;height:48px;border-radius:50%;
-  background:var(--live-soft);color:var(--live);
-  display:grid;place-items:center;font-size:22px;
-}
+.player-notice{position:fixed;top:calc(44px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:1005;background:rgba(13,14,16,.84);color:#fff;border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:7px;font-size:10.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .2s ease}
+.player-notice.show{opacity:1}
 
-/* ============================================================
-   TELEGRAM POPUP
-   ============================================================ */
-#tgOverlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  display:none;align-items:center;justify-content:center;
-  z-index:999999;padding:20px;
-}
-#tgOverlay.show{display:flex;animation:fadeInPopup .4s cubic-bezier(.25,.8,.25,1)}
-@keyframes fadeInPopup{from{opacity:0}to{opacity:1}}
+.screen-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;background:#000;color:#fff;font:600 15px var(--body);z-index:1001}
+.screen-msg small{font-weight:400;color:#aaa;max-width:90%;overflow-wrap:anywhere}
 
-#tgCard{
-  width:100%;max-width:400px;
-  background:linear-gradient(160deg,#121A2F,#0A0F1D);
-  border:1px solid rgba(168,85,247,.2);
-  border-radius:24px;padding:36px 28px 28px;
-  box-shadow:0 40px 80px rgba(0,0,0,.8),0 0 60px rgba(168,85,247,.06);
-  text-align:center;position:relative;overflow:hidden;
-  animation:popupScale .4s cubic-bezier(.25,.8,.25,1);
-}
-@keyframes popupScale{
-  from{transform:scale(.95) translateY(12px);opacity:0}
-  to{transform:scale(1) translateY(0);opacity:1}
-}
-#tgCard::before{
-  content:"";position:absolute;top:-50%;left:-50%;
-  width:200%;height:200%;
-  background:radial-gradient(circle at 30% 20%,rgba(168,85,247,.06),transparent 60%);
-  pointer-events:none;
-}
-#tgIcon{
-  width:72px;height:72px;margin:0 auto 16px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#2AABEE,#229ED9);
-  box-shadow:0 0 40px rgba(42,171,238,.3);
-  position:relative;z-index:1;
-}
-#tgIcon svg{width:36px;height:36px}
-#tgCard h2{
-  margin:0 0 8px;font-size:clamp(1.3rem,2.5vw,1.8rem);font-weight:700;
-  color:#fff;font-family:'Space Grotesk','Inter',system-ui,sans-serif;
-  position:relative;z-index:1;letter-spacing:-.01em;
-}
-#tgCard p{
-  margin:0 0 24px;color:#8e9baf;
-  font-size:clamp(.9rem,1.2vw,1.05rem);line-height:1.6;
-  position:relative;z-index:1;
-}
-#tgCard p b{color:#A855F7;font-weight:600}
-.tgBtns{display:flex;gap:12px;position:relative;z-index:1}
-.tgBtn{
-  flex:1;height:48px;border-radius:40px;font-weight:700;
-  font-size:clamp(.85rem,1vw,1rem);cursor:pointer;
-  transition:all .25s ease;border:none;
-  font-family:'Inter',system-ui,sans-serif;letter-spacing:.01em;
-}
-#joinNow{
-  background:linear-gradient(135deg,#A855F7,#C084FC);
-  color:#04110D;box-shadow:0 6px 24px rgba(168,85,247,.3);
-}
-#joinNow:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(168,85,247,.45)}
-#joinedBtn{
-  background:rgba(255,255,255,.05);color:#8e9baf;
-  border:1px solid rgba(255,255,255,.08);
-}
-#joinedBtn:hover{background:rgba(255,255,255,.08);color:#fff}
-@media(max-width:480px){
-  #tgCard{padding:24px 18px 20px;border-radius:20px}
-  #tgIcon{width:60px;height:60px}
-  #tgIcon svg{width:30px;height:30px}
-  #tgCard h2{font-size:1.2rem}
-  #tgCard p{font-size:.85rem;margin-bottom:18px}
-  .tgBtn{height:42px;font-size:.8rem}
-}
+/* Popup: larger & shifted up so JOIN NOW sits cleanly above lower controls */
+.popup-overlay{position:fixed;inset:0;background:rgba(20,20,20,.75);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:18px;z-index:2147483647;opacity:0;visibility:hidden;transition:.3s}
+.popup-overlay.visible{display:flex;opacity:1;visibility:visible}
+.popup-wrap{width:100%;max-width:455px;padding:3px;background:linear-gradient(145deg,var(--olive),#0088cc,var(--olive));border-radius:28px;box-shadow:0 20px 60px rgba(0,136,204,.35),0 35px 80px rgba(0,0,0,.5);transform:scale(.82) translateY(-4px);opacity:0;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),opacity .3s,max-width .35s}
+.popup-overlay.visible .popup-wrap{transform:scale(1) translateY(-28px);opacity:1}
+.popup-box{background:var(--cream);border-radius:25px;padding:44px 32px 26px;text-align:center;border:1px solid rgba(95,104,76,.25);box-shadow:inset 0 2px 6px rgba(255,255,255,.4)}
+.popup-overlay.button-stage .popup-wrap{max-width:320px;padding:0;background:transparent;border-radius:16px;box-shadow:none;transform:scale(.8) translateY(-14px);opacity:0;animation:joinFirstPop .42s cubic-bezier(.18,.9,.25,1.25) forwards}
+.popup-overlay.button-stage .popup-box{padding:0;background:transparent;border:0;border-radius:16px}
+.popup-overlay.button-stage .popup-title,.popup-overlay.button-stage .popup-text,.popup-overlay.button-stage .btn-joined-main{display:none}
+.popup-overlay.button-stage .popup-join{animation:joinButtonPulse 1.8s ease-in-out infinite;box-shadow:0 10px 35px rgba(0,136,204,.5)}
+@keyframes joinFirstPop{0%{opacity:0;transform:scale(.55) translateY(-14px)}75%{opacity:1;transform:scale(1.06) translateY(-28px)}100%{opacity:1;transform:scale(1) translateY(-28px)}}
+@keyframes joinButtonPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+.popup-overlay.revealing .popup-wrap{animation:popupExpand .42s cubic-bezier(.18,.9,.25,1.15) both}
+@keyframes popupExpand{0%{transform:scale(.88) translateY(-16px)}65%{transform:scale(1.025) translateY(-30px)}100%{transform:scale(1) translateY(-28px)}}
+.popup-overlay.revealing .popup-title,.popup-overlay.revealing .popup-text,.popup-overlay.revealing .btn-joined-main{animation:popupContentIn .28s ease both;animation-delay:.08s}
+@keyframes popupContentIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.popup-title{color:var(--olive);font-family:Acme,sans-serif;font-size:34px;margin-bottom:8px}
+.popup-text{color:var(--muted);font-size:15.5px;line-height:1.6;margin-bottom:22px;font-weight:500}
+.popup-text b{color:var(--ink);font-family:Amaranth,sans-serif;font-size:20px;display:block;margin-top:6px}
+.popup-join{width:100%;padding:22px 18px;border-radius:15px;font:700 19.5px Amaranth,sans-serif;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#0088cc,var(--olive));box-shadow:0 8px 25px rgba(0,136,204,.4);animation:btnPop 1.8s ease-in-out infinite;margin-bottom:10px}
+.btn-joined-main{color:var(--muted);font-size:10px;font-weight:600;width:auto;margin:4px auto 0;padding:2px 8px;background:transparent;border:0;opacity:0.7}
+@keyframes btnPop{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media(max-width:768px){
-  .container{padding:0 16px}
-  .header{padding:16px 0}
-  .brand-mark{width:40px;height:40px;font-size:19px;border-radius:12px}
-  .brand-text h1{font-size:19px}
-  .brand-text p{font-size:11.5px}
-  .header-actions{gap:8px}
-  .live-pill,.clock{font-size:11.5px;padding:6px 10px}
-  .join-btn{padding:7px 12px;font-size:12px}
-  .join-btn span{display:none}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-  .card{padding:16px}
-  .section-title{margin-top:22px}
-}
-@media(max-width:480px){
-  .grid{grid-template-columns:1fr}
-  .crest{width:50px;height:50px}
-  .kickoff-time{font-size:18px}
-  .team-name{font-size:12.5px}
-  .card-body{gap:8px}
-  #status{top:8px;left:8px;font-size:10.5px;padding:5px 12px 5px 9px}
-  .fit-pill{font-size:9px;padding:2px 5px}
-  .sp-btn{padding:0 5px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important}
-}
-
-/* ============================================================
-   CRICZONE NEON STADIUM — approved visual direction
-   ============================================================ */
-:root{
-  --bg:#050817;--surface:#0b1024;--surface-2:#111832;--surface-3:#1a2340;
-  --border:#29345d;--border-2:#8b45ff;--text:#f6f3ff;--text-dim:#c4bddf;--muted:#8990b2;
-  --accent:#bd55ff;--accent-2:#6e7bff;--accent-soft:rgba(189,85,255,.13);--accent-glow:rgba(189,85,255,.38);
-  --live:#ff3858;--live-soft:rgba(255,56,88,.13);--soon:#ffc36a;--soon-soft:rgba(255,195,106,.12);
-  --done:#8990b2;--done-soft:rgba(137,144,178,.12);
-  --radius:20px;--radius-md:15px;--shadow:0 8px 30px rgba(0,0,0,.42);--shadow-lg:0 25px 70px rgba(0,0,0,.62);
-}
-body{background:radial-gradient(ellipse at 50% -18%,rgba(100,42,190,.28),transparent 48%),radial-gradient(ellipse at 5% 52%,rgba(23,75,160,.16),transparent 35%),#050817;padding-bottom:28px}
-body::before{top:-28%;left:50%;width:1000px;height:1000px;background:radial-gradient(circle,rgba(151,61,255,.17),transparent 66%);animation:stadiumGlow 13s ease-in-out infinite alternate}
-body::after{bottom:-45%;right:-12%;width:850px;height:850px;background:radial-gradient(circle,rgba(42,104,255,.13),transparent 70%);animation:stadiumGlow 17s ease-in-out infinite alternate-reverse}
-@keyframes stadiumGlow{from{transform:translate3d(0,0,0) scale(.94)}to{transform:translate3d(-24px,-18px,0) scale(1.06)}}
-.container{max-width:1720px;padding:0 34px}
-.header{padding:20px 0 22px;border-bottom:1px solid rgba(160,115,255,.32);position:relative;gap:20px}
-.header::after{content:"";position:absolute;bottom:-1px;left:0;width:48%;height:2px;background:linear-gradient(90deg,transparent,#a84cff,#5d8cff,transparent);box-shadow:0 0 16px #9b4cff}
-.brand{gap:15px;text-decoration:none}
-.brand-mark{width:66px;height:66px;border-radius:20px;background:linear-gradient(145deg,#d66bff,#792cff 58%,#2635a8);font-size:30px;box-shadow:0 0 24px rgba(159,69,255,.5),inset 0 1px 0 rgba(255,255,255,.35);border:1px solid rgba(224,180,255,.65)}
-.brand-text h1{font-size:clamp(25px,3vw,39px);font-style:italic;letter-spacing:-1.8px;background:linear-gradient(100deg,#fff 0%,#f1eaff 48%,#bb61ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand-text h1 span{color:#bd62ff;-webkit-text-fill-color:#bd62ff}
-.brand-text p{font-size:11px;letter-spacing:5px;color:#c6b4ed;margin-top:6px;font-weight:700}
-.header-actions{gap:16px}
-.live-pill{padding:9px 17px;font-size:14px;background:rgba(255,43,78,.12);border-color:rgba(255,56,88,.45);box-shadow:0 0 18px rgba(255,56,88,.12)}
-.live-pill .dot{width:9px;height:9px;box-shadow:0 0 10px #ff3858}
-.clock{font-size:14px;color:#b8c3e2;white-space:nowrap}
-.header-social{display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid rgba(184,107,255,.7);border-radius:999px;background:rgba(10,13,32,.8);box-shadow:0 0 18px rgba(155,71,255,.14)}
-.social-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:50%;transition:transform .2s ease,box-shadow .2s ease}
-.social-icon svg{width:23px;height:23px;fill:currentColor}
-.social-icon.telegram{color:#fff;background:linear-gradient(145deg,#23c8ff,#087bd2);box-shadow:0 0 14px rgba(25,166,255,.45)}
-.social-icon.whatsapp{color:#fff;background:linear-gradient(145deg,#24e58b,#008d50);box-shadow:0 0 14px rgba(22,220,125,.35)}
-.social-icon.instagram{color:#fff;background:linear-gradient(135deg,#ffd05d,#f03b79 52%,#8d35e9);box-shadow:0 0 14px rgba(223,57,158,.35)}
-.social-icon:hover{transform:translateY(-3px) scale(1.06)}
-.filters{gap:14px;padding:20px 0 25px;margin-bottom:22px;border-bottom:1px solid rgba(142,111,220,.3)}
-.filter-row{gap:12px;padding:3px 2px}
-.pill{padding:11px 19px;font-size:15px;background:linear-gradient(145deg,rgba(22,29,55,.96),rgba(10,15,31,.96));border-color:#344166;color:#d4d9f1;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
-.pill:hover{border-color:#9c58ff;background:#171d3c}
-.pill.active{color:#fff;background:linear-gradient(110deg,#7628d9,#a23cff 60%,#5835c7);border-color:#e2baff;box-shadow:0 0 18px rgba(165,75,255,.45),inset 0 1px 0 rgba(255,255,255,.25)}
-.pill .count{background:rgba(4,8,25,.48);color:#e0d8f5;padding:2px 9px}
-.pill.active .count{background:rgba(10,4,28,.35);color:#fff}
-.pill[data-tab="live"].active{color:#fff;background:linear-gradient(110deg,#8d1839,#d32650);border-color:#ff8ba5;box-shadow:0 0 16px rgba(255,45,86,.3)}
-.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;padding-bottom:36px}
-.card{gap:14px;padding:18px 20px 16px;background:linear-gradient(145deg,rgba(14,20,43,.98),rgba(7,12,28,.98));border:1px solid rgba(169,91,255,.7);border-radius:21px;box-shadow:0 0 0 1px rgba(100,82,180,.1),0 7px 24px rgba(0,0,0,.35);min-height:220px}
-.card::before{height:2px;opacity:.75;background:linear-gradient(90deg,transparent,#7c55ff,#e36bff,#6e8dff,transparent);box-shadow:0 0 12px #9c48ff}
-.card:hover{transform:translateY(-4px);border-color:#d78cff;box-shadow:0 0 25px rgba(153,63,255,.25),0 15px 34px rgba(0,0,0,.45);background:linear-gradient(145deg,#151b3a,#0a1028)}
-.card.is-live{border-color:rgba(255,61,96,.42)}
-.card.is-live::before{background:linear-gradient(90deg,transparent,#ff3d67,#a44cff,transparent);opacity:1}
-.sport-chip{font-size:12px;color:#aab4d4;letter-spacing:.055em}
-.status{font-size:11px;padding:5px 12px}
-.status.live{box-shadow:0 0 13px rgba(255,56,88,.2);animation:liveStatus 2.2s ease-in-out infinite}
-@keyframes liveStatus{50%{box-shadow:0 0 20px rgba(255,56,88,.42)}}
-.crest{width:64px;height:64px;background:#111b34;border:3px solid #29375a;box-shadow:0 0 0 4px rgba(255,255,255,.035)}
-.crest img{background:#111b34;padding:2px}
-.team{gap:10px}
-.team-name{font-size:14px;color:#f1efff}
-.kickoff-time{font-size:clamp(20px,1.7vw,27px);color:#d36cff;text-shadow:0 0 14px rgba(183,82,255,.28)}
-.kickoff-date{font-size:12px;color:#a6b2d3}
-.card-foot{padding-top:13px;border-top-color:rgba(132,145,197,.22);font-size:13px}
-.stream-count{font-size:13px;color:#9eaccd}
-.watch-cta{font-size:14px;color:#fff;padding:8px 18px;border:1px solid #e4a7ff;border-radius:999px;background:linear-gradient(110deg,#7424d5,#a73aff 65%,#6235cf);box-shadow:0 0 15px rgba(162,65,255,.32);gap:8px}
-.card:hover .watch-cta{gap:11px}
-.hub-footer{display:flex;align-items:center;gap:16px;flex-wrap:nowrap;margin:8px 0 16px;padding:17px 22px;border:1px solid rgba(160,87,255,.58);border-radius:24px;background:linear-gradient(105deg,rgba(13,17,42,.98),rgba(8,13,31,.98));box-shadow:0 0 28px rgba(111,48,211,.15),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden}
-.hub-footer::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,#a64eff,#6d8aff,transparent);box-shadow:0 0 12px #a64eff}
-.footer-heading{display:flex;align-items:center;gap:12px;padding:0 18px 0 4px;margin-right:4px;border-right:1px solid rgba(176,156,225,.55);white-space:nowrap;font-size:17px;color:#f6f0ff}
-.footer-bell{font-size:26px;color:#d276ff;text-shadow:0 0 12px #b54aff}
-.footer-social{display:flex;align-items:center;gap:11px;min-width:0;flex:1;padding:10px 13px;border-radius:17px;border:1px solid currentColor;background:rgba(8,15,36,.8);transition:transform .2s ease,box-shadow .2s ease}
-.footer-social:hover{transform:translateY(-3px);box-shadow:0 0 20px currentColor}
-.footer-social.telegram{color:#37bdff;background:linear-gradient(110deg,rgba(0,139,226,.22),rgba(5,22,45,.8))}
-.footer-social.whatsapp{color:#31e18a;background:linear-gradient(110deg,rgba(0,175,91,.2),rgba(5,28,30,.8))}
-.footer-social.instagram{color:#ee83ff;background:linear-gradient(110deg,rgba(212,47,143,.2),rgba(30,12,43,.8))}
-.footer-social-icon{width:43px;height:43px;display:grid;place-items:center;flex:none;border-radius:50%;background:currentColor;box-shadow:0 0 16px currentColor}
-.footer-social-icon svg{width:23px;height:23px;fill:#fff;stroke:#fff}
-.footer-social span:last-child{display:flex;flex-direction:column;gap:1px;color:#fff}
-.footer-social b{font-size:14px;line-height:1.2}
-.footer-social small{font-size:10px;color:#b7c1dd;white-space:nowrap}
-.footer-credit{margin-left:auto;padding-left:22px;border-left:1px solid rgba(176,156,225,.55);white-space:nowrap;color:#f6efff;font-size:17px;font-style:italic}
-.footer-credit a{color:#d26bff;font-weight:800;text-decoration:underline;text-underline-offset:4px;text-shadow:0 0 12px rgba(188,78,255,.45)}
-.player-top{padding:22px 0 20px}
-.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
-.stream-btn.active{border-color:var(--accent);background:var(--accent-soft)}
-.shaka-settings-menu button.shaka-chosen-item,.shaka-settings-menu .shaka-back-to-overflow-button{color:#c77aff!important}
-.shaka-play-button{filter:drop-shadow(0 4px 16px rgba(174,75,255,.4))!important}
-.shaka-video-container .shaka-range-element{accent-color:#b45aff}
-#tgCard{border-color:rgba(184,88,255,.35);box-shadow:0 40px 80px rgba(0,0,0,.8),0 0 60px rgba(150,70,255,.1)}
-#tgCard p b{color:#c77aff}
-#joinNow{background:linear-gradient(135deg,#a33dff,#6d45e8);color:#fff;box-shadow:0 6px 24px rgba(158,65,255,.3)}
-#joinNow:hover{box-shadow:0 10px 32px rgba(158,65,255,.45)}
-@media(max-width:1100px){.container{padding:0 22px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-footer{flex-wrap:wrap}.footer-heading{border-right:0;width:100%;padding:0 0 8px;border-bottom:1px solid rgba(176,156,225,.3)}.footer-credit{margin-left:auto}}
-@media(max-width:700px){.container{padding:0 14px}.header{align-items:flex-start}.brand-mark{width:52px;height:52px}.brand-text h1{font-size:25px}.brand-text p{font-size:9px;letter-spacing:3px}.header-actions{width:100%;justify-content:space-between}.header-social{gap:7px;padding:5px 8px}.social-icon{width:33px;height:33px}.grid{grid-template-columns:1fr;gap:15px}.card{min-height:205px}.hub-footer{gap:10px;padding:15px}.footer-social{flex:1 1 calc(50% - 8px)}.footer-credit{width:100%;margin:4px 0 0;padding:12px 0 0;border-left:0;border-top:1px solid rgba(176,156,225,.3);text-align:center}.footer-heading{font-size:15px}}
-@media(max-width:390px){.brand-text h1{font-size:22px}.brand-text p{letter-spacing:2px}.live-pill{font-size:11px;padding:7px 10px}.clock{font-size:11px}.footer-social{padding:9px}.footer-social-icon{width:36px;height:36px}.footer-social b{font-size:12px}.footer-social small{font-size:9px}}
-@media(prefers-reduced-motion:reduce){body::before,body::after{animation:none!important}}
-
-
-/* CRICZONE photo navbar + polished responsive links */
-.brand{gap:14px;min-width:0}.brand-photo-frame{width:62px;height:62px;flex:none;position:relative;border-radius:18px;padding:2px;background:linear-gradient(145deg,#f6d66b,#a94dff 55%,#37c9ff);box-shadow:0 0 0 1px rgba(255,255,255,.18),0 8px 28px rgba(143,75,255,.35)}.brand-photo{width:100%;height:100%;object-fit:cover;object-position:center 22%;border-radius:16px;background:#111a32}.brand-photo-live{position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border:3px solid #080b19;border-radius:50%;background:#ff3858;box-shadow:0 0 12px #ff3858}.header-social{gap:10px}.header-site-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:999px;border:1px solid rgba(180,125,255,.5);background:rgba(20,25,52,.8);color:#f4edff;font-size:13px;font-weight:700;transition:transform .2s,border-color .2s,background .2s}.header-site-link:hover{transform:translateY(-2px);border-color:#d9a2ff;background:rgba(113,48,194,.3)}.header-site-link span{font-size:17px}.social-icon.telegram{width:43px;height:43px;box-shadow:0 0 18px rgba(25,166,255,.4)}.hub-footer{backdrop-filter:blur(12px)}
-@media(max-width:700px){.brand-photo-frame{width:52px;height:52px;border-radius:15px}.brand-photo{border-radius:13px}.header-actions{align-items:center}.header-social{margin-left:auto}.header-site-link{padding:8px 12px;font-size:12px}.social-icon.telegram{width:38px;height:38px}}
-@media(max-width:390px){.brand-photo-frame{width:46px;height:46px}.header-site-link{padding:7px 9px;font-size:11px}}
-
-/* Shared CRICZONE navbar portrait — gold circular frame */
-.brand{gap:13px;flex:1;min-width:0}.brand-photo-frame{position:relative;width:52px;height:52px;flex:none;padding:3px;border-radius:50%;background:linear-gradient(145deg,#fff0b0 0%,#d5a43d 28%,#fff0b0 48%,#9b6a17 72%,#f5d77b 100%);box-shadow:0 0 0 1px rgba(255,220,132,.42),0 5px 18px rgba(218,166,57,.22);overflow:visible}.brand-photo-frame:before{content:"";position:absolute;inset:-3px;border:1px solid rgba(245,215,123,.38);border-radius:50%;pointer-events:none}.brand-photo-frame img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:top center;background:#102534;border:2px solid #102534;transition:opacity .25s ease,transform .4s ease}.brand-photo-frame img.is-changing{opacity:.25;transform:scale(.94)}.brand-photo-live{position:absolute;right:0;bottom:1px;width:11px;height:11px;border:2px solid #10172b;border-radius:50%;background:#36d6e7;box-shadow:0 0 0 2px rgba(54,214,231,.18)}.brand-text h1{font-size:21px;letter-spacing:-.9px}.brand-text p{font-size:9px;letter-spacing:.16em;font-weight:800;color:var(--muted)}.header-site-link{display:inline-flex;align-items:center;padding:9px 14px;border-radius:999px;border:1px solid rgba(189,85,255,.5);background:rgba(20,25,52,.8);color:#f4edff;font-size:12px;font-weight:700;white-space:nowrap}.header-site-link:hover{border-color:#d9a2ff;background:rgba(113,48,194,.3)}.header-social{display:flex;align-items:center;gap:10px}.social-icon.telegram{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;color:#fff;background:linear-gradient(145deg,#23c8ff,#087bd2);box-shadow:0 0 14px rgba(25,166,255,.45)}.social-icon.telegram svg{width:23px;height:23px;fill:currentColor}@media(max-width:650px){.brand-photo-frame{width:43px;height:43px}.brand{gap:9px}.brand-text h1{font-size:17px}.brand-text p{font-size:7px;letter-spacing:.12em}.header-site-link{font-size:10px;padding:8px 10px}.social-icon.telegram{width:37px;height:37px}}@media(max-width:390px){.brand-photo-frame{width:39px;height:39px}.brand-text p{display:block;font-size:6.5px}}
-
-/* ============================================================
-   MOBILE UI — compact, touch-friendly, safe-area aware
-   ============================================================ */
-html{scroll-padding-top:12px}
-button,a{-webkit-tap-highlight-color:transparent}
-@media(max-width:760px){
-  body{font-size:14px;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}
-  .container{padding-left:14px;padding-right:14px}
-  .header{gap:12px;padding:15px 0 14px;align-items:center}
-  .brand{gap:10px;min-width:0}
-  .brand-mark{width:40px;height:40px;border-radius:12px;font-size:19px}
-  .brand-text h1{font-size:19px}
-  .brand-text p{font-size:10.5px}
-  .header-actions{gap:7px;justify-content:flex-end}
-  .live-pill{padding:6px 10px;font-size:11px}
-  .clock{font-size:11px}
-  .join-btn{padding:8px 12px;font-size:12px}
-  .filters{gap:8px;padding:2px 0 15px;margin-bottom:17px}
-  .filter-row{gap:7px;margin-right:-14px;padding:2px 14px 5px 2px;scroll-snap-type:x proximity}
-  .pill{padding:8px 12px;font-size:12px;scroll-snap-align:start}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-bottom:30px}
-  .card{gap:10px;padding:12px;border-radius:15px}
-  .card-top{align-items:flex-start;gap:6px}
-  .sport-chip{font-size:9.5px;gap:4px;letter-spacing:.02em}
-  .status{font-size:9px;padding:4px 7px;letter-spacing:.03em}
-  .card-body{gap:5px;padding:5px 0}
-  .crest{width:43px;height:43px;font-size:12px}
-  .team{gap:7px}
-  .team-name{font-size:11px;line-height:1.25;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:28px}
-  .kickoff-time{font-size:16px}
-  .kickoff-date{font-size:9px;text-align:center}
-  .card-foot{padding-top:9px;font-size:10px;gap:5px}
-  .stream-count{font-size:10px}
-  .watch-cta{font-size:10.5px;gap:3px;white-space:nowrap}
-  .player-top{gap:10px;padding:14px 0}
-  .icon-btn{width:40px;height:40px;border-radius:12px}
-  .player-title{font-size:clamp(17px,4.6vw,22px)}
-  .player-sub{font-size:11px}
-  .screen{width:100%;max-width:none;border-radius:13px}
-  .section-title{font-size:11px;margin:20px auto 9px}
-  .streams{gap:7px}
-  .stream-btn{padding:12px;border-radius:12px;gap:8px}
-  .stream-btn .title{font-size:12px}
-  .type-badge{font-size:9px;padding:3px 7px}
-  .state{padding:54px 16px}
-  #tgOverlay{padding:14px}
-  #tgCard{max-width:360px;padding:28px 20px 22px;border-radius:20px}
-}
-@media(max-width:420px){
-  .container{padding-left:11px;padding-right:11px}
-  .header{padding-top:12px}
-  .brand{gap:8px}
-  .brand-mark{width:36px;height:36px}
-  .brand-text h1{font-size:17px}
-  .brand-text p{font-size:9px}
-  .header-actions{gap:6px}
-  .live-pill{padding:6px 8px;font-size:10px}
-  .join-btn{padding:7px 10px;font-size:11px}
-  .grid{gap:8px}
-  .card{padding:10px;gap:9px;border-radius:13px}
-  .crest{width:38px;height:38px}
-  .team-name{font-size:10px}
-  .kickoff-time{font-size:14px}
-  .status{font-size:8px;padding:3px 6px}
-  .filter-row{margin-right:-11px;padding-right:11px}
-  .pill{padding:7px 10px;font-size:11px}
-}
-@media(max-width:350px){
-  .grid{grid-template-columns:1fr}
-  .card{padding:14px}
-  .crest{width:48px;height:48px}
-  .team-name{font-size:12px}
-  .kickoff-time{font-size:17px}
-  .header{align-items:flex-start}
-  .header-actions{width:100%;justify-content:flex-start}
-}
-@media(hover:none){
-  .card:hover{transform:none;box-shadow:none;background:var(--surface)}
-  .pill:hover,.stream-btn:hover{background:var(--surface)}
-}
-
-
-/* MATCH CENTER — search, refresh and responsive polish */
-.hub-tools{max-width:760px;margin:-5px auto 22px;position:relative;z-index:2}
-.search-wrap{display:flex;align-items:center;gap:11px;min-height:52px;padding:0 15px;border:1px solid var(--border-2);border-radius:16px;background:linear-gradient(135deg,rgba(21,28,38,.96),rgba(13,18,27,.96));box-shadow:0 10px 28px rgba(0,0,0,.18);transition:border-color .2s,box-shadow .2s}
-.search-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),0 12px 30px rgba(0,0,0,.2)}
-.search-wrap>svg{width:19px;height:19px;flex:none;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round}
-.search-wrap input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font-size:14px;padding:14px 0}
-.search-wrap input::placeholder{color:var(--muted)}
-.search-wrap input:focus-visible{outline:0}
-.clear-search{width:28px;height:28px;flex:none;border-radius:50%;background:var(--surface-3);color:var(--text-dim);font-size:21px;line-height:1}
-.hub-tools-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 3px 0;color:var(--muted);font-size:11px}
-.refresh-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--text-dim);font-size:11px;font-weight:700;background:var(--surface);transition:all .2s}
-.refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
-.refresh-icon{font-size:16px;line-height:1}
-.refresh-btn.is-loading .refresh-icon{display:inline-block;animation:czSpin .8s linear infinite}
-@keyframes czSpin{to{transform:rotate(360deg)}}
-.retry-btn{margin-top:8px;padding:10px 16px;border:1px solid var(--accent);border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700}
-.card{isolation:isolate}
-.card.is-live{background:linear-gradient(145deg,rgba(255,77,109,.055),transparent 55%),var(--surface)}
-.card:focus-visible{outline-offset:4px}
-.status.live{box-shadow:0 0 14px rgba(255,77,109,.12)}
-@media(min-width:1100px){.hub-tools{margin-top:0;margin-bottom:26px}.search-wrap{min-height:56px}}
-@media(max-width:760px){.hub-tools{margin:-3px 0 16px}.search-wrap{min-height:48px;border-radius:14px;padding:0 12px}.search-wrap input{font-size:13px;padding:12px 0}.hub-tools-meta{font-size:10px;padding-top:7px}.refresh-btn{padding:7px 10px;min-height:34px}}
-@media(prefers-reduced-motion:reduce){.refresh-icon{animation:none!important}.search-wrap,.refresh-btn{transition:none}}
-
-
-/* PHONE HEADER + MATCH CARD READABILITY FIX */
-@media(max-width:600px){
-  .header{align-items:center;gap:10px}
-  .header-actions{width:100%;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px}
-  .header-social{margin-left:auto;padding:0;background:transparent;border:0}
-  .header-site-link{display:none!important}
-  .social-icon.telegram{width:40px;height:40px}
-  .clock{white-space:nowrap;font-size:11px}
-  .grid{grid-template-columns:minmax(0,1fr)!important;gap:12px}
-  .card{min-height:0;padding:15px;gap:12px}
-  .card-body{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px}
-  .crest{width:52px;height:52px}
-  .team-name{font-size:12px;white-space:normal;overflow-wrap:anywhere}
-  .sport-chip{font-size:11px}
-  .status{font-size:10px}
-  .kickoff-time{font-size:18px}
-  .card-foot{padding-top:11px}
-}
-@media(max-width:390px){
-  .header-actions{gap:7px}
-  .live-pill{padding:6px 9px}
-  .clock{font-size:10px}
-  .social-icon.telegram{width:37px;height:37px}
-}
-
-
-/* FINAL ACCESSIBILITY + INTERACTION POLISH */
-.refresh-btn:disabled{opacity:.65;cursor:wait}
-.pill[aria-selected="true"]{box-shadow:0 0 0 1px currentColor inset}
-.search-wrap:has(input:focus-visible){outline:2px solid transparent}
-@media(min-width:761px){
-  .card{min-height:220px}
-  .grid{align-items:stretch}
-}
-@media(max-width:600px){
-  .card{min-height:154px}
-  .card-top{min-width:0}
-  .sport-chip{max-width:72%}
-  .sport-chip .name{max-width:100%}
-  .card-foot{min-height:42px}
-  .watch-cta{min-height:38px;padding:0 3px}
-}
-@media(max-width:360px){
-  .container{padding-left:10px;padding-right:10px}
-  .card{padding:12px}
-  .card-body{gap:6px}
-  .crest{width:46px;height:46px}
-  .kickoff-time{font-size:16px}
-  .team-name{font-size:11px}
-  .hub-tools-meta{gap:6px}
-}
-
-
-/* ============================================================
-   CRICZONE LIVE — premium match/player layout
-   ============================================================ */
-.cz-live-view{max-width:1040px;margin:0 auto;padding:0 2px 44px}
-.cz-live-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 6px 20px}
-.cz-live-brand{display:flex;align-items:center;gap:12px}
-.cz-live-mark{width:52px;height:52px;border-radius:17px;display:grid;place-items:center;font:700 19px var(--font-d);color:#fff;background:linear-gradient(145deg,#35c7d9,#1676e8);box-shadow:0 8px 24px rgba(23,142,226,.3);border:1px solid rgba(255,255,255,.2)}
-.cz-live-brand-copy{display:flex;flex-direction:column;line-height:1.12}
-.cz-live-brand-copy strong{font:700 20px var(--font-d);letter-spacing:-.5px;color:#f4f7fb}
-.cz-live-brand-copy span{font-size:10px;letter-spacing:1.6px;color:#8f9ba9;margin-top:5px}
-.cz-live-telegram{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:15px;color:#fff;background:linear-gradient(135deg,#159bdc,#087bd0);font-size:13px;font-weight:700;box-shadow:0 7px 20px rgba(0,136,210,.22)}
-.cz-live-telegram svg{width:17px;height:17px;fill:currentColor}
-.cz-back{display:inline-flex;align-items:center;gap:9px;color:#aab4c1;font-size:13px;font-weight:600;padding:5px 7px;margin:0 0 12px}
-.cz-back:hover{color:#fff}
-.cz-match-banner{position:relative;isolation:isolate;overflow:hidden;min-height:205px;border-radius:22px;margin:0 2px 24px;padding:23px 25px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(117,166,221,.25);background:radial-gradient(ellipse at 80% 15%,rgba(40,145,221,.42),transparent 38%),radial-gradient(ellipse at 10% 100%,rgba(24,171,139,.32),transparent 42%),linear-gradient(120deg,#101c34 0%,#182b4b 48%,#101622 100%);box-shadow:0 16px 35px rgba(0,0,0,.28)}
-.cz-match-banner:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.38;background:repeating-linear-gradient(128deg,transparent 0 38px,rgba(255,255,255,.08) 39px 41px,transparent 42px 82px)}
-.cz-banner-glow{position:absolute;z-index:-1;width:240px;height:240px;right:8%;top:-150px;border-radius:50%;background:#32b6e9;filter:blur(75px);opacity:.35}
-.cz-banner-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.cz-banner-kicker{font:700 11px var(--font-d);letter-spacing:2px;color:#b6d8f5}
-.cz-banner-live{display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.22);padding:6px 10px;border-radius:99px;font-size:9px;font-weight:800;letter-spacing:1px;color:#eaf6ff}
-.cz-banner-live i{width:7px;height:7px;border-radius:50%;background:#ff536d;box-shadow:0 0 10px #ff536d}
-.cz-banner-content{position:relative;z-index:1;margin-top:22px}
-.cz-banner-league{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8fc7f2}
-.cz-banner-content h2{font:700 clamp(24px,5vw,38px)/1.12 var(--font-d);color:#fff;margin:7px 0;text-shadow:0 2px 14px rgba(0,0,0,.3)}
-.cz-banner-content p{font-size:12px;color:#c1d0e0}
-.cz-banner-watermark{position:absolute;right:25px;bottom:5px;font:700 105px/.9 var(--font-d);color:rgba(255,255,255,.055);letter-spacing:-9px;pointer-events:none}
-.cz-teams-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:0 2px 29px;padding:0 14px}
-.cz-team-side{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;text-align:center}
-.cz-team-logo{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#273849,#151e2b);border:1px solid rgba(255,255,255,.13);box-shadow:0 7px 18px rgba(0,0,0,.24);font:700 18px var(--font-d);color:#c5d7e9}
-.cz-team-logo img{width:100%;height:100%;object-fit:contain;padding:5px}
-.cz-team-side strong{max-width:100%;font-size:14px;line-height:1.25;color:#f1f4f8}
-.cz-match-middle{display:flex;flex-direction:column;align-items:center;gap:7px}
-.cz-match-middle>b{font:700 16px var(--font-d);color:#8e99a7;letter-spacing:1px}
-.cz-share-btn{display:flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;background:linear-gradient(145deg,#27323e,#171e28);border:1px solid rgba(255,255,255,.1);color:#f1f5f9;font-size:12px;font-weight:700;box-shadow:0 5px 14px rgba(0,0,0,.2)}
-.cz-share-btn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.cz-channels-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 2px 13px}
-.cz-channels-heading h3{font:700 15px var(--font-d);letter-spacing:1.4px;color:#aeb8c5}
-.cz-channels-heading span{font-size:10px;font-weight:700;letter-spacing:1px;color:#768395}
-.cz-channel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:0 2px 28px}
-.cz-channel-card{min-height:164px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:17px 12px;border-radius:23px;background:linear-gradient(145deg,#1b2027,#15191f);border:1px solid rgba(255,255,255,.1);color:#f3f5f8;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.18);transition:transform .18s,border-color .18s,box-shadow .18s}
-.cz-channel-card:hover{transform:translateY(-2px);border-color:rgba(74,164,255,.55)}
-.cz-channel-card.active{border:2px solid #339cff;padding:16px 11px;box-shadow:0 0 0 1px rgba(51,156,255,.13),0 0 24px rgba(36,137,255,.16)}
-.cz-channel-icon{width:49px;height:49px;border-radius:50%;display:grid;place-items:center;background:#292e35;color:#aab2bd;font:700 15px var(--font-d);letter-spacing:.4px}
-.cz-channel-card strong{font-size:14px;line-height:1.25;font-weight:800}
-.cz-channel-card small{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#8993a0}
-.cz-channel-empty{grid-column:1/-1;padding:28px 16px;text-align:center;border:1px dashed #384454;border-radius:18px;color:#8d99a8;font-size:13px}
-.cz-player-wrap{margin:8px 2px 24px;padding:0 0 20px;border-bottom:1px solid rgba(255,255,255,.08);scroll-margin-top:16px}
-.cz-player-heading{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
-.cz-player-heading span{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#7f8b9b}
-.cz-player-heading strong{font:700 17px var(--font-d);color:#f2f5f9}
-.cz-player-sub{font-size:12px;color:#8793a2;margin-bottom:13px}
-.cz-player-wrap .screen{max-width:100%;margin:0;border-radius:18px}
-.cz-player-wrap .section-title{margin-top:0}
-@media(max-width:520px){
- .cz-live-view{padding-left:0;padding-right:0}
- .cz-live-header{padding:14px 2px 18px}
- .cz-live-mark{width:48px;height:48px;border-radius:15px}
- .cz-live-brand-copy strong{font-size:18px}
- .cz-live-telegram{padding:10px 12px;font-size:12px}
- .cz-match-banner{min-height:180px;padding:19px 17px;border-radius:19px;margin-bottom:22px}
- .cz-banner-watermark{font-size:86px;right:15px}
- .cz-team-logo{width:62px;height:62px}
- .cz-team-side strong{font-size:12px}
- .cz-teams-row{gap:5px;padding:0 5px}
- .cz-share-btn{padding:8px 11px;font-size:11px}
- .cz-channel-grid{gap:10px}
- .cz-channel-card{min-height:151px;border-radius:19px;padding:14px 8px}
- .cz-channel-card.active{padding:13px 7px}
- .cz-channel-card strong{font-size:12px}
- .cz-channel-icon{width:45px;height:45px}
-}
-@media(min-width:760px){.cz-channel-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cz-channel-card{min-height:176px}}
-
-
-/* CRICxCRATE-inspired compact live layout, CRICZONE branding */
-.cz-reference-header{padding:18px 6px 22px;align-items:center}
-.cz-reference-logo{width:68px;height:68px;flex:none;overflow:hidden;border-radius:18px;background:linear-gradient(145deg,#263c4d,#111b28);border:1px solid rgba(255,255,255,.16);box-shadow:0 7px 20px rgba(0,0,0,.3)}
-.cz-reference-logo img{width:100%;height:100%;display:block;object-fit:cover;object-position:top center}
-.cz-reference-header .cz-live-brand-copy strong{font-size:21px;letter-spacing:-.5px}
-.cz-reference-header .cz-live-brand-copy span{font-size:12px;letter-spacing:1.7px}
-.cz-get-app{min-height:50px;padding:0 18px;border-radius:16px;font-size:14px;box-shadow:0 7px 22px rgba(0,136,210,.26)}
-.cz-reference-player{margin:0 2px 24px;padding:0;border:0;scroll-margin-top:12px}
-.cz-reference-player .screen{margin:0;max-width:none;border-radius:17px;overflow:hidden}
-.cz-reference-player #player-container{width:100%}
-.cz-reference-player .screen video{object-fit:contain}
-.cz-live-view .cz-teams-row{margin:0 2px 27px;padding:0 14px}
-.cz-live-view .cz-channel-grid{margin-bottom:26px}
-.cz-live-view .cz-channels-heading{margin-bottom:13px}
-@media(max-width:520px){
- .cz-reference-header{padding:14px 3px 22px}
- .cz-reference-logo{width:60px;height:60px;border-radius:17px}
- .cz-reference-header .cz-live-brand-copy strong{font-size:19px}
- .cz-reference-header .cz-live-brand-copy span{font-size:10px}
- .cz-get-app{min-height:46px;padding:0 14px;border-radius:15px;font-size:13px}
- .cz-reference-player{margin-bottom:22px}
- .cz-live-view .cz-teams-row{padding:0 8px}
-}
-
-
-.cz-reference-back{display:inline-flex!important;align-items:center;gap:10px;margin:0 2px 16px;padding:10px 14px;border:1px solid rgba(132,151,190,.28);border-radius:13px;background:rgba(19,27,48,.82);color:#dce6f4;font-size:14px;font-weight:700;cursor:pointer}
-.cz-reference-back:active{transform:scale(.98)}
-
-
-/* Compact live navbar and channel tiles */
-.cz-reference-header{padding:8px 4px 10px;min-height:60px;gap:10px}
-.cz-reference-logo{width:50px;height:50px;border-radius:14px}
-.cz-reference-header .cz-live-brand{gap:10px}
-.cz-reference-header .cz-live-brand-copy strong{font-size:18px;line-height:1.05}
-.cz-reference-header .cz-live-brand-copy span{font-size:9px;letter-spacing:1.5px;margin-top:4px}
-.cz-get-app{min-height:40px;padding:0 13px;border-radius:13px;font-size:12px;gap:7px}
-.cz-get-app svg{width:17px;height:17px}
-.cz-reference-back{margin:0 2px 13px;padding:7px 11px;border-radius:11px;font-size:12px;gap:7px}
-.cz-channel-grid{gap:10px}
-.cz-channel-card{min-height:128px;padding:12px 8px;gap:8px;border-radius:18px}
-.cz-channel-card.active{padding:11px 7px}
-.cz-channel-icon{width:39px;height:39px;font-size:13px}
-.cz-channel-card strong{font-size:12px}
-.cz-channel-card small{font-size:9px;letter-spacing:1.2px}
-.cz-channels-heading h3{font-size:14px}
-@media(max-width:520px){
- .cz-reference-header{padding:7px 2px 9px;min-height:56px}
- .cz-reference-logo{width:46px;height:46px;border-radius:13px}
- .cz-reference-header .cz-live-brand{gap:9px}
- .cz-reference-header .cz-live-brand-copy strong{font-size:17px}
- .cz-reference-header .cz-live-brand-copy span{font-size:8px}
- .cz-get-app{min-height:38px;padding:0 11px;font-size:11px;border-radius:12px}
- .cz-reference-back{margin-bottom:12px;padding:7px 10px;font-size:12px}
- .cz-channel-grid{gap:9px}
- .cz-channel-card{min-height:120px;padding:10px 7px;gap:7px}
- .cz-channel-card.active{padding:9px 6px}
- .cz-channel-icon{width:36px;height:36px}
- .cz-channel-card strong{font-size:11px}
- .cz-channel-card small{font-size:8px}
-}
-
-
-/* CRICZONE hub refresh — cleaner filters and sharper match cards */
-#hubView .filters{gap:12px;padding:7px 0 18px;margin-bottom:20px;border-bottom-color:rgba(142,111,255,.2)}
-#hubView .filter-row{gap:9px;padding:3px 2px 5px}
-#hubView .pill{min-height:42px;padding:9px 15px;border-radius:14px;background:linear-gradient(145deg,rgba(20,26,48,.96),rgba(11,16,32,.96));border-color:rgba(132,148,190,.2);font-size:12.5px}
-#hubView .pill.active{background:linear-gradient(120deg,#8b35ef,#5b20bb);border-color:#c18aff;color:#fff;box-shadow:0 5px 18px rgba(137,52,235,.24)}
-#hubView .pill.active .count{background:rgba(255,255,255,.18);color:#fff}
-#hubView .hub-tools{max-width:none;margin:0 0 20px}
-#hubView .search-wrap{min-height:54px;border-radius:17px;border-color:rgba(157,91,255,.48);background:linear-gradient(135deg,rgba(17,23,43,.98),rgba(10,15,30,.98));box-shadow:0 8px 24px rgba(0,0,0,.16)}
-#hubView .hub-tools-meta{font-size:11px;color:#9ba6bb}
-#hubView .refresh-btn{min-height:38px;padding:8px 13px;border-radius:13px;border-color:rgba(139,155,196,.25);background:rgba(17,24,43,.8);font-size:11px}
-#hubView .grid{gap:13px;padding-bottom:42px}
-#hubView .card{gap:13px;padding:16px;border-radius:21px;border-color:rgba(126,145,190,.2);background:linear-gradient(145deg,rgba(18,25,47,.98),rgba(9,15,31,.98));box-shadow:0 8px 24px rgba(0,0,0,.16)}
-#hubView .card::before{height:2px;opacity:.5;background:linear-gradient(90deg,transparent,#8f4cff,#39b9ff,transparent)}
-#hubView .card.is-live{border-color:rgba(255,77,109,.38);background:linear-gradient(135deg,rgba(91,25,64,.15),transparent 48%),linear-gradient(145deg,rgba(18,25,47,.98),rgba(9,15,31,.98))}
-#hubView .card-top{gap:8px}
-#hubView .sport-chip{font-size:10.5px;letter-spacing:.055em;color:#aab6cb}
-#hubView .sport-chip .icon{font-size:15px}
-#hubView .status{padding:5px 10px;font-size:9.5px;letter-spacing:.07em}
-#hubView .status.live{box-shadow:0 0 15px rgba(255,77,109,.12)}
-#hubView .card-body{gap:7px;padding:8px 0 6px;min-height:128px}
-#hubView .team{gap:8px}
-#hubView .crest{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#253455,#10182d 70%);border:2px solid rgba(119,151,219,.23);box-shadow:0 0 0 4px rgba(96,119,185,.07)}
-#hubView .crest img{padding:5px;background:transparent}
-#hubView .team-name{font-size:13px;font-weight:700;color:#edf1fa}
-#hubView .versus{gap:5px}
-#hubView .kickoff-time{font-size:21px;letter-spacing:-.02em;text-shadow:0 0 18px rgba(176,83,255,.2)}
-#hubView .kickoff-date{font-size:10px;color:#9aa6bc}
-#hubView .card-foot{padding-top:11px;border-top-color:rgba(143,157,193,.16);font-size:11px}
-#hubView .stream-count{color:#a5b1c7}
-#hubView .watch-cta{padding:8px 13px;border-radius:999px;background:linear-gradient(120deg,#8b35ed,#5c22bd);color:#fff;font-size:11px;box-shadow:0 4px 15px rgba(133,49,226,.2)}
-#hubView .card:hover .watch-cta{gap:8px}
-@media(max-width:760px){
- #hubView .filters{gap:10px;padding-bottom:15px;margin-bottom:17px}
- #hubView .pill{min-height:39px;padding:8px 12px;font-size:11.5px;border-radius:13px}
- #hubView .hub-tools{margin:0 0 16px}
- #hubView .search-wrap{min-height:49px}
- #hubView .grid{gap:11px}
- #hubView .card{padding:14px;border-radius:18px;gap:11px}
- #hubView .card-body{min-height:119px;padding:6px 0}
- #hubView .crest{width:55px;height:55px}
- #hubView .team-name{font-size:12px}
- #hubView .kickoff-time{font-size:19px}
- #hubView .sport-chip{font-size:9.5px}
- #hubView .status{font-size:9px;padding:4px 8px}
- #hubView .card-foot{padding-top:9px}
- #hubView .watch-cta{padding:7px 11px}
-}
-@media(max-width:380px){
- #hubView .card{padding:12px}
- #hubView .crest{width:49px;height:49px}
- #hubView .team-name{font-size:11px}
- #hubView .kickoff-time{font-size:17px}
- #hubView .sport-chip{font-size:9px}
-}
-
+@media(max-width:600px){.container{padding:0 14px}.header{padding:12px 14px;margin-left:-14px;margin-right:-14px}.brand-text h1{font-size:16px}.brand-text p{font-size:9.5px}.brand-mark{width:36px;height:36px;font-size:15px}.live-pill{padding:5px 8px;font-size:11px}.icon-action-btn{width:34px;height:34px;font-size:13px}.join-btn{padding:6px 10px;font-size:11px}.slider-card{flex:0 0 304px}.upcoming-list-stack{grid-template-columns:1fr}.tl-stream-btn{max-width:140px}.popup-wrap{max-width:94vw}.popup-box{padding:36px 22px 22px}}
 </style>
 </head>
-
 <body>
-
-<!-- ==================== TELEGRAM POPUP ==================== -->
-<div id="tgOverlay">
-  <div id="tgCard">
-    <div id="tgIcon">
-      <svg viewBox="0 0 24 24" fill="white" width="36" height="36" aria-hidden="true">
-        <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"/>
-      </svg>
-    </div>
-    <h2>Join Our Telegram</h2>
-    <p>Get match links &amp; live updates delivered straight to your phone.</p>
-    <div class="tgBtns">
-      <button class="tgBtn" id="joinedBtn">Already Joined</button>
-      <button class="tgBtn" id="joinNow">Join Now</button>
-    </div>
-  </div>
+<div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+  <div class="popup-wrap"><div class="popup-box">
+    <div class="popup-title" id="popupTitle">Follow Us !!</div>
+    <div class="popup-text">Join our Telegram channel<br><b>CʀɪᴄxCʀᴀᴛᴇ ™</b>For Instant Updates &amp; Exclusive Links.</div>
+    <button class="popup-join" id="popupJoinBtn" type="button">JOIN NOW</button>
+    <button class="btn-popup btn-joined-main" id="popupSkipBtn" type="button">No, Thanks</button>
+  </div></div>
 </div>
 
 <div class="container">
-
-  <!-- ==================== HUB VIEW ==================== -->
-  <section id="hubView" class="view active">
+  <section id="hubView" class="view">
     <header class="header">
-      <a class="brand" href="#/" aria-label="CRICZONE home">
-        <div class="brand-photo-frame"><img id="czNavbarPlayerPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"><span class="brand-photo-live" aria-hidden="true"></span></div>
-        <div class="brand-text">
-          <h1>CRIC<span>ZONE</span></h1>
-          <p>LIVE CRICKET STREAMING</p>
-        </div>
-      </a>
+      <div class="brand">
+        <div class="brand-mark">Cᴄ</div>
+        <div class="brand-text"><h1>CʀɪᴄxCʀᴀᴛᴇ</h1><p>Live cricket hub</p></div>
+      </div>
       <div class="header-actions">
+        <button class="icon-action-btn" id="alertToggleBtn" type="button" aria-label="Match Alerts" title="Match Alerts">🔔</button>
+        <button class="icon-action-btn" id="themeToggle" type="button" aria-label="Toggle Theme">☀️</button>
         <div class="live-pill"><span class="dot"></span> Live</div>
-        <div class="clock" id="clock">—</div>
-        <nav class="header-social" aria-label="CRICZONE links">
-          
-          <a class="social-icon telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="CRICZONE Telegram">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
-          </a>
-        </nav>
+        <div class="clock" id="clock"></div>
+        <a class="join-btn" href="https://t.me/+_Rw99hQyOxplYmJl" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Telegram</span>
+        </a>
       </div>
     </header>
 
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" class="search-input" type="search" placeholder="Search matches, teams or languages..." autocomplete="off">
+    </div>
+
     <div class="filters">
-      <div class="filter-row" id="sports" role="tablist" aria-label="Sports"></div>
       <div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div>
     </div>
 
-    <section class="hub-tools" aria-label="Find matches">
-<div class="search-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><input id="matchSearch" type="search" placeholder="Search teams, tournaments or sports..." autocomplete="off" aria-label="Search matches"><button id="clearSearch" class="clear-search" type="button" aria-label="Clear search" hidden>×</button></div>
-<div class="hub-tools-meta"><span id="resultsMeta" aria-live="polite">Loading matches…</span><button id="refreshMatches" class="refresh-btn" type="button"><span class="refresh-icon">↻</span> Refresh</button></div></section>
-<main id="list" class="grid" aria-live="polite"></main>
-    <footer class="hub-footer">
-      <div class="footer-heading"><span class="footer-bell">♧</span><strong>Follow CRICZONE</strong></div>
-      <a class="footer-social telegram" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
-        <span class="footer-social-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg></span><span><b>Telegram</b><small>Live match updates</small></span>
-      </a>
-      <div class="footer-credit"><a href="https://criczone.pages.dev/" target="_blank" rel="noopener">CRICZONE Website</a></div>
-    </footer>
+    <div id="hubSectionsContainer">
+      <div class="empty-box">Loading matches…</div>
+    </div>
   </section>
 
-  <!-- ==================== CRICZONE LIVE PLAYER VIEW ==================== -->
-  <section id="playerView" class="view cz-live-view">
-    <span id="playerTitle" hidden></span><span id="playerSub" hidden></span>
-    <header class="cz-live-header cz-reference-header">
-      <div class="cz-live-brand">
-        <div class="cz-reference-logo"><img id="czPlayerNavbarPhoto" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma" loading="eager" decoding="async"></div>
-        <div class="cz-live-brand-copy"><strong>CRICZONE</strong><span>LIVE</span></div>
+  <!-- FULL-SCREEN SHAKA PLAYER WITH SHAKA UI -->
+  <section id="playerView" class="view">
+    <div class="pure-stage" id="pureStage">
+      <div class="top-left-stream-bar" id="topLeftStreamBar">
+        <div class="tl-stream-wrap" id="streamMenuWrap">
+          <button class="tl-stream-btn" id="streamSelectBtn" type="button" aria-expanded="false">
+            <span id="activeStreamLabel">Select Stream</span>
+            <span id="activeStreamTag"></span>
+            <span>▾</span>
+          </button>
+          <div class="tl-stream-menu" id="streamSelectMenu" role="listbox"></div>
+        </div>
       </div>
-      <a class="cz-live-telegram cz-get-app" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Get CRICZONE app">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.8 3.2 18.5 20c-.25 1.2-.95 1.48-1.95.92l-5.4-3.98-2.6 2.5c-.29.29-.54.54-1.1.54l.39-5.5 10-9.04c.44-.39-.1-.61-.68-.22L4.8 12.9l-5.1-1.6c-1.1-.35-1.12-1.1.23-1.63L20.1 2.2c.96-.35 1.8.22 1.7 1z"/></svg>
-        <span>Get App</span>
-      </a>
-    </header>
 
-    <button id="backHub" class="cz-back cz-reference-back" type="button" aria-label="Back to matches">← <span>Back to matches</span></button>
-
-    <div class="cz-player-wrap cz-reference-player" id="czPlayerSection">
-      <div class="screen"><div id="player-container"></div></div>
-    </div>
-
-    <div class="cz-teams-row">
-      <div class="cz-team-side">
-        <div class="cz-team-logo" id="czTeamLogoA">A</div>
-        <strong id="czTeamA">Team A</strong>
-      </div>
-      <div class="cz-match-middle">
-        <button class="cz-share-btn" id="czShareMatch" type="button" aria-label="Share match">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.7 10.7 6.6-4.1M8.7 13.3l6.6 4.1"></path></svg><span>Share</span>
+      <div class="top-right-player-bar" id="topRightPlayerBar">
+        <button class="tr-pill-btn" id="shareBtn" type="button" aria-label="Share">
+          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+          <span>Share</span>
         </button>
-        <b>VS</b>
+        <a class="tr-pill-btn get-btn" href="https://t.me/+_Rw99hQyOxplYmJl" target="_blank" rel="noopener" aria-label="Get App">
+          <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Get App</span>
+        </a>
       </div>
-      <div class="cz-team-side">
-        <div class="cz-team-logo" id="czTeamLogoB">B</div>
-        <strong id="czTeamB">Team B</strong>
-      </div>
+
+      <div class="player-notice" id="playerNotice"></div>
+      <div id="player-container"><div class="screen-msg">Starting stream…</div></div>
     </div>
-
-    <div class="cz-channels-heading"><h3>LIVE CHANNELS</h3><span id="czChannelCount">0 CHANNELS</span></div>
-    <div class="cz-channel-grid" id="streams"></div>
   </section>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
+<div class="hub-toast" id="hubToast"></div>
 
 <script>
 "use strict";
 
-/* ============================================================
-   CONFIG — direct
-   ============================================================ */
-const DATA_URL = "https://sonujson-v6.pages.dev/Data/events/allinone.json";
-const LOG  = (...a) => console.log("[CRICZONE]", ...a);
-const WARN = (...a) => console.warn("[CRICZONE]", ...a);
-const ERR  = (...a) => console.error("[CRICZONE]", ...a);
-
+const JSON_FEEDS = [
+  "https://sonujson-v6.pages.dev/Data/events/allinone.json",
+  "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/main/Sports_data.json"
+];
+const PRIME_FEED = "https://raw.githubusercontent.com/doctor-8trange/tekzya9/refs/heads/main/data/primevideoindia.json";
+const WILLOW_FEED = "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json";
+const TG_LINK = "https://t.me/+_Rw99hQyOxplYmJl";
+const ACCESS_KEY = "@Bx7man@45";
+const AUTH_STORAGE_KEY = "cx_unlock_auth";
 const $ = id => document.getElementById(id);
 
+function saveAuthFlag() {
+  try { localStorage.setItem(AUTH_STORAGE_KEY, "1"); } catch (e) {}
+  try { sessionStorage.setItem(AUTH_STORAGE_KEY, "1"); } catch (e) {}
+  try {
+    if (!String(window.name || "").includes(`${AUTH_STORAGE_KEY}=1`)) {
+      window.name = `${window.name || ""}|${AUTH_STORAGE_KEY}=1`;
+    }
+  } catch (e) {}
+}
+
+function hasStoredAuthFlag() {
+  try { if (localStorage.getItem(AUTH_STORAGE_KEY) === "1") return true; } catch (e) {}
+  try { if (sessionStorage.getItem(AUTH_STORAGE_KEY) === "1") return true; } catch (e) {}
+  try { if (String(window.name || "").includes(`${AUTH_STORAGE_KEY}=1`)) return true; } catch (e) {}
+  return false;
+}
+
+function urlHasKey() {
+  const raw = `${location.search || ""}${location.hash || ""}`;
+  let decoded = raw;
+  try { decoded = decodeURIComponent(raw); } catch (e) {}
+  return raw.includes(ACCESS_KEY) || decoded.includes(ACCESS_KEY);
+}
+
+function isAuthorized() {
+  if (urlHasKey()) {
+    saveAuthFlag();
+    try {
+      history.replaceState(null, "", `${location.pathname}#/`);
+    } catch (e) {}
+    return true;
+  }
+  return hasStoredAuthFlag();
+}
+
+function isSharedStreamHash(h) {
+  const raw = String(h || "");
+  return /^#w\?id=[^&]+/.test(raw) || /^#watch\?id=[^&]+/.test(raw);
+}
+
+const initHash = location.hash || "";
+if (isSharedStreamHash(initHash)) {
+  $("playerView").classList.add("active");
+} else if (isAuthorized()) {
+  $("hubView").classList.add("active");
+} else {
+  window.location.replace(TG_LINK);
+}
+
 const state = {
-  events: [],
-  sport: "All",
+  jsonCricket: [],
+  primeCricket: [],
+  willowCricket: [],
   tab: "all",
-  search: "",
+  searchQuery: "",
   currentEvent: null,
   currentStreams: [],
-  currentIndex: 0
+  currentIndex: 0,
+  menuOpen: false,
+  favs: JSON.parse(localStorage.getItem("cx_favs") || "[]"),
+  notified: JSON.parse(localStorage.getItem("cx_notified") || "[]"),
+  alertsOn: localStorage.getItem("cx_alerts") === "true"
 };
 
-/* ============================================================
-   TELEGRAM POPUP CONTROLLER
-   ============================================================ */
-const TG = (function(){
-  const overlay = document.getElementById("tgOverlay");
+let shakaPlayer = null, shakaOverlay = null, playSeq = 0, noticeTimer = null, verifyTimer = null, hubToastTimer = null;
 
-  function isOpen(){ return overlay.classList.contains("show"); }
-  function open(){ overlay.classList.add("show"); try{ document.body.style.overflow = "hidden"; }catch(_){} }
-  function close(){ overlay.classList.remove("show"); try{ document.body.style.overflow = ""; }catch(_){} }
-  function markSeen(){ try{ sessionStorage.setItem("tg_popup_seen","1"); }catch(_){} }
-  function wasSeen(){ try{ return sessionStorage.getItem("tg_popup_seen") === "1"; }catch(_){ return false; } }
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[c]));
 
-  document.getElementById("joinNow").addEventListener("click", () => {
-    window.open("https://t.me/+pN15_8gc54s2NDU1","_blank","noopener");
-    markSeen(); close();
-  });
-  document.getElementById("joinedBtn").addEventListener("click", () => { markSeen(); close(); });
-  overlay.addEventListener("click", (e) => {
-    if(e.target === overlay){ markSeen(); close(); }
-  });
-  document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape" && isOpen()){ markSeen(); close(); }
-  });
-
-  return { open, close, isOpen, markSeen, wasSeen };
-})();
-
-/* ============================================================
-   TIER / DEVICE PROFILE
-   ============================================================ */
-function getTier(){
-  const mem = navigator.deviceMemory || 4;
-  const cores = navigator.hardwareConcurrency || 4;
-  const mob = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const net = conn ? (conn.effectiveType || "4g") : "4g";
-  if(!mob) return "high";
-  if(mem <= 1.5 || cores <= 2 || net === "slow-2g" || net === "2g") return "low";
-  if(mem <= 3 || cores <= 4) return "mid";
-  return "high";
-}
-const TIER = getTier();
-const PROF = {
-  low : { buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000  },
-  mid : { buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000 },
-  high: { buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000 }
-}[TIER];
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function esc(v){
-  return String(v ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
+function showHubToast(msg, ms = 2400) {
+  const el = $("hubToast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(hubToastTimer);
+  if (ms) hubToastTimer = setTimeout(() => el.classList.remove("show"), ms);
 }
 
-function parseDate(value){
-  if(!value) return null;
-  let s = String(value).trim();
-  if(!s || s === "null" || s === "undefined") return null;
+function safeFileName(title) {
+  const base = String(title || "thumbnail")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50) || "thumbnail";
+  return `${base}.jpg`;
+}
 
-  const isIST = /\bIST\b/i.test(s);
-  if(isIST) s = s.replace(/\s*IST\s*$/i, "").trim();
-
-  let m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?\s*([+-]\d{2}:?\d{2}|Z)?$/);
-  if(m){
-    const [,y,mo,d,h,mi,se="00",off] = m;
-    let offset = "+0000";
-    if(off) offset = off === "Z" ? "+0000" : (off.includes(":") ? off.replace(":","") : off);
-    else if(isIST) offset = "+0530";
-    const iso = `${y}-${mo.padStart(2,"0")}-${d.padStart(2,"0")}T${h.padStart(2,"0")}:${mi}:${se}${offset.slice(0,3)}:${offset.slice(3)}`;
-    const dt = new Date(iso);
-    if(!isNaN(dt.getTime())) return dt;
+async function downloadThumbnail(url, title) {
+  const cleanUrl = String(url || "").trim();
+  if (!/^https?:\/\//i.test(cleanUrl) || cleanUrl === "null") {
+    showHubToast("Thumbnail unavailable");
+    return;
   }
+  const fileName = safeFileName(title);
+  try {
+    const res = await fetch(cleanUrl, { mode: "cors" });
+    if (!res.ok) throw Error("Fetch failed");
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
+    showHubToast("Thumbnail downloaded");
+  } catch (e) {
+    const a = document.createElement("a");
+    a.href = cleanUrl;
+    a.download = fileName;
+    a.target = "_blank";
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showHubToast("Opened thumbnail");
+  }
+}
 
-  const MONTHS = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
-  m = s.match(/^(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})[,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?\s*([+-]\d{2}:?\d{2})?$/i);
-  if(m){
-    const [,d,mon,y,h,mi,se="00",ampm,off] = m;
-    const mi2 = MONTHS[mon.toLowerCase().slice(0,3)];
-    if(mi2 !== undefined){
-      let hour = parseInt(h,10);
-      if(ampm){
-        if(ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
-        if(ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+function makePrimeShortId(title, dateObj) {
+  const words = String(title || "match")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const acronym = words.map(w => w.slice(0, 2)).join("") || "pv";
+
+  const istParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(dateObj);
+  const hh = (istParts.find(p => p.type === "hour")?.value || "00").padStart(2, "0");
+  const mm = (istParts.find(p => p.type === "minute")?.value || "00").padStart(2, "0");
+
+  return `p_${acronym}-${hh}${mm}`;
+}
+
+function makeShortId(source, rawPart, fallbackNum) {
+  const pref = source === "willow" ? "w" : "j";
+  const cleaned = String(rawPart || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 10);
+  return `${pref}_${cleaned || fallbackNum}`;
+}
+
+function shortLangCode(label, fallbackIdx = 0) {
+  const clean = String(label || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (clean.length >= 2) return clean.slice(0, 2);
+  if (clean.length === 1) return `${clean}${fallbackIdx + 1}`;
+  return `s${fallbackIdx + 1}`;
+}
+
+function streamParamValue(ev, stream, idx) {
+  if (!stream) return "";
+  if (ev && ev.source === "prime") {
+    return encodeURIComponent(shortLangCode(stream.label, idx));
+  }
+  if (ev && ev.source === "willow") {
+    return encodeURIComponent(stream.label || `s${idx + 1}`);
+  }
+  const rawName = String(stream.label || `stream_${idx + 1}`).trim();
+  return encodeURIComponent(rawName.replace(/\s+/g, "_"));
+}
+
+function buildWatchHash(ev, idx) {
+  const s = ev.streams[idx] || ev.streams[0];
+  const stVal = streamParamValue(ev, s, idx);
+  return `#w?id=${encodeURIComponent(ev.id)}${stVal ? `&st=${stVal}` : ""}`;
+}
+
+function isBlockedTamashaOrTapmad(labelOrUrl) {
+  return /\b(tamasha|tapmad)\b/i.test(String(labelOrUrl || ""));
+}
+
+function detectPlatformTag(stream) {
+  if (!stream) return "";
+  const link = String(stream.link || "");
+  const isMpd = /\.mpd(?:\?|$)/i.test(link);
+  const isM3u8 = /\.m3u8(?:\?|$)/i.test(link);
+  const hasKeys = Boolean(
+    (stream.clearKeys && Object.keys(stream.clearKeys).length) ||
+    (stream.kid && stream.key) ||
+    (stream.key && String(stream.key).includes(":"))
+  );
+  if (isMpd && hasKeys) return "android";
+  if (isM3u8) return "ios";
+  return "";
+}
+
+function tinyFmtTag(tag) {
+  if (!tag) return "";
+  return `<span class="fmt-tag ${tag}">${tag}</span>`;
+}
+
+function eventFmtBadges(streams) {
+  if (!Array.isArray(streams) || !streams.length) return "";
+  const set = new Set();
+  streams.forEach(s => {
+    const t = detectPlatformTag(s);
+    if (t) set.add(t);
+  });
+  return Array.from(set).map(tinyFmtTag).join("");
+}
+
+function showNotice(msg, ms = 3000) {
+  const el = $("playerNotice");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(noticeTimer);
+  if (ms) noticeTimer = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const next = dark ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("cx_theme", next);
+  $("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
+}
+
+function updateAlertIcon() {
+  const btn = $("alertToggleBtn");
+  if (!btn) return;
+  const ok = state.alertsOn && ("Notification" in window) && Notification.permission === "granted";
+  btn.classList.toggle("alert-active", ok);
+}
+
+async function toggleAlerts() {
+  if (!("Notification" in window)) return;
+  if (!state.alertsOn) {
+    const p = await Notification.requestPermission();
+    if (p === "granted") {
+      state.alertsOn = true;
+      localStorage.setItem("cx_alerts", "true");
+      new Notification("CʀɪᴄxCʀᴀᴛᴇ", { body: "Live match alerts enabled." });
+    }
+  } else {
+    state.alertsOn = false;
+    localStorage.setItem("cx_alerts", "false");
+  }
+  updateAlertIcon();
+}
+
+function checkAlerts() {
+  if (!state.alertsOn || !("Notification" in window) || Notification.permission !== "granted") return;
+  const all = [...state.jsonCricket, ...state.primeCricket, ...state.willowCricket];
+  let changed = false;
+  all.forEach(ev => {
+    if (getStatus(ev) === "live" && state.favs.includes(ev.id) && !state.notified.includes(ev.id)) {
+      new Notification("Live Now", { body: ev.title });
+      state.notified.push(ev.id);
+      changed = true;
+    }
+  });
+  if (changed) localStorage.setItem("cx_notified", JSON.stringify(state.notified.slice(-100)));
+}
+
+function parseDateAny(val) {
+  if (!val) return new Date(Date.now() + 3600000);
+  if (typeof val === "number" && !isNaN(val) && val > 0) return new Date(val);
+  let s = String(val).trim();
+  if (!s || s === "null" || s === "undefined") return new Date(Date.now() + 3600000);
+
+  const ist = /\bIST\b/i.test(s);
+  const bdt = /\bBDT\b/i.test(s);
+
+  if (ist || bdt) {
+    s = s.replace(/\s*(IST|BDT)\s*$/i, "").trim();
+    const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    let dayOffset = 0;
+    if (/^tomorrow\b/i.test(s)) {
+      dayOffset = 1;
+      s = s.replace(/^tomorrow\s+/i, "").trim();
+    } else if (/^today\b/i.test(s)) {
+      s = s.replace(/^today\s+/i, "").trim();
+    } else {
+      const wkMatch = s.match(/^(sun|mon|tue|wed|thu|fri|sat)[a-z]*,?\s+([a-z]{3})\s+(\d{1,2})\s+(.+)$/i);
+      if (wkMatch) {
+        const year = nowIST.getFullYear();
+        const candidate = new Date(`${wkMatch[2]} ${wkMatch[3]} ${year} ${wkMatch[4]}`);
+        if (!isNaN(candidate)) {
+          if (bdt) candidate.setMinutes(candidate.getMinutes() - 30);
+          return candidate;
+        }
       }
-      const offset = off ? (off.includes(":") ? off.replace(":","") : off) : (isIST ? "+0530" : "+0000");
-      const iso = `${y}-${String(mi2+1).padStart(2,"0")}-${d.padStart(2,"0")}T${String(hour).padStart(2,"0")}:${mi}:${se}${offset.slice(0,3)}:${offset.slice(3)}`;
-      const dt = new Date(iso);
-      if(!isNaN(dt.getTime())) return dt;
+    }
+
+    const timeMatch = s.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+    if (timeMatch) {
+      let hr = Number(timeMatch[1]);
+      const min = Number(timeMatch[2] || 0);
+      const mer = (timeMatch[3] || "").toUpperCase();
+      if (mer === "PM" && hr < 12) hr += 12;
+      if (mer === "AM" && hr === 12) hr = 0;
+
+      const base = new Date(Date.UTC(
+        nowIST.getFullYear(),
+        nowIST.getMonth(),
+        nowIST.getDate() + dayOffset,
+        hr,
+        min,
+        0
+      ));
+      const offsetMins = bdt ? -360 : -330;
+      return new Date(base.getTime() + offsetMins * 60000);
     }
   }
+
+  const m1 = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m1) {
+    const [, y, mo, d, h, mi, se = "00"] = m1;
+    const dt = new Date(`${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}T${h.padStart(2, "0")}:${mi}:${se}${ist ? "+05:30" : "Z"}`);
+    if (!isNaN(dt)) return dt;
+  }
+  const m2 = s.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+  if (m2) {
+    const [, d, mo, y, h, mi, se] = m2;
+    const dt = new Date(`${y}-${mo}-${d}T${h}:${mi}:${se}Z`);
+    if (!isNaN(dt)) return dt;
+  }
   const dt = new Date(s);
-  return isNaN(dt.getTime()) ? null : dt;
+  return isNaN(dt) ? new Date(Date.now() + 3600000) : dt;
 }
 
-function getStatus(e){
+function getStatus(ev) {
+  if (ev.forceLive) return "live";
   const now = Date.now();
-  if(now < e.st) return "soon";
-  if(now <= e.en) return "live";
+  if (now < ev.st.getTime()) return "soon";
+  if (now <= ev.en.getTime()) return "live";
   return "done";
 }
 
-function duration(ms){
-  const mins = Math.max(0, Math.round(ms / 60000));
-  const h = Math.floor(mins / 60), m = mins % 60;
-  if(h >= 24){ const d = Math.floor(h / 24); return `${d}d ${h % 24}h`; }
-  if(h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
-function timeString(d){ return d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}); }
-function dateString(d){ return d.toLocaleDateString([], {day:"numeric", month:"short"}); }
-
-function sportIcon(sport){
-  const s = String(sport).toLowerCase();
-  if(s.includes("cricket")) return "🏏";
-  if(s.includes("football") || s.includes("soccer")) return "⚽";
-  if(s.includes("wwe") || s.includes("wrestling")) return "🤼";
-  if(s.includes("basketball")) return "🏀";
-  if(s.includes("tennis")) return "🎾";
-  if(s.includes("baseball")) return "⚾";
-  if(s.includes("hockey")) return "🏒";
-  if(s.includes("motor") || s.includes("formula") || s.includes("motogp")) return "🏎️";
-  if(s.includes("boxing")) return "🥊";
-  if(s.includes("ufc") || s.includes("mma")) return "🥋";
-  if(s.includes("snooker") || s.includes("pool")) return "🎱";
-  if(s.includes("cycling")) return "🚴";
-  return "🏆";
+function fmtDur(ms) {
+  const n = Math.max(0, Math.round(ms / 60000));
+  const h = Math.floor(n / 60), m = n % 60;
+  if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
+  return h ? `${h}h ${m}m` : `${m}m`;
 }
 
-function crest(url, name){
-  const initials = String(name || "")
-    .replace(/[^A-Za-z0-9 ]/g,"").split(/\s+/).filter(Boolean)
-    .map(x => x[0]).join("").slice(0,3).toUpperCase() || "?";
-  if(!url || url === "null") return `<div class="crest">${esc(initials)}</div>`;
-  return `<div class="crest"><span>${esc(initials)}</span><img src="${esc(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div>`;
+const fmtTime = d => d.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit" });
+const fmtDate = d => d.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short" });
+
+function isCricketOnly(itemText, explicitSport = "") {
+  const sp = String(explicitSport || "").trim().toLowerCase();
+  if (sp && sp !== "cricket" && sp !== "sports" && sp !== "other") {
+    return false;
+  }
+  if (/\b(football|soccer|nba|wnbl|basketball|ufc|mma|boxing|grand prix|formula\s*1|f1|tennis|badminton|hockey|kabaddi|wrestling|volleyball|rugby|golf)\b/i.test(itemText)) {
+    return false;
+  }
+  return sp === "cricket" || /\b(cricket|ipl|wpl|cpl|psl|bbl|t20|odi|test\s+match|1st\s+test|2nd\s+test|3rd\s+test|1st\s+odi|2nd\s+odi|3rd\s+odi|1st\s+t20|2nd\s+t20|3rd\s+t20|ashes|world\s+cup|asia\s+cup|champions\s+trophy|ranji|vijay\s+hazare|syed\s+mushtaq|big\s+bash|super\s+smash|hundred|lpl|bpl|sa20|willow|cric)\b/i.test(itemText);
 }
 
-/* ============================================================
-   FETCH & NORMALIZE
-   ============================================================ */
-async function fetchJson(url){
-  LOG("Fetching:", url);
-  const res = await fetch(url, {cache:"no-store"});
-  if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-  const text = await res.text();
-  if(text.trim().startsWith("<")) throw new Error("Server returned HTML instead of JSON.");
-  try{ return JSON.parse(text); }
-  catch(err){ throw new Error("Invalid JSON: " + err.message); }
+function extractTeamsIfMatchup(teamA, teamB, title, comp) {
+  let a = String(teamA || "").trim();
+  let b = String(teamB || "").trim();
+
+  if (!b && /\bvs\.?\b/i.test(title)) {
+    const parts = title.split(/\s+\bvs\.?\b\s+/i);
+    if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
+      const leftChunks = parts[0].trim().split(/\s+-\s+/);
+      a = leftChunks[leftChunks.length - 1].trim();
+      b = parts.slice(1).join(" vs ").trim();
+    }
+  }
+
+  const normA = a.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const normB = b.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const normComp = String(comp || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (!b || !normA || !normB || normA === normB || (normComp && normA === normComp && normB === normComp)) {
+    return { isMatchup: false, a: a || title, b: "" };
+  }
+
+  return { isMatchup: true, a, b };
 }
 
-function normalize(data){
-  const list = Array.isArray(data) ? data : (data && Array.isArray(data.events) ? data.events : null);
-  if(!list) throw new Error("Expected an events array.");
+async function fetchJson(url) {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const raw = await res.text();
+    if (!raw || raw.trim().startsWith("<")) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function parseJsonCricket(data) {
+  const list = Array.isArray(data)
+    ? data
+    : (Array.isArray(data?.events) ? data.events : (Array.isArray(data?.matches) ? data.matches : Object.values(data || {})));
+  if (!Array.isArray(list)) return [];
+
   const events = [];
-  let ok = 0, skipped = 0;
+  list.forEach((item, idx) => {
+    if (!item || typeof item !== "object") return;
+    const info = item.event || item.eventInfo || item.matchInfo || item;
+    const sport = String(item.Category || item.sport || info.category || info.name || item.cat || "").trim();
+    const rawA = String(info.teamA || info.home || item.homeTeam || "").trim();
+    const rawB = String(info.teamB || info.away || item.awayTeam || "").trim();
+    const comp = String(info.type || info.eventName || item.tournament || item.title || "").trim();
+    const title = String(item.title || item.event_name || (rawA && rawB ? `${rawA} vs ${rawB}` : comp || "Cricket Match")).trim();
 
-  list.forEach((item, index) => {
-    try{
-      const info = item.event || {};
-      const st = parseDate(info.startTimeIST) || parseDate(info.startTime) || parseDate(item.startTime);
-      if(!st){ skipped++; return; }
-      let en = parseDate(info.endTimeIST) || parseDate(info.endTime) || parseDate(item.endTime);
-      if(!en || en <= st) en = new Date(st.getTime() + 3 * 3600000);
+    if (!isCricketOnly(`${sport} ${comp} ${title} ${rawA} ${rawB}`, sport)) return;
 
-      const rawStreams = Array.isArray(item.streams) ? item.streams : [];
-      const seen = new Set();
-      const streams = [];
-      rawStreams.forEach((s, i) => {
-        if(!s) return;
-        const link = String(s.link || s.url || "").split("|")[0].trim();
-        if(!link || !/^https?:\/\//i.test(link)) return;
-        if(seen.has(link)) return;
-        const t = String(s.type || "").toLowerCase();
-        const isDash = t === "dash" || /\.mpd(\?|$)/i.test(link);
-        const isHls  = t === "hls"  || t === "0" || /\.m3u8(\?|$)/i.test(link);
-        if(!isDash && !isHls) return;
-        seen.add(link);
-        streams.push({
-          title: String(s.title || s.name || `Stream ${i+1}`).trim(),
-          link,
-          type: isDash ? "DASH" : "HLS",
-          key: String(s.api || s.key || "").trim()
-        });
+    const matchup = extractTeamsIfMatchup(rawA, rawB, title, comp);
+    const st = parseDateAny(info.startTimeIST || info.startTime || item.startTime || item.time);
+    let en = parseDateAny(info.endTimeIST || info.endTime || item.endTime);
+    if (!en || en <= st) en = new Date(st.getTime() + 4 * 3600000);
+
+    const statusUpper = String(item.status || info.status || "").toUpperCase();
+    const forceLive = statusUpper === "LIVE" || statusUpper === "IN_PLAY" || statusUpper === "STARTED";
+
+    const seen = new Set();
+    const streams = [];
+    const rawStreams = Array.isArray(item.streams) ? item.streams : (Array.isArray(info.streams) ? info.streams : []);
+    rawStreams.forEach((s, sIdx) => {
+      if (!s) return;
+      const chName = String(s.channel_name || s.title || s.name || `Stream ${sIdx + 1}`).trim();
+      const link = String(s.stream_url || s.link || s.url || s.src || "").split("|")[0].trim();
+      if (!/^https?:\/\//i.test(link) || seen.has(link)) return;
+      if (isBlockedTamashaOrTapmad(`${chName} ${link}`)) return;
+      seen.add(link);
+      streams.push({
+        id: `js_${idx}_${sIdx}`,
+        label: chName,
+        link,
+        key: String(s.key || s.api || "").trim(),
+        kid: String(s.kid || "").trim(),
+        clearKeys: null
       });
+    });
 
-      events.push({
-        id: item.id ?? String(index),
-        sport: String(info.category || info.name || item.cat || "Other").trim(),
-        comp: String(info.type || info.name || item.title || "").trim(),
-        a: info.teamA || info.home || "",
-        b: info.teamB || info.away || "",
-        fa: info.teamAFlag || info.homeFlag || "",
-        fb: info.teamBFlag || info.awayFlag || "",
-        st, en, streams
-      });
-      ok++;
-    }catch(err){ ERR(`Event #${index} error:`, err); skipped++; }
+    const fa = String(info.teamAFlag || info.homeFlag || item.homeFlag || "").trim();
+    const fb = String(info.teamBFlag || info.awayFlag || item.awayFlag || "").trim();
+    const poster = String(item.cover_image || info.cover_image || fa || fb || "").trim();
+
+    const compactId = makeShortId("json", item.id || `${title}_${idx}`, idx + 1);
+    events.push({
+      id: compactId,
+      source: "json",
+      title,
+      sport: "Cricket",
+      comp: comp || "Cricket",
+      isMatchup: matchup.isMatchup,
+      a: matchup.a,
+      b: matchup.b,
+      fa,
+      fb,
+      poster,
+      st,
+      en,
+      forceLive,
+      streams
+    });
   });
-  LOG(`Normalize done — ok=${ok}, skipped=${skipped}`);
+
   return events;
 }
 
-let dataLoading = false;
-let lastUpdatedAt = 0;
-async function loadData(){
-  if(dataLoading) return;
-  dataLoading = true;
-  const refreshButton = $("refreshMatches");
-  if(refreshButton){
-    refreshButton.classList.add("is-loading");
-    refreshButton.disabled = true;
-    refreshButton.setAttribute("aria-busy","true");
-  }
-  try{
-    const raw = await fetchJson(DATA_URL);
-    const nextEvents = normalize(raw);
-    state.events = nextEvents;
-    lastUpdatedAt = Date.now();
-    renderHub();
-    if(!nextEvents.length) $("list").innerHTML = `<div class="state"><div class="err-icon">!</div><h3>No events found</h3><p>The feed loaded but no matches had a usable start time.</p></div>`;
-    if(!window.__booted){
-      window.__booted = true;
-      route();
-      maybeShowHubPopup();
+function extractClearKeysFromMap(pairs) {
+  const map = {};
+  if (!Array.isArray(pairs)) return null;
+  pairs.forEach(p => {
+    const parts = String(p || "").trim().split(":");
+    if (parts.length >= 2) {
+      const kid = parts.shift().trim().replace(/^0x/i, "").toLowerCase();
+      const key = parts.join(":").trim().replace(/^0x/i, "").toLowerCase();
+      if (/^[0-9a-f]{32}$/.test(kid) && /^[0-9a-f]{32}$/.test(key)) map[kid] = key;
     }
-  }catch(err){
-    ERR("Load failed:", err);
-    if(state.events.length){
-      renderHub();
-      $("resultsMeta").textContent = "Refresh failed · Showing previously loaded matches";
-    }else{
-      $("list").innerHTML = `<div class="state"><div class="err-icon">!</div><h3>Could not load events</h3><p>${esc(err.message)}</p><button class="retry-btn" type="button" onclick="loadData()">Try again</button></div>`;
-      $("resultsMeta").textContent = "Unable to connect to match feed";
-    }
-  }finally{
-    dataLoading = false;
-    if(refreshButton){
-      refreshButton.classList.remove("is-loading");
-      refreshButton.disabled = false;
-      refreshButton.removeAttribute("aria-busy");
-    }
-  }
-}
-
-/* ============================================================
-   HUB RENDERING
-   ============================================================ */
-function eventCard(e){
-  const status = getStatus(e);
-  const now = Date.now();
-  const isLive = status === "live";
-  let statusClass = "", statusText = "";
-  if(status === "live"){ statusClass = "live"; statusText = "Live"; }
-  else if(status === "soon"){ statusClass = "soon"; statusText = `in ${duration(e.st - now)}`; }
-  else { statusClass = "done"; statusText = "Finished"; }
-  const n = e.streams.length;
-  const streamInfo = n === 0 ? `<span class="stream-count empty">No streams</span>` : `<span class="stream-count">${n} stream${n > 1 ? "s" : ""}</span>`;
-  const sameTeam = !e.b || e.a === e.b;
-  const sideA = `<div class="team">${crest(e.fa, e.a || e.comp)}<div class="team-name">${esc(e.a || e.comp || "TBD")}</div></div>`;
-  const sideB = sameTeam ? `<div class="team"></div>` : `<div class="team">${crest(e.fb, e.b)}<div class="team-name">${esc(e.b)}</div></div>`;
-  const matchLabel = [e.a, e.b].filter(Boolean).join(" vs ") || e.comp || "Match";
-  // Stream URLs can be listed before kickoff; an upcoming fixture is not live yet.
-  const actionLabel = status === "soon" ? "Upcoming match details" : n ? "Watch match" : "View match details";
-  const ctaLabel = status === "soon" ? "Upcoming" : n ? "Watch" : "Details";
-  return `
-    <button class="card ${isLive ? "is-live" : ""}" data-watch-event="${esc(e.id)}" type="button" aria-label="${esc(matchLabel)} · ${esc(statusText)} · ${n} streams · ${actionLabel}">
-      <div class="card-top">
-        <span class="sport-chip"><span class="icon">${sportIcon(e.sport)}</span><span class="name">${esc(e.sport)}${e.comp ? " · " + esc(e.comp) : ""}</span></span>
-        <span class="status ${statusClass}">${statusText}</span>
-      </div>
-      <div class="card-body">
-        ${sideA}
-        <div class="versus"><div class="kickoff-time">${timeString(e.st)}</div><div class="kickoff-date">${dateString(e.st)} · IST</div></div>
-        ${sideB}
-      </div>
-      <div class="card-foot">${streamInfo}<span class="watch-cta">${ctaLabel} <span class="arrow">→</span></span></div>
-    </button>
-  `;}
-
-function renderHub(){
-  const counts = {live:0, soon:0, done:0};
-  state.events.forEach(e => counts[getStatus(e)]++);
-  const sports = ["All", ...new Set(state.events.map(e => e.sport).filter(Boolean))];
-  $("sports").innerHTML = sports.map(s => {
-    const n = s === "All" ? state.events.length : state.events.filter(e => e.sport === s).length;
-    return `<button class="pill ${state.sport === s ? "active" : ""}" data-sport="${esc(s)}" role="tab" aria-selected="${state.sport === s}">${s === "All" ? "🏆" : sportIcon(s)} ${esc(s)}<span class="count">${n}</span></button>`;
-  }).join("");
-  const tabs = [["all","All",state.events.length],["live","Live",counts.live],["soon","Upcoming",counts.soon]];
-  $("tabs").innerHTML = tabs.map(([key,label,n]) =>
-    `<button class="pill ${state.tab === key ? "active" : ""}" data-tab="${key}" role="tab" aria-selected="${state.tab === key}">${key === "live" ? "🔴" : key === "soon" ? "📅" : "✅"} ${label}<span class="count">${n}</span></button>`
-  ).join("");
-  const q = state.search.trim().toLowerCase();
-  const rows = state.events
-    .filter(e => (state.tab === "all" || getStatus(e) === state.tab) && (state.sport === "All" || e.sport === state.sport))
-    .filter(e => !q || [e.a,e.b,e.comp,e.sport].some(v => String(v || "").toLowerCase().includes(q)))
-    .sort((a, b) => {
-      const order = {live:0, soon:1, done:2};
-      const sa = order[getStatus(a)] ?? 3, sb = order[getStatus(b)] ?? 3;
-      if(sa !== sb) return sa - sb;
-      return a.st - b.st;
-    });
-  $("list").innerHTML = rows.length ? rows.map(eventCard).join("") : `<div class="state"><div class="err-icon">⌕</div><h3>No matches found</h3><p>Try another team name or clear your filters.</p><button class="retry-btn" type="button" onclick="clearMatchFilters()">Clear filters</button></div>`;
-  const meta = $("resultsMeta");
-  if(meta){
-    const shown = rows.length === 1 ? "1 match" : rows.length + " matches";
-    const stamp = lastUpdatedAt ? " · Updated " + new Date(lastUpdatedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : "";
-    meta.textContent = shown + " found" + stamp;
-  }
-  const clear = $("clearSearch");
-  if(clear) clear.hidden = !state.search;
-  $("clock").textContent = new Date().toLocaleString("en-IN", {timeZone:"Asia/Kolkata",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) + " IST";
-}
-
-/* ============================================================
-   HUB POPUP (landing page only, once per session)
-   ============================================================ */
-function maybeShowHubPopup(){
-  if(TG.wasSeen()) return;
-  if(location.hash.includes("watch")) return; // direct watch URL — handled in player
-  setTimeout(() => {
-    if(!TG.isOpen() && !location.hash.includes("watch")){
-      TG.open();
-    }
-  }, 3000);
-}
-
-/* ============================================================
-   ROUTER — opens player directly, no popup gate
-   ============================================================ */
-function route(){
-  const raw = location.hash.replace(/^#\/?/, "");
-  const [path, qs] = raw.split("?");
-  const params = new URLSearchParams(qs || "");
-  if(path === "watch") openPlayer(params.get("id"), Number(params.get("stream") || 0));
-  else showHub();
-}
-
-function showHub(){
-  stopPlayback();
-  state.currentEvent = null;
-  state.currentStreams = [];
-  $("playerView").classList.remove("active");
-  $("hubView").classList.add("active");
-  window.scrollTo(0, 0);
-}
-
-/* ============================================================
-   PLAYER STATE
-   ============================================================ */
-let player = null;
-let overlay = null;
-let jwInstance = null;
-let playbackToken = 0;
-
-let sessionStart = 0;
-let thermalTimer = null;
-let thermalApplied = false;
-let restrictionsRelaxed = false;
-let refreshing = false;
-let retries = 0;
-let edgeTried = false;
-let started = false;
-let stallTmr = null;
-let currentStreamInfo = null;
-let jwFitMode = 0;
-
-/* TG shown flag — reset per match open, blocks popup on stream switch */
-let tgShownForMatch = false;
-
-/* Trigger the popup AFTER playback starts */
-function showPlayerTGPopup(){
-  if(tgShownForMatch) return;
-  tgShownForMatch = true;
-  setTimeout(() => {
-    if(!TG.isOpen()) TG.open();
-  }, 1500);
-}
-
-/* ============================================================
-   OPEN PLAYER
-   ============================================================ */
-async function openPlayer(id, index){
-  $("hubView").classList.remove("active");
-  $("playerView").classList.add("active");
-  window.scrollTo(0, 0);
-
-  const event = state.events.find(e => String(e.id) === String(id));
-  if(!event){
-    state.currentEvent = null;
-    state.currentStreams = [];
-    $("playerTitle").textContent = "Match not found";
-    $("playerSub").textContent = "";
-    $("streams").innerHTML = "";
-    $("player-container").innerHTML = `<div class="screen-msg">This match is no longer available.</div>`;
-    return;
-  }
-
-  state.currentEvent = event;
-  state.currentStreams = event.streams || [];
-  state.currentIndex = index;
-
-  // Reset the flag — popup will show again after this match plays
-  tgShownForMatch = false;
-
-  const matchName = event.a && event.b ? `${event.a} vs ${event.b}` : (event.comp || "CRICZONE LIVE");
-  $("playerTitle").textContent = matchName;
-  $("playerSub").textContent = [event.sport, event.comp].filter(Boolean).join(" · ");
-  $("czTeamA").textContent = event.a || event.comp || "Team A";
-  $("czTeamB").textContent = event.b || event.comp || "Team B";
-  const setTeamMark = (id, flag, name, fallback) => {
-    const node = $(id);
-    const safeFlag = String(flag || "");
-    node.innerHTML = safeFlag && /^https?:\/\//i.test(safeFlag)
-      ? `<img src="${esc(safeFlag)}" alt="" loading="lazy" onerror="this.remove();this.parentNode.textContent='${esc(fallback)}'">`
-      : esc(fallback);
-  };
-  setTeamMark("czTeamLogoA", event.fa, event.a, (event.a || "A").slice(0,2).toUpperCase());
-  setTeamMark("czTeamLogoB", event.fb, event.b, (event.b || "B").slice(0,2).toUpperCase());
-
-  renderPlayerStreams(index);
-
-  const record = state.currentStreams[index];
-  if(record) await playRecord(record, index);
-  else $("player-container").innerHTML = `<div class="screen-msg">No playable streams for this match.</div>`;
-}
-
-/* ============================================================
-   TOAST / ERR
-   ============================================================ */
-function toast(msg, type, dur){
-  const el = $("status");
-  if(!el) return;
-  el.innerHTML = `<span class="st-dot"></span><span>${esc(msg)}</span>`;
-  el.className = "show " + (type || "ok");
-  clearTimeout(el.__tmr);
-  if(dur !== 0){
-    el.__tmr = setTimeout(() => {
-      el.className = el.className.replace("show","").trim();
-    }, dur || 4000);
-  }
-}
-
-function shakaErrStr(e){
-  if(!e) return "Playback Error";
-  const cat = {1:"Network",2:"Text",3:"Media",4:"Manifest",5:"Stream",6:"DRM",7:"Player"};
-  let s = (cat[e.category] || "Error") + " " + e.category + ":" + e.code;
-  if(e.data && e.data[0] && typeof e.data[0] === "string") s += " — " + e.data[0].slice(0,72);
-  return s;
-}
-
-function ratioLabel(w,h){
-  if(!w || !h) return "—";
-  const gcd = (a,b) => b ? gcd(b,a%b) : a;
-  const g = gcd(w,h) || 1;
-  const rw = w/g, rh = h/g;
-  const named = {"16:9":16/9,"4:3":4/3,"21:9":21/9,"1:1":1,"9:16":9/16,"3:2":3/2,"5:4":5/4,"2:1":2};
-  const real = w/h;
-  let best = null, bestD = .02;
-  Object.keys(named).forEach(k => {
-    const d = Math.abs(named[k] - real);
-    if(d < bestD){ bestD = d; best = k; }
   });
-  if(best) return best;
-  if(rw <= 40 && rh <= 40) return rw + ":" + rh;
-  return real.toFixed(2) + ":1";
+  return Object.keys(map).length ? map : null;
 }
 
-function getClearKey(record){
-  const raw = String(record && record.key || "").trim();
-  if(!raw || !raw.includes(":")) return null;
-  const parts = raw.split(":");
-  if(parts.length < 2) return null;
-  const kid = parts.shift().trim().replace(/^0x/i,"").toLowerCase();
-  const key = parts.join(":").trim().replace(/^0x/i,"").toLowerCase();
-  if(!/^[0-9a-f]+$/.test(kid) || !/^[0-9a-f]+$/.test(key)) return null;
-  return {keyId: kid, key};
+function parseDrmKeyString(drmStr) {
+  const s = String(drmStr || "").trim();
+  if (!s.includes(":")) return null;
+  const parts = s.split(":");
+  const kid = parts.shift().trim().replace(/^0x/i, "").toLowerCase();
+  const key = parts.join(":").trim().replace(/^0x/i, "").toLowerCase();
+  if (/^[0-9a-f]{32}$/.test(kid) && /^[0-9a-f]{32}$/.test(key)) return { [kid]: key };
+  return null;
 }
 
-function makeLoadingEl(){
-  const el = document.createElement("div");
-  el.className = "loading-overlay";
-  el.innerHTML = `<svg width="34" height="34" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="16" stroke="#1a1a1a" stroke-width="4"/><path d="M20 4a16 16 0 0 1 16 16" stroke="#A855F7" stroke-width="4" stroke-linecap="round"/></svg><p>Loading stream…</p>`;
-  return el;
-}
+function parsePrimeCricketEvents(data) {
+  if (!data || typeof data !== "object") return [];
+  const raw = [];
+  if (Array.isArray(data.live)) data.live.forEach(item => raw.push({ item, forceLive: true }));
+  if (Array.isArray(data.upcoming)) data.upcoming.forEach(item => raw.push({ item, forceLive: false }));
 
-/* ============================================================
-   FIT BUTTON (Shaka)
-   ============================================================ */
-function injectFitButton(container, vid){
-  const panel = container.querySelector(".shaka-controls-button-panel");
-  if(!panel) return false;
-  if(panel.querySelector(".sp-fit-btn")) return true;
-  const anchor = panel.querySelector(".shaka-fullscreen-button");
-  const FITS = ["contain","fill","cover"];
-  const FIT_LABELS = {contain:"Fit", fill:"Fill", cover:"Zoom"};
-  let fitIdx = 0;
-  const fitBtn = document.createElement("button");
-  fitBtn.className = "sp-btn sp-fit-btn";
-  fitBtn.title = "Video Fit: Fit";
-  fitBtn.setAttribute("aria-label", "Cycle Video Fit Mode");
-  fitBtn.innerHTML = '<span class="fit-pill">—</span>';
-  if(anchor) panel.insertBefore(fitBtn, anchor);
-  else panel.appendChild(fitBtn);
-  let currentRatio = "—";
-  function applyFit(i){
-    fitIdx = i;
-    const m = FITS[i];
-    vid.classList.remove("mode-fill","mode-cover");
-    if(m === "fill") vid.classList.add("mode-fill");
-    if(m === "cover") vid.classList.add("mode-cover");
-    fitBtn.classList.remove("mode-fill","mode-cover");
-    if(m !== "contain") fitBtn.classList.add("mode-" + m);
-    fitBtn.title = "Video Fit: " + FIT_LABELS[m];
-    const pill = fitBtn.querySelector(".fit-pill");
-    if(pill) pill.textContent = m === "contain" ? currentRatio : FIT_LABELS[m];
-  }
-  fitBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    applyFit((fitIdx + 1) % FITS.length);
-  });
-  ["fullscreenchange","webkitfullscreenchange"].forEach(ev => {
-    document.addEventListener(ev, () => {
-      if(!document.fullscreenElement && !document.webkitFullscreenElement) applyFit(0);
+  const map = new Map();
+  raw.forEach(({ item, forceLive }, idx) => {
+    if (!item || typeof item !== "object") return;
+    const cat = item?.catalogMetadata?.catalog || {};
+    const title = String(cat.eventTitle || item.eventTitle || item.title || "").trim();
+    const provider = String(item?.providerLogoInfo?.name || "Prime Video").trim();
+    if (!isCricketOnly(`${title} ${provider} ${item.title || ""}`, "cricket")) return;
+
+    const dt = item?.catalogMetadata?.liveEventDateTime || {};
+    const st = parseDateAny(dt.startTimeMillis || dt.startTimeIST || item?.liveSchedule?.timeBadge);
+    const en = new Date(st.getTime() + (/\btest\b/i.test(title) ? 8 * 3600000 : 4 * 3600000));
+    const primeId = makePrimeShortId(title || `match_${idx}`, st);
+
+    const poster = String(
+      item?.images?.coverImageFragments?.mediaCentralUrl ||
+      item?.images?.boxArtImageFragments?.mediaCentralUrl ||
+      item?.catalogMetadata?.images?.coverImage ||
+      item?.catalogMetadata?.images?.boxartImage ||
+      ""
+    ).trim();
+
+    const langsRaw = Array.isArray(cat.primarySpokenLanguages) && cat.primarySpokenLanguages.length
+      ? cat.primarySpokenLanguages
+      : (Array.isArray(cat.originalLanguages) ? cat.originalLanguages : []);
+    const langs = langsRaw.map(x => String(x || "").trim()).filter(Boolean);
+    const scheduleText = String(dt.startTimeIST || item?.liveSchedule?.timeBadge || "").trim();
+
+    if (!map.has(primeId)) {
+      map.set(primeId, {
+        id: primeId,
+        source: "prime",
+        title: title || "Cricket Match",
+        sport: "Cricket",
+        comp: provider,
+        poster,
+        scheduleText,
+        languages: new Set(langs),
+        st,
+        en,
+        forceLive,
+        streams: []
+      });
+    }
+
+    const ev = map.get(primeId);
+    if (forceLive) ev.forceLive = true;
+    if (!ev.poster && poster) ev.poster = poster;
+    langs.forEach(l => ev.languages.add(l));
+
+    const pUrls = Array.isArray(item?.playback_details?.playback_url) ? item.playback_details.playback_url : [];
+    const clearKeys = extractClearKeysFromMap(item?.playback_details?.clearkey_pairs);
+
+    pUrls.forEach((p, pIdx) => {
+      const link = String(p?.url || "").trim();
+      if (!/^https?:\/\//i.test(link) || ev.streams.some(s => s.link === link)) return;
+      if (isBlockedTamashaOrTapmad(`${item.title || ""} ${link}`)) return;
+      const chLabel = langs[pIdx] || langs[0] || (item.title && item.title !== title ? item.title : (provider || `Stream ${ev.streams.length + 1}`));
+      ev.streams.push({
+        id: `pv_${idx}_${pIdx}`,
+        label: chLabel,
+        link,
+        key: "",
+        kid: "",
+        clearKeys
+      });
     });
   });
-  let ratioTries = 0;
-  function updateRatio(){
-    const pill = fitBtn.querySelector(".fit-pill");
-    if(!pill) return;
-    if(vid.videoWidth > 0){
-      currentRatio = ratioLabel(vid.videoWidth, vid.videoHeight);
-      if(FITS[fitIdx] === "contain") pill.textContent = currentRatio;
-      ratioTries = 0;
-    } else if(ratioTries < 15){
-      ratioTries++;
-      setTimeout(updateRatio, 700);
-    }
-  }
-  vid.addEventListener("loadedmetadata", () => { ratioTries = 0; updateRatio(); });
-  vid.addEventListener("resize", updateRatio);
-  vid.addEventListener("timeupdate", function onFirst(){ vid.removeEventListener("timeupdate", onFirst); updateRatio(); });
-  updateRatio();
-  return true;
+
+  return Array.from(map.values()).map(ev => {
+    const streams = [...ev.streams].sort((a, b) => {
+      const aEn = /\benglish\b/i.test(a.label) ? 0 : 1;
+      const bEn = /\benglish\b/i.test(b.label) ? 0 : 1;
+      return aEn - bEn;
+    });
+    return { ...ev, languages: Array.from(ev.languages), streams };
+  });
 }
 
-/* ============================================================
-   PLAYER CONFIG BUILDER (Shaka)
-   ============================================================ */
-function buildCfg(){
-  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const effMaxH = thermalApplied && mobile ? Math.min(PROF.maxH, 720) : PROF.maxH;
-  const restr = {};
-  if(!restrictionsRelaxed){
-    if(effMaxH < 1080) restr.maxHeight = effMaxH;
-    if(PROF.maxBw > 0) restr.maxBandwidth = PROF.maxBw;
-  }
-  return {
-    manifest:{ defaultPresentationDelay:4, ignoreTextStreamFailures:true, retryParameters:{ maxAttempts:5, baseDelay:500, backoffFactor:2, fuzzFactor:.5, timeout:30000 } },
-    streaming:{ lowLatencyMode:false, bufferingGoal:PROF.buf, rebufferingGoal:PROF.reBuf, bufferBehind:PROF.behind, safeSeekOffset:4, stallEnabled:true, stallThreshold:1, stallSkip:.3, inaccurateManifestTolerance:0, retryParameters:{ maxAttempts:5, baseDelay:500, backoffFactor:2, fuzzFactor:.5, timeout:30000 } },
-    abr:{ enabled:true, defaultBandwidthEstimate:PROF.bwEst, switchInterval:4, restrictions:restr }
-  };
+function parseWillowCricketEvents(data) {
+  if (!data || typeof data !== "object") return [];
+  const list = Array.isArray(data.Matches) ? data.Matches : [];
+  const out = [];
+
+  list.forEach((m, idx) => {
+    if (!m || typeof m !== "object") return;
+    const title = String(m.title || m.synopsis || "Cricket Match").trim();
+    if (!isCricketOnly(`${title} ${m.synopsis || ""}`, "cricket")) return;
+
+    const st = parseDateAny(m.time);
+    const en = new Date(st.getTime() + (/\btest\b/i.test(title) ? 8 * 3600000 : 4 * 3600000));
+    const forceLive = String(m.status || "").toUpperCase() === "LIVE";
+    const clearKeys = parseDrmKeyString(m.drm_key);
+
+    const streams = [];
+    const seenUrls = new Set();
+    let srvNum = 1;
+
+    const addServerMap = obj => {
+      if (!obj || typeof obj !== "object") return;
+      Object.entries(obj).forEach(([srvName, urlVal]) => {
+        const link = String(urlVal || "").trim();
+        if (!/^https?:\/\//i.test(link) || seenUrls.has(link)) return;
+        if (isBlockedTamashaOrTapmad(`${srvName} ${link}`)) return;
+        seenUrls.add(link);
+        const code = `s${srvNum++}`;
+        streams.push({
+          id: `wl_${idx}_${code}`,
+          label: code,
+          link,
+          key: "",
+          kid: "",
+          clearKeys
+        });
+      });
+    };
+
+    addServerMap(m.stream_url_alpha);
+    addServerMap(m.stream_url_bravo);
+
+    const compactId = makeShortId("willow", m.match_id || `${title}_${idx}`, idx + 1);
+    out.push({
+      id: compactId,
+      source: "willow",
+      title,
+      sport: "Cricket",
+      comp: "Willow",
+      poster: String(m.cover_image || "").trim(),
+      scheduleText: String(m.time || "").trim(),
+      isFree: Boolean(m.is_free),
+      st,
+      en,
+      forceLive,
+      streams
+    });
+  });
+
+  return out;
 }
 
-/* ============================================================
-   DESTROY
-   ============================================================ */
-async function destroyPlayer(){
-  if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
-  if(thermalTimer){ clearInterval(thermalTimer); thermalTimer = null; }
-  if(jwInstance){ try{ jwInstance.remove(); }catch(e){} jwInstance = null; }
-  if(overlay){ try{ overlay.destroy(); }catch(e){} overlay = null; }
-  if(player){ try{ await player.destroy(); }catch(e){} player = null; }
-  const c = $("player-container");
-  if(c) c.innerHTML = "";
-  currentStreamInfo = null;
-  sessionStart = 0; thermalApplied = false; restrictionsRelaxed = false;
-  refreshing = false; retries = 0; edgeTried = false; started = false;
-  jwFitMode = 0;
-}
+async function loadData() {
+  const [jsonResults, primeData, willowData] = await Promise.all([
+    Promise.all(JSON_FEEDS.map(fetchJson)),
+    fetchJson(PRIME_FEED),
+    fetchJson(WILLOW_FEED)
+  ]);
 
-async function stopPlayback(){
-  playbackToken++;
-  await destroyPlayer();
-}
+  let allJson = [];
+  jsonResults.forEach(d => { if (d) allJson = allJson.concat(parseJsonCricket(d)); });
 
-/* ============================================================
-   JW PLAYER (HLS) — popup fires from "play" event
-   ============================================================ */
-async function mountJWPlayer(record, token){
-  if(!window.jwplayer){
-    $("player-container").innerHTML = `<div class="screen-msg">JW Player failed to load.</div>`;
-    return;
-  }
-  const container = $("player-container");
-  container.innerHTML = "";
-  const root = document.createElement("div");
-  root.id = "jw-root";
-  container.appendChild(root);
-  const statusEl = document.createElement("div");
-  statusEl.id = "status";
-  container.appendChild(statusEl);
-  const loadEl = makeLoadingEl();
-  container.appendChild(loadEl);
-  jwInstance = window.jwplayer(root);
-  toast("Loading Stream…", "warn", 0);
-  jwInstance.setup({
-    file: record.link, autostart: true, mute: true,
-    primary: "html5", hlshtml: true,
-    width: "100%", height: "100%",
-    crossorigin: "anonymous",
-    stretching: "uniform",
-    playbackRateControls: false,
-    displaytitle: false
-  });
-
-  jwInstance.on("ready", () => {
-    if(token !== playbackToken) return;
-    loadEl.hidden = true;
-    toast("Ready — Tap ▶ To Play", "ok", 5000);
-    try{
-      const fitSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>`;
-      const fitIcon = "data:image/svg+xml," + encodeURIComponent(fitSvg);
-      jwInstance.addButton(fitIcon, "Fit", cycleJwFit, "sp-jw-fit");
-    }catch(e){}
-  });
-
-  jwInstance.on("play", () => {
-    if(token !== playbackToken) return;
-    started = true;
-    retries = 0;
-    toast("Live", "live", 3000);
-    /* ★ SHOW TG POPUP AFTER PLAYING */
-    showPlayerTGPopup();
-  });
-
-  jwInstance.on("buffer", () => {
-    if(token !== playbackToken) return;
-    toast("Buffering…", "warn", 0);
-  });
-
-  jwInstance.on("error", (e) => {
-    if(token !== playbackToken) return;
-    ERR("JW Player error:", e);
-    if(retries >= 5){ toast("Stream Unavailable. Please Try Again Later.", "err", 0); return; }
-    retries++;
-    const attempt = retries;
-    toast(`Reconnecting… (${attempt}/5)`, "warn", 0);
-    const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
-    setTimeout(() => {
-      if(token !== playbackToken) return;
-      try{ jwInstance.load(record.link); jwInstance.play(); }catch(err){ ERR("JW reload failed:", err); }
-    }, delay);
-  });
-
-  jwInstance.on("setupError", (e) => {
-    if(token !== playbackToken) return;
-    ERR("JW setupError:", e);
-    loadEl.hidden = true;
-    toast("Invalid stream URL", "err", 6000);
-  });
-
-  const unmuteOnce = () => { try{ jwInstance.setMute(false); }catch(_){} };
-  container.addEventListener("pointerdown", unmuteOnce, {capture:true, once:true});
-  container.addEventListener("click", unmuteOnce, {capture:true, once:true});
-  container.addEventListener("keydown", unmuteOnce, {capture:true, once:true});
-}
-
-function cycleJwFit(){
-  const modes  = ["uniform", "exactfit", "fill"];
-  const labels = ["Fit", "Fill", "Zoom"];
-  jwFitMode = (jwFitMode + 1) % modes.length;
-  try{ jwInstance.setStretching(modes[jwFitMode]); }catch(e){}
-  toast("Fit: " + labels[jwFitMode], "ok", 1500);
-}
-
-/* ============================================================
-   SHAKA PLAYER (DASH + ClearKey) — popup fires from "playing" event
-   ============================================================ */
-async function mountShaka(record, token){
-  shaka.polyfill.installAll();
-  if(!shaka.Player.isBrowserSupported()) throw new Error("Browser not supported.");
-
-  const container = $("player-container");
-  container.innerHTML = "";
-
-  const vid = document.createElement("video");
-  vid.id = "shaka-video";
-  vid.playsInline = true;
-  vid.setAttribute("playsinline","");
-  vid.setAttribute("webkit-playsinline","");
-  vid.preload = "none";
-  vid.muted = true;
-  vid.autoplay = true;
-  container.appendChild(vid);
-
-  const statusEl = document.createElement("div");
-  statusEl.id = "status";
-  container.appendChild(statusEl);
-
-  const loadEl = makeLoadingEl();
-  container.appendChild(loadEl);
-
-  player = new shaka.Player();
-  await player.attach(vid);
-
-  overlay = new shaka.ui.Overlay(player, container, vid);
-  overlay.configure({
-    controlPanelElements: ["play_pause","mute","volume","time_and_duration","spacer","picture_in_picture","fullscreen","overflow_menu"],
-    seekBarColors: { base:"#828282", buffered:"#ffc336", played:"#A855F7" }
-  });
-
-  let tries = 0;
-  (function tryInject(){
-    if(injectFitButton(container, vid)) return;
-    if(++tries < 10) setTimeout(tryInject, 150);
-  })();
-
-  const key = getClearKey(record);
-  if(key){ player.configure({ drm:{ clearKeys:{ [key.keyId]: key.key } } }); LOG("ClearKey applied:", key.keyId); }
-  else { player.configure({ drm: {} }); }
-
-  player.configure(buildCfg());
-
-  sessionStart = Date.now();
-  thermalTimer = setInterval(() => {
-    if(Date.now() - sessionStart < 60 * 60 * 1000) return;
-    clearInterval(thermalTimer); thermalTimer = null;
-    if(thermalApplied) return;
-    thermalApplied = true;
-    try{
-      player.configure("streaming.bufferBehind", 8);
-      if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
-        player.configure("abr.restrictions.maxHeight", Math.min(PROF.maxH, 720));
-      }
-    }catch(_){}
-  }, 60000);
-
-  const streamInfo = { url: record.link, type: record.type };
-  currentStreamInfo = streamInfo;
-
-  async function reload(){
-    if(refreshing || token !== playbackToken || !player) return;
-    if(retries >= 5){ toast("Stream Unavailable. Please Try Again Later.", "err", 0); return; }
-    refreshing = true; retries++;
-    const attempt = retries;
-    toast(`Reconnecting… (${attempt}/5)`, "warn", 0);
-    try{
-      player.configure(buildCfg());
-      await player.load(streamInfo.url);
-      if(token !== playbackToken){ refreshing = false; return; }
-      vid.play().catch(()=>{});
-      retries = 0; edgeTried = false;
-      toast("Live", "live", 4000);
-      refreshing = false;
-    }catch(err){
-      LOG(`Reload attempt ${attempt} failed:`, err);
-      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
-      setTimeout(() => { refreshing = false; reload(); }, delay);
-    }
-  }
-
-  function goLiveEdge(){
-    if(refreshing || token !== playbackToken || !player) return;
-    try{ player.goToLive(); edgeTried = true; toast("Syncing To Live Edge…", "warn", 2000); }
-    catch(_){ reload(); }
-  }
-
-  const RECOVERABLE = [1001,1002,1003,4012,6006,6007,7000,7001,7002];
-  player.addEventListener("error", (ev) => {
-    if(token !== playbackToken) return;
-    const err = ev.detail, code = err && err.code;
-    if(code === 4014 && !restrictionsRelaxed){
-      restrictionsRelaxed = true; refreshing = true;
-      toast("Adjusting Quality…", "warn", 2000);
-      player.configure(buildCfg());
-      player.load(streamInfo.url)
-        .then(() => { if(token !== playbackToken) return; vid.play().catch(()=>{}); retries = 0; toast("Live","live",4000); })
-        .catch(() => { if(token === playbackToken) setTimeout(reload, 500); })
-        .finally(() => { refreshing = false; });
-      return;
-    }
-    if(RECOVERABLE.includes(code)){
-      toast("Buffering…", "warn", 0);
-      setTimeout(() => { if(!refreshing) reload(); }, 500);
+  const dedupJson = new Map();
+  allJson.forEach(ev => {
+    const k = ev.isMatchup
+      ? `${ev.a.toLowerCase()}_vs_${ev.b.toLowerCase()}`
+      : `${ev.title.toLowerCase()}_${ev.st.getTime()}`;
+    if (dedupJson.has(k)) {
+      const ex = dedupJson.get(k);
+      if (ev.forceLive) ex.forceLive = true;
+      if (!ex.poster && ev.poster) ex.poster = ev.poster;
+      ev.streams.forEach(s => { if (!ex.streams.some(x => x.link === s.link)) ex.streams.push(s); });
     } else {
-      toast(shakaErrStr(err), "err", 6000);
+      dedupJson.set(k, ev);
     }
   });
 
-  vid.addEventListener("waiting", () => {
-    if(stallTmr) return;
-    toast("Buffering…", "warn", 0);
-    if(!started || refreshing) return;
-    stallTmr = setTimeout(() => {
-      stallTmr = null;
-      if(!edgeTried) goLiveEdge(); else reload();
-    }, 5000);
-  });
-  vid.addEventListener("stalled", () => {
-    if(!stallTmr) vid.dispatchEvent(new Event("waiting"));
-  });
+  state.jsonCricket = Array.from(dedupJson.values());
+  state.primeCricket = parsePrimeCricketEvents(primeData);
+  state.willowCricket = parseWillowCricketEvents(willowData);
 
-  /* ★ SHOW TG POPUP AFTER PLAYING */
-  vid.addEventListener("playing", () => {
-    started = true;
-    if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
-    if(!refreshing) toast("Live", "live", 3000);
-    showPlayerTGPopup();
-  });
+  renderHub();
+  checkAlerts();
 
-  vid.addEventListener("error", () => {
-    if(refreshing) return;
-    toast("Buffering…", "warn", 0);
-    setTimeout(() => { if(!refreshing) reload(); }, 500);
-  });
+  if (!window.__booted) {
+    window.__booted = true;
+    route();
+  }
+}
 
-  document.addEventListener("visibilitychange", () => {
-    if(!document.hidden){
-      setTimeout(() => {
-        if(started && vid.paused && !refreshing) vid.play().catch(()=>{});
-      }, 400);
+function filterList(list) {
+  return list.filter(ev => {
+    const st = getStatus(ev);
+    if (state.tab === "live" && st !== "live") return false;
+    if (state.tab === "soon" && st !== "soon") return false;
+    if (state.tab === "favs" && !state.favs.includes(ev.id)) return false;
+
+    if (state.searchQuery) {
+      const hay = [ev.title, ev.comp, ev.a, ev.b, ev.scheduleText, ...(ev.languages || [])].join(" ").toLowerCase();
+      if (!hay.includes(state.searchQuery)) return false;
     }
+    return true;
+  }).sort((a, b) => {
+    const rank = { live: 0, soon: 1, done: 2 };
+    const d = (rank[getStatus(a)] ?? 2) - (rank[getStatus(b)] ?? 2);
+    return d || (a.st - b.st);
   });
+}
 
-  const unmuteOnce = () => { vid.muted = false; };
-  container.addEventListener("pointerdown", unmuteOnce, {capture:true, once:true});
-  container.addEventListener("click", unmuteOnce, {capture:true, once:true});
-  container.addEventListener("keydown", unmuteOnce, {capture:true, once:true});
+function crestHtml(url, name) {
+  const init = String(name || "").replace(/[^A-Za-z0-9 ]/g, "").split(/\s+/).filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "CR";
+  if (!url || url === "null") return `<div class="crest">${esc(init)}</div>`;
+  return `<div class="crest"><span>${esc(init)}</span><img src="${esc(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div>`;
+}
 
-  const netConn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  if(netConn){
-    netConn.addEventListener("change", () => {
-      if(!player || restrictionsRelaxed) return;
-      const t = netConn.effectiveType || "4g";
-      const h = (t === "slow-2g" || t === "2g") ? 240 : t === "3g" ? 480 : PROF.maxH;
-      try{ player.configure("abr.restrictions.maxHeight", h); }catch(_){}
-      if(h < PROF.maxH) toast("Slow Network — Reducing Quality", "warn", 3000);
+function thumbDownloadBtnHtml(ev) {
+  const thumbUrl = ev.poster || ev.fa || ev.fb || "";
+  if (!thumbUrl || thumbUrl === "null") return "";
+  return `<button class="thumb-dl-btn" data-dl-thumb="${esc(thumbUrl)}" data-dl-title="${esc(ev.title)}" type="button" title="Download Thumbnail">⬇ Thumb</button>`;
+}
+
+function jsonMatchCardHtml(ev) {
+  const st = getStatus(ev);
+  const badge = st === "live" ? "Live" : st === "soon" ? `in ${fmtDur(ev.st.getTime() - Date.now())}` : "Finished";
+  const n = ev.streams.length;
+  const fav = state.favs.includes(ev.id);
+  const fmtBadges = eventFmtBadges(ev.streams);
+
+  let bodyHtml = "";
+  if (ev.isMatchup) {
+    bodyHtml = `<div class="card-body-h2h">
+      <div class="team-column">
+        ${crestHtml(ev.fa, ev.a)}
+        <div class="team-row">
+          <span class="team-name" title="${esc(ev.a)}">${esc(ev.a)}</span>
+          <button class="fav-team-btn ${fav ? "active" : ""}" data-fav="${esc(ev.id)}" type="button" title="Save">♥</button>
+        </div>
+      </div>
+      <div class="versus">
+        <div class="kickoff-time">${fmtTime(ev.st)}</div>
+        <div class="kickoff-date">${fmtDate(ev.st)}</div>
+      </div>
+      <div class="team-column">
+        ${crestHtml(ev.fb, ev.b)}
+        <div class="team-row">
+          <span class="team-name" title="${esc(ev.b)}">${esc(ev.b)}</span>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    bodyHtml = `<div class="card-body-single">
+      <div class="single-event-left">
+        ${crestHtml(ev.fa || ev.fb, ev.title)}
+        <div class="team-row">
+          <span class="single-event-title" title="${esc(ev.title)}">${esc(ev.title)}</span>
+          <button class="fav-team-btn ${fav ? "active" : ""}" data-fav="${esc(ev.id)}" type="button" title="Save">♥</button>
+        </div>
+      </div>
+      <div class="versus">
+        <div class="kickoff-time">${fmtTime(ev.st)}</div>
+        <div class="kickoff-date">${fmtDate(ev.st)}</div>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="slider-card ${st === "live" ? "is-live" : ""}">
+    <div class="card-top">
+      <span class="sport-chip"><span class="name">${esc(ev.comp || "Cricket")}</span></span>
+      <span class="status ${st}">${badge}</span>
+    </div>
+    <div class="card-main-click" data-open="${esc(ev.id)}">
+      ${bodyHtml}
+    </div>
+    <div class="card-foot">
+      <div class="card-foot-left">
+        <span class="stream-count ${n ? "" : "empty"}">${n ? `${n} stream${n > 1 ? "s" : ""}` : "No stream"}</span>
+        ${fmtBadges}
+      </div>
+      <div class="card-foot-right">
+        ${thumbDownloadBtnHtml(ev)}
+        <button class="watch-cta" data-open="${esc(ev.id)}" type="button">Watch →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function posterMatchCardHtml(ev, sourcePrefix) {
+  const st = getStatus(ev);
+  const badge = st === "live" ? "Live" : st === "soon" ? `in ${fmtDur(ev.st.getTime() - Date.now())}` : "Finished";
+  const n = ev.streams.length;
+  const fav = state.favs.includes(ev.id);
+  const fmtBadges = eventFmtBadges(ev.streams);
+
+  const poster = ev.poster
+    ? `<img src="${esc(ev.poster)}" alt="${esc(ev.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=poster-slider-fallback>${esc(sourcePrefix)}</div>'">`
+    : `<div class="poster-slider-fallback">${esc(sourcePrefix)}</div>`;
+
+  const langs = ev.languages && ev.languages.length
+    ? `<div class="lang-tags">${ev.languages.map(l => `<span class="lang-tag">${esc(l)}</span>`).join("")}</div>`
+    : "";
+
+  return `<div class="slider-card ${st === "live" ? "is-live" : ""}">
+    <div class="card-top">
+      <span class="sport-chip"><span class="name">${esc(sourcePrefix)}</span></span>
+      <span class="status ${st}">${badge}</span>
+    </div>
+    <div class="card-main-click" data-open="${esc(ev.id)}" style="display:flex;flex-direction:column;gap:10px">
+      <div class="poster-slider-wrap">${poster}</div>
+      <div class="slider-title-row">
+        <div class="slider-match-title">${esc(ev.title)}</div>
+        <button class="fav-team-btn ${fav ? "active" : ""}" data-fav="${esc(ev.id)}" type="button" title="Save">♥</button>
+      </div>
+      <div class="slider-time-line">
+        <span class="kickoff-time">${fmtTime(ev.st)}</span>
+        <span class="kickoff-date">${fmtDate(ev.st)}${ev.scheduleText ? " · " + esc(ev.scheduleText) : ""}</span>
+      </div>
+      ${langs}
+    </div>
+    <div class="card-foot">
+      <div class="card-foot-left">
+        <span class="stream-count ${n ? "" : "empty"}">${n ? `${n} stream${n > 1 ? "s" : ""}` : "Upcoming"}</span>
+        ${fmtBadges}
+      </div>
+      <div class="card-foot-right">
+        ${thumbDownloadBtnHtml(ev)}
+        <button class="watch-cta" data-open="${esc(ev.id)}" type="button">Watch →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildSectionBlock({ id, title, count, itemsHtml, isUpcomingBlock, prevId, nextId }) {
+  const controlsHtml = isUpcomingBlock
+    ? ""
+    : `<div class="slider-controls">
+        <button class="slider-nav-btn" id="${prevId}" type="button" aria-label="Previous">‹</button>
+        <button class="slider-nav-btn" id="${nextId}" type="button" aria-label="Next">›</button>
+      </div>`;
+
+  const containerClass = isUpcomingBlock ? "upcoming-list-stack" : "matches-slider";
+
+  return `<section class="section-block" id="${id}">
+    <div class="section-head">
+      <div class="section-head-left">
+        <h2 class="section-heading">${esc(title)}</h2>
+        <span class="section-badge">${count}</span>
+      </div>
+      ${controlsHtml}
+    </div>
+    <div class="${containerClass}">${itemsHtml}</div>
+  </section>`;
+}
+
+function bindSliderNavButtons() {
+  $("jsonPrevBtn")?.addEventListener("click", () => $("jsonSlider")?.scrollBy({ left: -350, behavior: "smooth" }));
+  $("jsonNextBtn")?.addEventListener("click", () => $("jsonSlider")?.scrollBy({ left: 350, behavior: "smooth" }));
+  $("primePrevBtn")?.addEventListener("click", () => $("primeSlider")?.scrollBy({ left: -350, behavior: "smooth" }));
+  $("primeNextBtn")?.addEventListener("click", () => $("primeSlider")?.scrollBy({ left: 350, behavior: "smooth" }));
+  $("willowPrevBtn")?.addEventListener("click", () => $("willowSlider")?.scrollBy({ left: -350, behavior: "smooth" }));
+  $("willowNextBtn")?.addEventListener("click", () => $("willowSlider")?.scrollBy({ left: 350, behavior: "smooth" }));
+}
+
+function renderHub() {
+  if (!$("hubView").classList.contains("active")) return;
+
+  const jsonRows = filterList(state.jsonCricket);
+  const primeRows = filterList(state.primeCricket);
+  const willowRows = filterList(state.willowCricket);
+
+  const isUpcomingView = state.tab === "soon";
+  const host = $("hubSectionsContainer");
+
+  if (isUpcomingView) {
+    const upcomingJson = jsonRows.filter(e => getStatus(e) === "soon");
+    const upcomingPrime = primeRows.filter(e => getStatus(e) === "soon");
+    const upcomingWillow = willowRows.filter(e => getStatus(e) === "soon");
+
+    const block1 = buildSectionBlock({
+      id: "upBlock1",
+      title: "Upcoming Matches",
+      count: upcomingJson.length,
+      itemsHtml: upcomingJson.length
+        ? upcomingJson.map(jsonMatchCardHtml).join("")
+        : `<div class="empty-box">No upcoming matches found.</div>`,
+      isUpcomingBlock: true
     });
+
+    const block2 = buildSectionBlock({
+      id: "upBlock2",
+      title: "Upcoming Prime & Willow",
+      count: upcomingPrime.length + upcomingWillow.length,
+      itemsHtml: (upcomingPrime.length || upcomingWillow.length)
+        ? [
+            ...upcomingPrime.map(ev => posterMatchCardHtml(ev, "Prime Video")),
+            ...upcomingWillow.map(ev => posterMatchCardHtml(ev, "Willow"))
+          ].join("")
+        : `<div class="empty-box">No upcoming matches found.</div>`,
+      isUpcomingBlock: true
+    });
+
+    host.innerHTML = `<div class="upcoming-blocks-stack">${block1}${block2}</div>`;
+  } else {
+    const s1 = `<section class="section-block" id="jsonSliderSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">Live Cricket</h2>
+          <span class="section-badge" id="jsonCountBadge">${jsonRows.length}</span>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-nav-btn" id="jsonPrevBtn" type="button" aria-label="Previous">‹</button>
+          <button class="slider-nav-btn" id="jsonNextBtn" type="button" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="matches-slider" id="jsonSlider">${
+        jsonRows.length
+          ? jsonRows.map(jsonMatchCardHtml).join("")
+          : `<div class="empty-box" style="width:100%">No matches found.</div>`
+      }</div>
+    </section>`;
+
+    const s2 = `<section class="section-block" id="primeSliderSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">Prime Cricket</h2>
+          <span class="section-badge" id="primeCountBadge">${primeRows.length}</span>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-nav-btn" id="primePrevBtn" type="button" aria-label="Previous">‹</button>
+          <button class="slider-nav-btn" id="primeNextBtn" type="button" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="matches-slider" id="primeSlider">${
+        primeRows.length
+          ? primeRows.map(ev => posterMatchCardHtml(ev, "Prime Video")).join("")
+          : `<div class="empty-box" style="width:100%">No matches found.</div>`
+      }</div>
+    </section>`;
+
+    const s3 = `<section class="section-block" id="willowSliderSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">Willow Cricket</h2>
+          <span class="section-badge" id="willowCountBadge">${willowRows.length}</span>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-nav-btn" id="willowPrevBtn" type="button" aria-label="Previous">‹</button>
+          <button class="slider-nav-btn" id="willowNextBtn" type="button" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="matches-slider" id="willowSlider">${
+        willowRows.length
+          ? willowRows.map(ev => posterMatchCardHtml(ev, "Willow")).join("")
+          : `<div class="empty-box" style="width:100%">No matches found.</div>`
+      }</div>
+    </section>`;
+
+    host.innerHTML = s1 + s2 + s3;
+    bindSliderNavButtons();
   }
 
-  if("wakeLock" in navigator){ navigator.wakeLock.request("screen").catch(()=>{}); }
+  const combined = [...state.jsonCricket, ...state.primeCricket, ...state.willowCricket];
+  const counts = {
+    all: combined.length,
+    live: combined.filter(e => getStatus(e) === "live").length,
+    soon: combined.filter(e => getStatus(e) === "soon").length,
+    favs: combined.filter(e => state.favs.includes(e.id)).length
+  };
 
-  try{
-    toast("Loading Stream…", "warn", 0);
-    await player.load(streamInfo.url);
-    if(token !== playbackToken) return;
-    loadEl.hidden = true;
-    toast("Ready — Tap ▶ To Play", "ok", 5000);
-    vid.muted = true;
-    vid.play().catch(() => LOG("Autoplay blocked"));
-  }catch(e){
-    ERR("Initial load failed:", e);
-    loadEl.hidden = true;
-    toast("Connection Error — Retrying…", "warn", 0);
-    setTimeout(reload, 800);
+  $("tabs").innerHTML = [
+    ["all", "All", counts.all],
+    ["live", "Live", counts.live],
+    ["soon", "Upcoming", counts.soon],
+    ["favs", "♥ Saved", counts.favs]
+  ].map(([k, l, n]) => `<button class="pill ${state.tab === k ? "active" : ""}" data-tab="${k}" role="tab">${l}<span class="count">${n}</span></button>`).join("");
+
+  $("clock").textContent = new Date().toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" }) + " IST";
+}
+
+function getClearKey(rec) {
+  if (rec.clearKeys && Object.keys(rec.clearKeys).length) return rec.clearKeys;
+  const kid = String(rec.kid || "").trim().toLowerCase();
+  const key = String(rec.key || "").trim().toLowerCase();
+  if (kid && key && /^[0-9a-f]+$/.test(kid) && /^[0-9a-f]+$/.test(key)) return { [kid]: key };
+  const raw = String(rec.key || "").trim();
+  if (raw.includes(":")) {
+    const parts = raw.split(":");
+    const pKid = parts.shift().trim().replace(/^0x/i, "").toLowerCase();
+    const pKey = parts.join(":").trim().replace(/^0x/i, "").toLowerCase();
+    if (/^[0-9a-f]+$/.test(pKid) && /^[0-9a-f]+$/.test(pKey)) return { [pKid]: pKey };
+  }
+  return null;
+}
+
+function clearVerifyTimer() {
+  if (verifyTimer) {
+    clearTimeout(verifyTimer);
+    verifyTimer = null;
   }
 }
 
-/* ============================================================
-   DISPATCH
-   ============================================================ */
-async function mountPlayer(record, token){
-  if(record.type === "HLS"){ LOG("Mounting JW Player for HLS:", record.link); return mountJWPlayer(record, token); }
-  LOG("Mounting Shaka for DASH:", record.link);
-  return mountShaka(record, token);
+async function destroyShaka() {
+  clearVerifyTimer();
+  if (shakaOverlay) {
+    try { shakaOverlay.destroy(); } catch (e) {}
+    shakaOverlay = null;
+  }
+  if (shakaPlayer) {
+    try { await shakaPlayer.destroy(); } catch (e) {}
+    shakaPlayer = null;
+  }
+  const c = $("player-container");
+  if (c) c.innerHTML = "";
 }
 
-async function playRecord(record, index){
-  if(!record) return;
-  document.querySelectorAll("[data-player-stream]").forEach((btn, i) => btn.classList.toggle("active", i === index));
-  const token = ++playbackToken;
-  await destroyPlayer();
-  const rawUrl = String(record.link || "").split("|")[0].trim();
-  if(!/^https?:\/\//i.test(rawUrl)){
-    $("player-container").innerHTML = `<div class="screen-msg">Invalid stream link.</div>`;
+async function stopVideo() {
+  playSeq++;
+  await destroyShaka();
+}
+
+function setStreamMenuOpen(open) {
+  state.menuOpen = Boolean(open);
+  const menu = $("streamSelectMenu");
+  const btn = $("streamSelectBtn");
+  if (menu) menu.classList.toggle("open", state.menuOpen);
+  if (btn) btn.setAttribute("aria-expanded", String(state.menuOpen));
+}
+
+function renderTopLeftStreamMenu() {
+  const active = state.currentStreams[state.currentIndex];
+  $("activeStreamLabel").textContent = active ? active.label : (state.currentStreams.length ? "Select Stream" : "No Streams");
+  $("activeStreamTag").innerHTML = active ? tinyFmtTag(detectPlatformTag(active)) : "";
+
+  const menu = $("streamSelectMenu");
+  if (!state.currentStreams.length) {
+    menu.innerHTML = `<div class="tl-stream-item">No streams</div>`;
     return;
   }
-  try{
-    await mountPlayer({...record, link: rawUrl}, token);
-  }catch(error){
-    if(token === playbackToken){
-      $("player-container").innerHTML = `<div class="screen-msg">Could not play this stream.<small>${esc(error.message || "")}</small></div>`;
-      ERR("Playback error:", error);
-    }
-  }
-}
 
-function renderPlayerStreams(activeIndex){
-  const box = $("streams");
-  const count = $("czChannelCount");
-  if(count) count.textContent = `${state.currentStreams.length} CHANNEL${state.currentStreams.length === 1 ? "" : "S"}`;
-  if(!state.currentStreams.length){
-    box.innerHTML = `<div class="cz-channel-empty">No live channels are available for this match right now.</div>`;
-    return;
-  }
-  box.innerHTML = state.currentStreams.map((s, i) => {
-    const title = String(s.title || `Channel ${i+1}`);
-    const initials = title.split(/\\s+/).filter(Boolean).slice(0,2).map(part => part[0]).join("").toUpperCase() || "TV";
-    const platform = /A SPORTS|MYCO/i.test(title) ? "IOS" : "ANDROID";
-    return `<button class="cz-channel-card ${i === activeIndex ? "active" : ""}" data-player-stream="${i}" type="button" aria-label="Play ${esc(title)}">
-      <span class="cz-channel-icon">${esc(initials)}</span>
-      <strong>${esc(title)}</strong>
-      <small>${platform}</small>
+  menu.innerHTML = state.currentStreams.map((s, i) => {
+    const act = i === state.currentIndex;
+    const tag = tinyFmtTag(detectPlatformTag(s));
+    return `<button class="tl-stream-item ${act ? "active" : ""}" data-stream-idx="${i}" type="button">
+      <span>${esc(s.label)}</span>
+      <span class="tl-stream-item-right">${tag}<span>${act ? "●" : ""}</span></span>
     </button>`;
   }).join("");
 }
 
-/* ============================================================
-   ROTATION
-   ============================================================ */
-function onViewportChange(){
-  if(overlay && overlay.getControls){ try{ overlay.getControls().dispatchEvent(new Event("resize")); }catch(_){} }
-  if(jwInstance && typeof jwInstance.resize === "function"){ try{ jwInstance.resize("100%","100%"); }catch(_){} }
-}
-let rotationAttached = false;
-function setupRotation(){
-  if(rotationAttached) return;
-  rotationAttached = true;
-  window.addEventListener("resize", onViewportChange, {passive:true});
-  window.addEventListener("orientationchange", () => { setTimeout(onViewportChange, 200); setTimeout(onViewportChange, 450); });
-  document.addEventListener("fullscreenchange", () => {
-    if(document.fullscreenElement){
-      if(screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(()=>{});
+async function playStream(idx, { allowAutoSwitch = false, visitedSet = null } = {}) {
+  const total = state.currentStreams.length;
+  if (!total) return;
+
+  const isWillowEvent = state.currentEvent && state.currentEvent.source === "willow";
+  const canAutoSwitch = Boolean(allowAutoSwitch && isWillowEvent);
+
+  const visited = visitedSet instanceof Set ? visitedSet : new Set();
+  visited.add(idx);
+
+  const rec = state.currentStreams[idx];
+  if (!rec) return;
+
+  state.currentIndex = idx;
+  renderTopLeftStreamMenu();
+
+  if (state.currentEvent) {
+    history.replaceState(null, "", buildWatchHash(state.currentEvent, idx));
+  }
+
+  const token = ++playSeq;
+  await destroyShaka();
+  if (token !== playSeq) return;
+
+  const handleFailure = () => {
+    if (token !== playSeq) return;
+    if (!canAutoSwitch) {
+      showNotice(`${rec.label} unavailable — select another from top-left`, 3600);
+      return;
+    }
+    if (visited.size < total) {
+      let nextIdx = (idx + 1) % total;
+      while (visited.has(nextIdx) && visited.size < total) {
+        nextIdx = (nextIdx + 1) % total;
+      }
+      const nextRec = state.currentStreams[nextIdx];
+      showNotice(`Switching to ${nextRec.label} (${visited.size + 1}/${total})`, 2200);
+      playStream(nextIdx, { allowAutoSwitch: true, visitedSet: visited });
     } else {
-      if(screen.orientation && screen.orientation.unlock){ try{ screen.orientation.unlock(); }catch(_){} }
+      showNotice("Select another server from top-left", 3800);
     }
-    setTimeout(onViewportChange, 120);
-  });
-}
-
-/* ============================================================
-   DOM EVENTS
-   ============================================================ */
-function clearMatchFilters(){
-  state.search = ""; state.sport = "All"; state.tab = "all";
-  const input = $("matchSearch"); if(input) input.value = "";
-  renderHub();
-}
-$("matchSearch").addEventListener("input", e => { state.search = e.target.value || ""; renderHub(); });
-$("clearSearch").addEventListener("click", () => { state.search = ""; $("matchSearch").value = ""; $("matchSearch").focus(); renderHub(); });
-$("refreshMatches").addEventListener("click", loadData);
-document.addEventListener("keydown", e => {
-  if(e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey){
-    const tag = document.activeElement && document.activeElement.tagName;
-    if(tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT" && !document.activeElement.isContentEditable){
-      e.preventDefault();
-      $("matchSearch").focus();
-    }
-  }
-  if(e.key === "Escape" && document.activeElement === $("matchSearch") && state.search){
-    state.search = "";
-    $("matchSearch").value = "";
-    renderHub();
-  }
-});
-
-$("list").addEventListener("click", e => {
-  const card = e.target.closest("[data-watch-event]");
-  if(!card) return;
-  location.hash = `#watch?id=${encodeURIComponent(card.dataset.watchEvent)}&stream=0`;
-});
-
-$("sports").addEventListener("click", e => {
-  const btn = e.target.closest("[data-sport]"); if(!btn) return;
-  state.sport = btn.dataset.sport; renderHub();
-});
-
-$("tabs").addEventListener("click", e => {
-  const btn = e.target.closest("[data-tab]"); if(!btn) return;
-  state.tab = btn.dataset.tab; renderHub();
-});
-
-$("streams").addEventListener("click", e => {
-  const btn = e.target.closest("[data-player-stream]");
-  if(!btn || !state.currentEvent) return;
-  const index = Number(btn.dataset.playerStream);
-  if(!state.currentStreams[index]) return;
-  state.currentIndex = index;
-  renderPlayerStreams(index);
-  history.replaceState(null, "", `#watch?id=${encodeURIComponent(state.currentEvent.id)}&stream=${index}`);
-  playRecord(state.currentStreams[index], index);
-  $("czPlayerSection").scrollIntoView({behavior:"smooth", block:"start"});
-});
-
-$("czShareMatch").addEventListener("click", async () => {
-  const title = $("playerTitle").textContent || "CRICZONE LIVE";
-  const url = location.href;
-  try{
-    if(navigator.share) await navigator.share({title, text:"Watch this match on CRICZONE", url});
-    else if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(url); toast("Match link copied", "ok", 2500); }
-    else window.prompt("Copy match link", url);
-  }catch(err){ if(err && err.name !== "AbortError") WARN("Share failed:", err); }
-});
-
-$("backHub").onclick = () => { location.hash = "#/"; };
-window.addEventListener("hashchange", route);
-
-/* ============================================================
-   NAVBAR PLAYER PORTRAIT ROTATION
-   ============================================================ */
-(function rotateNavbarPortrait(){
- const players=[
-  {name:"Rohit Sharma",src:"https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840"},
-  {name:"Virat Kohli",src:"https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png"}
- ];
- let index=0;
- setInterval(()=>{
-  const nextIndex=(index+1)%players.length,next=players[nextIndex],preload=new Image();
-  preload.onload=()=>{
-   document.querySelectorAll("#czNavbarPlayerPhoto,#czPlayerNavbarPhoto").forEach(photo=>{
-    photo.classList.add("is-changing");
-    setTimeout(()=>{photo.src=next.src;photo.alt=next.name;photo.classList.remove("is-changing")},160);
-   });
-   index=nextIndex;
   };
-  preload.onerror=()=>document.querySelectorAll("#czNavbarPlayerPhoto,#czPlayerNavbarPhoto").forEach(photo=>photo.classList.remove("is-changing"));
-  preload.src=next.src;
- },4000);
-})();
 
-/* ============================================================
-   BOOT
-   ============================================================ */
-setupRotation();
-loadData();
-setInterval(() => { if(window.__booted) renderHub(); }, 30000);
-setInterval(() => { if(window.__booted && !location.hash.includes("watch")) loadData(); }, 120000);
+  if (!window.shaka || !window.shaka.Player || !window.shaka.Player.isBrowserSupported()) {
+    $("player-container").innerHTML = `<div class="screen-msg">Playback not supported</div>`;
+    return;
+  }
+
+  shaka.polyfill.installAll();
+
+  const c = $("player-container");
+  const video = document.createElement("video");
+  video.controls = false;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.setAttribute("playsinline", "");
+  video.setAttribute("webkit-playsinline", "");
+  video.preload = "auto";
+  c.appendChild(video);
+
+  const inst = new shaka.Player();
+  shakaPlayer = inst;
+  await inst.attach(video);
+  if (token !== playSeq) return;
+
+  const ui = new shaka.ui.Overlay(inst, c, video);
+  shakaOverlay = ui;
+  ui.configure({
+    controlPanelElements: [
+      "play_pause",
+      "mute",
+      "volume",
+      "time_and_duration",
+      "spacer",
+      "quality",
+      "picture_in_picture",
+      "fullscreen",
+      "overflow_menu"
+    ],
+    overflowMenuButtons: [
+      "quality",
+      "language",
+      "captions",
+      "playback_rate",
+      "picture_in_picture"
+    ],
+    seekBarColors: {
+      base: "#777",
+      buffered: "#D48806",
+      played: "#0088cc",
+      ad: "#fff"
+    }
+  });
+
+  inst.configure({
+    preferredAudioLanguage: "en",
+    streaming: {
+      bufferingGoal: 25,
+      rebufferingGoal: 1,
+      bufferBehind: 15,
+      lowLatencyMode: true,
+      retryParameters: { maxAttempts: 2, baseDelay: 250, fuzzFactor: 0.3, timeout: 6500 }
+    },
+    manifest: {
+      retryParameters: { maxAttempts: 2, baseDelay: 250, fuzzFactor: 0.3, timeout: 6500 }
+    },
+    drm: {
+      retryParameters: { maxAttempts: 2, baseDelay: 250, fuzzFactor: 0.3, timeout: 6500 }
+    },
+    abr: { enabled: true, defaultBandwidthEstimate: 3500000 }
+  });
+
+  const ck = getClearKey(rec);
+  if (ck) inst.configure({ drm: { clearKeys: ck } });
+
+  let streamActive = false;
+  const markActive = () => {
+    if (token !== playSeq || streamActive) return;
+    streamActive = true;
+    clearVerifyTimer();
+  };
+
+  video.addEventListener("playing", () => {
+    if (video.readyState >= 2) markActive();
+  });
+  video.addEventListener("timeupdate", () => {
+    if (video.currentTime > 0.2 || video.readyState >= 3) markActive();
+  });
+
+  inst.addEventListener("error", ev => {
+    const e = ev.detail;
+    if (token === playSeq && e && e.severity === shaka.util.Error.Severity.CRITICAL) {
+      clearVerifyTimer();
+      handleFailure();
+    }
+  });
+
+  if (canAutoSwitch) {
+    verifyTimer = setTimeout(() => {
+      if (token === playSeq && !streamActive && !video.paused) {
+        handleFailure();
+      }
+    }, 7000);
+  }
+
+  try {
+    await inst.load(rec.link);
+    if (token !== playSeq) return;
+    try {
+      await video.play();
+    } catch (playErr) {
+      clearVerifyTimer();
+      showNotice("Tap Play to start", 3000);
+    }
+  } catch (loadErr) {
+    if (token !== playSeq) return;
+    clearVerifyTimer();
+    handleFailure();
+  }
+}
+
+function findEvent(id) {
+  return state.jsonCricket.find(e => e.id === id)
+    || state.primeCricket.find(e => e.id === id)
+    || state.willowCricket.find(e => e.id === id)
+    || null;
+}
+
+function resolveStreamIndex(ev, stParam) {
+  if (!ev || !Array.isArray(ev.streams) || !ev.streams.length) return 0;
+  if (!stParam) return 0;
+
+  const decoded = decodeURIComponent(stParam).trim().toLowerCase();
+  if (/^\d+$/.test(decoded)) {
+    return Math.max(0, Math.min(Number(decoded), ev.streams.length - 1));
+  }
+
+  const normalizedTarget = decoded.replace(/[_\s-]+/g, " ");
+  const idx = ev.streams.findIndex((s, i) => {
+    const lbl = String(s.label || "").trim().toLowerCase();
+    const lblNorm = lbl.replace(/[_\s-]+/g, " ");
+    const langCode = shortLangCode(s.label, i);
+    return lbl === decoded
+      || lblNorm === normalizedTarget
+      || langCode === decoded
+      || String(s.id).toLowerCase() === decoded
+      || `s${i + 1}` === decoded;
+  });
+  return idx >= 0 ? idx : 0;
+}
+
+async function openPlayer(id, stParam = "") {
+  $("hubView").classList.remove("active");
+  $("playerView").classList.add("active");
+  setStreamMenuOpen(false);
+  window.scrollTo(0, 0);
+
+  if (!state.jsonCricket.length && !state.primeCricket.length && !state.willowCricket.length) {
+    await loadData();
+  }
+
+  const ev = findEvent(id);
+  if (!ev) {
+    state.currentEvent = null;
+    state.currentStreams = [];
+    renderTopLeftStreamMenu();
+    $("player-container").innerHTML = `<div class="screen-msg">Match not found</div>`;
+    return;
+  }
+
+  state.currentEvent = ev;
+  state.currentStreams = ev.streams || [];
+  const safeIdx = resolveStreamIndex(ev, stParam);
+  renderTopLeftStreamMenu();
+
+  if (state.currentStreams.length) {
+    const isWillow = ev.source === "willow";
+    await playStream(safeIdx, { allowAutoSwitch: isWillow, visitedSet: new Set() });
+  } else {
+    $("player-container").innerHTML = `<div class="screen-msg">No stream available yet<small>${esc(ev.title)}</small></div>`;
+  }
+}
+
+function showHub() {
+  if (!isAuthorized()) {
+    window.location.replace(TG_LINK);
+    return;
+  }
+  stopVideo();
+  setStreamMenuOpen(false);
+  state.currentEvent = null;
+  state.currentStreams = [];
+  $("playerView").classList.remove("active");
+  $("hubView").classList.add("active");
+  renderHub();
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  const h = location.hash || "";
+
+  if (urlHasKey() && isAuthorized()) {
+    showHub();
+    return;
+  }
+
+  const compact = h.match(/^#w\?id=([^&]+)(?:&st=([^&]+))?/);
+  if (compact) {
+    openPlayer(decodeURIComponent(compact[1]), compact[2] || "");
+    return;
+  }
+  const legacy = h.match(/^#watch\?id=([^&]+)(?:&stream=(\d+))?/);
+  if (legacy) {
+    openPlayer(decodeURIComponent(legacy[1]), legacy[2] || "0");
+    return;
+  }
+
+  if (!isAuthorized()) {
+    window.location.replace(TG_LINK);
+    return;
+  }
+
+  showHub();
+}
+
+async function shareCurrentStream() {
+  if (!state.currentEvent) return;
+  const shareUrl = `${location.origin}${location.pathname}${buildWatchHash(state.currentEvent, state.currentIndex)}`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: state.currentEvent.title, url: shareUrl });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+  }
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    showNotice("Link copied", 2200);
+  } catch (e) {
+    showNotice("Copy failed", 2200);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("cx_theme") || "dark";
+  document.documentElement.setAttribute("data-theme", saved);
+  $("themeToggle").textContent = saved === "dark" ? "☀️" : "🌙";
+  updateAlertIcon();
+
+  $("themeToggle").addEventListener("click", toggleTheme);
+  $("alertToggleBtn").addEventListener("click", toggleAlerts);
+  $("shareBtn").addEventListener("click", shareCurrentStream);
+
+  $("streamSelectBtn").addEventListener("click", e => {
+    e.stopPropagation();
+    setStreamMenuOpen(!state.menuOpen);
+  });
+
+  $("streamSelectMenu").addEventListener("click", e => {
+    e.stopPropagation();
+    const item = e.target.closest("[data-stream-idx]");
+    if (!item || !state.currentEvent) return;
+    const idx = Number(item.dataset.streamIdx);
+    setStreamMenuOpen(false);
+    playStream(idx, { allowAutoSwitch: false });
+  });
+
+  document.addEventListener("click", e => {
+    if (state.menuOpen && !e.target.closest("#streamMenuWrap")) setStreamMenuOpen(false);
+  });
+
+  $("searchInput").addEventListener("input", e => {
+    state.searchQuery = e.target.value.toLowerCase().trim();
+    renderHub();
+  });
+
+  $("tabs").addEventListener("click", e => {
+    const b = e.target.closest("[data-tab]");
+    if (b) { state.tab = b.dataset.tab; renderHub(); }
+  });
+
+  const onHubClick = e => {
+    const dlBtn = e.target.closest("[data-dl-thumb]");
+    if (dlBtn) {
+      e.stopPropagation();
+      downloadThumbnail(dlBtn.dataset.dlThumb, dlBtn.dataset.dlTitle);
+      return;
+    }
+    const fav = e.target.closest("[data-fav]");
+    if (fav) {
+      e.stopPropagation();
+      const id = fav.dataset.fav;
+      const i = state.favs.indexOf(id);
+      if (i > -1) state.favs.splice(i, 1);
+      else state.favs.push(id);
+      localStorage.setItem("cx_favs", JSON.stringify(state.favs));
+      renderHub();
+      return;
+    }
+    const open = e.target.closest("[data-open]");
+    if (open) {
+      const all = [...state.jsonCricket, ...state.primeCricket, ...state.willowCricket];
+      const ev = all.find(x => x.id === open.dataset.open);
+      if (ev) {
+        location.hash = buildWatchHash(ev, 0);
+      }
+    }
+  };
+
+  $("hubSectionsContainer").addEventListener("click", onHubClick);
+
+  const popup = $("popup");
+  setTimeout(() => {
+    popup.classList.add("visible", "button-stage");
+    setTimeout(() => {
+      popup.classList.remove("button-stage");
+      popup.classList.add("revealing");
+      setTimeout(() => popup.classList.remove("revealing"), 500);
+    }, 100);
+  }, 3000);
+
+  $("popupJoinBtn").addEventListener("click", () => {
+    const w = window.open(TG_LINK, "_blank", "noopener");
+    if (!w) location.href = TG_LINK;
+    popup.classList.remove("visible");
+  });
+  $("popupSkipBtn").addEventListener("click", () => popup.classList.remove("visible"));
+});
+
+window.addEventListener("hashchange", route);
+window.addEventListener("pagehide", stopVideo);
+
+if (isSharedStreamHash(initHash) || isAuthorized()) {
+  loadData();
+}
+
+setInterval(() => {
+  if (window.__booted && !location.hash.startsWith("#w") && isAuthorized() && !document.hidden) loadData();
+}, 120000);
 </script>
 </body>
 </html>
