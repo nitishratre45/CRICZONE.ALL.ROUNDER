@@ -6,6 +6,7 @@
  * the Telegram OWNER/ADMIN user account that can manage join requests.
  *
  * Dry run:  node tools/telegram-approve-pending.mjs
+ * Approve all: node tools/telegram-approve-pending.mjs --all --confirm
  * Approve:  node tools/telegram-approve-pending.mjs --confirm
  *
  * Required environment:
@@ -28,6 +29,7 @@ const channelRef = process.env.TG_CHANNEL;
 const delayMs = Math.max(800, Number(process.env.TG_DELAY_MS || 1200));
 const limit = process.env.TG_LIMIT ? Math.max(1, Number(process.env.TG_LIMIT)) : Infinity;
 const confirmed = process.argv.includes("--confirm");
+const approveAll = process.argv.includes("--all");
 
 if (!apiId || !apiHash || !channelRef) {
   console.error("Missing TG_API_ID, TG_API_HASH, or TG_CHANNEL environment variable.");
@@ -113,7 +115,10 @@ try {
   console.log(`Found ${pending.length} pending request(s).`);
   if (!confirmed) {
     console.log("DRY RUN ONLY — no requests were approved.");
-    console.log("After checking the channel and count, rerun with --confirm.");
+    console.log("After checking the channel and count, rerun with --all --confirm to approve all pending requests.");
+  } else if (approveAll) {
+    await invokeWithFloodWait(new Api.messages.HideAllChatJoinRequests({ peer, approved: true }));
+    console.log("Telegram accepted the bulk approval command for all pending requests on this channel.");
   } else {
     const batch = pending.slice(0, limit);
     let approved = 0;
