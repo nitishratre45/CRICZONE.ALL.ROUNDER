@@ -314,10 +314,8 @@ function isSharedStreamHash(h) {
 const initHash = location.hash || "";
 if (isSharedStreamHash(initHash)) {
   $("playerView").classList.add("active");
-} else if (isAuthorized()) {
-  $("hubView").classList.add("active");
 } else {
-  window.location.replace(TG_LINK);
+  $("hubView").classList.add("active");
 }
 
 const state = {
@@ -1529,10 +1527,6 @@ async function openPlayer(id, stParam = "") {
 }
 
 function showHub() {
-  if (!isAuthorized()) {
-    window.location.replace(TG_LINK);
-    return;
-  }
   stopVideo();
   setStreamMenuOpen(false);
   state.currentEvent = null;
@@ -1559,11 +1553,6 @@ function route() {
   const legacy = h.match(/^#watch\?id=([^&]+)(?:&stream=(\d+))?/);
   if (legacy) {
     openPlayer(decodeURIComponent(legacy[1]), legacy[2] || "0");
-    return;
-  }
-
-  if (!isAuthorized()) {
-    window.location.replace(TG_LINK);
     return;
   }
 
@@ -1678,12 +1667,10 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("hashchange", route);
 window.addEventListener("pagehide", stopVideo);
 
-if (isSharedStreamHash(initHash) || isAuthorized()) {
-  loadData();
-}
+loadData();
 
 setInterval(() => {
-  if (window.__booted && !location.hash.startsWith("#w") && isAuthorized() && !document.hidden) loadData();
+  if (window.__booted && !location.hash.startsWith("#w") && !document.hidden) loadData();
 }, 120000);
 </script>
 </body>
