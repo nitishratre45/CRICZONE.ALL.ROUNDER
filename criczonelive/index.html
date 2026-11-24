@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0E10">
 <meta name="referrer" content="no-referrer">
-<title>CʀɪᴄxCʀᴀᴛᴇ Lɪᴠᴇ</title>
+<title>CRICZONE — CRICZONE Lɪᴠᴇ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
@@ -158,6 +158,21 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;backgroun
 /* Telegram community popup is loaded from the shared CRICZONE script. */
 
 @media(max-width:600px){.container{padding:0 14px}.header{padding:12px 14px;margin-left:-14px;margin-right:-14px}.brand-text h1{font-size:16px}.brand-text p{font-size:9.5px}.brand-mark{width:36px;height:36px;font-size:15px}.live-pill{padding:5px 8px;font-size:11px}.icon-action-btn{width:34px;height:34px;font-size:13px}.join-btn{padding:6px 10px;font-size:11px}.slider-card{flex:0 0 304px}.upcoming-list-stack{grid-template-columns:1fr}.tl-stream-btn{max-width:140px}}
+
+/* ===== CRICZONE HEADER BRANDING ===== */
+.header{min-height:112px;padding:18px 30px;margin-left:-20px;margin-right:-20px;background:#17191c;border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 8px 26px rgba(0,0,0,.22);}
+.brand{gap:16px;}
+.brand-mark{width:62px;height:62px;border-radius:17px;background:linear-gradient(145deg,#123d2b,#087f55);border:1px solid rgba(114,224,170,.35);font:800 21px 'Space Grotesk',sans-serif;letter-spacing:-1px;box-shadow:0 5px 20px rgba(0,0,0,.28);}
+.brand-text h1{font-size:clamp(21px,2vw,27px);letter-spacing:.1px;background:linear-gradient(110deg,#f4f6f8,#a9c6b5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-text p{font-size:15px;color:#9fa6ad;margin-top:5px;}
+.header-actions{gap:12px;}
+.icon-action-btn{width:58px;height:58px;border-radius:15px;font-size:21px;background:#222529;border-color:rgba(255,255,255,.08);}
+.live-pill{padding:13px 19px;border-radius:13px;font-size:16px;font-weight:800;}
+.join-btn{min-height:54px;padding:0 24px;border-radius:15px;font-size:16px;}
+@media(min-width:900px){.header{padding-left:30px;padding-right:30px}.brand{flex:1}.header-actions{gap:12px}}
+@media(max-width:700px){.header{min-height:76px;padding:10px 12px;margin-left:-14px;margin-right:-14px;gap:8px}.brand{gap:9px}.brand-mark{width:42px;height:42px;border-radius:12px;font-size:15px}.brand-text h1{font-size:17px}.brand-text p{font-size:10px;margin-top:3px}.header-actions{gap:6px}.icon-action-btn{width:36px;height:36px;border-radius:10px;font-size:14px}.live-pill{padding:7px 9px;font-size:11px}.join-btn{min-height:36px;padding:0 10px;border-radius:10px;font-size:11px;gap:5px}.join-btn svg{width:15px;height:15px}}
+@media(max-width:390px){.header{padding-left:9px;padding-right:9px}.brand{gap:7px}.brand-mark{width:36px;height:36px}.brand-text h1{font-size:14px}.brand-text p{font-size:9px}.header-actions{gap:4px}.icon-action-btn{width:31px;height:32px;font-size:12px}.live-pill{padding:6px 7px;font-size:10px}.join-btn{padding:0 7px;font-size:10px}}
+/* ===== END CRICZONE HEADER BRANDING ===== */
 </style>
 </head>
 <body>
@@ -165,8 +180,8 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;backgroun
   <section id="hubView" class="view">
     <header class="header">
       <div class="brand">
-        <div class="brand-mark">Cᴄ</div>
-        <div class="brand-text"><h1>CʀɪᴄxCʀᴀᴛᴇ</h1><p>Live cricket hub</p></div>
+        <div class="brand-mark">CZ</div>
+        <div class="brand-text"><h1>CRICZONE</h1><p>Live cricket hub</p></div>
       </div>
       <div class="header-actions">
         <button class="icon-action-btn" id="alertToggleBtn" type="button" aria-label="Match Alerts" title="Match Alerts">🔔</button>
@@ -479,7 +494,7 @@ async function toggleAlerts() {
     if (p === "granted") {
       state.alertsOn = true;
       localStorage.setItem("cx_alerts", "true");
-      new Notification("CʀɪᴄxCʀᴀᴛᴇ", { body: "Live match alerts enabled." });
+      new Notification("CRICZONE", { body: "Live match alerts enabled." });
     }
   } else {
     state.alertsOn = false;
