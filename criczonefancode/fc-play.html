@@ -406,18 +406,28 @@ async function initPlayer() {
         const requestTypes = shaka.net.NetworkingEngine.RequestType;
         const isManifest = type === requestTypes.MANIFEST;
         const isSegment = type === requestTypes.SEGMENT;
-        if (isManifest || isSegment) {
-          // Avoid replaying stale cached live playlists or media chunks.
-          // Do not rewrite segment URLs: signed CDN segment URLs must stay intact.
-          request.headers["Cache-Control"] = "no-cache, no-store, max-age=0";
-          request.headers["Pragma"] = "no-cache";
-        }
+
         if (isManifest) {
-          // Force a fresh live playlist while preserving existing auth query params.
+          // Force a fresh live playlist on each reload.
           request.uris = request.uris.map(uri => {
             const liveUrl = new URL(uri);
             liveUrl.searchParams.set("_cz_live_refresh", String(Date.now()));
             return liveUrl.toString();
+          });
+        }
+
+        if (isSegment) {
+          // Refresh plain HLS media chunks using a URL cache key. Avoid custom
+          // request headers (they trigger CORS preflight OPTIONS requests).
+          // Preserve signed/query-auth segment URLs unchanged.
+          request.uris = request.uris.map(uri => {
+            const segmentUrl = new URL(uri);
+            const isMediaChunk = /\\.(?:ts|m4s|mp4|aac|mp3)$/i.test(segmentUrl.pathname);
+            if (isMediaChunk && !segmentUrl.search) {
+              segmentUrl.searchParams.set("_cz_seg_refresh", String(Date.now()));
+              return segmentUrl.toString();
+            }
+            return uri;
           });
         }
       });
