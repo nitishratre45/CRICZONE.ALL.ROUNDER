@@ -332,17 +332,63 @@
   }
 
   function addDragScroll(track) {
-    var active = false, startX = 0, initialScroll = 0;
+    // Keep ordinary mouse clicks on event-card links intact. Only begin a
+    // desktop drag after the pointer has moved beyond a small threshold.
+    // Touch devices retain the browser's native horizontal swipe behavior.
+    var pressed = false;
+    var dragging = false;
+    var startX = 0;
+    var initialScroll = 0;
+    var suppressClick = false;
+    var pointerId = null;
+
     track.addEventListener('pointerdown', function (event) {
-      active = true; startX = event.clientX; initialScroll = track.scrollLeft;
-      track.classList.add('is-dragging');
-      if (track.setPointerCapture) track.setPointerCapture(event.pointerId);
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      pressed = true;
+      dragging = false;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      initialScroll = track.scrollLeft;
     });
-    track.addEventListener('pointermove', function (event) { if (active) track.scrollLeft = initialScroll - (event.clientX - startX); });
-    function stop() { active = false; track.classList.remove('is-dragging'); }
-    track.addEventListener('pointerup', stop);
-    track.addEventListener('pointercancel', stop);
-    track.addEventListener('pointerleave', function (event) { if (active && event.buttons === 0) stop(); });
+
+    document.addEventListener('pointermove', function (event) {
+      if (!pressed || event.pointerId !== pointerId) return;
+      var delta = event.clientX - startX;
+      if (!dragging && Math.abs(delta) > 7) {
+        dragging = true;
+        track.classList.add('is-dragging');
+      }
+      if (dragging) {
+        track.scrollLeft = initialScroll - delta;
+        if (event.cancelable) event.preventDefault();
+      }
+    }, { passive: false });
+
+    function stopDrag() {
+      if (!pressed) return;
+      pressed = false;
+      if (dragging) {
+        suppressClick = true;
+        window.setTimeout(function () { suppressClick = false; }, 0);
+      }
+      dragging = false;
+      pointerId = null;
+      track.classList.remove('is-dragging');
+    }
+
+    document.addEventListener('pointerup', function (event) {
+      if (event.pointerId === pointerId) stopDrag();
+    });
+    document.addEventListener('pointercancel', function (event) {
+      if (event.pointerId === pointerId) stopDrag();
+    });
+
+    track.addEventListener('click', function (event) {
+      if (!suppressClick) return;
+      event.preventDefault();
+      event.stopPropagation();
+      suppressClick = false;
+    }, true);
   }
 
   function mount(sectionInfo) {
