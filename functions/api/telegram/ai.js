@@ -192,6 +192,22 @@ async function getTelegramUsersSnapshot(env) {
   return snapshot;
 }
 
+function formatSnapshotUpdatedAt(snapshot) {
+  const value = snapshot?.generated_at || "";
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "Unknown";
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  }).format(date) + " IST";
+}
+
 function getAdminIds(env) {
   return String(env.TELEGRAM_ADMIN_IDS || '').split(',').map(v => v.trim()).filter(Boolean);
 }
@@ -293,7 +309,7 @@ async function handlePrivateMessage({ env, message }) {
       ].map(csvEscape).join(','))).join('\n');
       const form = new FormData();
       form.append('chat_id', String(chatId));
-      form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)');
+      form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)\\n🕒 Last updated: ' + formatSnapshotUpdatedAt(snapshot));
       form.append('document', new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'criczone_registered_users.csv');
       const response = await fetch('https://api.telegram.org/bot' + env.BOT_TOKEN + '/sendDocument', { method: 'POST', body: form });
       const result = await response.json();
@@ -327,7 +343,7 @@ async function handlePrivateMessage({ env, message }) {
       return (i+1+(page-1)*perPage) + '. ' + name + '\n   ' + username + '\n   ID: ' + u.user_id + '\n   Registered: ' + registered + '\n   Status: ' + (Number(u.active) ? 'Active' : 'Inactive');
     });
     const pages = Math.max(1, Math.ceil(count/perPage));
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE REGISTERED USERS\nPage ' + page + '/' + pages + ' • Total: ' + count + '\n\n' + lines.join('\n\n') + '\n\nNext page: /users ' + (page+1) });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE REGISTERED USERS\nPage ' + page + '/' + pages + ' • Total: ' + count + '\n🕒 Last updated: ' + formatSnapshotUpdatedAt(snapshot) + '\n\n' + lines.join('\n\n') + '\n\nNext page: /users ' + (page+1) });
     return;
   }
 
