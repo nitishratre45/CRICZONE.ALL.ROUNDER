@@ -343,6 +343,8 @@
     var pointerId = null;
 
     track.addEventListener('pointerdown', function (event) {
+      // Do not capture clicks that begin on a match link or interactive control.
+      if (event.target && event.target.closest && event.target.closest('a, button, input, select, textarea, label')) return;
       if (event.pointerType !== 'mouse' || event.button !== 0) return;
       pressed = true;
       dragging = false;
