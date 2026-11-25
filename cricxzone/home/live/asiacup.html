@@ -478,6 +478,54 @@
     .asia-counter-mount #viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:22px!important;margin-left:2px!important;padding:3px 5px!important;border-radius:5px!important;border:1px solid rgba(249,115,22,.35)!important;background:rgba(249,115,22,.12)!important;color:#ffb36d!important;font:900 8px/1 system-ui,sans-serif!important}
     @media(max-width:640px){.asia-stream-divider{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;margin-top:20px}.asia-stream-divider::before,.asia-stream-divider::after{display:none}.asia-stream-divider .section-label{min-width:0;white-space:normal}.asia-stream-divider .section-label-text{font-size:clamp(.62rem,2.8vw,.72rem);letter-spacing:.07em}.asia-counter-mount{justify-self:end}.asia-counter-mount #viewerBadge{padding:5px 6px!important;gap:2px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:7px!important;gap:3px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:8px!important;min-width:22px!important;padding:2px 4px!important}}
     @media(max-width:360px){.asia-stream-divider{grid-template-columns:1fr;justify-items:start}.asia-counter-mount{justify-self:start}}
+
+    /* CRICZONE full-screen refresh — page chrome only; keep stream/player untouched */
+    :root{
+      --bg:#07111b;--bg-2:#0b1a27;--bg-card:rgba(12,29,42,.96);
+      --orange:#39e6b0;--orange-dim:rgba(57,230,176,.13);--orange-glow:rgba(57,230,176,.28);
+      --red-live:#ff426d;--text:#f1fbff;--text-2:#9bb7c6;--text-3:rgba(220,245,255,.38);
+      --border:rgba(108,220,214,.16);--border-2:rgba(108,220,214,.09);
+    }
+    body{
+      background-color:var(--bg)!important;color:var(--text);
+      background-image:
+        radial-gradient(ellipse 72% 42% at 12% 0%,rgba(0,214,170,.13) 0%,transparent 62%),
+        radial-gradient(ellipse 58% 42% at 92% 45%,rgba(36,126,202,.13) 0%,transparent 64%),
+        linear-gradient(180deg,#07111b 0%,#081724 48%,#07111b 100%)!important;
+    }
+    .site-header{background:rgba(5,17,27,.94)!important;border-bottom:1px solid rgba(79,211,190,.2)!important}
+    .site-header::after{background:linear-gradient(90deg,transparent,rgba(57,230,176,.55),transparent)!important}
+    .header-back:hover{color:#57f2c1!important}
+    .vs-word{color:#06241f!important;background:linear-gradient(135deg,#a5ffe5,#37ddb0)!important;border-color:rgba(57,230,176,.45)!important}
+    .player-shell{background:#02080d!important;border-bottom-color:rgba(57,230,176,.18)!important;box-shadow:0 18px 58px rgba(0,0,0,.42)!important}
+    .inner-wrap{width:100%!important;max-width:none!important;margin:0!important;padding:0 clamp(14px,3.2vw,56px)!important}
+    .section-divider::before,.section-divider::after{background:linear-gradient(90deg,transparent,rgba(93,209,198,.25),transparent)!important}
+    .section-label .material-icons-round{color:#4ce6bd!important}
+    .section-label-text{color:#a8c9d6!important}
+    .section-label-count{background:rgba(24,53,68,.85)!important;border-color:rgba(91,211,193,.22)!important;color:#b8f5e6!important}
+    .channels-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))!important;gap:clamp(10px,1.2vw,18px)!important}
+    .ch-card{background:linear-gradient(145deg,rgba(38,111,102,.18),rgba(19,48,68,.28))!important;border-color:rgba(111,218,201,.18)!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important}
+    .ch-card:hover{border-color:rgba(57,230,176,.48)!important;box-shadow:0 14px 34px rgba(0,190,155,.12)!important}
+    .ch-inner{background:linear-gradient(145deg,rgba(14,35,48,.98),rgba(8,23,36,.99))!important}
+    .ch-name,.mi-name{color:#ecfbff!important}
+    .ch-lang,.ch-meta,.mi-desc-text{color:#9bb9c7!important}
+    .ch-card .material-icons-round{color:#57e7c0!important}
+    .match-info-section,.mi-desc-block{background:linear-gradient(145deg,rgba(13,35,48,.94),rgba(8,23,36,.96))!important;border-color:var(--border)!important}
+    .mi-vs{color:#06241f!important;background:linear-gradient(135deg,#a5ffe5,#37ddb0)!important}
+    .site-footer{background:#050f18!important;border-top:1px solid rgba(80,210,190,.18)!important}
+    .footer-logo .accent{color:#57e7c0!important}
+    .footer-nav a:hover,.footer-legal a:hover{color:#57e7c0!important}
+    .social-btn{background:rgba(57,230,176,.12)!important;border-color:rgba(57,230,176,.28)!important;color:#6af0ca!important}
+    .asia-counter-mount #viewerBadge{border-color:rgba(75,225,190,.42)!important;background:linear-gradient(135deg,rgba(6,29,38,.98),rgba(7,20,34,.98))!important}
+    @media(min-width:900px){
+      .channels-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))!important}
+      .section-divider{margin-top:32px}
+    }
+    @media(max-width:640px){
+      .inner-wrap{padding-left:12px!important;padding-right:12px!important}
+      .channels-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+    }
+
   </style>
 
    <script>
