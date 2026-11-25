@@ -403,9 +403,17 @@ async function initPlayer() {
     const networkingEngine = player.getNetworkingEngine();
     if (networkingEngine) {
       networkingEngine.registerRequestFilter((type, request) => {
-        if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+        const requestTypes = shaka.net.NetworkingEngine.RequestType;
+        const isManifest = type === requestTypes.MANIFEST;
+        const isSegment = type === requestTypes.SEGMENT;
+        if (isManifest || isSegment) {
+          // Avoid replaying stale cached live playlists or media chunks.
+          // Do not rewrite segment URLs: signed CDN segment URLs must stay intact.
           request.headers["Cache-Control"] = "no-cache, no-store, max-age=0";
           request.headers["Pragma"] = "no-cache";
+        }
+        if (isManifest) {
+          // Force a fresh live playlist while preserving existing auth query params.
           request.uris = request.uris.map(uri => {
             const liveUrl = new URL(uri);
             liveUrl.searchParams.set("_cz_live_refresh", String(Date.now()));
