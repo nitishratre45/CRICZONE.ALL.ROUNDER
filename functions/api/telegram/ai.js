@@ -216,7 +216,7 @@ async function handlePrivateMessage({ env, message }) {
   const command = text.split(/\s+/)[0].toLowerCase().replace(/@[\w]+$/, '');
 
   if (command === '/start') {
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👋 Welcome to CRICZONE! 🏏\\n\\nSend me a private message anytime to stay registered for CRICZONE announcements.' });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👋 Welcome to CRICZONE! 🏏\n\nSend me a private message anytime to stay registered for CRICZONE announcements.' });
     return;
   }
 
@@ -231,7 +231,7 @@ async function handlePrivateMessage({ env, message }) {
   }
 
   if (command === '/myid') {
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: `🆔 Your Telegram ID: ${senderId}\\n\\nAdmin broadcast setup requires this ID in TELEGRAM_ADMIN_IDS.` });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: `🆔 Your Telegram ID: ${senderId}\n\nAdmin broadcast setup requires this ID in TELEGRAM_ADMIN_IDS.` });
     return;
   }
 
@@ -299,7 +299,7 @@ async function handlePrivateMessage({ env, message }) {
     await env.TELEGRAM_DB.prepare(`INSERT INTO telegram_broadcast_states (admin_id,step,source_message_id,updated_at)
       VALUES (?, 'waiting_message', NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step='waiting_message',source_message_id=NULL,updated_at=excluded.updated_at`)
       .bind(senderId,Math.floor(Date.now()/1000)).run();
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📢 Send the message, photo, video, or supported media you want to broadcast.\\n\\nAfter that, I’ll show a confirmation.' });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📢 Send the message, photo, video, or supported media you want to broadcast.\n\nAfter that, I’ll show a confirmation.' });
     return;
   }
 
@@ -310,7 +310,7 @@ async function handlePrivateMessage({ env, message }) {
     }
     const targetId = text.split(/\s+/)[1] || '';
     if (!/^\d{5,20}$/.test(targetId)) {
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: 'Usage: /sendto TELEGRAM_USER_ID\\nExample: /sendto 123456789' });
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: 'Usage: /sendto TELEGRAM_USER_ID\nExample: /sendto 123456789' });
       return;
     }
     const target = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,active FROM telegram_broadcast_users WHERE user_id=?').bind(targetId).first();
@@ -322,7 +322,7 @@ async function handlePrivateMessage({ env, message }) {
       VALUES (?, ?, NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step=excluded.step,source_message_id=NULL,updated_at=excluded.updated_at`)
       .bind(senderId,'waiting_message:'+targetId,Math.floor(Date.now()/1000)).run();
     const name=[target.first_name,target.last_name].filter(Boolean).join(' ')||'User';
-    await telegramCall(env,'sendMessage',{chat_id:chatId,text:'✉️ Preparing a private message for '+name+' (ID: '+targetId+').\\n\\nNow send the text, photo, video or supported media you want to deliver. You will get a confirmation before sending.'});
+    await telegramCall(env,'sendMessage',{chat_id:chatId,text:'✉️ Preparing a private message for '+name+' (ID: '+targetId+').\n\nNow send the text, photo, video or supported media you want to deliver. You will get a confirmation before sending.'});
     return;
   }
 
@@ -335,7 +335,7 @@ async function handlePrivateMessage({ env, message }) {
       await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=?,source_message_id=?,updated_at=? WHERE admin_id=?')
         .bind(nextStep,message.message_id,Math.floor(Date.now()/1000),senderId).run();
       if (targetId) {
-        await telegramCall(env,'sendMessage',{chat_id:chatId,text:'🔎 Private message preview\\n\\nRecipient ID: '+targetId+'\\n\\nConfirm to send only to this user.',reply_markup:{inline_keyboard:[[
+        await telegramCall(env,'sendMessage',{chat_id:chatId,text:'🔎 Private message preview\n\nRecipient ID: '+targetId+'\n\nConfirm to send only to this user.',reply_markup:{inline_keyboard:[[
           {text:'✉️ Send to this user',callback_data:'broadcast:confirm:'+targetId},
           {text:'❌ Cancel',callback_data:'broadcast:cancel'}
         ]] }});
@@ -343,7 +343,7 @@ async function handlePrivateMessage({ env, message }) {
         const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
         await telegramCall(env, 'sendMessage', {
           chat_id: chatId,
-          text: `📢 Broadcast preview is ready.\\n\\n👥 Active registered users: ${Number(audience?.count || 0)}\\n\\nConfirm to send the message you just submitted to all registered users.`,
+          text: `📢 Broadcast preview is ready.\n\n👥 Active registered users: ${Number(audience?.count || 0)}\n\nConfirm to send the message you just submitted to all registered users.`,
           reply_markup: { inline_keyboard: [[
             { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
             { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
@@ -1193,7 +1193,7 @@ export async function onRequestPost({ request, env }) {
           'UPDATE telegram_broadcast_totals SET broadcasts=broadcasts+1,recipients=recipients+?,sent=sent+?,failed=failed+?,blocked=blocked+?,updated_at=? WHERE id=1'
         ).bind(recipients,sent,failed,blocked,completedAt).run();
         await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
-        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ ${requestedTarget?'Private message':'Broadcast'} finished.\\n\\n👥 Recipients: ${recipients}\\n📨 Sent successfully: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
+        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ ${requestedTarget?'Private message':'Broadcast'} finished.\n\n👥 Recipients: ${recipients}\n📨 Sent successfully: ${sent}\n❌ Failed: ${failed}\n🚫 Blocked/deactivated: ${blocked}`});
         return json({ ok: true, received: true });
       }
     }
