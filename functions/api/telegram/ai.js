@@ -265,7 +265,7 @@ async function handlePrivateMessage({ env, message }) {
       const total = snapshot.users.length;
       const active = Number(snapshot.counts?.active ?? snapshot.users.filter(user => user.status === 'active').length);
       const inactive = Number(snapshot.counts?.inactive ?? (total - active));
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\\n\\n📋 Total registered: ' + total + '\\n✅ Active: ' + active + '\\n🚫 Inactive/blocked: ' + inactive + '\\n\\n🗂 Source: Daily KV snapshot' });
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + total + '\n✅ Active: ' + active + '\n🚫 Inactive/blocked: ' + inactive + '\n\n🗂 Source: Daily KV snapshot' });
       return;
     }
 
@@ -308,7 +308,7 @@ async function handlePrivateMessage({ env, message }) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⚠️ User snapshot is not available yet. Please ask an admin to open the Telegram Admin Dashboard once to generate it.' });
       return;
     }
-    const parts = text.split(/\\s+/);
+    const parts = text.split(/\s+/);
     const page = Math.max(1, parseInt(parts[1] || '1', 10) || 1);
     const perPage = 10;
     const count = snapshot.users.length;
