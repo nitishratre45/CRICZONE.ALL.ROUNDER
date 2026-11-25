@@ -213,21 +213,7 @@
         }
     </style>
 </head>
-<body class="locked">
-
-    <div class="backdrop active" id="backdrop"></div>
-    <div class="modal active" id="telegramPopup">
-        <div class="modal-icon">
-            <i class="fa-brands fa-telegram"></i>
-        </div>
-        <h2>Support Our Channel</h2>
-        <p>Join <strong>CRICKET NEWS POINT</strong> on WhatsApp/Telegram for instant match links and updates.</p>
-        
-        <a href="https://whatsapp.com/channel/0029VaeylYYBPzjVNomWuZ0T" target="_blank" id="joinBtn" class="btn-join">
-            <i class="fa-brands fa-whatsapp"></i> Join Channel
-        </a>
-        <button id="closeBtn" class="btn-close">I've Already Joined</button>
-    </div>
+<body>
 
     <div id="toast">
         <i class="fa-solid fa-circle-check"></i> <span>Link Copied Successfully!</span>
@@ -262,7 +248,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 SonyLiv Events | Developed by Cricket News Point</p>
+        <p>&copy; 2026 CRICZONE · Sony LIV | Powered by CRICZONE</p>
     </footer>
 
     <script>
@@ -270,24 +256,6 @@
         let allMatches = [];
         const grid = document.getElementById('matches-grid');
         const toast = document.getElementById('toast');
-
-        const popup = document.getElementById('telegramPopup');
-        const backdrop = document.getElementById('backdrop');
-        const joinBtn = document.getElementById('joinBtn');
-        const closeBtn = document.getElementById('closeBtn');
-
-        function hidePopup() {
-            popup.classList.remove('active');
-            backdrop.classList.remove('active');
-            document.body.classList.remove('locked');
-            setTimeout(() => {
-                popup.style.display = 'none';
-                backdrop.style.display = 'none';
-            }, 400); 
-        }
-
-        joinBtn.addEventListener('click', hidePopup);
-        closeBtn.addEventListener('click', hidePopup);
 
         function showToast(message) {
             toast.querySelector('span').innerText = message;
