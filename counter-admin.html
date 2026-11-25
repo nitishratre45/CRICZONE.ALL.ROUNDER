@@ -226,15 +226,15 @@ const tgAuth = {
    if(!token)throw new Error("Enter the dashboard access key. Your session lasts 5 days.");
    keyInput.value="";
    const [subsResponse,statsResponse]=await Promise.all([
-    fetch("/api/telegram/member-count",{cache:"no-store"}),
-    fetch("/api/telegram/admin-stats",{cache:"no-store",headers:{Authorization:"Bearer "+token}})
+    fetch("/api/telegram/member-count",{cache:"no-store"}).catch(()=>null),
+    fetch("/api/telegram/admin-stats",{cache:"no-store",headers:{Authorization:"Bearer "+token}}).catch(()=>null)
    ]);
-   const subs=await subsResponse.json().catch(()=>({}));
-   const stats=await statsResponse.json().catch(()=>({}));
-   if(statsResponse.status===401){tgAuth.clear();throw new Error("Your 5-day admin session expired. Enter the key again.");}
-   if(subsResponse.ok&&subs.ok&&Number.isFinite(Number(subs.count))) $("tgSubscribers").textContent=fmt(subs.count);
+   const subs=subsResponse?await subsResponse.json().catch(()=>({})):{};
+   const stats=statsResponse?await statsResponse.json().catch(()=>({})):{};
+   if(statsResponse&&statsResponse.status===401){tgAuth.clear();throw new Error("Your previous admin session is no longer valid. Enter the dashboard key once to start a fresh 5-day session.");}
+   if(subsResponse&&subsResponse.ok&&subs.ok&&Number.isFinite(Number(subs.count))) $("tgSubscribers").textContent=fmt(subs.count);
    else $("tgSubscribers").textContent="Unavailable";
-   if(!statsResponse.ok||!stats.ok) throw new Error(stats.error||"Bot stats request failed (HTTP "+statsResponse.status+")");
+   if(!statsResponse||!statsResponse.ok||!stats.ok) throw new Error(stats.error||"Bot stats request failed"+(statsResponse?" (HTTP "+statsResponse.status+")":" (network error)"));
    $("tgRegistered").textContent=fmt(stats.total_registered);
    $("tgActive").textContent=fmt(stats.active);
    $("tgInactive").textContent=fmt(stats.inactive);
@@ -301,7 +301,7 @@ const tgAuth = {
   if(loading)return;
   if(!token()){meta.textContent="Enter the dashboard access key first. Session access lasts 5 days.";return;}
   loading=true;more.disabled=true;more.textContent="Loading…";
-  if(reset){page=1;allUsers=[];tbody.innerHTML='<tr><td colspan="6" class="tg-empty">Loading Telegram users…</td></tr>';}
+  if(reset){page=1;if(!allUsers.length)tbody.innerHTML='<tr><td colspan="6" class="tg-empty">Loading Telegram users…</td></tr>';}
   try{
    const response=await fetch("/api/telegram/admin-stats?page="+page+"&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+token()}});
    const data=await response.json();
