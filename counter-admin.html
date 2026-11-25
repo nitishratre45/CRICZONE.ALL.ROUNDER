@@ -48,10 +48,40 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
 @media(max-width:900px){main{width:calc(100% - 32px);margin:26px auto 50px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric,.worker{padding:17px}}
 @media(max-width:600px){main{width:calc(100% - 20px);margin:20px auto 38px}.top{align-items:flex-start;gap:14px;margin-bottom:19px;padding-bottom:17px}.actions{width:100%;justify-content:space-between}.overview{grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}.metric{padding:14px;border-radius:16px}.metric small{font-size:10px}.metric strong{font-size:24px}.grid{grid-template-columns:1fr;gap:11px}.worker{padding:15px;border-radius:17px}.worker h2{font-size:15px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:23px}.label{font-size:10px}.foot{font-size:10px}.sub{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+
+.telegram-panel{margin:0 0 22px;padding:22px;border:1px solid rgba(56,82,118,.72);border-radius:20px;background:linear-gradient(145deg,rgba(15,31,51,.97),rgba(7,17,30,.98));box-shadow:0 12px 32px rgba(0,0,0,.18)}
+.telegram-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.telegram-panel h2{margin:0 0 7px;font-size:19px}.telegram-panel p{margin:0;color:#91a8c7;font-size:12px;line-height:1.6}
+.tg-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tg-controls input{width:min(260px,60vw);padding:11px 13px;border:1px solid #31506f;border-radius:11px;background:#071323;color:#f4f8ff;outline:none}
+.tg-controls input:focus{border-color:#59baff;box-shadow:0 0 0 3px #59baff20}
+.tg-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.tg-card{padding:16px;border-radius:14px;border:1px solid #203750;background:linear-gradient(145deg,#081525,#0d1b2d);min-width:0}
+.tg-card small{display:block;color:#91a8c7;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.tg-card strong{display:block;margin-top:8px;font-size:clamp(22px,2.5vw,30px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tg-card.active strong{color:var(--green)}.tg-card.inactive strong{color:var(--red)}.tg-card.subs strong{color:var(--blue)}
+.tg-status{margin-top:12px;color:#91a8c7;font-size:11px;min-height:16px}
+.tg-status.error{color:#ff9eae}.tg-status.ok{color:var(--green)}
+@media(max-width:700px){.telegram-panel{padding:15px;border-radius:17px}.tg-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.telegram-panel-head{display:block}.tg-controls{margin-top:12px}.tg-controls input{flex:1;min-width:0}}
+
 </style>
 </head>
 <body><main>
 <header class="top"><div><div class="eyebrow">CRICZONE • SYSTEM STATUS</div><div class="title">Worker Monitor</div><div class="sub">Seven visitor-counter workers • live status and visit totals</div></div><div class="actions"><span class="updated" id="updated">Not checked yet</span><button id="refresh">↻ Refresh</button></div></header>
+
+<section class="telegram-panel" aria-labelledby="telegramHeading">
+ <div class="telegram-panel-head">
+  <div><h2 id="telegramHeading">Telegram Audience</h2><p>Live channel subscriber count plus private bot registration totals from the existing CRICZONE Telegram D1 database.</p></div>
+  <div class="tg-controls"><input id="tgAdminKey" type="password" autocomplete="current-password" placeholder="Dashboard access key" aria-label="Telegram dashboard access key"><button id="tgLoad" type="button">Load Telegram Stats</button></div>
+ </div>
+ <div class="tg-cards">
+  <div class="tg-card subs"><small>Channel subscribers</small><strong id="tgSubscribers">—</strong></div>
+  <div class="tg-card"><small>Bot registered users</small><strong id="tgRegistered">—</strong></div>
+  <div class="tg-card active"><small>Active bot users</small><strong id="tgActive">—</strong></div>
+  <div class="tg-card inactive"><small>Blocked / inactive</small><strong id="tgInactive">—</strong></div>
+ </div>
+ <div class="tg-status" id="tgStatus" role="status">Enter the dashboard key to load private bot totals. Channel subscriber count is fetched from Telegram.</div>
+</section>
 <section class="overview">
 <div class="metric"><small>Workers online</small><strong id="online">— / 7</strong></div>
 <div class="metric"><small>Combined live visitors*</small><strong id="combinedLive">—</strong></div>
@@ -112,4 +142,42 @@ async function refresh(manual=false){
 }
 document.getElementById("refresh").addEventListener("click",()=>refresh(true));
 refresh();setInterval(()=>refresh(false),120000);
+
+(function(){
+ const $=id=>document.getElementById(id);
+ const fmt=value=>Number(value||0).toLocaleString("en-IN");
+ const keyInput=$("tgAdminKey"),load=$("tgLoad"),status=$("tgStatus");
+ try{keyInput.value=sessionStorage.getItem("cz_tg_admin_key")||"";}catch(_){}
+ async function loadTelegram(){
+  load.disabled=true;status.className="tg-status";status.textContent="Fetching Telegram data…";
+  $("tgSubscribers").textContent="…";
+  try{
+   const [subsResponse,statsResponse]=await Promise.all([
+    fetch("/api/telegram/member-count",{cache:"no-store"}),
+    fetch("/api/telegram/admin-stats",{cache:"no-store",headers:{Authorization:"Bearer "+keyInput.value.trim()}})
+   ]);
+   const subs=await subsResponse.json().catch(()=>({}));
+   const stats=await statsResponse.json().catch(()=>({}));
+   if(subsResponse.ok&&subs.ok&&Number.isFinite(Number(subs.count))) $("tgSubscribers").textContent=fmt(subs.count);
+   else $("tgSubscribers").textContent="Unavailable";
+   if(!statsResponse.ok||!stats.ok) throw new Error(stats.error||"Bot stats request failed (HTTP "+statsResponse.status+")");
+   $("tgRegistered").textContent=fmt(stats.total_registered);
+   $("tgActive").textContent=fmt(stats.active);
+   $("tgInactive").textContent=fmt(stats.inactive);
+   status.className="tg-status ok";
+   status.textContent="Updated "+new Date().toLocaleString()+" · Aggregate counts only; no Telegram user IDs are exposed.";
+   try{sessionStorage.setItem("cz_tg_admin_key",keyInput.value.trim());}catch(_){}
+   if($("tgSubscribers").textContent==="Unavailable") status.textContent+=" Channel subscriber count is temporarily unavailable.";
+  }catch(error){
+   status.className="tg-status error";
+   status.textContent=(error.message||"Unable to load Telegram stats")+". Set TELEGRAM_ADMIN_DASHBOARD_KEY in Cloudflare Pages environment variables if not configured.";
+   $("tgSubscribers").textContent=$("tgSubscribers").textContent==="…"?"Unavailable":$("tgSubscribers").textContent;
+   $("tgRegistered").textContent=$("tgActive").textContent=$("tgInactive").textContent="—";
+  }finally{load.disabled=false;}
+ }
+ load.addEventListener("click",loadTelegram);
+ keyInput.addEventListener("keydown",event=>{if(event.key==="Enter")loadTelegram();});
+ if(keyInput.value.trim()) loadTelegram();
+})();
+
 </script></body></html>
