@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var cfg          = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+  var cfg          = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
   var apis         = cfg.apis || {};
   var API_URL      = apis.fanCode || apis.fancode || '';
   var ROUTES       = cfg.routes || {};
@@ -138,7 +138,7 @@
   }
 
   function buildPlayerUrl(matchId, languageCode) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfgObj = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var secCfg = (cfgObj.sections || {}).fancode || {};
     var secLink = String(secCfg.link || '');
     var base;
@@ -246,7 +246,7 @@
   );
 
   function renderMatches(matches) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfgObj = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
     var labels = cfgObj.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
