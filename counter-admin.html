@@ -244,10 +244,10 @@ const tgAuth = {
    document.dispatchEvent(new Event("cz-tg-admin-authenticated"));
    if($("tgSubscribers").textContent==="Unavailable") status.textContent+=" Channel subscriber count is temporarily unavailable.";
   }catch(error){
-   status.className="tg-status error";
-   status.textContent=(error.message||"Unable to load Telegram stats")+".";
+   status.className=hadCache?"tg-status":"tg-status error";
+   status.textContent=(error.message||"Unable to load Telegram stats")+(hadCache?" · Showing previously saved data.":".");
    $("tgSubscribers").textContent=$("tgSubscribers").textContent==="…"?"Unavailable":$("tgSubscribers").textContent;
-   $("tgRegistered").textContent=$("tgActive").textContent=$("tgInactive").textContent="—";
+   if(!hadCache)$("tgRegistered").textContent=$("tgActive").textContent=$("tgInactive").textContent="—";
   }finally{load.disabled=false;}
  }
  load.addEventListener("click",loadTelegram);
