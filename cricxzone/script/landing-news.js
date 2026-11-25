@@ -41,14 +41,14 @@
   function renderArticle(article) {
     var title = escapeHtml(article && article.title || 'Sports update');
     var source = escapeHtml(article && article.source || 'Sports news');
-    var image = safeHttpUrl(article && article.image) || FALLBACK_IMAGE;
+    var image = safeHttpUrl(article && article.image);
     var url = safeHttpUrl(article && article.link) || '/cricxzone/#newsSection';
     var target = url === '/news/' ? '' : ' target="_blank" rel="noopener noreferrer"';
 
     return '' +
       '<a class="news-card-landing" href="' + escapeHtml(url) + '"' + target + '>' +
         '<div class="news-card-media">' +
-          '<img class="news-card-img" src="' + escapeHtml(image) + '" alt="" loading="lazy" decoding="async" data-news-image>' +
+          (image ? '<img class="news-card-img" src="' + escapeHtml(image) + '" alt="" loading="lazy" decoding="async" data-news-image>' : '<div class="news-card-img news-card-img-placeholder" aria-hidden="true"></div>') +
           '<span class="news-card-source">' + source + '</span>' +
         '</div>' +
         '<div class="news-card-body">' +
@@ -70,7 +70,7 @@
   function setImageFallbacks() {
     Array.prototype.forEach.call(track.querySelectorAll('[data-news-image]'), function (image) {
       image.addEventListener('error', function () {
-        if (image.getAttribute('src') !== FALLBACK_IMAGE) image.setAttribute('src', FALLBACK_IMAGE);
+        image.style.display = 'none';
       }, { once: true });
     });
   }
