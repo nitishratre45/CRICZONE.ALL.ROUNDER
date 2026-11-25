@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <title>criczone · Sony Sports</title>
+  <title>CRICZONE · Live Sports</title>
 
   <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css"/>
@@ -338,6 +338,47 @@
       .ch-card .ch-logo{max-height:65px}
       .ch-card .ch-name{font-size:14px}
     }
+  
+    
+    /* CRICZONE visual refresh — presentation only; playback/data logic unchanged */
+    :root{color-scheme:dark;--cz-blue:#2563eb;--cz-cyan:#22d3ee;--cz-orange:#f97316}
+    html,body{background:#050914;color:#eef4ff}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--cz-cyan),var(--cz-blue))}
+    #overlay{background:radial-gradient(ellipse at 50% 42%,#10264a 0%,#070d1c 48%,#040711 100%)}
+    #overlay svg path{stroke:var(--cz-cyan)}
+    #overlay p{color:#9db3d6;letter-spacing:.6px}
+    #channel-list{background:radial-gradient(ellipse at 50% -20%,#122b55 0%,#080f20 42%,#050914 100%);padding-left:clamp(14px,3vw,34px);padding-right:clamp(14px,3vw,34px)}
+    #channel-list .header{padding:16px 4px 18px;border-bottom:1px solid rgba(148,184,255,.16);gap:12px}
+    #channel-list .header h1{font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:1.5px;background:linear-gradient(100deg,#fff 5%,#67e8f9 48%,#60a5fa 85%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 18px rgba(34,211,238,.18))}
+    #channel-list .header .subtitle{color:#a9c8ff;background:rgba(37,99,235,.13);border:1px solid rgba(96,165,250,.28);border-radius:999px;padding:7px 12px;font-size:9px;font-weight:800;letter-spacing:1.1px}
+    #channel-list .header .count{color:#9fb4d6;font-variant-numeric:tabular-nums}
+    #category-filter{padding:16px 0;border-bottom:1px solid rgba(148,184,255,.1);gap:9px}
+    .filter-pill{background:rgba(12,25,49,.82);color:#9bb0d1;border:1px solid rgba(125,160,220,.18);padding:8px 16px;font-size:10px;font-weight:800;letter-spacing:.55px;transition:background .2s,border-color .2s,transform .2s}
+    .filter-pill:hover{background:#142b50;color:#e5f3ff;border-color:rgba(34,211,238,.45)}
+    .filter-pill.active{background:linear-gradient(110deg,#1d4ed8,#0891b2);color:#fff;border-color:transparent;box-shadow:0 5px 18px rgba(14,165,233,.25)}
+    #grid-wrapper{padding-top:18px}
+    #ch-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
+    .ch-card{background:linear-gradient(150deg,rgba(18,37,70,.96),rgba(8,17,34,.98));border:1px solid rgba(125,160,220,.17);border-radius:17px;min-height:140px;padding:18px 14px;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .22s,border-color .22s,box-shadow .22s}
+    .ch-card::before{background:linear-gradient(135deg,transparent,transparent)}
+    .ch-card:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.65);box-shadow:0 12px 30px rgba(2,132,199,.18)}
+    .ch-card:hover::before{background:linear-gradient(135deg,#22d3ee,#2563eb,#f97316)}
+    .ch-card .ch-logo{max-width:118px;max-height:58px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.2))}
+    .ch-card .ch-name{color:#e6f0ff;font-size:12px;font-weight:750;letter-spacing:.15px}
+    .ch-card .ch-placeholder{background:linear-gradient(145deg,#17335f,#0c1b36);border:1px solid rgba(96,165,250,.22);color:#7dd3fc}
+    .ch-card .ch-placeholder .initials{background:linear-gradient(135deg,#67e8f9,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    #player-container{background:#000}
+    .plyr__controls{background:linear-gradient(0deg,rgba(2,8,20,.96),transparent)!important}
+    .plyr__control--overlaid{background:linear-gradient(135deg,#2563eb,#0891b2)!important}
+    .plyr__control.plyr__control--overlaid:hover{background:linear-gradient(135deg,#1d4ed8,#0e7490)!important}
+    .plyr__control[data-plyr="play"]:hover,.plyr__control[data-plyr="fullscreen"]:hover{background:rgba(34,211,238,.18)!important}
+    .plyr__progress__buffer{background:rgba(34,211,238,.25)!important}
+    .plyr__progress__played{background:linear-gradient(90deg,#2563eb,#22d3ee)!important}
+    .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before{background:linear-gradient(135deg,#2563eb,#22d3ee)!important}
+    #status{background:rgba(5,13,29,.92);border:1px solid rgba(96,165,250,.2);color:#67e8f9;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    #status.ok{color:#67e8f9}#status.warn{color:#fdba74}#status.err{color:#fca5a5}
+    @media(max-width:400px){#ch-grid{grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px}.ch-card{min-height:118px;border-radius:14px}}
+    @media(min-width:768px){#channel-list{padding-left:clamp(28px,5vw,72px);padding-right:clamp(28px,5vw,72px)}#ch-grid{grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:18px}}
+
   </style>
 </head>
 <body>
@@ -357,8 +398,8 @@
 <!-- Channel List -->
 <div id="channel-list">
   <div class="header">
-    <h1>⚡ SPORTLINK</h1>
-    <span class="subtitle">Sony Sports</span>
+    <h1>⚡ CRICZONE</h1>
+    <span class="subtitle">LIVE SPORTS HUB</span>
   </div>
   <div id="category-filter"></div>
   <div id="grid-wrapper">
