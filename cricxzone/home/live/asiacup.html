@@ -527,7 +527,6 @@
     }
 
 
-    .ch-id{display:block;margin-top:5px;font:600 8px/1.2 system-ui,sans-serif;letter-spacing:.025em;color:rgba(151,190,203,.58);overflow-wrap:anywhere}
     .ch-card.is-active{border-color:rgba(57,230,176,.72)!important;box-shadow:0 0 0 1px rgba(57,230,176,.16),0 8px 22px rgba(0,190,155,.12)!important}
     .ch-card.is-active .ch-id{color:#6debc7}
     @media(max-width:420px){.ch-id{font-size:7px;margin-top:4px}}
@@ -894,11 +893,10 @@
         grid.innerHTML = channels.map((ch, i) => `
           <div class="ch-card${i === activeIdx ? ' is-active' : ''}${ch.external ? ' is-ext' : ''}"
             data-index="${i}" data-channel-id="${ch.id}" role="listitem" tabindex="0"
-            aria-label="${ch.name} — Channel ID: ${ch.id}${ch.external ? ' — opens in new tab' : ''}">
+            aria-label="${ch.name}${ch.external ? ' — opens in new tab' : ''}">
             <div class="ch-inner">
               <span class="ch-name">${ch.name}</span>
               <span class="ch-label">${ch.label || (ch.external ? '↗ External' : 'HD Stream')}</span>
-              <span class="ch-id">ID: ${ch.id}</span>
             </div>
           </div>`).join('');
         grid.querySelectorAll('.ch-card').forEach(card => {
