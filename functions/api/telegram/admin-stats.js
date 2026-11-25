@@ -90,7 +90,7 @@ export async function onRequestGet({ request, env }) {
     const broadcastDataPromise = page === 1
       ? Promise.all([
           env.TELEGRAM_DB.prepare("SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1").first(),
-          env.TELEGRAM_DB.prepare("SELECT id, created_at, recipients, sent, failed, blocked FROM telegram_broadcast_logs ORDER BY id DESC LIMIT 10").all()
+          env.TELEGRAM_DB.prepare("SELECT id, created_at, mode, target_user_id, recipients, sent, failed, blocked FROM telegram_broadcast_activity ORDER BY id DESC LIMIT 10").all()
         ]).catch(() => [null, { results: [] }])
       : Promise.resolve([null, { results: [] }]);
     const [counts, users, broadcastData] = await Promise.all([
@@ -135,7 +135,9 @@ export async function onRequestGet({ request, env }) {
           recipients: Number(item.recipients || 0),
           sent: Number(item.sent || 0),
           failed: Number(item.failed || 0),
-          blocked: Number(item.blocked || 0)
+          blocked: Number(item.blocked || 0),
+          mode: String(item.mode || "all"),
+          target_user_id: String(item.target_user_id || "")
         }))
       } : undefined,
       updated_at: new Date().toISOString()
