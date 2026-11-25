@@ -281,7 +281,7 @@ async function handlePrivateMessage({ env, message }) {
       const total = snapshot.users.length;
       const active = Number(snapshot.counts?.active ?? snapshot.users.filter(user => user.status === 'active').length);
       const inactive = Number(snapshot.counts?.inactive ?? (total - active));
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + total + '\n✅ Active: ' + active + '\n🚫 Inactive/blocked: ' + inactive + '\n\n🗂 Source: Daily KV snapshot' });
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + total + '\n✅ Active: ' + active + '\n🚫 Inactive/blocked: ' + inactive + '\n🕒 Last updated: ' + formatSnapshotUpdatedAt(snapshot) + '\n🗂 Source: Daily KV snapshot' });
       return;
     }
 
@@ -309,7 +309,7 @@ async function handlePrivateMessage({ env, message }) {
       ].map(csvEscape).join(','))).join('\n');
       const form = new FormData();
       form.append('chat_id', String(chatId));
-      form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)\\n🕒 Last updated: ' + formatSnapshotUpdatedAt(snapshot));
+      form.append('caption', '📥 CRICZONE registered users export (' + rows.length + ' users)\n🕒 Last updated: ' + formatSnapshotUpdatedAt(snapshot));
       form.append('document', new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'criczone_registered_users.csv');
       const response = await fetch('https://api.telegram.org/bot' + env.BOT_TOKEN + '/sendDocument', { method: 'POST', body: form });
       const result = await response.json();
