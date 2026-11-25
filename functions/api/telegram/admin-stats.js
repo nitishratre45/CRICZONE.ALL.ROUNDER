@@ -15,6 +15,8 @@ function safeEqual(a, b) {
 }
 
 const SESSION_TTL_SECONDS = 5 * 24 * 60 * 60;
+const SNAPSHOT_KEY = "telegram:admin:users:snapshot:v1";
+const SNAPSHOT_LOCK_PREFIX = "telegram:admin:users:snapshot:lock:";
 
 function toHex(bytes) {
   return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
@@ -59,6 +61,128 @@ async function verifySession(secret, token) {
   }
 }
 
+function istDateKey() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function makeResponseFromSnapshot(snapshot, page, limit) {
+  const allUsers = Array.isArray(snapshot.users) ? snapshot.users : [];
+  const totalRegistered = allUsers.length;
+  const offset = (page - 1) * limit;
+  const rows = allUsers.slice(offset, offset + limit);
+  const counts = snapshot.counts || {};
+  return {
+    ok: true,
+    total_registered: totalRegistered,
+    active: Number(counts.active || 0),
+    inactive: Number(counts.inactive || 0),
+    users: rows,
+    page,
+    limit,
+    has_more: offset + rows.length < totalRegistered,
+    broadcast: page === 1 ? (snapshot.broadcast || {
+      broadcasts: 0, recipients: 0, sent: 0, failed: 0, blocked: 0, updated_at: 0, recent: []
+    }) : undefined,
+    snapshot: {
+      date: snapshot.date,
+      generated_at: snapshot.generated_at,
+      source: "cloudflare-kv"
+    },
+    updated_at: snapshot.generated_at || new Date().toISOString()
+  };
+}
+
+async function buildDailySnapshot(db) {
+  const [usersResult, broadcastTotals, recentBroadcasts] = await Promise.all([
+    db.prepare(
+      "SELECT user_id, first_name, last_name, username, started_at, last_seen_at, active FROM telegram_broadcast_users ORDER BY started_at DESC, user_id ASC"
+    ).all(),
+    db.prepare(
+      "SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1"
+    ).first().catch(() => null),
+    db.prepare(
+      "SELECT id, created_at, mode, target_user_id, recipients, sent, failed, blocked FROM telegram_broadcast_activity ORDER BY id DESC LIMIT 10"
+    ).all().catch(() => ({ results: [] }))
+  ]);
+
+  const users = (usersResult.results || []).map(row => ({
+    user_id: String(row.user_id || ""),
+    first_name: String(row.first_name || ""),
+    last_name: String(row.last_name || ""),
+    username: String(row.username || ""),
+    started_at: Number(row.started_at || 0),
+    last_seen_at: Number(row.last_seen_at || 0),
+    status: Number(row.active) === 1 ? "active" : "blocked_or_inactive"
+  }));
+
+  const active = users.reduce((sum, row) => sum + (row.status === "active" ? 1 : 0), 0);
+  const generatedAt = new Date().toISOString();
+  return {
+    version: 1,
+    date: istDateKey(),
+    generated_at: generatedAt,
+    users,
+    counts: { active, inactive: users.length - active },
+    broadcast: {
+      broadcasts: Number(broadcastTotals?.broadcasts || 0),
+      recipients: Number(broadcastTotals?.recipients || 0),
+      sent: Number(broadcastTotals?.sent || 0),
+      failed: Number(broadcastTotals?.failed || 0),
+      blocked: Number(broadcastTotals?.blocked || 0),
+      updated_at: Number(broadcastTotals?.updated_at || 0),
+      recent: (recentBroadcasts?.results || []).map(item => ({
+        id: Number(item.id || 0),
+        created_at: Number(item.created_at || 0),
+        recipients: Number(item.recipients || 0),
+        sent: Number(item.sent || 0),
+        failed: Number(item.failed || 0),
+        blocked: Number(item.blocked || 0),
+        mode: String(item.mode || "all"),
+        target_user_id: String(item.target_user_id || "")
+      }))
+    }
+  };
+}
+
+async function getDailySnapshot(env) {
+  const kv = env.MATCHCENTER_KV;
+  if (!kv) throw new Error("MATCHCENTER_KV binding is not configured");
+
+  const today = istDateKey();
+  const cached = await kv.get(SNAPSHOT_KEY, "json");
+  if (cached?.version === 1 && cached.date === today && Array.isArray(cached.users)) {
+    return cached;
+  }
+
+  // A short KV lease prevents most simultaneous first-page requests from all scanning D1.
+  const lockKey = SNAPSHOT_LOCK_PREFIX + today;
+  const lock = await kv.get(lockKey);
+  if (lock) {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 250));
+      const refreshed = await kv.get(SNAPSHOT_KEY, "json");
+      if (refreshed?.version === 1 && refreshed.date === today && Array.isArray(refreshed.users)) return refreshed;
+    }
+    // If another request is still syncing, serve yesterday's snapshot rather than add D1 reads.
+    if (cached?.version === 1 && Array.isArray(cached.users)) return cached;
+    throw new Error("Daily Telegram snapshot is currently being refreshed; retry shortly");
+  }
+
+  await kv.put(lockKey, String(Date.now()), { expirationTtl: 180 });
+  try {
+    const snapshot = await buildDailySnapshot(env.TELEGRAM_DB);
+    await kv.put(SNAPSHOT_KEY, JSON.stringify(snapshot), { expirationTtl: 60 * 60 * 48 });
+    return snapshot;
+  } finally {
+    await kv.delete(lockKey);
+  }
+}
+
 export async function onRequestPost({ request, env }) {
   const expected = String(env.TELEGRAM_ADMIN_DASHBOARD_KEY || "");
   if (!expected) return json({ ok: false, error: "Telegram dashboard key is not configured" }, 503);
@@ -75,75 +199,20 @@ export async function onRequestGet({ request, env }) {
   if (!expected) return json({ ok: false, error: "Telegram dashboard key is not configured" }, 503);
   const authorization = request.headers.get("Authorization") || "";
   const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
-  // Accept the original key for compatibility with older admin clients.
   const authorized = safeEqual(supplied, expected) || await verifySession(expected, supplied);
   if (!authorized) return json({ ok: false, error: "Session expired or unauthorized. Enter the dashboard access key again." }, 401);
   if (!env.TELEGRAM_DB) return json({ ok: false, error: "Telegram D1 database binding is unavailable" }, 503);
+  if (!env.MATCHCENTER_KV) return json({ ok: false, error: "MATCHCENTER_KV binding is unavailable; daily snapshot storage is required" }, 503);
 
   const url = new URL(request.url);
   const page = Math.max(1, Math.min(100000, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1));
   const limit = Math.max(1, Math.min(100, Number.parseInt(url.searchParams.get("limit") || "50", 10) || 50));
-  const offset = (page - 1) * limit;
 
   try {
-    // One aggregate scan replaces three separate COUNT(*) table scans.
-    const broadcastDataPromise = page === 1
-      ? Promise.all([
-          env.TELEGRAM_DB.prepare("SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1").first(),
-          env.TELEGRAM_DB.prepare("SELECT id, created_at, mode, target_user_id, recipients, sent, failed, blocked FROM telegram_broadcast_activity ORDER BY id DESC LIMIT 10").all()
-        ]).catch(() => [null, { results: [] }])
-      : Promise.resolve([null, { results: [] }]);
-    const [counts, users, broadcastData] = await Promise.all([
-      env.TELEGRAM_DB.prepare(
-        "SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active, COALESCE(SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END), 0) AS inactive FROM telegram_broadcast_users"
-      ).first(),
-      env.TELEGRAM_DB.prepare(
-        "SELECT user_id, first_name, last_name, username, started_at, last_seen_at, active FROM telegram_broadcast_users ORDER BY started_at DESC, user_id ASC LIMIT ? OFFSET ?"
-      ).bind(limit, offset).all(),
-      broadcastDataPromise
-    ]);
-    const [broadcastTotals, recentBroadcasts] = broadcastData;
-    const totalRegistered = Number(counts?.total || 0);
-    const rows = (users.results || []).map(row => ({
-      user_id: String(row.user_id || ""),
-      first_name: String(row.first_name || ""),
-      last_name: String(row.last_name || ""),
-      username: String(row.username || ""),
-      started_at: Number(row.started_at || 0),
-      last_seen_at: Number(row.last_seen_at || 0),
-      status: Number(row.active) === 1 ? "active" : "blocked_or_inactive"
-    }));
-    return json({
-      ok: true,
-      total_registered: totalRegistered,
-      active: Number(counts?.active || 0),
-      inactive: Number(counts?.inactive || 0),
-      users: rows,
-      page,
-      limit,
-      has_more: offset + rows.length < totalRegistered,
-      broadcast: page === 1 ? {
-        broadcasts: Number(broadcastTotals?.broadcasts || 0),
-        recipients: Number(broadcastTotals?.recipients || 0),
-        sent: Number(broadcastTotals?.sent || 0),
-        failed: Number(broadcastTotals?.failed || 0),
-        blocked: Number(broadcastTotals?.blocked || 0),
-        updated_at: Number(broadcastTotals?.updated_at || 0),
-        recent: (recentBroadcasts?.results || []).map(item => ({
-          id: Number(item.id || 0),
-          created_at: Number(item.created_at || 0),
-          recipients: Number(item.recipients || 0),
-          sent: Number(item.sent || 0),
-          failed: Number(item.failed || 0),
-          blocked: Number(item.blocked || 0),
-          mode: String(item.mode || "all"),
-          target_user_id: String(item.target_user_id || "")
-        }))
-      } : undefined,
-      updated_at: new Date().toISOString()
-    });
+    const snapshot = await getDailySnapshot(env);
+    return json(makeResponseFromSnapshot(snapshot, page, limit));
   } catch (error) {
-    console.error("Telegram admin stats query failed", error);
-    return json({ ok: false, error: "Unable to read Telegram aggregate statistics" }, 500);
+    console.error("Telegram admin daily snapshot failed", error);
+    return json({ ok: false, error: "Unable to load the daily Telegram users snapshot" }, 500);
   }
 }
