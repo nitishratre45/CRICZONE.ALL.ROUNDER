@@ -147,6 +147,25 @@ async function ensureBroadcastTables(db) {
     source_message_id INTEGER,
     updated_at INTEGER NOT NULL
   )`).run();
+  // Store one compact record per completed broadcast; never store per-user delivery rows.
+  await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_broadcast_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at INTEGER NOT NULL,
+    recipients INTEGER NOT NULL DEFAULT 0,
+    sent INTEGER NOT NULL DEFAULT 0,
+    failed INTEGER NOT NULL DEFAULT 0,
+    blocked INTEGER NOT NULL DEFAULT 0
+  )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_broadcast_totals (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    broadcasts INTEGER NOT NULL DEFAULT 0,
+    recipients INTEGER NOT NULL DEFAULT 0,
+    sent INTEGER NOT NULL DEFAULT 0,
+    failed INTEGER NOT NULL DEFAULT 0,
+    blocked INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL DEFAULT 0
+  )`).run();
+  await db.prepare('INSERT OR IGNORE INTO telegram_broadcast_totals (id) VALUES (1)').run();
 }
 
 function getAdminIds(env) {
@@ -1110,8 +1129,16 @@ export async function onRequestPost({ request, env }) {
           }
           await new Promise(resolve=>setTimeout(resolve,35));
         }
+        const recipients = (users.results || []).length;
+        const completedAt = Math.floor(Date.now() / 1000);
+        await env.TELEGRAM_DB.prepare(
+          'INSERT INTO telegram_broadcast_logs (created_at,recipients,sent,failed,blocked) VALUES (?,?,?,?,?)'
+        ).bind(completedAt,recipients,sent,failed,blocked).run();
+        await env.TELEGRAM_DB.prepare(
+          'UPDATE telegram_broadcast_totals SET broadcasts=broadcasts+1,recipients=recipients+?,sent=sent+?,failed=failed+?,blocked=blocked+?,updated_at=? WHERE id=1'
+        ).bind(recipients,sent,failed,blocked,completedAt).run();
         await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
-        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ Broadcast finished.\\n\\n📨 Sent: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
+        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ Broadcast finished.\\n\\n👥 Recipients: ${recipients}\\n📨 Sent successfully: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
         return json({ ok: true, received: true });
       }
     }
