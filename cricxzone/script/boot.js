@@ -39,12 +39,12 @@
       sony:                "https://raw.githubusercontent.com/kajju027/SonyLiv-Events-Json/refs/heads/main/sonyliv.json"
     },
     sections: {
-      football:    { link: "/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/watch/football/"  },
-      cricket:     { link: "/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/watch/cricket/"   },
-      willow:      { link: "/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/watch/willow/"    },
-      fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/watch/fancode/"   },
-      worldSports: { link: "/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/watch/wwsports/"  },
-      sonyLiv:     { link: "/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/watch/sliv/"      }
+      football:    { link: "/cricxzone/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/football/"  },
+      cricket:     { link: "/cricxzone/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/cricket/"   },
+      willow:      { link: "/cricxzone/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/willow/"    },
+      fancode:     { link: "/cricxzone/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/fancode/"   },
+      worldSports: { link: "/cricxzone/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/wwsports/"  },
+      sonyLiv:     { link: "/cricxzone/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/sliv/"      }
     },
     cardLimit: 10,
     upcomingClickable: true,
@@ -56,9 +56,9 @@
     },
     playerBase: "",
     routes: {
-      willowPlayer:  "/watch/willow/",
-      fancodePlayer: "/watch/fancode/pz/",
-      sonyPlayer:    "/watch/sliv/"
+      willowPlayer:  "/cricxzone/watch/willow/",
+      fancodePlayer: "/cricxzone/watch/fancode/pz/",
+      sonyPlayer:    "/cricxzone/watch/sliv/"
     },
     willowPlayerMode: "stream",
     heroMatches: []
