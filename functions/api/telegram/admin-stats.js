@@ -187,7 +187,29 @@ export async function onRequestPost({ request, env }) {
   const expected = String(env.TELEGRAM_ADMIN_DASHBOARD_KEY || "");
   if (!expected) return json({ ok: false, error: "Telegram dashboard key is not configured" }, 503);
   let body;
-  try { body = await request.json(); } catch (_) { return json({ ok: false, error: "Invalid login request" }, 400); }
+  try { body = await request.json(); } catch (_) { return json({ ok: false, error: "Invalid request body" }, 400); }
+
+  if (body?.action === "sync_snapshot") {
+    const authorization = request.headers.get("Authorization") || "";
+    const suppliedToken = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
+    const authorized = safeEqual(suppliedToken, expected) || await verifySession(expected, suppliedToken);
+    if (!authorized) return json({ ok: false, error: "Session expired or unauthorized" }, 401);
+    if (!env.TELEGRAM_DB || !env.MATCHCENTER_KV) return json({ ok: false, error: "D1 or KV binding is unavailable" }, 503);
+    const lockKey = SNAPSHOT_LOCK_PREFIX + "manual";
+    if (await env.MATCHCENTER_KV.get(lockKey)) return json({ ok: false, error: "A snapshot sync is already running. Please wait and try again." }, 409);
+    await env.MATCHCENTER_KV.put(lockKey, String(Date.now()), { expirationTtl: 180 });
+    try {
+      const snapshot = await buildDailySnapshot(env.TELEGRAM_DB);
+      await env.MATCHCENTER_KV.put(SNAPSHOT_KEY, JSON.stringify(snapshot), { expirationTtl: 60 * 60 * 48 });
+      return json({ ok: true, message: "D1 data successfully synced to KV", total_registered: snapshot.users.length, active: snapshot.counts.active, inactive: snapshot.counts.inactive, generated_at: snapshot.generated_at, date: snapshot.date, source: "cloudflare-kv" });
+    } catch (error) {
+      console.error("Manual Telegram snapshot sync failed", error);
+      return json({ ok: false, error: "Manual snapshot sync failed. Existing KV snapshot was kept." }, 500);
+    } finally {
+      await env.MATCHCENTER_KV.delete(lockKey);
+    }
+  }
+
   const supplied = typeof body?.key === "string" ? body.key.trim() : "";
   if (!safeEqual(supplied, expected)) return json({ ok: false, error: "Incorrect dashboard access key" }, 401);
   const session = await issueSession(expected);
