@@ -10,7 +10,7 @@
         <title>Willow Live Streaming &amp; Schedule | CRICZONE</title>
         <meta name="description" content="Watch Willow live sports streams and upcoming events on CRICZONE with multiple HD servers. All times are shown in IST.">
         <meta name="robots" content="index, follow, max-image-preview:large" id="robots">
-        <link rel="canonical" href="https://criczonebuzz.pages.dev/watch/willow/">
+        <link rel="canonical" href="https://criczone.pages.dev/cricxzone/watch/willow/">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Acme&amp;family=Amaranth:wght@400;700&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
@@ -45,7 +45,7 @@
                 display: flex;
                 flex-direction: column;
                 overflow-x: hidden;
-                background: radial-gradient(760px 430px at 50% -10%,rgba(255,184,0,.13),transparent 62%),radial-gradient(720px 460px at 100% 100%,rgba(255,136,0,.06),transparent 55%),#08080c;
+                background: radial-gradient(920px 420px at 8% -8%,rgba(0,232,123,.05),transparent 62%),radial-gradient(760px 460px at 100% 0,rgba(56,148,255,.05),transparent 58%),var(--bg);
                 color: #fff;
                 font: 400 14px/1.4 Inter,system-ui,sans-serif;
                 -webkit-font-smoothing: antialiased;
@@ -297,7 +297,7 @@
                 font-weight: 900;
                 letter-spacing: .02em;
                 line-height: 1.05;
-                background: linear-gradient(135deg,#ffb800,#ff8800);
+                background: rgba(0,232,123,.12);
                 -webkit-background-clip: text;
                 background-clip: text;
                 -webkit-text-fill-color: transparent;
@@ -306,7 +306,7 @@
             }
 
             .hero p {
-                margin: 8px auto 0;
+                margin: 8px 0 0;
                 color: #8e8e9a;
                 font-size: .82rem;
                 font-weight: 500;
@@ -1224,7 +1224,7 @@
             }
 
             .ribbon.live {
-                background: linear-gradient(135deg,#e82000,#ff4422);
+                background: linear-gradient(135deg,#ff2d55,#e81748);
                 color: #fff;
                 box-shadow: 0 4px 15px rgba(232,32,0,.48)
             }
@@ -1267,7 +1267,7 @@
 
             .wleague {
                 margin: 0;
-                color: #ffb800;
+                color: #ffd257;
                 font-size: .78rem;
                 font-weight: 600;
                 line-height: 1.45
@@ -1439,25 +1439,32 @@
                 }
             }
         .cz-wordmark{display:inline-flex;align-items:center;font-family:Inter,Arial,sans-serif;font-size:clamp(22px,2vw,29px);font-weight:900;letter-spacing:-1.25px;line-height:1;color:#f4f7ff;text-decoration:none;white-space:nowrap}.cz-wordmark>span{color:#9be15d}.cz-wordmark-drawer{font-size:25px}
+
+            .cz-header{gap:clamp(10px,2vw,20px)}
+            .hamburger{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:6px;width:36px;height:36px;padding:0;border:0;background:none;color:#fff;cursor:pointer;flex:0 0 auto}
+            .hamburger i{display:block;height:3px;width:26px;border-radius:3px;background:currentColor}.hamburger i:nth-child(2){width:16px}
+            .willow-scrim{position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.62);opacity:0;visibility:hidden;transition:.25s}.willow-scrim.open{opacity:1;visibility:visible}
+            .willow-drawer{position:fixed;z-index:40;top:0;bottom:0;left:0;width:min(86vw,340px);padding:18px;display:flex;flex-direction:column;gap:5px;background:linear-gradient(180deg,#131a21,#090d13);border-right:1px solid var(--line);box-shadow:24px 0 60px rgba(0,0,0,.5);transform:translateX(-105%);transition:transform .28s ease}
+            .willow-drawer.open{transform:translateX(0)}.willow-drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+            .willow-drawer-head strong{font-size:22px;font-weight:900;letter-spacing:-1px}.willow-drawer-head strong span{color:#9be15d}.willow-drawer-head button{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#111923;color:#fff;font-size:24px;cursor:pointer}
+            .willow-drawer>a{padding:13px 12px;border-radius:10px;color:#dce8ef;font-weight:650}.willow-drawer>a:hover,.willow-drawer>a[aria-current]{background:rgba(0,232,123,.1);color:#57ffc4}
+            body.menu-open{overflow:hidden}
+            @media(max-width:640px){.wgrid{grid-template-columns:1fr}.hero{padding-top:24px}.bar{gap:7px}.pill{padding:0 13px}}
 </style>
     </head>
     <body>
-        <header>
-            <a href="/cricxzone/" class="logo" aria-label="CRICZONE home">
-                <span class="cz-wordmark" aria-label="CRICZONE"><span>CRIC</span>ZONE</span>
-            </a>
-            <a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer" aria-label="Join CRICZONE Telegram" title="Join Telegram" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 12px;border:1px solid rgba(0,136,204,.55);border-radius:11px;background:rgba(0,136,204,.13);color:#8bd8ff;font-size:12px;font-weight:700;white-space:nowrap">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M21.5 3.4 18.2 20c-.2 1.2-.9 1.5-1.9.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1L17.6 6c.4-.4-.1-.6-.6-.3L5.5 13 .6 11.5c-1.1-.4-1.2-1.1.3-1.7L20 2.5c.9-.3 1.7.2 1.5.9Z"/></svg>
-                Telegram
-            </a>
+        <header class="cz-header">
+            <button class="hamburger" id="willowMenuBtn" type="button" aria-label="Open menu" aria-expanded="false"><i></i><i></i><i></i></button>
+            <a href="/cricxzone/" class="logo" aria-label="CRICZONE home"><span class="cz-wordmark" aria-label="CRICZONE"><span>CRIC</span>ZONE</span></a>
             <a class="profile-btn" href="/cricxzone/" aria-label="Go To Home Page" title="Home">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="m3 11 9-7 9 7"></path>
-                    <path d="M5 10v10h14V10"></path>
-                    <path d="M9 20v-6h6v6"></path>
-                </svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 9-7 9 7"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg>
             </a>
         </header>
+        <div class="willow-scrim" id="willowScrim"></div>
+        <aside class="willow-drawer" id="willowDrawer" aria-hidden="true">
+            <div class="willow-drawer-head"><strong><span>CRIC</span>ZONE</strong><button type="button" id="willowMenuClose" aria-label="Close menu">×</button></div>
+            <a href="/cricxzone/">Home</a><a href="/cricxzone/watch/cricket/">Cricket 24×7</a><a href="/cricxzone/watch/football/">Football 24×7</a><a href="/cricxzone/watch/willow/" aria-current="page">Willow Cricbuzz</a><a href="/cricxzone/watch/sliv/">Sony LIV</a><a href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
+        </aside>
         <main>
             <section id="list">
                 <div class="hero">
@@ -1496,7 +1503,7 @@
                 <a class="back" id="bk" href="./">&larr; All events</a>
             </section>
         </main>
-        <footer>
+<script>(function(){const b=document.getElementById('willowMenuBtn'),d=document.getElementById('willowDrawer'),s=document.getElementById('willowScrim'),x=document.getElementById('willowMenuClose');if(!b||!d||!s||!x)return;function toggle(v){d.classList.toggle('open',v);s.classList.toggle('open',v);document.body.classList.toggle('menu-open',v);d.setAttribute('aria-hidden',String(!v));b.setAttribute('aria-expanded',String(v));}b.addEventListener('click',()=>toggle(!d.classList.contains('open')));x.addEventListener('click',()=>toggle(false));s.addEventListener('click',()=>toggle(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')toggle(false);});})();</script>\n        <footer>
             <p class="fd">We are truly sorry if anything here worries you. CRICZONE does not host, store or upload any video or content on its own servers. We only point people to links that are already publicly available on the internet, so they can be found in one place. Everything belongs to its respective owners, and we mean no harm to anyone's work. If you are an owner and would like something removed, please tell us and we will take it down quickly.</p>
             <div class="fl">
                 <a href="/cricxzone/privacy.html">Privacy Policy</a>
