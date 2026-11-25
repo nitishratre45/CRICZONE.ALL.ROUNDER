@@ -1,4 +1,4 @@
-var CNPTV_CONF = {
+var CRICZONE_CONF = {
   siteName: "CRICZONE",
 
   build: "24",
@@ -56,12 +56,12 @@ var CNPTV_CONF = {
   heroMatches: []
 };
 
-window.CNPTV_CONFIG      = CNPTV_CONF;
-window.MATCHDEKHO_CONFIG = CNPTV_CONF;
+window.CRICZONE_CONFIG      = CRICZONE_CONF;
+window.CRICZONE_CONFIG = CRICZONE_CONF;
 
-window.CnpTVHelper = (function () {
+window.CRICZONEHelper = (function () {
   function buildUrl(sectionCfg, eventId) {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var siteBase = String(cfg.siteBase || "").replace(/\/+$/, "");
     var base = String(sectionCfg && sectionCfg.link || "");
     if (!base) return "";
@@ -88,8 +88,8 @@ window.CnpTVHelper = (function () {
   return { buildUrl: buildUrl, extractId: extractId, toTitleCase: toTitleCase };
 })();
 
-if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
-  CNPTV_CONF.heroMatches = [
+if (typeof CRICZONE_CONF !== "undefined" && CRICZONE_CONF) {
+  CRICZONE_CONF.heroMatches = [
     {
       "tournament": "WEST INDIES TOUR OF INDIA - 3RD T20I",
       "homeTeam": {
@@ -107,8 +107,8 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
   ];
 }
 
-if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
-  CNPTV_CONF.heroMatches = [
+if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
+  CRICZONE_CONF.heroMatches = [
     {
       "tournament": "ASIA CUP 2026 LIVE",
       "homeTeam": {
