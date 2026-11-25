@@ -88,7 +88,7 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
 <section class="telegram-panel" aria-labelledby="telegramHeading">
  <div class="telegram-panel-head">
   <div><h2 id="telegramHeading">Telegram Audience</h2><p>Live channel subscriber count plus private bot registration totals from the existing CRICZONE Telegram D1 database.</p></div>
-  <div class="tg-controls"><input id="tgAdminKey" type="password" autocomplete="current-password" placeholder="Dashboard access key" aria-label="Telegram dashboard access key"><button id="tgLoad" type="button">Load Telegram Stats</button></div>
+  <div class="tg-controls"><input id="tgAdminKey" type="password" autocomplete="current-password" placeholder="Admin key · valid for 5 days" aria-label="Telegram dashboard access key"><button id="tgLoad" type="button">Load Telegram Stats</button></div>
  </div>
  <div class="tg-cards">
   <div class="tg-card subs"><small>Channel subscribers</small><strong id="tgSubscribers">—</strong></div>
@@ -164,21 +164,61 @@ async function refresh(manual=false){
 document.getElementById("refresh").addEventListener("click",()=>refresh(true));
 refresh();setInterval(()=>refresh(false),120000);
 
+const tgAuth = {
+  token: "",
+  expiresAt: 0,
+  getToken() {
+    if (this.token && this.expiresAt > Math.floor(Date.now() / 1000)) return this.token;
+    try {
+      const saved = JSON.parse(localStorage.getItem("cz_tg_admin_session") || "null");
+      if (saved && saved.token && Number(saved.expires_at) > Math.floor(Date.now() / 1000)) {
+        this.token = saved.token;
+        this.expiresAt = Number(saved.expires_at);
+        return this.token;
+      }
+      localStorage.removeItem("cz_tg_admin_session");
+    } catch (_) {}
+    this.token = ""; this.expiresAt = 0;
+    return "";
+  },
+  async login(key) {
+    const response = await fetch("/api/telegram/admin-stats", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      body: JSON.stringify({ key })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok || !data.token) throw new Error(data.error || "Admin login failed");
+    this.token = data.token;
+    this.expiresAt = Number(data.expires_at);
+    try { localStorage.setItem("cz_tg_admin_session", JSON.stringify({ token: this.token, expires_at: this.expiresAt })); } catch (_) {}
+    return this.token;
+  },
+  clear() {
+    this.token = ""; this.expiresAt = 0;
+    try { localStorage.removeItem("cz_tg_admin_session"); } catch (_) {}
+  }
+};
+
 (function(){
  const $=id=>document.getElementById(id);
  const fmt=value=>Number(value||0).toLocaleString("en-IN");
  const keyInput=$("tgAdminKey"),load=$("tgLoad"),status=$("tgStatus");
- try{keyInput.value=sessionStorage.getItem("cz_tg_admin_key")||"";}catch(_){}
  async function loadTelegram(){
-  load.disabled=true;status.className="tg-status";status.textContent="Fetching Telegram data…";
+  load.disabled=true;status.className="tg-status";status.textContent="Authenticating and fetching Telegram data…";
   $("tgSubscribers").textContent="…";
   try{
+   const token=keyInput.value.trim()?await tgAuth.login(keyInput.value.trim()):tgAuth.getToken();
+   if(!token)throw new Error("Enter the dashboard access key. Your session lasts 5 days.");
+   keyInput.value="";
    const [subsResponse,statsResponse]=await Promise.all([
     fetch("/api/telegram/member-count",{cache:"no-store"}),
-    fetch("/api/telegram/admin-stats",{cache:"no-store",headers:{Authorization:"Bearer "+keyInput.value.trim()}})
+    fetch("/api/telegram/admin-stats",{cache:"no-store",headers:{Authorization:"Bearer "+token}})
    ]);
    const subs=await subsResponse.json().catch(()=>({}));
    const stats=await statsResponse.json().catch(()=>({}));
+   if(statsResponse.status===401){tgAuth.clear();throw new Error("Your 5-day admin session expired. Enter the key again.");}
    if(subsResponse.ok&&subs.ok&&Number.isFinite(Number(subs.count))) $("tgSubscribers").textContent=fmt(subs.count);
    else $("tgSubscribers").textContent="Unavailable";
    if(!statsResponse.ok||!stats.ok) throw new Error(stats.error||"Bot stats request failed (HTTP "+statsResponse.status+")");
@@ -186,24 +226,23 @@ refresh();setInterval(()=>refresh(false),120000);
    $("tgActive").textContent=fmt(stats.active);
    $("tgInactive").textContent=fmt(stats.inactive);
    status.className="tg-status ok";
-   status.textContent="Updated "+new Date().toLocaleString()+" · Aggregate counts only; no Telegram user IDs are exposed.";
-   try{sessionStorage.setItem("cz_tg_admin_key",keyInput.value.trim());}catch(_){}
+   status.textContent="Admin session active until "+new Date(tgAuth.expiresAt*1000).toLocaleString()+" · 5-day access.";
    if($("tgSubscribers").textContent==="Unavailable") status.textContent+=" Channel subscriber count is temporarily unavailable.";
   }catch(error){
    status.className="tg-status error";
-   status.textContent=(error.message||"Unable to load Telegram stats")+". Set TELEGRAM_ADMIN_DASHBOARD_KEY in Cloudflare Pages environment variables if not configured.";
-   $("tgSubscribers").textContent=$("tgSubscribers").textContent==="…"?"Unavailable":$("tgSubscribers").textContent;
+   status.textContent=(error.message||"Unable to load Telegram stats")+".";
+   $("tgSubscribers").textContent=$("tgSubscribers").textContent==="… "?"Unavailable":$("tgSubscribers").textContent;
    $("tgRegistered").textContent=$("tgActive").textContent=$("tgInactive").textContent="—";
   }finally{load.disabled=false;}
  }
  load.addEventListener("click",loadTelegram);
  keyInput.addEventListener("keydown",event=>{if(event.key==="Enter")loadTelegram();});
- if(keyInput.value.trim()) loadTelegram();
+ if(tgAuth.getToken()) loadTelegram();
 })();
 
 
 (function(){
- const key=()=>document.getElementById("tgAdminKey").value.trim();
+ const token=()=>tgAuth.getToken();
  const tbody=document.getElementById("tgUserRows"),more=document.getElementById("tgLoadMore");
  const meta=document.getElementById("tgDirectoryMeta"),shown=document.getElementById("tgShown"),search=document.getElementById("tgUserSearch");
  let page=1,hasMore=false,loading=false,allUsers=[],searchTimer=null;
@@ -230,11 +269,11 @@ refresh();setInterval(()=>refresh(false),120000);
  }
  async function loadPage(reset){
   if(loading)return;
-  if(!key()){meta.textContent="Enter the dashboard access key first.";return;}
+  if(!token()){meta.textContent="Enter the dashboard access key first. Session access lasts 5 days.";return;}
   loading=true;more.disabled=true;more.textContent="Loading…";
   if(reset){page=1;allUsers=[];tbody.innerHTML='<tr><td colspan="6" class="tg-empty">Loading Telegram users…</td></tr>';}
   try{
-   const response=await fetch("/api/telegram/admin-stats?page="+page+"&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+key()}});
+   const response=await fetch("/api/telegram/admin-stats?page="+page+"&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+token()}});
    const data=await response.json();
    if(!response.ok||!data.ok)throw new Error(data.error||"Could not load Telegram user list");
    allUsers=allUsers.concat(Array.isArray(data.users)?data.users:[]);
@@ -249,7 +288,7 @@ refresh();setInterval(()=>refresh(false),120000);
  more.addEventListener("click",()=>loadPage(false));
  search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,120);});
  const originalLoad=document.getElementById("tgLoad");
- originalLoad.addEventListener("click",()=>{if(key())loadPage(true);});
+ originalLoad.addEventListener("click",()=>{if(token())loadPage(true);});
 })();
 
 </script></body></html>
