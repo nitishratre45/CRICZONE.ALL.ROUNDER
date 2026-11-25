@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0D0E10">
 <meta name="referrer" content="no-referrer">
-<title>CʀɪᴄxCʀᴀᴛᴇ Lɪᴠᴇ</title>
+<title>CRICZONE • FANCODE LIVE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/controls.css">
+<link rel="stylesheet" href="./fancode-premium.css?v=20261125">
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/shaka-player.ui.min.js"></script>
 <style>
 :root{--cream:#F8EFD4;--olive:#5F684C;--white:#FFFFFF;--ink:#141414;--muted:#595959;--accent:#0088cc;--border:rgba(0,0,0,.12);--surface2:#F0E4C3;--surface3:#E4D7B2;--live:#FF3355;--soon:#D48806;--done:#5C6B80;--radius:16px;--shadow:0 12px 35px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);--shadow-deep:0 20px 50px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);--display:'Space Grotesk','Inter',sans-serif;--body:'Inter',system-ui,sans-serif}
@@ -171,21 +172,12 @@ button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;backgroun
 </style>
 </head>
 <body>
-<div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-  <div class="popup-wrap"><div class="popup-box">
-    <div class="popup-title" id="popupTitle">Follow Us !!</div>
-    <div class="popup-text">Join our Telegram channel<br><b>CʀɪᴄxCʀᴀᴛᴇ ™</b>For Instant Updates &amp; Exclusive Links.</div>
-    <button class="popup-join" id="popupJoinBtn" type="button">JOIN NOW</button>
-    <button class="btn-popup btn-joined-main" id="popupSkipBtn" type="button">No, Thanks</button>
-  </div></div>
-</div>
-
 <div class="container">
   <section id="hubView" class="view active">
     <header class="header">
       <div class="brand">
-        <div class="brand-mark">Cᴄ</div>
-        <div class="brand-text"><h1>CʀɪᴄxCʀᴀᴛᴇ</h1><p>FanCode sports live</p></div>
+        <div class="brand-mark">CZ</div>
+        <div class="brand-text"><h1>CRICZONE</h1><p>FANCODE LIVE SPORTS</p></div>
       </div>
       <div class="header-actions">
         <button class="icon-action-btn" id="alertToggleBtn" type="button" aria-label="Match Alerts" title="Match Alerts">🔔</button>
@@ -1255,22 +1247,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const popup = $("popup");
-  setTimeout(() => {
-    popup.classList.add("visible", "button-stage");
-    setTimeout(() => {
-      popup.classList.remove("button-stage");
-      popup.classList.add("revealing");
-      setTimeout(() => popup.classList.remove("revealing"), 500);
-    }, 100);
-  }, 3000);
-
-  $("popupJoinBtn").addEventListener("click", () => {
-    const w = window.open(TG_LINK, "_blank", "noopener");
-    if (!w) location.href = TG_LINK;
-    popup.classList.remove("visible");
-  });
-  $("popupSkipBtn").addEventListener("click", () => popup.classList.remove("visible"));
 });
 
 window.addEventListener("hashchange", route);
@@ -1282,6 +1258,7 @@ setInterval(() => {
   if (window.__booted && !location.hash.startsWith("#w") && !document.hidden) loadData();
 }, 120000);
 </script>
+<script src="/assets/js/cz-global-community.js" defer></script>
 </body>
 </html>
 
