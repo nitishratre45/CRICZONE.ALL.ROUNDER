@@ -465,6 +465,34 @@
     #btnAlready:hover { background: rgba(255,255,255,0.09); color: var(--text); }
     #btnJoin { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 4px 18px rgba(37,211,102,0.3); }
     #btnJoin:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,211,102,0.5); }
+
+    :root{--bg:#07111b;--bg-2:#0b1a27;--bg-card:rgba(12,29,42,.96);--orange:#39e6b0;--orange-dim:rgba(57,230,176,.13);--orange-glow:rgba(57,230,176,.28);--red-live:#ff426d;--text:#f1fbff;--text-2:#9bb7c6;--text-3:rgba(220,245,255,.38);--border:rgba(108,220,214,.16);--border-2:rgba(108,220,214,.09)}
+    body{background-color:var(--bg)!important;color:var(--text);background-image:radial-gradient(ellipse 72% 42% at 12% 0%,rgba(0,214,170,.13) 0%,transparent 62%),radial-gradient(ellipse 58% 42% at 92% 45%,rgba(36,126,202,.13) 0%,transparent 64%),linear-gradient(180deg,#07111b 0%,#081724 48%,#07111b 100%)!important}
+    .site-header{background:rgba(5,17,27,.94)!important;border-bottom:1px solid rgba(79,211,190,.2)!important}
+    .site-header::after{background:linear-gradient(90deg,transparent,rgba(57,230,176,.55),transparent)!important}
+    .player-shell{background:#02080d!important;border-bottom-color:rgba(57,230,176,.18)!important;box-shadow:0 18px 58px rgba(0,0,0,.42)!important}
+    .inner-wrap{width:100%!important;max-width:none!important;margin:0!important;padding:0 clamp(14px,3.2vw,56px)!important}
+    .section-divider::before,.section-divider::after{background:linear-gradient(90deg,transparent,rgba(93,209,198,.25),transparent)!important}
+    .section-label .material-icons-round{color:#4ce6bd!important}.section-label-text{color:#a8c9d6!important}
+    .section-label-count{background:rgba(24,53,68,.85)!important;border-color:rgba(91,211,193,.22)!important;color:#b8f5e6!important}
+    .channels-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))!important;gap:clamp(10px,1.2vw,18px)!important}
+    .ch-card{background:linear-gradient(145deg,rgba(38,111,102,.18),rgba(19,48,68,.28))!important;border-color:rgba(111,218,201,.18)!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important}
+    .ch-card:hover{border-color:rgba(57,230,176,.48)!important;box-shadow:0 14px 34px rgba(0,190,155,.12)!important}
+    .ch-inner{background:linear-gradient(145deg,rgba(14,35,48,.98),rgba(8,23,36,.99))!important}
+    .ch-name{color:#ecfbff!important}.ch-label{color:#9bb9c7!important}
+    .site-footer{background:#050f18!important;border-top:1px solid rgba(80,210,190,.18)!important}
+    .asia-stream-divider{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+    .asia-stream-divider::before,.asia-stream-divider::after{flex:1;min-width:12px}
+    .asia-stream-divider .section-label{flex:0 0 auto;gap:7px}
+    .asia-counter-mount{flex:0 0 auto;width:auto;min-width:0;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
+    .asia-counter-mount #viewerBadge{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;width:auto!important;max-width:100%!important;height:auto!important;margin:0!important;padding:5px 8px!important;border:1px solid rgba(70,235,210,.34)!important;border-radius:9px!important;background:linear-gradient(135deg,rgba(7,25,31,.96),rgba(5,14,23,.96))!important;color:#d9f8f2!important;font:800 9px/1.15 system-ui,sans-serif!important;letter-spacing:.35px!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.2)!important;pointer-events:auto!important;cursor:default!important;touch-action:auto!important;user-select:text!important;-webkit-user-select:text!important;backdrop-filter:blur(10px)!important;animation:none!important;transform:none!important}
+    .asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{display:flex!important;align-items:center!important;gap:4px!important;padding:2px 4px!important;font:850 8px/1.15 system-ui,sans-serif!important;color:#c7e9e5!important}
+    .asia-counter-mount #viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.2)!important;padding-left:7px!important}
+    .asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{display:inline-block!important;min-width:25px!important;padding:2px 5px!important;border-radius:5px!important;background:linear-gradient(135deg,#a7fff0,#39d9bd)!important;color:#062326!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}
+    .asia-counter-mount #viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:22px!important;margin-left:2px!important;padding:3px 5px!important;border-radius:5px!important;border:1px solid rgba(249,115,22,.35)!important;background:rgba(249,115,22,.12)!important;color:#ffb36d!important;font:900 8px/1 system-ui,sans-serif!important}
+    @media(min-width:900px){.channels-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))!important;gap:14px!important}.section-divider{margin-top:32px}}
+    @media(max-width:640px){.inner-wrap{padding-left:12px!important;padding-right:12px!important}.channels-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.asia-stream-divider{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:18px;min-width:0}.asia-stream-divider::before,.asia-stream-divider::after{display:none}.asia-stream-divider .section-label{min-width:0;gap:5px;padding:0}.asia-stream-divider .section-label-text{font-size:clamp(.58rem,2.4vw,.68rem);letter-spacing:.055em}.asia-stream-divider .section-label .material-icons-round{font-size:12px}.asia-stream-divider .section-label-count{font-size:8px;padding:1px 5px}.asia-counter-mount{flex:0 0 auto;justify-self:end}.asia-counter-mount #viewerBadge{padding:3px 5px!important;gap:2px!important;border-radius:7px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:6.5px!important;gap:2px!important;padding:1px 2px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:7px!important;min-width:19px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #counterServer{font-size:6px!important;min-width:17px!important;padding:2px 3px!important;margin-left:1px!important}}
+
   </style>
 
    <script>
@@ -516,7 +544,7 @@
 
 </head>
 
-<body>
+<body data-counter-mount="indNzCounterMount">
 
   <header class="site-header">
 
@@ -552,12 +580,13 @@
 
     <div class="inner-wrap">
 
-      <div class="section-divider" role="separator">
+      <div class="section-divider asia-stream-divider" role="separator">
         <div class="section-label">
           <span class="material-icons-round" aria-hidden="true">sensors</span>
           <span class="section-label-text">Stream Channels</span>
           <span class="section-label-count" id="channelCountBadge"></span>
         </div>
+        <div id="indNzCounterMount" class="asia-counter-mount" aria-label="Live audience statistics"></div>
       </div>
 
       <div class="channels-grid" id="channelsGrid" role="list"></div>
@@ -795,59 +824,25 @@ New Zealand vs India 1st Test 2026, NZ vs IND 1st Test Wellington, India tour of
       const streamCount = channels.filter(c => !c.external).length;
       if (countBadge) countBadge.textContent = streamCount;
 
-      let activeChannelIdx = -1;
-
-      function renderGrid(activeIdx) {
-        activeChannelIdx = activeIdx;
-        grid.innerHTML = channels.map((ch, i) => `
-          <div
-            class="ch-card${i === activeIdx ? ' is-active' : ''}${ch.external ? ' is-ext' : ''}"
-            data-index="${i}"
-            role="listitem"
-            tabindex="0"
-            aria-label="${ch.name}${ch.external ? ' — opens in new tab' : ''}"
-          >
-            <div class="ch-inner">
-              <span class="ch-name">${ch.name}</span>
-              <span class="ch-label">${ch.label || (ch.external ? '↗ External' : 'HD Stream')}</span>
-            </div>
-          </div>
-        `).join('');
-
-        grid.querySelectorAll('.ch-card').forEach(card => {
-          const activate = () => switchChannel(parseInt(card.dataset.index, 10));
-          card.addEventListener('click', activate);
-          card.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
-          });
-        });
+      function makeChannelId(channel,index){
+        const base=(String(channel.name||'channel')+'-'+String(channel.label||'stream')).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48)||('channel-'+index);
+        let id=base,suffix=2;while(channels.some((other,otherIndex)=>otherIndex<index&&other.id===id))id=base+'-'+suffix++;return id;
       }
-
-      function setActiveCard(idx) {
-        activeChannelIdx = idx;
-        grid.querySelectorAll('.ch-card').forEach(card => {
-          card.classList.toggle('is-active', parseInt(card.dataset.index, 10) === idx);
-        });
+      channels.forEach((channel,index)=>{channel.id=makeChannelId(channel,index);});
+      let activeChannelIdx=-1;
+      function writeChannelToUrl(channel,replace){if(!channel)return;const url=new URL(location.href);url.searchParams.set('channel',channel.id);history[replace?'replaceState':'pushState']({channelId:channel.id},'',url);}
+      function renderGrid(activeIdx){
+        activeChannelIdx=activeIdx;
+        grid.innerHTML=channels.map((ch,i)=>`<div class="ch-card${i===activeIdx?' is-active':''}${ch.external?' is-ext':''}" data-index="${i}" data-channel-id="${ch.id}" role="listitem" tabindex="0" aria-label="${ch.name}${ch.external?' — opens in new tab':''}"><div class="ch-inner"><span class="ch-name">${ch.name}</span><span class="ch-label">${ch.label||(ch.external?'↗ External':'HD Stream')}</span></div></div>`).join('');
+        grid.querySelectorAll('.ch-card').forEach(card=>{const activate=()=>switchChannel(parseInt(card.dataset.index,10),false);card.addEventListener('click',activate);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}});});
       }
-
-      function switchChannel(idx) {
-        const ch = channels[idx];
-        if (!ch) return;
-        if (ch.external) {
-          window.open(ch.url, '_blank', 'noopener,noreferrer');
-          return;
-        }
-        if (idx === activeChannelIdx) return;
-        setActiveCard(idx);
-        player.src = ch.url;
+      function setActiveCard(idx){activeChannelIdx=idx;grid.querySelectorAll('.ch-card').forEach(card=>{const active=parseInt(card.dataset.index,10)===idx;card.classList.toggle('is-active',active);card.setAttribute('aria-current',active?'true':'false');});}
+      function switchChannel(idx,fromHistory){const ch=channels[idx];if(!ch)return;if(!fromHistory)writeChannelToUrl(ch,false);setActiveCard(idx);if(ch.external){window.open(ch.url,'_blank','noopener,noreferrer');return;}if(player&&player.src!==ch.url)player.src=ch.url;}
+      function initPlayer(){
+        const requestedId=new URLSearchParams(location.search).get('channel'),requestedIdx=requestedId?channels.findIndex(ch=>ch.id===requestedId):-1,firstIdx=channels.findIndex(c=>!c.external),startIdx=requestedIdx>=0?requestedIdx:(firstIdx!==-1?firstIdx:0),selected=channels[startIdx];
+        if(selected){setActiveCard(startIdx);if(!selected.external&&player)player.src=selected.url;writeChannelToUrl(selected,true);}return startIdx;
       }
-
-      function initPlayer() {
-        const firstIdx = channels.findIndex(c => !c.external);
-        const first = firstIdx !== -1 ? channels[firstIdx] : null;
-        if (first && player) player.src = first.url;
-        return firstIdx !== -1 ? firstIdx : 0;
-      }
+      window.addEventListener('popstate',()=>{const id=new URLSearchParams(location.search).get('channel'),idx=channels.findIndex(ch=>ch.id===id);if(idx>=0)switchChannel(idx,true);});
       const yearEl = document.getElementById('footerYear');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
 
