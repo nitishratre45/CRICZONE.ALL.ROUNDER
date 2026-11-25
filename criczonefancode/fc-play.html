@@ -396,6 +396,25 @@ async function initPlayer() {
     if (!shaka.Player.isBrowserSupported()) throw new Error("This browser is not supported");
 
     player = new shaka.Player(video);
+
+    // Live HLS playlists must never be reused from a long-lived browser/CDN cache.
+    // The captured Network panel showed the media playlist returning Age > 200
+    // with Cache-Control: max-age=31536000, which can freeze the live edge.
+    const networkingEngine = player.getNetworkingEngine();
+    if (networkingEngine) {
+      networkingEngine.registerRequestFilter((type, request) => {
+        if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+          request.headers["Cache-Control"] = "no-cache, no-store, max-age=0";
+          request.headers["Pragma"] = "no-cache";
+          request.uris = request.uris.map(uri => {
+            const liveUrl = new URL(uri);
+            liveUrl.searchParams.set("_cz_live_refresh", String(Date.now()));
+            return liveUrl.toString();
+          });
+        }
+      });
+    }
+
     const container = document.querySelector(".shaka-video-container");
     const ui = new shaka.ui.Overlay(player, container, video);
     ui.configure({
