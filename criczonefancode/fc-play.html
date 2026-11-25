@@ -422,7 +422,7 @@ async function initPlayer() {
           // Preserve signed/query-auth segment URLs unchanged.
           request.uris = request.uris.map(uri => {
             const segmentUrl = new URL(uri);
-            const isMediaChunk = /\\.(?:ts|m4s|mp4|aac|mp3)$/i.test(segmentUrl.pathname);
+            const isMediaChunk = /\.(?:ts|m4s|mp4|aac|mp3)$/i.test(segmentUrl.pathname);
             if (isMediaChunk && !segmentUrl.search) {
               segmentUrl.searchParams.set("_cz_seg_refresh", String(Date.now()));
               return segmentUrl.toString();
