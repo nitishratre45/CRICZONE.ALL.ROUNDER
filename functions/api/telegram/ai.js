@@ -212,10 +212,8 @@ async function handlePrivateMessage({ env, message }) {
     }
 
     if (command === '/userstats') {
-      const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
-      const active = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
-      const inactive = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=0').first();
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + Number(total?.count || 0) + '\n✅ Active: ' + Number(active?.count || 0) + '\n🚫 Inactive/blocked: ' + Number(inactive?.count || 0) });
+      const counts = await env.TELEGRAM_DB.prepare("SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active=1 THEN 1 ELSE 0 END),0) AS active, COALESCE(SUM(CASE WHEN active=0 THEN 1 ELSE 0 END),0) AS inactive FROM telegram_broadcast_users").first();
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + Number(counts?.total || 0) + '\n✅ Active: ' + Number(counts?.active || 0) + '\n🚫 Inactive/blocked: ' + Number(counts?.inactive || 0) });
       return;
     }
 
