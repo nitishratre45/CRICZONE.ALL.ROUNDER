@@ -1,0 +1,17 @@
+{
+  "name": "CRICZONE",
+  "short_name": "CRICZONE",
+  "start_url": "/cricxzone/",
+  "scope": "/cricxzone/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "/cricxzone/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
