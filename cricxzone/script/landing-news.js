@@ -4,7 +4,6 @@
 
   var NEWS_URL = '/cricxzone/news/data.json';
   var MAX_ITEMS = 10;
-  var FALLBACK_IMAGE = '/cricxzone/assets/android-chrome-512x512.png';
   var track = document.getElementById('landingNewsTrack');
 
   if (!track) return;
