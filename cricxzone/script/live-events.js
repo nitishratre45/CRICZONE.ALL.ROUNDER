@@ -1,11 +1,11 @@
 (function () {
   'use strict';
 
-  var config = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+  var config = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
   var apis = config.apis || {};
   var refreshEvery = Number(config.eventRefreshMs) || 300000;
   var requestTimeout = 12000;
-  var cachePrefix = 'cnptv-home-events-v3:';
+  var cachePrefix = 'criczone-home-events-v3:';
   var sections = [
     { key: 'football', api: apis.football || '', trackId: 'footballTrack', statusId: 'footballStatus', previousId: 'footballPrevious', nextId: 'footballNext', label: 'Football' },
     { key: 'cricket',  api: apis.cricket  || '', trackId: 'cricketTrack',  statusId: 'cricketStatus',  previousId: 'cricketPrevious',  nextId: 'cricketNext',  label: 'Cricket'  }
@@ -183,9 +183,9 @@
   }
 
   function eventUrl(sectionInfo, item) {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var sectionCfg = (cfg.sections || {})[sectionInfo.key];
-    var helper = window.CnpTVHelper;
+    var helper = window.CRICZONEHelper;
     if (sectionCfg && helper && sectionCfg.link) {
       var eventId = helper.extractId(item) || item.slug || '';
       return helper.buildUrl(sectionCfg, eventId);
@@ -209,7 +209,7 @@
   }
 
   function renderCard(item, sectionInfo) {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var upcomingClickable = cfg.upcomingClickable !== false;
     var labels = cfg.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
@@ -255,7 +255,7 @@
   }
 
   function viewAllCardHtml(sectionInfo) {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var labels = cfg.labels || {};
     var sectionCfg = (cfg.sections || {})[sectionInfo.key] || {};
     var link = escapeHtml(sectionCfg.viewAllLink || '/events/');
@@ -307,7 +307,7 @@
   }
 
   function renderEvents(track, statusNode, sectionInfo, events) {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var cardLimit = Number(cfg.cardLimit) || 10;
 
     if (!events.length) {
