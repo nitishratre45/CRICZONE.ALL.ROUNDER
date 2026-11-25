@@ -205,9 +205,22 @@ const tgAuth = {
  const $=id=>document.getElementById(id);
  const fmt=value=>Number(value||0).toLocaleString("en-IN");
  const keyInput=$("tgAdminKey"),load=$("tgLoad"),status=$("tgStatus");
+ const TG_CACHE_KEY="cz_tg_admin_data_v1";
+ const readCache=()=>{try{const value=JSON.parse(localStorage.getItem(TG_CACHE_KEY)||"null");return value&&Date.now()-Number(value.savedAt)<5*24*60*60*1000?value:null;}catch(_){return null;}};
+ const writeCache=value=>{try{localStorage.setItem(TG_CACHE_KEY,JSON.stringify({...value,savedAt:Date.now()}));}catch(_){}};
+ function showCachedStats(){
+  const cached=readCache();if(!cached||!cached.stats)return false;
+  $("tgSubscribers").textContent=cached.stats.subscribers??"—";
+  $("tgRegistered").textContent=cached.stats.registered??"—";
+  $("tgActive").textContent=cached.stats.active??"—";
+  $("tgInactive").textContent=cached.stats.inactive??"—";
+  status.className="tg-status";
+  status.textContent="Showing saved data from "+new Date(cached.savedAt).toLocaleString()+" · Updating in background…";
+  return true;
+ }
+
  async function loadTelegram(){
-  load.disabled=true;status.className="tg-status";status.textContent="Authenticating and fetching Telegram data…";
-  $("tgSubscribers").textContent="…";
+  load.disabled=true;const hadCache=showCachedStats();if(!hadCache){status.className="tg-status";status.textContent="Authenticating and fetching Telegram data…";$("tgSubscribers").textContent="…";}
   try{
    const token=keyInput.value.trim()?await tgAuth.login(keyInput.value.trim()):tgAuth.getToken();
    if(!token)throw new Error("Enter the dashboard access key. Your session lasts 5 days.");
@@ -225,6 +238,7 @@ const tgAuth = {
    $("tgRegistered").textContent=fmt(stats.total_registered);
    $("tgActive").textContent=fmt(stats.active);
    $("tgInactive").textContent=fmt(stats.inactive);
+   writeCache({stats:{subscribers:$("tgSubscribers").textContent,registered:$("tgRegistered").textContent,active:$("tgActive").textContent,inactive:$("tgInactive").textContent}});
    status.className="tg-status ok";
    status.textContent="Admin session active until "+new Date(tgAuth.expiresAt*1000).toLocaleString()+" · 5-day access.";
    document.dispatchEvent(new Event("cz-tg-admin-authenticated"));
@@ -247,6 +261,21 @@ const tgAuth = {
  const tbody=document.getElementById("tgUserRows"),more=document.getElementById("tgLoadMore");
  const meta=document.getElementById("tgDirectoryMeta"),shown=document.getElementById("tgShown"),search=document.getElementById("tgUserSearch");
  let page=1,hasMore=false,loading=false,allUsers=[],searchTimer=null;
+ const CACHE_KEY="cz_tg_admin_data_v1";
+ function readDirectoryCache(){
+  try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");return c&&Date.now()-Number(c.savedAt)<5*24*60*60*1000?c:null;}catch(_){return null;}
+ }
+ function saveDirectoryCache(){
+  try{const old=readDirectoryCache()||{};localStorage.setItem(CACHE_KEY,JSON.stringify({...old,users:allUsers,hasMore,nextPage:page,savedAt:Date.now()}));}catch(_){}
+ }
+ function restoreDirectoryCache(){
+  const c=readDirectoryCache();if(!c||!Array.isArray(c.users))return false;
+  allUsers=c.users;hasMore=!!c.hasMore;page=Math.max(1,Number(c.nextPage)||1);render();
+  more.hidden=!hasMore;more.disabled=!hasMore;more.textContent=hasMore?"Load more users":"All users loaded";
+  meta.textContent="Showing saved list · Last saved "+new Date(c.savedAt).toLocaleString()+" · Refreshing in background…";
+  return true;
+ }
+
  const fmtDate=value=>{if(!value)return "—";const d=new Date(Number(value)*1000);return Number.isNaN(d.getTime())?"—":d.toLocaleString();};
  const safe=value=>String(value??"");
  function render(){
@@ -277,19 +306,19 @@ const tgAuth = {
    const response=await fetch("/api/telegram/admin-stats?page="+page+"&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+token()}});
    const data=await response.json();
    if(!response.ok||!data.ok)throw new Error(data.error||"Could not load Telegram user list");
-   allUsers=allUsers.concat(Array.isArray(data.users)?data.users:[]);
+   allUsers=reset?(Array.isArray(data.users)?data.users:[]):allUsers.concat(Array.isArray(data.users)?data.users:[]);
    hasMore=!!data.has_more;page++;
-   render();
+   render();saveDirectoryCache();
    more.hidden=!hasMore;more.disabled=!hasMore;more.textContent=hasMore?"Load more users":"All users loaded";
-  }catch(error){meta.textContent=error.message||"Unable to load user list";more.textContent="Retry";more.hidden=false;more.disabled=false;}
+  }catch(error){meta.textContent=(error.message||"Unable to load user list")+(allUsers.length?" · Showing saved user list.":"");more.textContent="Retry";more.hidden=false;more.disabled=false;}
   finally{loading=false;}
  }
- document.addEventListener("cz-tg-admin-authenticated",()=>loadPage(true));
+ document.addEventListener("cz-tg-admin-authenticated",()=>{restoreDirectoryCache();loadPage(true);});
  document.getElementById("tgReloadUsers").addEventListener("click",()=>loadPage(true));
  more.addEventListener("click",()=>loadPage(false));
  search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,120);});
  const originalLoad=document.getElementById("tgLoad");
- originalLoad.addEventListener("click",()=>{if(token())loadPage(true);});
+ originalLoad.addEventListener("click",()=>{if(token()){restoreDirectoryCache();loadPage(true);}});
 })();
 
 </script></body></html>
