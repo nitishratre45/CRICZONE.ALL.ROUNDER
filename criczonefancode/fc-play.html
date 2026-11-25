@@ -282,6 +282,7 @@ function scheduleRecovery(reason) {
       video.play().catch(() => {});
     } catch (error) {
       console.error("Stream recovery failed", error);
+      isRecovering = false;
       scheduleRecovery(error);
     } finally {
       isRecovering = false;
