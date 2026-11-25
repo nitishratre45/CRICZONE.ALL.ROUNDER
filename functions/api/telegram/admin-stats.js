@@ -16,10 +16,13 @@ function safeEqual(a, b) {
 
 const SESSION_TTL_SECONDS = 5 * 24 * 60 * 60;
 
-function base64Url(bytes) {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+function toHex(bytes) {
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function fromHex(value) {
+  if (typeof value !== "string" || !/^[a-f0-9]{64}$/i.test(value)) return null;
+  return Uint8Array.from(value.match(/.{2}/g), pair => parseInt(pair, 16));
 }
 
 async function signSession(secret, expiresAt) {
@@ -38,7 +41,7 @@ async function signSession(secret, expiresAt) {
 async function issueSession(secret) {
   const expiresAt = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
   const signed = await signSession(secret, expiresAt);
-  return { token: expiresAt + "." + base64Url(new Uint8Array(signed.signature)), expires_at: expiresAt };
+  return { token: expiresAt + "." + toHex(new Uint8Array(signed.signature)), expires_at: expiresAt };
 }
 
 async function verifySession(secret, token) {
@@ -47,10 +50,8 @@ async function verifySession(secret, token) {
   const expiresAt = Number(parts[0]);
   if (!Number.isSafeInteger(expiresAt) || expiresAt <= Math.floor(Date.now() / 1000)) return false;
   try {
-    const signature = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    const padded = signature + "=".repeat((4 - signature.length % 4) % 4);
-    const binary = atob(padded);
-    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    const bytes = fromHex(parts[1]);
+    if (!bytes) return false;
     const signed = await signSession(secret, expiresAt);
     return await crypto.subtle.verify("HMAC", signed.key, bytes, signed.message);
   } catch (_) {
