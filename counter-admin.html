@@ -80,11 +80,43 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
 .tg-status.error{color:#ff9eae}.tg-status.ok{color:var(--green)}
 @media(max-width:700px){.telegram-panel{padding:15px;border-radius:17px}.tg-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.telegram-panel-head{display:block}.tg-controls{margin-top:12px}.tg-controls input{flex:1;min-width:0}}
 
+
+/* Admin navigation and responsive section layout */
+.admin-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 12px;padding:8px;border:1px solid rgba(71,111,158,.32);border-radius:19px;background:rgba(7,17,31,.82);box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.admin-tab{position:relative;display:flex;align-items:center;gap:13px;min-width:0;text-align:left;padding:14px 16px;border:1px solid transparent;border-radius:13px;background:transparent;box-shadow:none;color:#9db4d2}
+.admin-tab:hover{transform:none;background:rgba(34,66,103,.3);border-color:#294767;box-shadow:none}
+.admin-tab.active{color:#f4f8ff;border-color:rgba(89,186,255,.45);background:linear-gradient(120deg,rgba(35,89,139,.48),rgba(25,48,78,.72));box-shadow:inset 0 1px rgba(255,255,255,.06),0 6px 18px rgba(0,0,0,.16)}
+.tab-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:#132a44;color:#73c7ff;font-size:19px}
+.admin-tab b,.admin-tab small{display:block}.admin-tab b{font-size:13px;font-weight:850}.admin-tab small{margin-top:4px;color:#91a8c7;font-size:10px;font-weight:600}
+.tab-count{margin-left:auto;padding:5px 9px;border:1px solid #315779;border-radius:9px;color:#a9d9ff;font-size:11px}
+.view-switch-hint{margin:0 2px 16px;color:#7892b2;font-size:11px;letter-spacing:.25px}
+.panel-view{display:none;animation:panelEnter .22s ease both}.panel-view.active{display:block}
+@keyframes panelEnter{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.telegram-panel{margin-bottom:0}
+#workersView .overview{margin-top:0}
+#workersView .grid{margin-top:0}
+#workersView .note{margin-bottom:0}
+@media(max-width:600px){
+ .admin-tabs{gap:7px;padding:6px;border-radius:15px;margin-bottom:10px}
+ .admin-tab{gap:8px;padding:11px 9px;border-radius:11px}
+ .tab-icon{width:31px;height:31px;flex-basis:31px;border-radius:9px;font-size:16px}
+ .admin-tab b{font-size:11px;line-height:1.25}.admin-tab small{font-size:9px;line-height:1.3}
+ .tab-count{padding:4px 6px;font-size:10px}
+ .view-switch-hint{margin-bottom:12px;font-size:10px}
+}
+@media(max-width:370px){.admin-tab{gap:6px;padding:10px 7px}.tab-icon{width:27px;height:27px;flex-basis:27px}.admin-tab b{font-size:10px}.admin-tab small{font-size:8px}.tab-count{display:none}}
+
 </style>
 </head>
 <body><main>
-<header class="top"><div><div class="eyebrow">CRICZONE • SYSTEM STATUS</div><div class="title">Worker Monitor</div><div class="sub">Seven visitor-counter workers • live status and visit totals</div></div><div class="actions"><span class="updated" id="updated">Not checked yet</span><button id="refresh">↻ Refresh</button></div></header>
+<header class="top"><div><div class="eyebrow">CRICZONE • SYSTEM STATUS</div><div class="title">Admin Control Center</div><div class="sub">Telegram audience management and live worker monitoring</div></div><div class="actions"><span class="updated" id="updated">Not checked yet</span><button id="refresh">↻ Refresh</button></div></header>
 
+<nav class="admin-tabs" role="tablist" aria-label="Admin sections">
+ <button class="admin-tab active" id="tabTelegram" type="button" role="tab" aria-selected="true" aria-controls="telegramView" data-view="telegramView"><span class="tab-icon">✈</span><span><b>Telegram Admin</b><small>Audience & user directory</small></span></button>
+ <button class="admin-tab" id="tabWorkers" type="button" role="tab" aria-selected="false" aria-controls="workersView" data-view="workersView"><span class="tab-icon">◉</span><span><b>Live Workers</b><small>7 counters & live status</small></span><span class="tab-count">7</span></button>
+</nav>
+<div class="view-switch-hint" id="viewHint">Telegram audience dashboard</div>
+<section class="panel-view active" id="telegramView" role="tabpanel" aria-labelledby="tabTelegram">
 <section class="telegram-panel" aria-labelledby="telegramHeading">
  <div class="telegram-panel-head">
   <div><h2 id="telegramHeading">Telegram Audience</h2><p>Live channel subscriber count plus private bot registration totals from the existing CRICZONE Telegram D1 database.</p></div>
@@ -103,12 +135,15 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
   <div class="tg-directory-foot"><span id="tgShown">0 users loaded</span><button id="tgLoadMore" type="button" disabled>Load more users</button></div>
  </div>
 </section>
+</section>
+<section class="panel-view" id="workersView" role="tabpanel" aria-labelledby="tabWorkers">
 <section class="overview">
 <div class="metric"><small>Workers online</small><strong id="online">— / 7</strong></div>
 <div class="metric"><small>Combined live visitors*</small><strong id="combinedLive">—</strong></div>
 </section>
 <section class="grid" id="workers"></section>
 <p class="note">*Combined LIVE is the sum of each online worker's LIVE count; the same browser can appear on more than one independent worker, so duplicates are possible. No visitor-ID lists are fetched. Each worker's total is shown independently. Auto-refreshes every 120 seconds. Manual Refresh checks all seven workers immediately. Read-only dashboard; no counter data is changed.</p>
+</section>
 </main>
 <script>
 const WORKERS=[
@@ -319,6 +354,37 @@ const tgAuth = {
  search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,120);});
  const originalLoad=document.getElementById("tgLoad");
  originalLoad.addEventListener("click",()=>{if(token()){restoreDirectoryCache();loadPage(true);}});
+})();
+
+
+(function(){
+ const tabs=[...document.querySelectorAll(".admin-tab")];
+ const hint=document.getElementById("viewHint");
+ const labels={telegramView:"Telegram audience dashboard",workersView:"Seven visitor-counter workers · live status and visit totals"};
+ function activate(view,focus=false){
+  tabs.forEach(tab=>{
+   const active=tab.dataset.view===view;
+   tab.classList.toggle("active",active);
+   tab.setAttribute("aria-selected",String(active));
+   tab.tabIndex=active?0:-1;
+  });
+  document.querySelectorAll(".panel-view").forEach(panel=>panel.classList.toggle("active",panel.id===view));
+  hint.textContent=labels[view]||"CRICZONE Admin";
+  try{sessionStorage.setItem("cz_admin_active_view",view);}catch(_){}
+  if(focus){const tab=tabs.find(item=>item.dataset.view===view);tab?.focus();}
+ }
+ tabs.forEach((tab,index)=>{
+  tab.addEventListener("click",()=>activate(tab.dataset.view));
+  tab.addEventListener("keydown",event=>{
+   if(event.key!=="ArrowRight"&&event.key!=="ArrowLeft")return;
+   event.preventDefault();
+   const next=tabs[(index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length];
+   activate(next.dataset.view,true);
+  });
+ });
+ let initial="telegramView";
+ try{const saved=sessionStorage.getItem("cz_admin_active_view");if(saved&&labels[saved])initial=saved;}catch(_){}
+ activate(initial);
 })();
 
 </script></body></html>
