@@ -24,12 +24,12 @@ var CNPTV_CONF = {
   },
 
   sections: {
-    football:    { link: "/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/watch/football/"  },
-    cricket:     { link: "/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/watch/cricket/"   },
-    willow:      { link: "/watch/willow/",     idMode: "param", idKey: "", viewAllLink: "/watch/willow/"    },
-    fancode:     { link: "/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/watch/fancode/"   },
-    worldSports: { link: "/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/watch/wwsports/"  },
-    sonyLiv:     { link: "/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/watch/sliv/"      }
+    football:    { link: "/cricxzone/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/football/"  },
+    cricket:     { link: "/cricxzone/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/cricket/"   },
+    willow:      { link: "/cricxzone/watch/willow/",     idMode: "param", idKey: "", viewAllLink: "/cricxzone/watch/willow/"    },
+    fancode:     { link: "/cricxzone/watch/fancode/pz/", idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/fancode/"   },
+    worldSports: { link: "/cricxzone/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/wwsports/"  },
+    sonyLiv:     { link: "/cricxzone/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/sliv/"      }
   },
 
   cardLimit: 10,
@@ -46,9 +46,9 @@ var CNPTV_CONF = {
   playerBase: "",
 
   routes: {
-    willowPlayer:  "/watch/willow/",
-    fancodePlayer: "/watch/fancode/pz/",
-    sonyPlayer:    "/watch/sliv/"
+    willowPlayer:  "/cricxzone/watch/willow/",
+    fancodePlayer: "/cricxzone/watch/fancode/pz/",
+    sonyPlayer:    "/cricxzone/watch/sliv/"
   },
 
   willowPlayerMode: "stream",
@@ -102,7 +102,7 @@ if (typeof CNPTV_CONF !== "undefined" && CNPTV_CONF) {
       },
       "poster": "https://img10.hotstar.com/image/upload/f_auto,q_90,w_1920/sources/r1/cms/prod/9280/1791259109280-i",
       "date": "17 OCT 2026, 07:00 PM",
-      "watchUrl": "/home/live/ind-vs-wi.html"
+      "watchUrl": "/cricxzone/home/live/ind-vs-wi.html"
     }
   ];
 }
@@ -121,7 +121,7 @@ if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
       },
       "poster": "https://imgh.in/host/bj7cji",
       "date": "24 NOVEMBER 2026 - 11:00 PM",
-      "watchUrl": "/home/live/asiacup.html"
+      "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
     {
       "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 1ST TEST",
@@ -135,7 +135,7 @@ if(typeof CNPTV_CONF!=='undefined'&&CNPTV_CONF){
       },
       "poster": "https://imgh.in/host/x98v9c",
       "date": "1ST TEST MATCH - 3:30 AM",
-      "watchUrl": "/home/live/ind-vs-nz.html"
+      "watchUrl": "/cricxzone/home/live/ind-vs-nz.html"
     }
   ];
 }
