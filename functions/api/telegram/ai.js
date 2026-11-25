@@ -166,6 +166,17 @@ async function ensureBroadcastTables(db) {
     updated_at INTEGER NOT NULL DEFAULT 0
   )`).run();
   await db.prepare('INSERT OR IGNORE INTO telegram_broadcast_totals (id) VALUES (1)').run();
+  // Compact activity rows cover both all-user and single-user sends without per-recipient logging.
+  await db.prepare(`CREATE TABLE IF NOT EXISTS telegram_broadcast_activity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at INTEGER NOT NULL,
+    mode TEXT NOT NULL DEFAULT 'all',
+    target_user_id TEXT NOT NULL DEFAULT '',
+    recipients INTEGER NOT NULL DEFAULT 0,
+    sent INTEGER NOT NULL DEFAULT 0,
+    failed INTEGER NOT NULL DEFAULT 0,
+    blocked INTEGER NOT NULL DEFAULT 0
+  )`).run();
 }
 
 function getAdminIds(env) {
@@ -292,20 +303,53 @@ async function handlePrivateMessage({ env, message }) {
     return;
   }
 
+  if (command === '/sendto') {
+    if (!isAdmin) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
+      return;
+    }
+    const targetId = text.split(/\\s+/)[1] || '';
+    if (!/^\\d{5,20}$/.test(targetId)) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: 'Usage: /sendto TELEGRAM_USER_ID\\nExample: /sendto 123456789' });
+      return;
+    }
+    const target = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,active FROM telegram_broadcast_users WHERE user_id=?').bind(targetId).first();
+    if (!target || Number(target.active) !== 1) {
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '❌ This user ID is not in the active registered audience. Check /users and try again.' });
+      return;
+    }
+    await env.TELEGRAM_DB.prepare(`INSERT INTO telegram_broadcast_states (admin_id,step,source_message_id,updated_at)
+      VALUES (?, ?, NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step=excluded.step,source_message_id=NULL,updated_at=excluded.updated_at`)
+      .bind(senderId,'waiting_message:'+targetId,Math.floor(Date.now()/1000)).run();
+    const name=[target.first_name,target.last_name].filter(Boolean).join(' ')||'User';
+    await telegramCall(env,'sendMessage',{chat_id:chatId,text:'✉️ Preparing a private message for '+name+' (ID: '+targetId+').\\n\\nNow send the text, photo, video or supported media you want to deliver. You will get a confirmation before sending.'});
+    return;
+  }
+
   if (isAdmin) {
     const state = await env.TELEGRAM_DB.prepare('SELECT * FROM telegram_broadcast_states WHERE admin_id=?').bind(senderId).first();
-    if (state?.step === 'waiting_message') {
+    const waitingMatch = /^waiting_message(?::(\\d+))?$/.exec(String(state?.step || ''));
+    if (waitingMatch) {
+      const targetId = waitingMatch[1] || '';
+      const nextStep = targetId ? 'confirm:'+targetId : 'confirm';
       await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=?,source_message_id=?,updated_at=? WHERE admin_id=?')
-        .bind('confirm',message.message_id,Math.floor(Date.now()/1000),senderId).run();
-      const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
-      await telegramCall(env, 'sendMessage', {
-        chat_id: chatId,
-        text: `📢 Broadcast preview is ready.\\n\\n👥 Active registered users: ${Number(audience?.count || 0)}\\n\\nConfirm to send the message you just submitted to all registered users.`,
-        reply_markup: { inline_keyboard: [[
-          { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
-          { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
-        ]] }
-      });
+        .bind(nextStep,message.message_id,Math.floor(Date.now()/1000),senderId).run();
+      if (targetId) {
+        await telegramCall(env,'sendMessage',{chat_id:chatId,text:'🔎 Private message preview\\n\\nRecipient ID: '+targetId+'\\n\\nConfirm to send only to this user.',reply_markup:{inline_keyboard:[[
+          {text:'✉️ Send to this user',callback_data:'broadcast:confirm:'+targetId},
+          {text:'❌ Cancel',callback_data:'broadcast:cancel'}
+        ]] }});
+      } else {
+        const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
+        await telegramCall(env, 'sendMessage', {
+          chat_id: chatId,
+          text: `📢 Broadcast preview is ready.\\n\\n👥 Active registered users: ${Number(audience?.count || 0)}\\n\\nConfirm to send the message you just submitted to all registered users.`,
+          reply_markup: { inline_keyboard: [[
+            { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
+            { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
+          ]] }
+        });
+      }
       return;
     }
   }
@@ -1094,15 +1138,23 @@ export async function onRequestPost({ request, env }) {
         await telegramCall(env, 'sendMessage', { chat_id: callback.message.chat.id, text: '❌ Broadcast cancelled.' });
         return json({ ok: true, received: true });
       }
-      if (broadcastAction === 'broadcast:confirm') {
+      if (broadcastAction === 'broadcast:confirm' || broadcastAction.startsWith('broadcast:confirm:')) {
+        const requestedTarget = broadcastAction.split(':')[2] || '';
+        if (requestedTarget && !/^\\d{5,20}$/.test(requestedTarget)) {
+          await telegramCall(env,'answerCallbackQuery',{callback_query_id:callback.id,text:'Invalid user ID.'});
+          return json({ok:true,received:true});
+        }
         const state = await env.TELEGRAM_DB.prepare('SELECT * FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).first();
-        if (!state || state.step !== 'confirm' || !state.source_message_id) {
-          await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'No pending broadcast.' });
+        const expectedStep = requestedTarget ? 'confirm:'+requestedTarget : 'confirm';
+        if (!state || state.step !== expectedStep || !state.source_message_id) {
+          await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'No matching pending send.' });
           return json({ ok: true, received: true });
         }
         await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=? WHERE admin_id=?').bind('sending',adminId).run();
-        await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'Broadcast started.' });
-        const users = await env.TELEGRAM_DB.prepare('SELECT user_id FROM telegram_broadcast_users WHERE active=1 ORDER BY started_at').all();
+        await telegramCall(env, 'answerCallbackQuery', { callback_query_id: callback.id, text: requestedTarget ? 'Sending to selected user.' : 'Broadcast started.' });
+        const users = requestedTarget
+          ? await env.TELEGRAM_DB.prepare('SELECT user_id FROM telegram_broadcast_users WHERE user_id=? AND active=1').bind(requestedTarget).all()
+          : await env.TELEGRAM_DB.prepare('SELECT user_id FROM telegram_broadcast_users WHERE active=1 ORDER BY started_at').all();
         let sent=0, failed=0, blocked=0;
         for (const row of (users.results || [])) {
           const target=String(row.user_id);
@@ -1135,10 +1187,13 @@ export async function onRequestPost({ request, env }) {
           'INSERT INTO telegram_broadcast_logs (created_at,recipients,sent,failed,blocked) VALUES (?,?,?,?,?)'
         ).bind(completedAt,recipients,sent,failed,blocked).run();
         await env.TELEGRAM_DB.prepare(
+          'INSERT INTO telegram_broadcast_activity (created_at,mode,target_user_id,recipients,sent,failed,blocked) VALUES (?,?,?,?,?,?,?)'
+        ).bind(completedAt,requestedTarget?'single':'all',requestedTarget,recipients,sent,failed,blocked).run();
+        await env.TELEGRAM_DB.prepare(
           'UPDATE telegram_broadcast_totals SET broadcasts=broadcasts+1,recipients=recipients+?,sent=sent+?,failed=failed+?,blocked=blocked+?,updated_at=? WHERE id=1'
         ).bind(recipients,sent,failed,blocked,completedAt).run();
         await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
-        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ Broadcast finished.\\n\\n👥 Recipients: ${recipients}\\n📨 Sent successfully: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
+        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ ${requestedTarget?'Private message':'Broadcast'} finished.\\n\\n👥 Recipients: ${recipients}\\n📨 Sent successfully: ${sent}\\n❌ Failed: ${failed}\\n🚫 Blocked/deactivated: ${blocked}`});
         return json({ ok: true, received: true });
       }
     }
