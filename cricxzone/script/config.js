@@ -47,7 +47,7 @@ var CNPTV_CONF = {
 
   routes: {
     willowPlayer:  "/cricxzone/watch/willow/",
-    fancodePlayer: "/cricxzone/watch/fancode/pz/",
+    fancodePlayer: "/fancodeweb/fc-play.html",
     sonyPlayer:    "/cricxzone/watch/sliv/"
   },
 
