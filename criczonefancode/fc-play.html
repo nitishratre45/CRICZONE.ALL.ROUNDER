@@ -224,7 +224,7 @@ video{background:#000;object-fit:contain}
     <a id="waBadge"
        href="#"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener noreferrer">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
       </svg>
@@ -242,90 +242,151 @@ video{background:#000;object-fit:contain}
 
 const params = new URLSearchParams(window.location.search);
 const encoded = params.get("data");
-let streamUrl = encoded ? atob(encoded) : "";
+let streamUrl = "";
+try { streamUrl = encoded ? atob(encoded) : ""; } catch (e) { console.error("Invalid stream parameter", e); }
 
 const video = document.getElementById("video");
 const loading = document.getElementById("loading");
+let player = null;
+let retryCount = 0;
+let retryTimer = null;
+let isRecovering = false;
 
-/* ── Detect fullscreen state (kept for any future needs) ── */
-function updateFsState(){
-  const inFs = !!(
-    document.fullscreenElement ||
-    document.webkitFullscreenElement ||
-    document.mozFullScreenElement ||
-    document.msFullscreenElement
-  );
-  document.body.classList.toggle('fs-active', inFs);
+function showLoading(message) {
+  if (loading) {
+    loading.style.display = "flex";
+    const label = loading.lastChild;
+    if (label && label.nodeType === Node.TEXT_NODE) label.textContent = message || "Reconnecting to live stream...";
+  }
 }
-['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
-  .forEach(function(ev){ document.addEventListener(ev, updateFsState); });
+function hideLoading() {
+  if (loading) loading.style.display = "none";
+}
+function scheduleRecovery(reason) {
+  if (!player || retryTimer || isRecovering || retryCount >= 6) return;
+  retryCount += 1;
+  const delay = Math.min(15000, 1500 * Math.pow(2, retryCount - 1));
+  console.warn("FanCode stream recovery", reason, "attempt", retryCount, "in", delay);
+  showLoading("Live stream interrupted. Reconnecting...");
+  retryTimer = setTimeout(async () => {
+    retryTimer = null;
+    if (!player) return;
+    isRecovering = true;
+    try {
+      if (typeof player.retryStreaming === "function") {
+        await player.retryStreaming();
+      } else {
+        await player.unload();
+        await player.load(streamUrl);
+      }
+      video.play().catch(() => {});
+    } catch (error) {
+      console.error("Stream recovery failed", error);
+      scheduleRecovery(error);
+    } finally {
+      isRecovering = false;
+    }
+  }, delay);
+}
 
-async function initPlayer(){
+/* Fullscreen state */
+function updateFsState(){
+  const inFs = !!(document.fullscreenElement || document.webkitFullscreenElement ||
+    document.mozFullScreenElement || document.msFullscreenElement);
+  document.body.classList.toggle("fs-active", inFs);
+}
+["fullscreenchange","webkitfullscreenchange","mozfullscreenchange","MSFullscreenChange"]
+  .forEach(ev => document.addEventListener(ev, updateFsState));
 
-  if(!streamUrl){
-    alert("Stream URL missing");
+async function initPlayer() {
+  if (!streamUrl) {
+    showLoading("Stream URL missing");
+    console.error("Missing stream URL");
+    return;
+  }
+  if (!window.shaka || !shaka.Player) {
+    showLoading("Player library failed to load. Refresh the page.");
+    console.error("Shaka Player library unavailable");
     return;
   }
 
-  try{
+  try {
+    shaka.polyfill.installAll();
+    if (!shaka.Player.isBrowserSupported()) throw new Error("This browser is not supported");
 
-    const player = new shaka.Player(video);
+    player = new shaka.Player(video);
     const container = document.querySelector(".shaka-video-container");
     const ui = new shaka.ui.Overlay(player, container, video);
 
     ui.configure({
-      controlPanelElements:[
-        'play_pause',
-        'mute',
-        'time_and_duration',
-        'spacer',
-        'quality',
-        'language',
-        'picture_in_picture',
-        'fullscreen',
-        'overflow_menu'
+      controlPanelElements: [
+        "play_pause", "mute", "time_and_duration", "spacer",
+        "quality", "language", "picture_in_picture", "fullscreen", "overflow_menu"
       ],
-      addSeekBar:true
+      addSeekBar: true
     });
 
     player.configure({
-      streaming:{
-        bufferingGoal:10,
-        rebufferingGoal:2,
-        bufferBehind:30
+      streaming: {
+        bufferingGoal: 30,
+        rebufferingGoal: 8,
+        bufferBehind: 60,
+        retryParameters: {
+          timeout: 30000,
+          maxAttempts: 5,
+          baseDelay: 1000,
+          backoffFactor: 2,
+          fuzzFactor: 0.5
+        },
+        stallEnabled: true,
+        stallThreshold: 3,
+        stallSkip: 1.5,
+        lowLatencyMode: false
+      },
+      manifest: {
+        retryParameters: {
+          timeout: 30000,
+          maxAttempts: 5,
+          baseDelay: 1000,
+          backoffFactor: 2,
+          fuzzFactor: 0.5
+        }
       }
     });
 
+    player.addEventListener("error", event => {
+      const error = event.detail;
+      console.error("Shaka playback error", error);
+      scheduleRecovery(error && (error.code + ": " + error.message));
+    });
+
+    video.addEventListener("playing", () => {
+      retryCount = 0;
+      if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
+      hideLoading();
+    });
+    video.addEventListener("waiting", () => showLoading("Buffering live stream..."));
+    video.addEventListener("stalled", () => scheduleRecovery("video stalled"));
+    video.addEventListener("error", () => {
+      console.error("Video element error", video.error);
+      scheduleRecovery(video.error && video.error.message);
+    });
+
     await player.load(streamUrl);
-
-    video.play().catch(()=>{
-      video.muted=true;
-      video.play();
+    await video.play().catch(() => {
+      video.muted = true;
+      return video.play();
     });
-
-    video.addEventListener("playing",()=>{
-      loading.style.display="none";
-    });
-
+  } catch (error) {
+    console.error("FanCode player initialization failed", error);
+    showLoading("Unable to start stream. Please refresh or try another quality.");
+    // Do not switch to native video playback automatically: it bypasses Shaka's
+    // HLS/DASH handling and can make a recoverable manifest/segment error worse.
+    scheduleRecovery(error && (error.code + ": " + error.message));
   }
-
-  catch(e){
-
-    console.log("Shaka error:",e);
-
-    video.src = streamUrl;
-    video.play();
-
-    video.addEventListener("playing",()=>{
-      loading.style.display="none";
-    });
-
-  }
-
 }
 
-document.addEventListener("DOMContentLoaded", initPlayer);
-
+document.addEventListener("DOMContentLoaded", initPlayer, { once: true });
 </script>
 
 
