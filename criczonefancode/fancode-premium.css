@@ -1,0 +1,58 @@
+/* CRICZONE FANCODE — visual-only premium layer. Playback/data logic remains untouched. */
+:root{
+  --cream:#07111f;--olive:#7fa4cf;--white:#0d1b2d;--ink:#f3f7ff;--muted:#9db0c8;
+  --accent:#39a8ff;--border:rgba(147,190,238,.16);--surface2:#12243a;--surface3:#1a304a;
+  --live:#ff4d68;--soon:#ffc46b;--done:#8ca0b7;--radius:18px;
+  --shadow:0 14px 38px rgba(0,0,0,.28);--shadow-deep:0 22px 55px rgba(0,0,0,.42);
+}
+html,body{background:#06101e;color:var(--ink)}
+body:before{background:radial-gradient(ellipse at 12% 0%,rgba(34,116,218,.18),transparent 42%),radial-gradient(ellipse at 92% 12%,rgba(0,202,220,.09),transparent 34%),linear-gradient(180deg,#08172a 0%,#06101e 65%,#050b14 100%);animation:none}
+.container{max-width:1440px;padding-inline:clamp(12px,2.4vw,30px)}
+.header{position:sticky;top:0;z-index:50;margin-inline:calc(-1 * clamp(12px,2.4vw,30px));padding:14px clamp(12px,2.4vw,30px);background:rgba(8,20,36,.88);border-bottom:1px solid rgba(124,178,235,.18);box-shadow:0 10px 32px rgba(0,0,0,.2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.brand-mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#2786ef,#13b8c8);box-shadow:0 8px 24px rgba(32,137,231,.3);font:800 15px var(--display);letter-spacing:-1px}
+.brand-text h1{background:linear-gradient(100deg,#fff,#9edaff 72%,#6ce3e4);-webkit-background-clip:text}
+.brand-text p{color:#91a9c5;letter-spacing:.08em;font-size:10px;font-weight:800}
+.live-pill{border-radius:999px;background:rgba(255,65,96,.12);border-color:rgba(255,65,96,.26)}
+.join-btn{border-radius:999px;background:linear-gradient(110deg,#1478e8,#11a8d0);box-shadow:0 8px 22px rgba(20,133,220,.25)}
+.search-input{background:rgba(13,29,48,.92);border:1px solid var(--border);border-radius:14px;color:#f3f7ff}
+.search-input::placeholder{color:#7188a4}
+.pill{background:#0e2035;border-color:var(--border);color:#a9bdd5;border-radius:999px}
+.pill.active{background:linear-gradient(110deg,#176ed2,#168eae);border-color:transparent;color:white;box-shadow:0 7px 20px rgba(24,125,213,.28)}
+.pill[data-tab=live].active{background:rgba(255,65,96,.14);border-color:#ff4d68;color:#ff7186}
+.section-heading{color:#edf5ff;font-size:17px}
+.section-badge{background:rgba(35,130,215,.13);border-color:rgba(82,167,239,.22);color:#83caff}
+.slider-card{background:linear-gradient(155deg,rgba(17,39,64,.98),rgba(10,25,43,.98));border:1px solid rgba(132,179,229,.16);border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.slider-card:hover{background:linear-gradient(155deg,#173756,#102b47);border-color:rgba(66,174,255,.5);box-shadow:0 18px 40px rgba(0,0,0,.34)}
+.slider-card.is-live{border-color:rgba(255,77,104,.4)}
+.poster-slider-wrap{border-radius:13px;background:#081525;border-color:rgba(132,179,229,.16)}
+.slider-match-title{color:#f4f8ff}
+.kickoff-time{color:#83caff}
+.lang-tag{background:#172d46;border-color:rgba(132,179,229,.16);color:#c5d8ee}
+.lang-tag.cat-badge{background:rgba(35,130,215,.14);color:#82caff}
+.card-foot{border-color:rgba(132,179,229,.14)}
+.thumb-dl-btn{background:#172d46;border-color:rgba(132,179,229,.16);border-radius:8px}
+.watch-cta{color:#71caff}
+.empty-box{background:#0d1b2d;border-color:rgba(132,179,229,.22);border-radius:16px}
+.icon-action-btn,.slider-nav-btn{background:#10243a;border-color:rgba(132,179,229,.2);color:#e7f2ff}
+#playerView.active,.pure-stage,#player-container{background:#000}
+.top-left-stream-bar,.top-right-player-bar{z-index:1005}
+.tl-stream-btn,.tr-pill-btn{border-color:rgba(150,195,240,.22);background:rgba(7,19,33,.82);box-shadow:0 5px 18px rgba(0,0,0,.2)}
+.tl-stream-menu{background:rgba(8,21,37,.97);border-color:rgba(150,195,240,.2)}
+.tl-stream-item{color:#e6f1ff}
+.tl-stream-item.active{background:rgba(36,133,224,.32)}
+.player-notice{background:rgba(8,21,37,.92);border-color:rgba(150,195,240,.2)}
+.screen-msg{background:radial-gradient(ellipse at center,#102944,#030811 72%);color:#f4f8ff}
+@media(max-width:700px){
+  .container{padding-inline:12px}
+  .header{margin-inline:-12px;padding:11px 12px;gap:8px}
+  .brand{gap:9px}
+  .brand-mark{width:39px;height:39px}
+  .brand-text h1{font-size:17px}
+  .brand-text p{font-size:9px}
+  .header-actions{gap:6px}
+  .icon-action-btn{width:34px;height:34px}
+  .join-btn{padding:7px 10px}
+  .slider-card{flex-basis:min(82vw,330px)}
+  .upcoming-list-stack{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){body:before{animation:none}}
