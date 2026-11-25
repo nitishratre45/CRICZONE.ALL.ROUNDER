@@ -1508,7 +1508,40 @@
                 © <span id="yr"></span> CRICZONE · Every match. One home.
             </p>
         </footer>
-        <script src="https://cdn.jsdelivr.net/npm/mux.js@7/dist/mux.min.js"></script>
+        <script>
+/* CRICZONE player popup guard: block click-triggered pop-under tabs without blocking playback controls. */
+(function () {
+  'use strict';
+  var playerClickUntil = 0;
+  var shell = document.getElementById('shell');
+  if (!shell) return;
+
+  shell.addEventListener('click', function (event) {
+    var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (link) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    playerClickUntil = Date.now() + 1800;
+  }, true);
+
+  shell.addEventListener('auxclick', function (event) {
+    var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (link) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+
+  var nativeOpen = window.open;
+  window.open = function () {
+    if (Date.now() < playerClickUntil) return null;
+    return nativeOpen.apply(window, arguments);
+  };
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mux.js@7/dist/mux.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
         <script>
             ( () => {
