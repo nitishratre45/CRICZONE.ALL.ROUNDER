@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var CFG      = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+  var CFG      = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
   var APIS     = CFG.apis || {};
   var API_URL  = APIS.worldSports || APIS.world_sports || '';
 
@@ -84,7 +84,7 @@
   }
 
   function renderMatches(matches) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfgObj = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
     var labels = cfgObj.labels || {};
     var watchLabel = labels.watchNow || 'Watch Now';
