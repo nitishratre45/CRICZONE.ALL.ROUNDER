@@ -290,12 +290,18 @@
 
   function makeBadge() {
     var badge = document.getElementById("viewerBadge");
+    var mountId = document.body && document.body.getAttribute("data-counter-mount");
+    var mount = mountId ? document.getElementById(mountId) : null;
     if (!badge) {
       badge = document.createElement("div");
       badge.id = "viewerBadge";
       badge.setAttribute("aria-live", "polite");
       badge.setAttribute("aria-label", "CRICZONE visitor statistics");
-      (document.body || document.documentElement).appendChild(badge);
+      (mount || document.body || document.documentElement).appendChild(badge);
+    }
+    if (mount) {
+      if (badge.parentElement !== mount) mount.appendChild(badge);
+      badge.classList.add("cz-counter-inline");
     }
     // Legacy CRICZONE player pages placed the counter inside #pc.
     // Move it outside the player so hiding/showing the player cannot hide the counter.
@@ -351,11 +357,16 @@
         "@media(max-width:480px){#viewerBadge{top:8px!important;right:8px!important;padding:2px 4px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:6px!important}}";
       style.textContent += "@keyframes czCounterSweep{from{transform:translateX(0)}to{transform:translateX(calc(-1 * (100vw - 100% - 24px)))}}";
       style.textContent += "#viewerBadge{padding:2.7px 4.5px!important;border-radius:7px!important;font-size:7.2px!important;letter-spacing:.315px!important;box-shadow:0 3px 11px rgba(0,0,0,.32)!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{gap:2.7px!important;padding:.9px 2.7px!important;font-size:6.3px!important}#viewerBadge #totalVisits,#viewerBadge #liveWatching{min-width:12.6px!important;padding:.9px 2.7px!important;border-radius:3.6px!important;font-size:7.2px!important}@media(max-width:480px){#viewerBadge{padding:1.8px 3.6px!important}#viewerBadge .cz-global-total,#viewerBadge .cz-global-live{font-size:5.4px!important}}";
+
+      style.textContent += "#viewerBadge.cz-counter-inline{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:inline-flex!important;width:max-content!important;max-width:100%!important;height:auto!important;margin:0!important;animation:none!important;transform:none!important;cursor:default!important;touch-action:auto!important;user-select:text!important;-webkit-user-select:text!important}";
+      style.textContent += "#viewerBadge.cz-counter-inline .cz-global-total,#viewerBadge.cz-counter-inline .cz-global-live{font-size:9px!important;gap:6px!important;padding:3px 5px!important}";
+      style.textContent += "#viewerBadge.cz-counter-inline #totalVisits,#viewerBadge.cz-counter-inline #liveWatching{min-width:28px!important;padding:3px 6px!important;font-size:10px!important}";
+      style.textContent += "#viewerBadge.cz-counter-inline #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:25px!important;margin-left:3px!important;padding:4px 6px!important;border-radius:6px!important;border:1px solid rgba(249,115,22,.4)!important;background:rgba(249,115,22,.13)!important;color:#ffb36d!important;font:900 9px/1 system-ui,sans-serif!important}";
       document.head.appendChild(style);
     }
     // Auto-sweep horizontally every 10 seconds until the user manually places it.
     // A saved manual position disables the automatic movement for this page.
-    if (!badge.__czDraggable) {
+    if (!badge.__czDraggable && !badge.classList.contains("cz-counter-inline")) {
       badge.__czDraggable = true;
       var positionKey = "cz_counter_position_v1:" + location.pathname;
       var manuallyPlaced = false;
