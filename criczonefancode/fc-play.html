@@ -398,29 +398,23 @@ async function initPlayer() {
 
     player = new shaka.Player(video);
 
-    // Live HLS playlists must never be reused from a long-lived browser/CDN cache.
-    // The captured Network panel showed the media playlist returning Age > 200
-    // with Cache-Control: max-age=31536000, which can freeze the live edge.
+    // Keep signed manifest/segment URLs byte-for-byte intact. Adding cache-buster
+    // query parameters can invalidate CDN signatures and cause repeated 403s.
     const networkingEngine = player.getNetworkingEngine();
     if (networkingEngine) {
-      networkingEngine.registerRequestFilter((type, request) => {
-        const requestTypes = shaka.net.NetworkingEngine.RequestType;
-        const isManifest = type === requestTypes.MANIFEST;
-        const isSegment = type === requestTypes.SEGMENT;
-
-        if (isManifest) {
-          // Force a fresh live playlist on each reload.
-          request.uris = request.uris.map(uri => {
-            const liveUrl = new URL(uri);
-            liveUrl.searchParams.set("_cz_live_refresh", String(Date.now()));
-            return liveUrl.toString();
-          });
+      // Allow a small amount of overlap without opening a burst of requests.
+      // Shaka still owns HLS playlist parsing, segment order and live-edge updates.
+      networkingEngine.configure({
+        maxParallelRequests: 2,
+        retryParameters: {
+          timeout: 18000,
+          maxAttempts: 6,
+          baseDelay: 1200,
+          backoffFactor: 1.5,
+          fuzzFactor: 0.2
         }
-
-        // Segment URLs are normally unique per sequence number. Do not append
-        // cache-busters to media chunks: some CDNs sign or validate exact paths.
-        // Let Shaka request each segment in playlist order.
       });
+
       networkingEngine.registerResponseFilter((type, response) => {
         if (type === shaka.net.NetworkingEngine.RequestType.SEGMENT &&
             response && response.data && response.data.byteLength > 0) {
@@ -445,11 +439,11 @@ async function initPlayer() {
         rebufferingGoal: 6,
         bufferBehind: 30,
         retryParameters: {
-          timeout: 20000,
-          maxAttempts: 8,
-          baseDelay: 1000,
-          backoffFactor: 1.6,
-          fuzzFactor: 0.25
+          timeout: 18000,
+          maxAttempts: 6,
+          baseDelay: 1200,
+          backoffFactor: 1.5,
+          fuzzFactor: 0.2
         },
         stallEnabled: true,
         stallThreshold: 5,
