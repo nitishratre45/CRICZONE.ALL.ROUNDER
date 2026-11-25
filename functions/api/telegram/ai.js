@@ -179,7 +179,11 @@ async function ensureBroadcastTables(db) {
   )`).run();
 }
 
-function escapeTelegramHtml(value) {\n  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n}\n\nfunction getAdminIds(env) {
+function escapeTelegramHtml(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+}
+
+function getAdminIds(env) {
   return String(env.TELEGRAM_ADMIN_IDS || '').split(',').map(v => v.trim()).filter(Boolean);
 }
 
