@@ -222,6 +222,9 @@ button:active{transform:scale(.98)}
  .tg-card,.metric,.worker,.admin-tab{transition:none}
 }
 
+
+/* Broadcast delivery analytics */
+.broadcast-panel{margin-top:18px;padding:18px;border:1px solid rgba(56,82,118,.65);border-radius:17px;background:linear-gradient(145deg,rgba(12,27,46,.96),rgba(7,17,30,.98))}.broadcast-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.broadcast-head h3{margin:0 0 5px;font-size:16px}.broadcast-head p,.broadcast-note{margin:0;color:#91a8c7;font-size:11px;line-height:1.6}.broadcast-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.broadcast-card{min-width:0;padding:13px;border:1px solid #203750;border-radius:12px;background:linear-gradient(145deg,#081525,#0d1b2d)}.broadcast-card small{display:block;color:#91a8c7;font-size:9px;font-weight:850;letter-spacing:.45px;text-transform:uppercase}.broadcast-card strong{display:block;margin-top:7px;font-size:clamp(20px,2.2vw,27px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.broadcast-card.sent strong{color:var(--green)}.broadcast-card.failed strong{color:var(--red)}.broadcast-card.rate strong{color:var(--blue)}.broadcast-history{width:100%;border-collapse:separate;border-spacing:0;min-width:560px;font-size:11px;margin-top:14px}.broadcast-history th{position:sticky;top:0;background:#14263d;color:#b8cee8;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.45px;padding:10px;border-bottom:1px solid #2b4665}.broadcast-history td{padding:10px;border-bottom:1px solid #1a2d43;color:#dce9f8}.broadcast-history-wrap{max-height:240px;overflow:auto;border:1px solid #203750;border-radius:11px;background:#071321}.broadcast-empty{text-align:center;color:#91a8c7!important;padding:18px!important}@media(max-width:700px){.broadcast-panel{padding:14px}.broadcast-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.broadcast-card:last-child{grid-column:span 2}}
 </style>
 </head>
 <body><main>
@@ -244,7 +247,12 @@ button:active{transform:scale(.98)}
   <div class="tg-card active"><small>Active bot users</small><strong id="tgActive">—</strong></div>
   <div class="tg-card inactive"><small>Blocked / inactive</small><strong id="tgInactive">—</strong></div>
  </div>
- <div class="tg-status" id="tgStatus" role="status">Enter the dashboard key to load private bot totals. Channel subscriber count is fetched from Telegram.</div>
+ <section class="broadcast-panel" aria-labelledby="broadcastHeading">
+<div class="broadcast-head"><div><h3 id="broadcastHeading">Broadcast Analytics</h3><p>Successful Telegram API deliveries, failures and recent broadcast history.</p></div><span class="updated" id="broadcastUpdated">No broadcast data yet</span></div>
+<div class="broadcast-cards"><div class="broadcast-card"><small>Total broadcasts</small><strong id="broadcastCount">—</strong></div><div class="broadcast-card"><small>Total recipients</small><strong id="broadcastRecipients">—</strong></div><div class="broadcast-card sent"><small>Sent successfully</small><strong id="broadcastSent">—</strong></div><div class="broadcast-card failed"><small>Failed deliveries</small><strong id="broadcastFailed">—</strong></div><div class="broadcast-card rate"><small>Delivery success rate</small><strong id="broadcastRate">—</strong></div></div>
+<p class="broadcast-note" style="margin-top:10px">Delivery means Telegram accepted the message for that recipient. Telegram does not expose read/view counts or taps for ordinary broadcast messages.</p>
+<div class="broadcast-history-wrap"><table class="broadcast-history"><thead><tr><th>Date</th><th>Recipients</th><th>Sent</th><th>Failed</th><th>Blocked</th></tr></thead><tbody id="broadcastHistory"><tr><td colspan="5" class="broadcast-empty">Load Telegram stats to view broadcast history.</td></tr></tbody></table></div></section>
+<div class="tg-status" id="tgStatus" role="status">Enter the dashboard key to load private bot totals. Channel subscriber count is fetched from Telegram.</div>
  <div class="tg-directory">
   <div class="tg-directory-head"><div><h3>Bot User Directory</h3><p id="tgDirectoryMeta">Registered users with names, usernames, registration time, last seen and status.</p></div><div class="tg-directory-tools"><input id="tgUserSearch" type="search" placeholder="Search name, username or ID" aria-label="Search Telegram users"><button id="tgReloadUsers" type="button">Refresh list</button></div></div>
   <div class="tg-table-wrap" id="tgTableWrap"><table class="tg-table"><thead><tr><th>User</th><th>Username</th><th>Telegram ID</th><th>Registered</th><th>Last seen</th><th>Status</th></tr></thead><tbody id="tgUserRows"><tr><td colspan="6" class="tg-empty">Enter dashboard key and load Telegram stats.</td></tr></tbody></table></div>
@@ -365,12 +373,21 @@ const tgAuth = {
   $("tgRegistered").textContent=cached.stats.registered??"—";
   $("tgActive").textContent=cached.stats.active??"—";
   $("tgInactive").textContent=cached.stats.inactive??"—";
+  if(cached.broadcast) renderBroadcast(cached.broadcast);
   status.className="tg-status";
   status.textContent="Showing saved data from "+new Date(cached.savedAt).toLocaleString()+" · Updating in background…";
   return true;
  }
 
- async function loadTelegram(){
+ function renderBroadcast(data){
+ const fmtCount=value=>Number(value||0).toLocaleString("en-IN"),sent=Number(data?.sent||0),recipients=Number(data?.recipients||0);
+ $("broadcastCount").textContent=fmtCount(data?.broadcasts);$("broadcastRecipients").textContent=fmtCount(recipients);$("broadcastSent").textContent=fmtCount(sent);$("broadcastFailed").textContent=fmtCount(data?.failed);$("broadcastRate").textContent=(recipients?(sent/recipients*100).toFixed(1):"0.0")+"%";
+ $("broadcastUpdated").textContent=data?.updated_at?"Updated "+new Date(Number(data.updated_at)*1000).toLocaleString():"No completed broadcasts yet";
+ const body=$("broadcastHistory");body.replaceChildren();const rows=Array.isArray(data?.recent)?data.recent:[];
+ if(!rows.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=5;td.className="broadcast-empty";td.textContent="No completed broadcasts recorded yet.";tr.append(td);body.append(tr);return;}
+ for(const item of rows){const tr=document.createElement("tr"),values=[item.created_at?new Date(Number(item.created_at)*1000).toLocaleString():"—",fmtCount(item.recipients),fmtCount(item.sent),fmtCount(item.failed),fmtCount(item.blocked)];for(const value of values){const td=document.createElement("td");td.textContent=value;tr.append(td);}body.append(tr);}
+}
+async function loadTelegram(){
   load.disabled=true;const hadCache=showCachedStats();if(!hadCache){status.className="tg-status";status.textContent="Authenticating and fetching Telegram data…";$("tgSubscribers").textContent="…";}
   try{
    const token=keyInput.value.trim()?await tgAuth.login(keyInput.value.trim()):tgAuth.getToken();
@@ -389,7 +406,8 @@ const tgAuth = {
    $("tgRegistered").textContent=fmt(stats.total_registered);
    $("tgActive").textContent=fmt(stats.active);
    $("tgInactive").textContent=fmt(stats.inactive);
-   writeCache({stats:{subscribers:$("tgSubscribers").textContent,registered:$("tgRegistered").textContent,active:$("tgActive").textContent,inactive:$("tgInactive").textContent}});
+   if(stats.broadcast) renderBroadcast(stats.broadcast);
+   writeCache({stats:{subscribers:$("tgSubscribers").textContent,registered:$("tgRegistered").textContent,active:$("tgActive").textContent,inactive:$("tgInactive").textContent},broadcast:stats.broadcast||null});
    status.className="tg-status ok";
    status.textContent="Admin session active until "+new Date(tgAuth.expiresAt*1000).toLocaleString()+" · 5-day access.";
    document.dispatchEvent(new Event("cz-tg-admin-authenticated"));
