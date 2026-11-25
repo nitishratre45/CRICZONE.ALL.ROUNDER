@@ -106,6 +106,122 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
 }
 @media(max-width:370px){.admin-tab{gap:6px;padding:10px 7px}.tab-icon{width:27px;height:27px;flex-basis:27px}.admin-tab b{font-size:10px}.admin-tab small{font-size:8px}.tab-count{display:none}}
 
+
+/* CRICZONE Admin visual refresh */
+:root{--admin-glow:rgba(72,166,255,.18);--admin-glass:rgba(9,22,39,.82)}
+html{scroll-behavior:smooth;scroll-padding-top:105px}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(117,166,220,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(117,166,220,.025) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 82%)}
+main{width:min(1480px,calc(100% - 48px));margin:28px auto 70px}
+.top{position:relative;align-items:center;padding:22px 24px;margin-bottom:18px;border:1px solid rgba(83,130,181,.25);border-radius:22px;background:linear-gradient(115deg,rgba(14,31,52,.92),rgba(8,19,34,.76));box-shadow:0 18px 45px rgba(0,0,0,.22);overflow:hidden}
+.top:after{content:"";position:absolute;right:-70px;top:-120px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(64,158,255,.19),transparent 68%);pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:2.8px}
+.eyebrow:before{width:8px;height:8px;animation:adminPulse 2s ease-in-out infinite}
+.title{font-size:clamp(28px,4vw,43px);margin:10px 0 7px;letter-spacing:-1.8px}
+.sub{font-size:13px;max-width:560px;line-height:1.6}
+.actions{position:relative;z-index:1;gap:10px}
+.updated{font-size:11px;padding:9px 12px;border:1px solid rgba(107,146,188,.2);border-radius:10px;background:rgba(4,13,24,.45)}
+button{min-height:42px;border-radius:12px;border-color:rgba(94,161,222,.42);background:linear-gradient(135deg,#1e4c78,#17304d);box-shadow:0 8px 22px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.07)}
+button:focus-visible,.tg-controls input:focus-visible,.tg-directory-tools input:focus-visible{outline:2px solid #74c8ff;outline-offset:3px}
+button:active{transform:scale(.98)}
+.admin-tabs{position:sticky;top:8px;z-index:20;max-width:780px;margin:0 auto 13px;padding:7px;gap:8px;border-radius:18px;border-color:rgba(83,139,195,.32);background:rgba(5,15,28,.88);backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%);box-shadow:0 14px 36px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.04)}
+.admin-tab{min-height:62px;gap:12px;padding:10px 15px;border-radius:13px;transition:background .22s,border-color .22s,transform .22s,box-shadow .22s}
+.admin-tab.active{position:relative;overflow:hidden;background:linear-gradient(115deg,rgba(35,91,145,.68),rgba(18,48,79,.82));border-color:rgba(98,184,255,.55);box-shadow:inset 0 1px rgba(255,255,255,.09),0 7px 20px rgba(24,107,184,.14)}
+.admin-tab.active:after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#6bc7ff,transparent);animation:navSweep 3s ease-in-out infinite}
+.admin-tab b{font-size:12px;letter-spacing:.15px}.admin-tab small{font-size:10px}
+.tab-icon{width:39px;height:39px;flex-basis:39px;background:linear-gradient(145deg,#1a3b5d,#10243a);border:1px solid rgba(104,175,235,.18);box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.admin-tab.active .tab-icon{color:#9cdbff;background:linear-gradient(145deg,#225784,#163653);box-shadow:0 0 22px rgba(79,174,255,.16)}
+.tab-count{background:rgba(53,126,184,.13);font-weight:850}
+.view-switch-hint{max-width:780px;margin:0 auto 14px;padding-left:4px;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:#7fa4ca}
+.panel-view.active{animation:adminReveal .32s cubic-bezier(.2,.7,.2,1) both}
+.telegram-panel{padding:24px;border-radius:22px;border-color:rgba(78,129,180,.34);background:linear-gradient(145deg,rgba(14,31,51,.96),rgba(6,16,29,.97));box-shadow:0 18px 48px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035)}
+.telegram-panel h2{font-size:20px;letter-spacing:-.35px}
+.telegram-panel p{max-width:620px;font-size:11px}
+.tg-controls input,.tg-directory-tools input{min-height:43px;border-radius:12px;border-color:rgba(92,139,185,.36);background:rgba(4,13,24,.72);transition:border-color .2s,box-shadow .2s}
+.tg-controls input:focus,.tg-directory-tools input:focus{border-color:#5bbcff;box-shadow:0 0 0 3px rgba(91,188,255,.11)}
+.tg-controls button,.tg-directory-tools button,.tg-directory-foot button{min-height:42px}
+.tg-cards{gap:13px}
+.tg-card{position:relative;overflow:hidden;padding:18px;border-radius:16px;border-color:rgba(76,117,160,.3);background:linear-gradient(145deg,rgba(13,31,51,.95),rgba(7,18,32,.98));box-shadow:inset 0 1px rgba(255,255,255,.035);transition:transform .22s,border-color .22s,box-shadow .22s}
+.tg-card:after{content:"";position:absolute;right:-34px;top:-48px;width:100px;height:100px;border-radius:50%;background:var(--card-glow,rgba(83,166,255,.09));filter:blur(17px);pointer-events:none}
+.tg-card:hover{transform:translateY(-3px);border-color:rgba(97,173,237,.48);box-shadow:0 12px 25px rgba(0,0,0,.2)}
+.tg-card.subs{--card-glow:rgba(89,186,255,.17)}.tg-card.active{--card-glow:rgba(50,230,160,.15)}.tg-card.inactive{--card-glow:rgba(255,88,119,.14)}
+.tg-card small{font-size:9px;letter-spacing:.8px}
+.tg-card strong{position:relative;z-index:1;font-size:clamp(25px,2.8vw,34px);letter-spacing:-.7px}
+.tg-status{padding:10px 12px;border:1px solid rgba(91,135,181,.16);border-radius:11px;background:rgba(4,13,24,.36);line-height:1.5}
+.tg-status.ok{border-color:rgba(50,230,160,.17);background:rgba(11,57,43,.2)}
+.tg-status.error{border-color:rgba(255,88,119,.2);background:rgba(73,25,42,.2)}
+.tg-directory{margin-top:22px;padding-top:20px;border-color:rgba(76,117,160,.27)}
+.tg-directory-head h3{font-size:16px;letter-spacing:-.2px}
+.tg-table-wrap{border-radius:15px;border-color:rgba(76,117,160,.3);background:rgba(4,13,24,.65);scrollbar-color:#345a7d #091523;scrollbar-width:thin}
+.tg-table th{background:#142b45;padding:14px 13px}
+.tg-table td{padding:13px}
+.tg-table tbody tr{transition:background .16s}
+.tg-table tbody tr:nth-child(even){background:rgba(18,39,62,.22)}
+.tg-pill{padding:6px 9px}
+.overview{gap:14px}
+.metric{border-radius:18px;border-color:rgba(74,122,173,.35);background:linear-gradient(145deg,rgba(15,34,56,.96),rgba(7,18,32,.98));transition:transform .22s,border-color .22s}
+.metric:hover{transform:translateY(-2px);border-color:rgba(91,176,239,.5)}
+.metric strong{font-size:clamp(30px,3.2vw,40px)}
+.worker{border-radius:19px;border-color:rgba(65,105,148,.4);background:linear-gradient(150deg,rgba(14,30,49,.97),rgba(7,17,30,.99));box-shadow:0 13px 32px rgba(0,0,0,.2);animation:workerIn .42s both;animation-delay:calc(var(--worker-index,0)*45ms)}
+.worker:nth-child(1){--worker-index:1}.worker:nth-child(2){--worker-index:2}.worker:nth-child(3){--worker-index:3}.worker:nth-child(4){--worker-index:4}.worker:nth-child(5){--worker-index:5}.worker:nth-child(6){--worker-index:6}.worker:nth-child(7){--worker-index:7}
+.worker:hover{transform:translateY(-3px);border-color:rgba(91,176,239,.54);box-shadow:0 18px 40px rgba(0,0,0,.27)}
+.stat{border-radius:15px;border-color:rgba(66,105,148,.34);background:linear-gradient(145deg,rgba(6,18,32,.94),rgba(10,27,45,.94))}
+.status{letter-spacing:.8px}
+.status.ok:before{content:"";display:inline-block;width:6px;height:6px;margin:0 6px 1px 0;border-radius:50%;background:currentColor;box-shadow:0 0 9px currentColor;animation:adminPulse 1.8s infinite}
+.note{padding:14px 16px;border:1px solid rgba(69,108,150,.2);border-radius:13px;background:rgba(7,18,31,.42)}
+@keyframes adminPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(89,186,255,.35)}50%{opacity:.65;box-shadow:0 0 0 6px rgba(89,186,255,0)}}
+@keyframes navSweep{0%,100%{opacity:.45;transform:scaleX(.6)}50%{opacity:1;transform:scaleX(1)}}
+@keyframes adminReveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes workerIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){
+ main{width:calc(100% - 24px);margin:16px auto 42px}
+ .top{padding:18px 16px;border-radius:18px;margin-bottom:13px}
+ .top .actions{width:100%;justify-content:space-between}
+ .admin-tabs{top:5px;max-width:none;gap:6px;padding:6px;border-radius:15px}
+ .admin-tab{min-height:57px;padding:9px 10px;gap:8px}
+ .tab-icon{width:34px;height:34px;flex-basis:34px}
+ .admin-tab b{font-size:11px}.admin-tab small{font-size:9px}
+ .view-switch-hint{margin-bottom:11px}
+ .telegram-panel{padding:16px;border-radius:18px}
+ .tg-cards{gap:9px}
+ .tg-card{padding:14px;border-radius:14px}
+ .tg-directory{margin-top:18px;padding-top:17px}
+ .tg-table-wrap{max-height:62vh}
+ .overview{gap:9px}
+ .metric{padding:15px;border-radius:15px}
+ .worker{border-radius:16px}
+}
+@media(max-width:420px){
+ .top{padding:16px 13px}
+ .title{font-size:27px;letter-spacing:-1.1px}
+ .sub{font-size:11px}
+ .updated{font-size:9px;padding:8px}
+ .actions button{padding:10px 12px;font-size:11px}
+ .admin-tab{padding:8px 7px;gap:6px}
+ .tab-icon{width:29px;height:29px;flex-basis:29px;font-size:14px}
+ .admin-tab b{font-size:10px}.admin-tab small{font-size:8px}
+ .tab-count{font-size:9px;padding:3px 5px}
+ .telegram-panel{padding:13px}
+ .tg-controls{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ .tg-controls input{width:100%;font-size:12px}
+ .tg-controls button{padding:10px 11px;font-size:10px}
+ .tg-cards{gap:8px}
+ .tg-card{padding:12px}
+ .tg-card small{font-size:8px;letter-spacing:.45px}
+ .tg-card strong{font-size:23px}
+ .tg-directory-tools{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ .tg-directory-tools button{padding:9px 10px;font-size:10px}
+ .tg-directory-tools input{width:100%;font-size:11px}
+ .tg-directory-foot{align-items:center}
+ .tg-directory-foot button{font-size:10px;padding:9px}
+ .overview .metric strong{font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .admin-tab.active:after,.eyebrow:before,.status.ok:before{animation:none}
+ .panel-view.active,.worker{animation:none}
+ .tg-card,.metric,.worker,.admin-tab{transition:none}
+}
+
 </style>
 </head>
 <body><main>
