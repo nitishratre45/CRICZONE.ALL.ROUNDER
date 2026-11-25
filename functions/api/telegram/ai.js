@@ -179,7 +179,7 @@ async function ensureBroadcastTables(db) {
   )`).run();
 }
 
-function getAdminIds(env) {
+function escapeTelegramHtml(value) {\n  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n}\n\nfunction getAdminIds(env) {
   return String(env.TELEGRAM_ADMIN_IDS || '').split(',').map(v => v.trim()).filter(Boolean);
 }
 
@@ -299,7 +299,7 @@ async function handlePrivateMessage({ env, message }) {
     await env.TELEGRAM_DB.prepare(`INSERT INTO telegram_broadcast_states (admin_id,step,source_message_id,updated_at)
       VALUES (?, 'waiting_message', NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step='waiting_message',source_message_id=NULL,updated_at=excluded.updated_at`)
       .bind(senderId,Math.floor(Date.now()/1000)).run();
-    await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📢 Send the message, photo, video, or supported media you want to broadcast.\n\nAfter that, I’ll show a confirmation.' });
+    await telegramCall(env, 'sendMessage', { chat_id: chatId, parse_mode: 'HTML', text: '📢 <b>CRICZONE BROADCAST</b>\n\n<i>Send the text, photo, video or supported media you want to broadcast.</i>\n\n<blockquote>🔐 You will get a preview and must confirm before anything is sent.</blockquote>' });
     return;
   }
 
@@ -322,7 +322,7 @@ async function handlePrivateMessage({ env, message }) {
       VALUES (?, ?, NULL, ?) ON CONFLICT(admin_id) DO UPDATE SET step=excluded.step,source_message_id=NULL,updated_at=excluded.updated_at`)
       .bind(senderId,'waiting_message:'+targetId,Math.floor(Date.now()/1000)).run();
     const name=[target.first_name,target.last_name].filter(Boolean).join(' ')||'User';
-    await telegramCall(env,'sendMessage',{chat_id:chatId,text:'✉️ Preparing a private message for '+name+' (ID: '+targetId+').\n\nNow send the text, photo, video or supported media you want to deliver. You will get a confirmation before sending.'});
+    await telegramCall(env,'sendMessage',{chat_id:chatId,parse_mode:'HTML',text:'✉️ <b>PRIVATE MESSAGE SETUP</b>\n\nPreparing a message for <b>'+escapeTelegramHtml(name)+'</b>\n<code>ID: '+targetId+'</code>\n\n<i>Now send the text, photo, video or supported media you want to deliver.</i>\n\n<blockquote>🛡️ Nothing will be sent until you confirm.</blockquote>'});
     return;
   }
 
@@ -335,7 +335,7 @@ async function handlePrivateMessage({ env, message }) {
       await env.TELEGRAM_DB.prepare('UPDATE telegram_broadcast_states SET step=?,source_message_id=?,updated_at=? WHERE admin_id=?')
         .bind(nextStep,message.message_id,Math.floor(Date.now()/1000),senderId).run();
       if (targetId) {
-        await telegramCall(env,'sendMessage',{chat_id:chatId,text:'🔎 Private message preview\n\nRecipient ID: '+targetId+'\n\nConfirm to send only to this user.',reply_markup:{inline_keyboard:[[
+        await telegramCall(env,'sendMessage',{chat_id:chatId,parse_mode:'HTML',text:'🔎 <b>PRIVATE MESSAGE PREVIEW</b>\n\n👤 <b>Recipient</b>\n<code>'+targetId+'</code>\n\n<blockquote><i>Confirm below to deliver this message only to the selected user.</i></blockquote>',reply_markup:{inline_keyboard:[[
           {text:'✉️ Send to this user',callback_data:'broadcast:confirm:'+targetId},
           {text:'❌ Cancel',callback_data:'broadcast:cancel'}
         ]] }});
@@ -343,7 +343,7 @@ async function handlePrivateMessage({ env, message }) {
         const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
         await telegramCall(env, 'sendMessage', {
           chat_id: chatId,
-          text: `📢 Broadcast preview is ready.\n\n👥 Active registered users: ${Number(audience?.count || 0)}\n\nConfirm to send the message you just submitted to all registered users.`,
+          parse_mode: 'HTML',\n          text: `📢 <b>BROADCAST PREVIEW</b>\n\n👥 <b>Active registered users:</b> ${Number(audience?.count || 0)}\n\n<blockquote><i>Confirm below to send your submitted message to all active registered users.</i></blockquote>`,
           reply_markup: { inline_keyboard: [[
             { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
             { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
@@ -1193,7 +1193,7 @@ export async function onRequestPost({ request, env }) {
           'UPDATE telegram_broadcast_totals SET broadcasts=broadcasts+1,recipients=recipients+?,sent=sent+?,failed=failed+?,blocked=blocked+?,updated_at=? WHERE id=1'
         ).bind(recipients,sent,failed,blocked,completedAt).run();
         await env.TELEGRAM_DB.prepare('DELETE FROM telegram_broadcast_states WHERE admin_id=?').bind(adminId).run();
-        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,text:`✅ ${requestedTarget?'Private message':'Broadcast'} finished.\n\n👥 Recipients: ${recipients}\n📨 Sent successfully: ${sent}\n❌ Failed: ${failed}\n🚫 Blocked/deactivated: ${blocked}`});
+        await telegramCall(env,'sendMessage',{chat_id:callback.message.chat.id,parse_mode:'HTML',text:`✅ <b>${requestedTarget?'PRIVATE MESSAGE COMPLETE':'BROADCAST COMPLETE'}</b>\n\n👥 <b>Recipients:</b> ${recipients}\n📨 <b>Sent successfully:</b> ${sent}\n❌ <b>Failed:</b> ${failed}\n🚫 <b>Blocked / deactivated:</b> ${blocked}\n\n<blockquote><i>${requestedTarget?'Private delivery report':'Broadcast delivery report'} • CRICZONE BOT</i></blockquote>`});
         return json({ ok: true, received: true });
       }
     }
