@@ -227,11 +227,12 @@ const tgAuth = {
    $("tgInactive").textContent=fmt(stats.inactive);
    status.className="tg-status ok";
    status.textContent="Admin session active until "+new Date(tgAuth.expiresAt*1000).toLocaleString()+" · 5-day access.";
+   document.dispatchEvent(new Event("cz-tg-admin-authenticated"));
    if($("tgSubscribers").textContent==="Unavailable") status.textContent+=" Channel subscriber count is temporarily unavailable.";
   }catch(error){
    status.className="tg-status error";
    status.textContent=(error.message||"Unable to load Telegram stats")+".";
-   $("tgSubscribers").textContent=$("tgSubscribers").textContent==="… "?"Unavailable":$("tgSubscribers").textContent;
+   $("tgSubscribers").textContent=$("tgSubscribers").textContent==="…"?"Unavailable":$("tgSubscribers").textContent;
    $("tgRegistered").textContent=$("tgActive").textContent=$("tgInactive").textContent="—";
   }finally{load.disabled=false;}
  }
@@ -283,7 +284,7 @@ const tgAuth = {
   }catch(error){meta.textContent=error.message||"Unable to load user list";more.textContent="Retry";more.hidden=false;more.disabled=false;}
   finally{loading=false;}
  }
- document.getElementById("tgLoad").addEventListener("click",()=>loadPage(true));
+ document.addEventListener("cz-tg-admin-authenticated",()=>loadPage(true));
  document.getElementById("tgReloadUsers").addEventListener("click",()=>loadPage(true));
  more.addEventListener("click",()=>loadPage(false));
  search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,120);});
