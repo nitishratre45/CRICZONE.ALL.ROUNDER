@@ -302,7 +302,7 @@ function markStablePlayback() {
     stableTimer = null;
   }, 30000);
 }
-function scheduleRecovery(reason, immediate = false) {
+function scheduleRecovery(reason, immediate = false, forceReload = false) {
   if (!player || recovering || retryTimer || document.visibilityState === "hidden") return;
   if (retryCount >= 12) {
     showLoading("Stream is still unavailable. Please refresh or try another quality.");
@@ -310,29 +310,45 @@ function scheduleRecovery(reason, immediate = false) {
     return;
   }
   retryCount += 1;
-  const delay = immediate ? 0 : Math.min(20000, 2000 * Math.pow(1.7, retryCount - 1));
+  const delay = immediate ? 0 : Math.min(15000, 1500 * Math.pow(1.55, retryCount - 1));
   console.warn("CRICZONE stream recovery:", reason, "attempt", retryCount, "delay", delay);
-  showLoading("Live interrupted. Reconnecting (" + retryCount + "/12)...");
+  showLoading("Live interrupted. Recovering (" + retryCount + "/12)...");
   retryTimer = setTimeout(async () => {
     retryTimer = null;
     if (!player || recovering) return;
     recovering = true;
     try {
-      video.pause();
+      // Do not tear down the whole HLS pipeline just because the media element
+      // fired a generic waiting/stalled event. Shaka's retryStreaming() is
+      // synchronous and returns true only when it actually resumed a failure.
       let resumed = false;
       try {
-        // Shaka returns false when no retryable streaming failure is pending.
-        // In that case, explicitly reload the live manifest instead of leaving
-        // the player stuck forever on the buffering overlay.
         if (typeof player.retryStreaming === "function") {
-          resumed = await player.retryStreaming(0.1);
+          resumed = player.retryStreaming(0.1) === true;
         }
       } catch (retryError) {
         console.warn("Shaka retryStreaming failed:", retryError);
       }
 
-      if (!resumed) {
-        console.warn("No pending Shaka retry; rebuilding live playback pipeline.");
+      // A live player can keep receiving segments while its playhead falls
+      // behind the live window. Move it close to the live edge only when the
+      // gap is meaningful; never seek on every ordinary buffer event.
+      const range = typeof player.seekRange === "function" ? player.seekRange() : null;
+      if (!resumed && range && Number.isFinite(range.end) &&
+          Number.isFinite(range.start) && range.end > range.start &&
+          Number.isFinite(video.currentTime) && range.end - video.currentTime > 8) {
+        const target = Math.max(range.start, range.end - 3);
+        console.warn("Advancing stalled live playhead:", video.currentTime, "=>", target);
+        video.currentTime = target;
+      }
+
+      // Reload only when delivery itself has stopped for a sustained period,
+      // or when the caller explicitly identifies a fatal pipeline failure.
+      const segmentSilence = lastSegmentResponseAt
+        ? Date.now() - lastSegmentResponseAt
+        : Date.now() - lastProgressAt;
+      if (!resumed && (forceReload || segmentSilence > 25000)) {
+        console.warn("Segment delivery has stopped; rebuilding HLS pipeline.");
         await player.unload();
         await player.load(streamUrl);
       }
@@ -346,7 +362,7 @@ function scheduleRecovery(reason, immediate = false) {
     } catch (error) {
       console.error("Recovery attempt failed:", error);
       recovering = false;
-      scheduleRecovery(error && (error.code || error.message || error), false);
+      scheduleRecovery(error && (error.code || error.message || error), false, true);
       return;
     } finally {
       recovering = false;
@@ -463,8 +479,17 @@ async function initPlayer() {
 
     player.addEventListener("error", event => {
       const error = event.detail || {};
-      console.error("Shaka playback error:", error.code, error);
-      scheduleRecovery("Shaka error " + (error.code || "unknown"), true);
+      console.error("Shaka playback error:", {
+        code: error.code,
+        severity: error.severity,
+        category: error.category,
+        data: error.data,
+        error
+      });
+      // Let Shaka's own live-stream retry mechanism run first. The recovery
+      // handler will rebuild the pipeline only if segment delivery is silent.
+      scheduleRecovery("Shaka error " + (error.code || "unknown"), false,
+        error.severity === shaka.util.Error.Severity.CRITICAL);
     });
 
     video.addEventListener("playing", markStablePlayback);
@@ -483,8 +508,19 @@ async function initPlayer() {
       }, 15000);
     });
     video.addEventListener("stalled", () => {
-      showLoading("Connection stalled. Reconnecting...");
-      scheduleRecovery("media element stalled", false);
+      // Browser 'stalled' can fire while Shaka is still fetching valid segments.
+      // Wait briefly and recover only if playback and segment delivery both stop.
+      showLoading("Connection paused. Checking live stream...");
+      setTimeout(() => {
+        if (video.paused || document.visibilityState === "hidden") return;
+        const playbackStalled = Date.now() - lastProgressAt > 12000;
+        const segmentsStalled = !lastSegmentResponseAt || Date.now() - lastSegmentResponseAt > 20000;
+        if (playbackStalled && segmentsStalled) {
+          scheduleRecovery("media stalled and segment delivery stopped", true, true);
+        } else if (video.currentTime > 0) {
+          hideLoading();
+        }
+      }, 12000);
     });
     video.addEventListener("error", () => {
       const mediaError = video.error;
