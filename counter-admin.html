@@ -239,7 +239,7 @@ button:active{transform:scale(.98)}
 <section class="telegram-panel" aria-labelledby="telegramHeading">
  <div class="telegram-panel-head">
   <div><h2 id="telegramHeading">Telegram Audience</h2><p>Live channel subscriber count plus private bot registration totals from the existing CRICZONE Telegram D1 database.</p></div>
-  <div class="tg-controls"><input id="tgAdminKey" type="password" autocomplete="current-password" placeholder="Admin key · valid for 5 days" aria-label="Telegram dashboard access key"><button id="tgLoad" type="button">Load Telegram Stats</button></div>
+  <div class="tg-controls"><input id="tgAdminKey" type="password" autocomplete="current-password" placeholder="Admin key · valid for 5 days" aria-label="Telegram dashboard access key"><button id="tgLoad" type="button">Load Telegram Stats</button><button id="tgSyncSnapshot" type="button">↻ Sync D1 → KV</button></div>
  </div>
  <div class="tg-cards">
   <div class="tg-card subs"><small>Channel subscribers</small><strong id="tgSubscribers">—</strong></div>
@@ -364,6 +364,7 @@ const tgAuth = {
  const $=id=>document.getElementById(id);
  const fmt=value=>Number(value||0).toLocaleString("en-IN");
  const keyInput=$("tgAdminKey"),load=$("tgLoad"),status=$("tgStatus");
+ const syncButton=$("tgSyncSnapshot");
  const TG_CACHE_KEY="cz_tg_admin_data_v1";
  const readCache=()=>{try{const value=JSON.parse(localStorage.getItem(TG_CACHE_KEY)||"null");return value&&Date.now()-Number(value.savedAt)<5*24*60*60*1000?value:null;}catch(_){return null;}};
  const writeCache=value=>{try{localStorage.setItem(TG_CACHE_KEY,JSON.stringify({...value,savedAt:Date.now()}));}catch(_){}};
@@ -386,6 +387,33 @@ const tgAuth = {
  const body=$("broadcastHistory");body.replaceChildren();const rows=Array.isArray(data?.recent)?data.recent:[];
  if(!rows.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=7;td.className="broadcast-empty";td.textContent="No completed broadcasts recorded yet.";tr.append(td);body.append(tr);return;}
  for(const item of rows){const tr=document.createElement("tr"),values=[item.created_at?new Date(Number(item.created_at)*1000).toLocaleString():"—",item.mode==="single"?"Single user":"All users",item.mode==="single"?(item.target_user_id||"—"):"—",fmtCount(item.recipients),fmtCount(item.sent),fmtCount(item.failed),fmtCount(item.blocked)];for(const value of values){const td=document.createElement("td");td.textContent=value;tr.append(td);}body.append(tr);}
+}
+async function syncTelegramSnapshot(){
+  const token=keyInput.value.trim()?await tgAuth.login(keyInput.value.trim()):tgAuth.getToken();
+  if(!token)throw new Error("Enter the dashboard access key first.");
+  keyInput.value="";
+  syncButton.disabled=true;syncButton.textContent="Syncing D1 → KV…";
+  status.className="tg-status";status.textContent="Reading Telegram users from D1 and updating the KV snapshot…";
+  try{
+   const response=await fetch("/api/telegram/admin-stats",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({action:"sync_snapshot"})});
+   const data=await response.json().catch(()=>({}));
+   if(!response.ok||!data.ok)throw new Error(data.error||"Snapshot sync failed");
+   status.className="tg-status ok";
+   status.textContent="KV snapshot updated · "+fmt(data.total_registered)+" users · "+new Date(data.generated_at).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
+   await loadTelegramAfterSync();
+  }catch(error){
+   status.className="tg-status";status.textContent=error.message||"Snapshot sync failed";
+  }finally{syncButton.disabled=false;syncButton.textContent="↻ Sync D1 → KV";}
+}
+async function loadTelegramAfterSync(){
+  const token=tgAuth.getToken();if(!token)return;
+  const response=await fetch("/api/telegram/admin-stats?page=1&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+token}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)return;
+  $("tgRegistered").textContent=fmt(data.total_registered);$("tgActive").textContent=fmt(data.active);$("tgInactive").textContent=fmt(data.inactive);
+  if(data.broadcast)renderBroadcast(data.broadcast);
+  writeCache({stats:{subscribers:$("tgSubscribers").textContent,registered:$("tgRegistered").textContent,active:$("tgActive").textContent,inactive:$("tgInactive").textContent},broadcast:data.broadcast||null});
+  document.dispatchEvent(new Event("cz-tg-admin-authenticated"));
 }
 async function loadTelegram(){
   load.disabled=true;const hadCache=showCachedStats();if(!hadCache){status.className="tg-status";status.textContent="Authenticating and fetching Telegram data…";$("tgSubscribers").textContent="…";}
@@ -420,6 +448,7 @@ async function loadTelegram(){
   }finally{load.disabled=false;}
  }
  load.addEventListener("click",loadTelegram);
+ syncButton.addEventListener("click",syncTelegramSnapshot);
  keyInput.addEventListener("keydown",event=>{if(event.key==="Enter")loadTelegram();});
  if(tgAuth.getToken()) loadTelegram();
 })();
