@@ -2,9 +2,9 @@
 (function () {
   'use strict';
 
-  var NEWS_URL = '/news/data.json';
+  var NEWS_URL = '/cricxzone/news/data.json';
   var MAX_ITEMS = 10;
-  var FALLBACK_IMAGE = '/assets/android-chrome-512x512.png';
+  var FALLBACK_IMAGE = '/cricxzone/assets/android-chrome-512x512.png';
   var track = document.getElementById('landingNewsTrack');
 
   if (!track) return;
@@ -42,7 +42,7 @@
     var title = escapeHtml(article && article.title || 'Sports update');
     var source = escapeHtml(article && article.source || 'Sports news');
     var image = safeHttpUrl(article && article.image) || FALLBACK_IMAGE;
-    var url = safeHttpUrl(article && article.link) || '/news/';
+    var url = safeHttpUrl(article && article.link) || '/cricxzone/#newsSection';
     var target = url === '/news/' ? '' : ' target="_blank" rel="noopener noreferrer"';
 
     return '' +
@@ -60,7 +60,7 @@
 
   function renderMoreCard() {
     return '' +
-      '<a class="news-read-more" href="/news/" aria-label="View all sports news">' +
+      '<a class="news-read-more" href="/cricxzone/#newsSection" aria-label="View all sports news">' +
         '<span class="news-more-icon" aria-hidden="true">+</span>' +
         '<strong>All News</strong>' +
         '<p>Explore every sports update</p>' +
