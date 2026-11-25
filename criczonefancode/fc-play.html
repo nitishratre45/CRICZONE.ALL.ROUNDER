@@ -239,59 +239,128 @@ video{background:#000;object-fit:contain}
 </div>
 
 <script>
+"use strict";
 
 const params = new URLSearchParams(window.location.search);
 const encoded = params.get("data");
-let streamUrl = "";
-try { streamUrl = encoded ? atob(encoded) : ""; } catch (e) { console.error("Invalid stream parameter", e); }
-
 const video = document.getElementById("video");
 const loading = document.getElementById("loading");
+let streamUrl = "";
 let player = null;
 let retryCount = 0;
 let retryTimer = null;
-let isRecovering = false;
+let waitingTimer = null;
+let watchdogTimer = null;
+let stableTimer = null;
+let recovering = false;
+let lastProgressAt = Date.now();
+let lastCurrentTime = 0;
+let hasStarted = false;
+
+function decodeStream(value) {
+  if (!value) return "";
+  let normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  while (normalized.length % 4) normalized += "=";
+  return atob(normalized);
+}
+try {
+  streamUrl = decodeStream(encoded);
+  const parsed = new URL(streamUrl);
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("Unsupported stream protocol");
+} catch (error) {
+  console.error("Invalid stream parameter:", error);
+  streamUrl = "";
+}
 
 function showLoading(message) {
-  if (loading) {
-    loading.style.display = "flex";
-    const label = loading.lastChild;
-    if (label && label.nodeType === Node.TEXT_NODE) label.textContent = message || "Reconnecting to live stream...";
-  }
+  if (!loading) return;
+  loading.style.display = "flex";
+  const textNode = Array.from(loading.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+  if (textNode) textNode.textContent = message || "Reconnecting to live stream...";
 }
 function hideLoading() {
   if (loading) loading.style.display = "none";
 }
-function scheduleRecovery(reason) {
-  if (!player || retryTimer || isRecovering || retryCount >= 6) return;
+function clearRecoveryTimers() {
+  if (retryTimer) clearTimeout(retryTimer);
+  if (waitingTimer) clearTimeout(waitingTimer);
+  if (stableTimer) clearTimeout(stableTimer);
+  retryTimer = waitingTimer = stableTimer = null;
+}
+function markProgress() {
+  lastProgressAt = Date.now();
+  if (video && Number.isFinite(video.currentTime)) lastCurrentTime = video.currentTime;
+}
+function markStablePlayback() {
+  hasStarted = true;
+  markProgress();
+  hideLoading();
+  if (stableTimer) clearTimeout(stableTimer);
+  stableTimer = setTimeout(() => {
+    retryCount = 0;
+    stableTimer = null;
+  }, 30000);
+}
+function scheduleRecovery(reason, immediate = false) {
+  if (!player || recovering || retryTimer || document.visibilityState === "hidden") return;
+  if (retryCount >= 12) {
+    showLoading("Stream is still unavailable. Please refresh or try another quality.");
+    console.error("Recovery limit reached:", reason);
+    return;
+  }
   retryCount += 1;
-  const delay = Math.min(15000, 1500 * Math.pow(2, retryCount - 1));
-  console.warn("FanCode stream recovery", reason, "attempt", retryCount, "in", delay);
-  showLoading("Live stream interrupted. Reconnecting...");
+  const delay = immediate ? 0 : Math.min(20000, 2000 * Math.pow(1.7, retryCount - 1));
+  console.warn("CRICZONE stream recovery:", reason, "attempt", retryCount, "delay", delay);
+  showLoading("Live interrupted. Reconnecting (" + retryCount + "/12)...");
   retryTimer = setTimeout(async () => {
     retryTimer = null;
-    if (!player) return;
-    isRecovering = true;
+    if (!player || recovering) return;
+    recovering = true;
     try {
-      if (typeof player.retryStreaming === "function") {
-        await player.retryStreaming();
-      } else {
+      video.pause();
+      try {
+        if (typeof player.retryStreaming === "function") {
+          await player.retryStreaming();
+        } else {
+          throw new Error("Streaming retry unavailable");
+        }
+      } catch (retryError) {
+        console.warn("Retry streaming failed; reloading manifest:", retryError);
         await player.unload();
         await player.load(streamUrl);
       }
-      video.play().catch(() => {});
+      await video.play().catch(() => {});
+      markProgress();
     } catch (error) {
-      console.error("Stream recovery failed", error);
-      isRecovering = false;
-      scheduleRecovery(error);
+      console.error("Recovery attempt failed:", error);
+      recovering = false;
+      scheduleRecovery(error && (error.code || error.message || error), false);
+      return;
     } finally {
-      isRecovering = false;
+      recovering = false;
     }
   }, delay);
 }
 
-/* Fullscreen state */
-function updateFsState(){
+function startWatchdog() {
+  if (watchdogTimer) clearInterval(watchdogTimer);
+  watchdogTimer = setInterval(() => {
+    if (!video || !player || document.visibilityState === "hidden" || video.paused || !hasStarted) return;
+    const now = Date.now();
+    const current = Number.isFinite(video.currentTime) ? video.currentTime : 0;
+    if (current > lastCurrentTime + 0.15) {
+      lastCurrentTime = current;
+      lastProgressAt = now;
+      return;
+    }
+    if (now - lastProgressAt > 12000 && !recovering) {
+      lastProgressAt = now;
+      scheduleRecovery("playback position stopped advancing", true);
+    }
+  }, 4000);
+}
+
+function updateFsState() {
   const inFs = !!(document.fullscreenElement || document.webkitFullscreenElement ||
     document.mozFullScreenElement || document.msFullscreenElement);
   document.body.classList.toggle("fs-active", inFs);
@@ -301,12 +370,12 @@ function updateFsState(){
 
 async function initPlayer() {
   if (!streamUrl) {
-    showLoading("Stream URL missing");
-    console.error("Missing stream URL");
+    showLoading("Stream URL missing or invalid. Go back and select the stream again.");
+    console.error("Missing or invalid stream URL");
     return;
   }
-  if (!window.shaka || !shaka.Player) {
-    showLoading("Player library failed to load. Refresh the page.");
+  if (!window.shaka || !window.shaka.Player) {
+    showLoading("Player library failed to load. Check your connection and refresh.");
     console.error("Shaka Player library unavailable");
     return;
   }
@@ -318,7 +387,6 @@ async function initPlayer() {
     player = new shaka.Player(video);
     const container = document.querySelector(".shaka-video-container");
     const ui = new shaka.ui.Overlay(player, container, video);
-
     ui.configure({
       controlPanelElements: [
         "play_pause", "mute", "time_and_duration", "spacer",
@@ -329,65 +397,95 @@ async function initPlayer() {
 
     player.configure({
       streaming: {
-        bufferingGoal: 30,
-        rebufferingGoal: 8,
-        bufferBehind: 60,
+        bufferingGoal: 20,
+        rebufferingGoal: 6,
+        bufferBehind: 30,
         retryParameters: {
-          timeout: 30000,
-          maxAttempts: 5,
+          timeout: 20000,
+          maxAttempts: 8,
           baseDelay: 1000,
-          backoffFactor: 2,
-          fuzzFactor: 0.5
+          backoffFactor: 1.6,
+          fuzzFactor: 0.25
         },
         stallEnabled: true,
-        stallThreshold: 3,
-        stallSkip: 1.5,
+        stallThreshold: 5,
+        stallSkip: 1,
         lowLatencyMode: false
       },
       manifest: {
         retryParameters: {
-          timeout: 30000,
-          maxAttempts: 5,
+          timeout: 20000,
+          maxAttempts: 8,
           baseDelay: 1000,
-          backoffFactor: 2,
-          fuzzFactor: 0.5
+          backoffFactor: 1.6,
+          fuzzFactor: 0.25
         }
       }
     });
 
     player.addEventListener("error", event => {
-      const error = event.detail;
-      console.error("Shaka playback error", error);
-      scheduleRecovery(error && (error.code + ": " + error.message));
+      const error = event.detail || {};
+      console.error("Shaka playback error:", error.code, error);
+      scheduleRecovery("Shaka error " + (error.code || "unknown"), true);
     });
 
-    video.addEventListener("playing", () => {
-      retryCount = 0;
-      if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
-      hideLoading();
+    video.addEventListener("playing", markStablePlayback);
+    video.addEventListener("timeupdate", markProgress);
+    video.addEventListener("canplay", () => {
+      if (video.currentTime > 0 || hasStarted) hideLoading();
     });
-    video.addEventListener("waiting", () => showLoading("Buffering live stream..."));
-    video.addEventListener("stalled", () => scheduleRecovery("video stalled"));
+    video.addEventListener("waiting", () => {
+      showLoading("Buffering live stream...");
+      if (waitingTimer) clearTimeout(waitingTimer);
+      waitingTimer = setTimeout(() => {
+        waitingTimer = null;
+        if (!video.paused && video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+          scheduleRecovery("buffering lasted longer than 8 seconds", true);
+        }
+      }, 8000);
+    });
+    video.addEventListener("stalled", () => {
+      showLoading("Connection stalled. Reconnecting...");
+      scheduleRecovery("media element stalled", false);
+    });
     video.addEventListener("error", () => {
-      console.error("Video element error", video.error);
-      scheduleRecovery(video.error && video.error.message);
+      const mediaError = video.error;
+      console.error("Video element error:", mediaError && mediaError.code, mediaError);
+      scheduleRecovery("video element error", true);
+    });
+    video.addEventListener("playing", () => {
+      if (waitingTimer) { clearTimeout(waitingTimer); waitingTimer = null; }
     });
 
     await player.load(streamUrl);
-    await video.play().catch(() => {
+    startWatchdog();
+    await video.play().catch(async () => {
       video.muted = true;
-      return video.play();
+      await video.play();
     });
   } catch (error) {
-    console.error("FanCode player initialization failed", error);
-    showLoading("Unable to start stream. Please refresh or try another quality.");
-    // Do not switch to native video playback automatically: it bypasses Shaka's
-    // HLS/DASH handling and can make a recoverable manifest/segment error worse.
-    scheduleRecovery(error && (error.code + ": " + error.message));
+    console.error("CRICZONE player initialization failed:", error);
+    showLoading("Unable to start stream. Retrying connection...");
+    if (player) scheduleRecovery(error && (error.code || error.message || error), true);
   }
 }
 
-document.addEventListener("DOMContentLoaded", initPlayer, { once: true });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && player && !video.paused) {
+    markProgress();
+    if (video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) scheduleRecovery("tab resumed without media data", true);
+  }
+});
+window.addEventListener("pagehide", () => {
+  clearRecoveryTimers();
+  if (watchdogTimer) clearInterval(watchdogTimer);
+  if (player) player.destroy().catch(() => {});
+});
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPlayer, { once: true });
+} else {
+  initPlayer();
+}
 </script>
 
 
