@@ -287,7 +287,7 @@
   }
 
   if (drNav) {
-    const OFFER_URL = "https://t.me/Cnp_action_bot"; 
+    const OFFER_URL = "https://t.me/+pN15_8gc54s2NDU1"; 
     let ki = 0;
     const sty = () => ' style="--i:' + (ki++) + '"';
     const NAV = [
@@ -314,7 +314,7 @@
       "</div></div>" +
       '<div class="dr-sep"></div>' +
       '<a class="dr-item"' + sty() + ' href="' + OFFER_URL + '" target="_blank" rel="noopener noreferrer">' + drIcon("tag") + "<span>Offers</span><span class=\"dr-new\">NEW</span></a>" +
-      '<a class="dr-item"' + sty() + ' href="https://t.me/Cnp_action_bot" target="_blank" rel="noopener noreferrer">' + drIcon("help") + "<span>Help &amp; Support</span></a>";
+      '<a class="dr-item"' + sty() + ' href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">' + drIcon("help") + "<span>Help &amp; Support</span></a>";
   }
 
   let dOpen = false;
