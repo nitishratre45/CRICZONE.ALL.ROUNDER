@@ -101,15 +101,15 @@
   }
 
   function boot() {
-    var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG;
+    var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG;
     if (!cfg || typeof cfg !== "object") cfg = FALLBACK;
-    window.CNPTV_CONFIG      = cfg;
-    window.MATCHDEKHO_CONFIG = cfg;
+    window.CRICZONE_CONFIG      = cfg;
+    window.CRICZONE_CONFIG = cfg;
 
-    if (!window.CnpTVHelper) {
-      window.CnpTVHelper = (function () {
+    if (!window.CRICZONEHelper) {
+      window.CRICZONEHelper = (function () {
         function buildUrl(sectionCfg, eventId) {
-          var c = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+          var c = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
           var siteBase = String(c.siteBase || "").replace(/\/+$/, "");
           var base = String(sectionCfg && sectionCfg.link || "");
           if (!base) return "";
