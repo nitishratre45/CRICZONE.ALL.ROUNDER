@@ -466,14 +466,19 @@
     #btnJoin { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 4px 18px rgba(37,211,102,0.3); }
     #btnJoin:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,211,102,0.5); }
 
-    .asia-counter-mount{width:100%;display:flex;justify-content:center;align-items:center;padding:14px 0 2px;min-height:48px}
-    .asia-counter-mount #viewerBadge{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:max-content!important;max-width:100%!important;height:auto!important;margin:0!important;padding:8px 12px!important;gap:5px!important;border:1px solid rgba(70,235,210,.42)!important;border-radius:12px!important;background:linear-gradient(135deg,rgba(7,25,31,.98),rgba(5,14,23,.98))!important;color:#d9f8f2!important;font:800 10px/1.2 system-ui,sans-serif!important;letter-spacing:.45px!important;white-space:nowrap!important;box-shadow:0 8px 24px rgba(0,0,0,.25)!important;pointer-events:auto!important;cursor:default!important;touch-action:auto!important;user-select:text!important;-webkit-user-select:text!important;backdrop-filter:blur(12px)!important;animation:none!important;transform:none!important}
-    .asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{display:flex!important;align-items:center!important;gap:6px!important;padding:3px 5px!important;font:850 9px/1.2 system-ui,sans-serif!important;color:#c7e9e5!important}
-    .asia-counter-mount #viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.22)!important;padding-left:9px!important}
-    .asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{display:inline-block!important;min-width:28px!important;padding:3px 6px!important;border-radius:6px!important;background:linear-gradient(135deg,#a7fff0,#39d9bd)!important;color:#062326!important;font:950 10px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}
-    .asia-counter-mount #viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:25px!important;margin-left:3px!important;padding:4px 6px!important;border-radius:6px!important;border:1px solid rgba(249,115,22,.4)!important;background:rgba(249,115,22,.13)!important;color:#ffb36d!important;font:900 9px/1 system-ui,sans-serif!important}
-    @media(max-width:480px){.asia-counter-mount{padding:12px 0 0;min-height:44px}.asia-counter-mount #viewerBadge{width:100%!important;justify-content:center!important;padding:7px 8px!important;gap:3px!important;border-radius:10px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:8px!important;gap:4px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:9px!important;min-width:24px!important}}
-\n  </style>
+    /* Compact counter aligned with the Stream Channels heading */
+    .asia-stream-divider{display:flex;align-items:center;gap:14px;margin-top:24px;min-width:0}
+    .asia-stream-divider::before,.asia-stream-divider::after{flex:1;min-width:12px}
+    .asia-stream-divider .section-label{flex:0 0 auto;gap:7px}
+    .asia-counter-mount{flex:0 0 auto;width:auto;min-width:0;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
+    .asia-counter-mount #viewerBadge{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;width:auto!important;max-width:100%!important;height:auto!important;margin:0!important;padding:5px 8px!important;border:1px solid rgba(70,235,210,.34)!important;border-radius:9px!important;background:linear-gradient(135deg,rgba(7,25,31,.96),rgba(5,14,23,.96))!important;color:#d9f8f2!important;font:800 9px/1.15 system-ui,sans-serif!important;letter-spacing:.35px!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.2)!important;pointer-events:auto!important;cursor:default!important;touch-action:auto!important;user-select:text!important;-webkit-user-select:text!important;backdrop-filter:blur(10px)!important;animation:none!important;transform:none!important}
+    .asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{display:flex!important;align-items:center!important;gap:4px!important;padding:2px 4px!important;font:850 8px/1.15 system-ui,sans-serif!important;color:#c7e9e5!important}
+    .asia-counter-mount #viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.2)!important;padding-left:7px!important}
+    .asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{display:inline-block!important;min-width:25px!important;padding:2px 5px!important;border-radius:5px!important;background:linear-gradient(135deg,#a7fff0,#39d9bd)!important;color:#062326!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}
+    .asia-counter-mount #viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:22px!important;margin-left:2px!important;padding:3px 5px!important;border-radius:5px!important;border:1px solid rgba(249,115,22,.35)!important;background:rgba(249,115,22,.12)!important;color:#ffb36d!important;font:900 8px/1 system-ui,sans-serif!important}
+    @media(max-width:640px){.asia-stream-divider{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;margin-top:20px}.asia-stream-divider::before,.asia-stream-divider::after{display:none}.asia-stream-divider .section-label{min-width:0;white-space:normal}.asia-stream-divider .section-label-text{font-size:clamp(.62rem,2.8vw,.72rem);letter-spacing:.07em}.asia-counter-mount{justify-self:end}.asia-counter-mount #viewerBadge{padding:5px 6px!important;gap:2px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:7px!important;gap:3px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:8px!important;min-width:22px!important;padding:2px 4px!important}}
+    @media(max-width:360px){.asia-stream-divider{grid-template-columns:1fr;justify-items:start}.asia-counter-mount{justify-self:start}}
+  </style>
 
    <script>
     window.__matchFallback = {
@@ -654,15 +659,13 @@
     </div>
 
     <div class="inner-wrap">
-
-      <div id="asiaCounterMount" class="asia-counter-mount" aria-label="Live audience statistics"></div>
-
-      <div class="section-divider" role="separator">
+      <div class="section-divider asia-stream-divider" role="separator">
         <div class="section-label">
           <span class="material-icons-round" aria-hidden="true">sensors</span>
           <span class="section-label-text">Stream Channels</span>
           <span class="section-label-count" id="channelCountBadge"></span>
         </div>
+        <div id="asiaCounterMount" class="asia-counter-mount" aria-label="Live audience statistics"></div>
       </div>
 
       <div class="channels-grid" id="channelsGrid" role="list"></div>
