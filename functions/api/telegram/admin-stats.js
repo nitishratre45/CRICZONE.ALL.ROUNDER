@@ -87,13 +87,18 @@ export async function onRequestGet({ request, env }) {
 
   try {
     // One aggregate scan replaces three separate COUNT(*) table scans.
-    const [counts, users] = await Promise.all([
+    const broadcastQueries = page === 1 ? [
+      env.TELEGRAM_DB.prepare("SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1").first(),
+      env.TELEGRAM_DB.prepare("SELECT id, created_at, recipients, sent, failed, blocked FROM telegram_broadcast_logs ORDER BY id DESC LIMIT 10").all()
+    ] : [Promise.resolve(null), Promise.resolve({ results: [] })];
+    const [counts, users, broadcastTotals, recentBroadcasts] = await Promise.all([
       env.TELEGRAM_DB.prepare(
         "SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active, COALESCE(SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END), 0) AS inactive FROM telegram_broadcast_users"
       ).first(),
       env.TELEGRAM_DB.prepare(
         "SELECT user_id, first_name, last_name, username, started_at, last_seen_at, active FROM telegram_broadcast_users ORDER BY started_at DESC, user_id ASC LIMIT ? OFFSET ?"
-      ).bind(limit, offset).all()
+      ).bind(limit, offset).all(),
+      ...broadcastQueries
     ]);
     const totalRegistered = Number(counts?.total || 0);
     const rows = (users.results || []).map(row => ({
@@ -114,6 +119,22 @@ export async function onRequestGet({ request, env }) {
       page,
       limit,
       has_more: offset + rows.length < totalRegistered,
+      broadcast: page === 1 ? {
+        broadcasts: Number(broadcastTotals?.broadcasts || 0),
+        recipients: Number(broadcastTotals?.recipients || 0),
+        sent: Number(broadcastTotals?.sent || 0),
+        failed: Number(broadcastTotals?.failed || 0),
+        blocked: Number(broadcastTotals?.blocked || 0),
+        updated_at: Number(broadcastTotals?.updated_at || 0),
+        recent: (recentBroadcasts?.results || []).map(item => ({
+          id: Number(item.id || 0),
+          created_at: Number(item.created_at || 0),
+          recipients: Number(item.recipients || 0),
+          sent: Number(item.sent || 0),
+          failed: Number(item.failed || 0),
+          blocked: Number(item.blocked || 0)
+        }))
+      } : undefined,
       updated_at: new Date().toISOString()
     });
   } catch (error) {
