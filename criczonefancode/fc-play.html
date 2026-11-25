@@ -255,6 +255,7 @@ let stableTimer = null;
 let recovering = false;
 let lastProgressAt = Date.now();
 let lastCurrentTime = 0;
+let lastSegmentResponseAt = 0;
 let hasStarted = false;
 
 function decodeStream(value) {
@@ -364,9 +365,9 @@ function startWatchdog() {
       lastProgressAt = now;
       return;
     }
-    if (now - lastProgressAt > 12000 && !recovering) {
+    if (now - lastProgressAt > 25000 && now - lastSegmentResponseAt > 15000 && !recovering) {
       lastProgressAt = now;
-      scheduleRecovery("playback position stopped advancing", true);
+      scheduleRecovery("playback and segment delivery both stopped", true);
     }
   }, 4000);
 }
@@ -416,19 +417,14 @@ async function initPlayer() {
           });
         }
 
-        if (isSegment) {
-          // Refresh plain HLS media chunks using a URL cache key. Avoid custom
-          // request headers (they trigger CORS preflight OPTIONS requests).
-          // Preserve signed/query-auth segment URLs unchanged.
-          request.uris = request.uris.map(uri => {
-            const segmentUrl = new URL(uri);
-            const isMediaChunk = /\.(?:ts|m4s|mp4|aac|mp3)$/i.test(segmentUrl.pathname);
-            if (isMediaChunk && !segmentUrl.search) {
-              segmentUrl.searchParams.set("_cz_seg_refresh", String(Date.now()));
-              return segmentUrl.toString();
-            }
-            return uri;
-          });
+        // Segment URLs are normally unique per sequence number. Do not append
+        // cache-busters to media chunks: some CDNs sign or validate exact paths.
+        // Let Shaka request each segment in playlist order.
+      });
+      networkingEngine.registerResponseFilter((type, response) => {
+        if (type === shaka.net.NetworkingEngine.RequestType.SEGMENT &&
+            response && response.data && response.data.byteLength > 0) {
+          lastSegmentResponseAt = Date.now();
         }
       });
     }
@@ -488,9 +484,9 @@ async function initPlayer() {
       waitingTimer = setTimeout(() => {
         waitingTimer = null;
         if (!video.paused && video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
-          scheduleRecovery("buffering lasted longer than 8 seconds", true);
+          if (Date.now() - lastSegmentResponseAt > 15000) scheduleRecovery("buffering continued and segment delivery stopped", true);
         }
-      }, 8000);
+      }, 15000);
     });
     video.addEventListener("stalled", () => {
       showLoading("Connection stalled. Reconnecting...");
