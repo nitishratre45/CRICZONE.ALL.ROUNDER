@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+  var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
   var apis = cfg.apis || {};
   var routes = cfg.routes || {};
   var API_URL = apis.sonyLiv || apis.sony || apis.sonyliv || "";
@@ -44,12 +44,12 @@
   }
 
   function playerUrl(id) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfgObj = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var secCfg = (cfgObj.sections || {}).sonyLiv || {};
     var secLink = String(secCfg.link || "");
 
     if (secLink) {
-      var helper = window.CnpTVHelper;
+      var helper = window.CRICZONEHelper;
       return helper && id ? helper.buildUrl(secCfg, String(id)) : secLink;
     }
 
@@ -115,7 +115,7 @@
   }
 
   function renderMatches(matches) {
-    var cfgObj = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+    var cfgObj = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
     var cardLimit = Number(cfgObj.cardLimit) || 10;
     var upcomingClickable = cfgObj.upcomingClickable !== false;
     var labels = cfgObj.labels || {};
