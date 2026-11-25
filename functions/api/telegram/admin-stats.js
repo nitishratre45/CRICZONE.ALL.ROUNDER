@@ -86,15 +86,16 @@ export async function onRequestGet({ request, env }) {
   const offset = (page - 1) * limit;
 
   try {
-    const [total, active, inactive, users] = await Promise.all([
-      env.TELEGRAM_DB.prepare("SELECT COUNT(*) AS count FROM telegram_broadcast_users").first(),
-      env.TELEGRAM_DB.prepare("SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active = 1").first(),
-      env.TELEGRAM_DB.prepare("SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active = 0").first(),
+    // One aggregate scan replaces three separate COUNT(*) table scans.
+    const [counts, users] = await Promise.all([
+      env.TELEGRAM_DB.prepare(
+        "SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active, COALESCE(SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END), 0) AS inactive FROM telegram_broadcast_users"
+      ).first(),
       env.TELEGRAM_DB.prepare(
         "SELECT user_id, first_name, last_name, username, started_at, last_seen_at, active FROM telegram_broadcast_users ORDER BY started_at DESC, user_id ASC LIMIT ? OFFSET ?"
       ).bind(limit, offset).all()
     ]);
-    const totalRegistered = Number(total?.count || 0);
+    const totalRegistered = Number(counts?.total || 0);
     const rows = (users.results || []).map(row => ({
       user_id: String(row.user_id || ""),
       first_name: String(row.first_name || ""),
@@ -107,8 +108,8 @@ export async function onRequestGet({ request, env }) {
     return json({
       ok: true,
       total_registered: totalRegistered,
-      active: Number(active?.count || 0),
-      inactive: Number(inactive?.count || 0),
+      active: Number(counts?.active || 0),
+      inactive: Number(counts?.inactive || 0),
       users: rows,
       page,
       limit,
