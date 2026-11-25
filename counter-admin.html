@@ -49,6 +49,22 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
 @media(max-width:600px){main{width:calc(100% - 20px);margin:20px auto 38px}.top{align-items:flex-start;gap:14px;margin-bottom:19px;padding-bottom:17px}.actions{width:100%;justify-content:space-between}.overview{grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}.metric{padding:14px;border-radius:16px}.metric small{font-size:10px}.metric strong{font-size:24px}.grid{grid-template-columns:1fr;gap:11px}.worker{padding:15px;border-radius:17px}.worker h2{font-size:15px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:23px}.label{font-size:10px}.foot{font-size:10px}.sub{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
 
+.tg-directory{margin-top:20px;border-top:1px solid #203750;padding-top:18px}
+.tg-directory-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:13px}
+.tg-directory-head h3{margin:0 0 6px;font-size:16px}.tg-directory-head p{margin:0;color:#91a8c7;font-size:11px}
+.tg-directory-tools{display:flex;gap:8px;flex-wrap:wrap}.tg-directory-tools input{min-width:210px;padding:10px 12px;border:1px solid #31506f;border-radius:10px;background:#071323;color:#f4f8ff;outline:none}
+.tg-table-wrap{max-height:560px;overflow:auto;border:1px solid #203750;border-radius:13px;background:#071321;overscroll-behavior:contain}
+.tg-table{width:100%;border-collapse:separate;border-spacing:0;min-width:850px;font-size:12px}
+.tg-table th{position:sticky;top:0;z-index:2;background:#14263d;color:#b8cee8;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:12px;border-bottom:1px solid #2b4665}
+.tg-table td{padding:11px 12px;border-bottom:1px solid #1a2d43;color:#dce9f8;vertical-align:middle}
+.tg-table tbody tr:hover{background:#10233a}.tg-user-name{font-weight:750}.tg-user-sub{display:block;color:#8099b9;font-size:10px;margin-top:3px}
+.tg-pill{display:inline-block;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.4px}
+.tg-pill.active{background:#0d3b2d;color:#50e4a6}.tg-pill.inactive{background:#482032;color:#ff91a6}
+.tg-empty{text-align:center!important;color:#91a8c7!important;padding:25px!important}
+.tg-directory-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;color:#91a8c7;font-size:11px}
+.tg-directory-foot button{padding:9px 13px}
+@media(max-width:700px){.tg-directory-tools{width:100%}.tg-directory-tools input{flex:1;min-width:0}.tg-directory-head{display:block}.tg-directory-tools{margin-top:12px}.tg-directory-foot{align-items:flex-start}.tg-table-wrap{max-height:65vh}}
+
 .telegram-panel{margin:0 0 22px;padding:22px;border:1px solid rgba(56,82,118,.72);border-radius:20px;background:linear-gradient(145deg,rgba(15,31,51,.97),rgba(7,17,30,.98));box-shadow:0 12px 32px rgba(0,0,0,.18)}
 .telegram-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
 .telegram-panel h2{margin:0 0 7px;font-size:19px}.telegram-panel p{margin:0;color:#91a8c7;font-size:12px;line-height:1.6}
@@ -81,6 +97,11 @@ button:hover{border-color:#60baff;box-shadow:0 0 22px rgba(67,156,255,.18);trans
   <div class="tg-card inactive"><small>Blocked / inactive</small><strong id="tgInactive">—</strong></div>
  </div>
  <div class="tg-status" id="tgStatus" role="status">Enter the dashboard key to load private bot totals. Channel subscriber count is fetched from Telegram.</div>
+ <div class="tg-directory">
+  <div class="tg-directory-head"><div><h3>Bot User Directory</h3><p id="tgDirectoryMeta">Registered users with names, usernames, registration time, last seen and status.</p></div><div class="tg-directory-tools"><input id="tgUserSearch" type="search" placeholder="Search name, username or ID" aria-label="Search Telegram users"><button id="tgReloadUsers" type="button">Refresh list</button></div></div>
+  <div class="tg-table-wrap" id="tgTableWrap"><table class="tg-table"><thead><tr><th>User</th><th>Username</th><th>Telegram ID</th><th>Registered</th><th>Last seen</th><th>Status</th></tr></thead><tbody id="tgUserRows"><tr><td colspan="6" class="tg-empty">Enter dashboard key and load Telegram stats.</td></tr></tbody></table></div>
+  <div class="tg-directory-foot"><span id="tgShown">0 users loaded</span><button id="tgLoadMore" type="button" disabled>Load more users</button></div>
+ </div>
 </section>
 <section class="overview">
 <div class="metric"><small>Workers online</small><strong id="online">— / 7</strong></div>
@@ -178,6 +199,57 @@ refresh();setInterval(()=>refresh(false),120000);
  load.addEventListener("click",loadTelegram);
  keyInput.addEventListener("keydown",event=>{if(event.key==="Enter")loadTelegram();});
  if(keyInput.value.trim()) loadTelegram();
+})();
+
+
+(function(){
+ const key=()=>document.getElementById("tgAdminKey").value.trim();
+ const tbody=document.getElementById("tgUserRows"),more=document.getElementById("tgLoadMore");
+ const meta=document.getElementById("tgDirectoryMeta"),shown=document.getElementById("tgShown"),search=document.getElementById("tgUserSearch");
+ let page=1,hasMore=false,loading=false,allUsers=[],searchTimer=null;
+ const fmtDate=value=>{if(!value)return "—";const d=new Date(Number(value)*1000);return Number.isNaN(d.getTime())?"—":d.toLocaleString();};
+ const safe=value=>String(value??"");
+ function render(){
+  const q=search.value.trim().toLowerCase();
+  const filtered=allUsers.filter(u=>[u.first_name,u.last_name,u.username,u.user_id].join(" ").toLowerCase().includes(q));
+  tbody.replaceChildren();
+  if(!filtered.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.className="tg-empty";td.textContent=allUsers.length?"No matching users on loaded pages. Load more to search further.":"No registered users found.";tr.append(td);tbody.append(tr);}
+  for(const u of filtered){
+   const tr=document.createElement("tr");
+   const name=document.createElement("td");const strong=document.createElement("span");strong.className="tg-user-name";strong.textContent=[u.first_name,u.last_name].filter(Boolean).join(" ")||"Unknown user";name.append(strong);
+   const sub=document.createElement("span");sub.className="tg-user-sub";sub.textContent="Bot user";name.append(sub);
+   const username=document.createElement("td");username.textContent=u.username?"@"+u.username:"—";
+   const id=document.createElement("td");id.textContent=u.user_id||"—";
+   const registered=document.createElement("td");registered.textContent=fmtDate(u.started_at);
+   const last=document.createElement("td");last.textContent=fmtDate(u.last_seen_at);
+   const status=document.createElement("td"),pill=document.createElement("span");pill.className="tg-pill "+(u.status==="active"?"active":"inactive");pill.textContent=u.status==="active"?"Active":"Blocked / Inactive";status.append(pill);
+   tr.append(name,username,id,registered,last,status);tbody.append(tr);
+  }
+  shown.textContent=filtered.length+" shown · "+allUsers.length+" loaded";
+  meta.textContent="Showing "+allUsers.length+" of "+(document.getElementById("tgRegistered").textContent||"—")+" registered users. Search filters loaded rows; use Load more to fetch the rest.";
+ }
+ async function loadPage(reset){
+  if(loading)return;
+  if(!key()){meta.textContent="Enter the dashboard access key first.";return;}
+  loading=true;more.disabled=true;more.textContent="Loading…";
+  if(reset){page=1;allUsers=[];tbody.innerHTML='<tr><td colspan="6" class="tg-empty">Loading Telegram users…</td></tr>';}
+  try{
+   const response=await fetch("/api/telegram/admin-stats?page="+page+"&limit=50",{cache:"no-store",headers:{Authorization:"Bearer "+key()}});
+   const data=await response.json();
+   if(!response.ok||!data.ok)throw new Error(data.error||"Could not load Telegram user list");
+   allUsers=allUsers.concat(Array.isArray(data.users)?data.users:[]);
+   hasMore=!!data.has_more;page++;
+   render();
+   more.hidden=!hasMore;more.disabled=!hasMore;more.textContent=hasMore?"Load more users":"All users loaded";
+  }catch(error){meta.textContent=error.message||"Unable to load user list";more.textContent="Retry";more.hidden=false;more.disabled=false;}
+  finally{loading=false;}
+ }
+ document.getElementById("tgLoad").addEventListener("click",()=>loadPage(true));
+ document.getElementById("tgReloadUsers").addEventListener("click",()=>loadPage(true));
+ more.addEventListener("click",()=>loadPage(false));
+ search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,120);});
+ const originalLoad=document.getElementById("tgLoad");
+ originalLoad.addEventListener("click",()=>{if(key())loadPage(true);});
 })();
 
 </script></body></html>
