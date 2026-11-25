@@ -347,7 +347,8 @@ async function handlePrivateMessage({ env, message }) {
         const audience = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users WHERE active=1').first();
         await telegramCall(env, 'sendMessage', {
           chat_id: chatId,
-          parse_mode: 'HTML',\n          text: `📢 <b>BROADCAST PREVIEW</b>\n\n👥 <b>Active registered users:</b> ${Number(audience?.count || 0)}\n\n<blockquote><i>Confirm below to send your submitted message to all active registered users.</i></blockquote>`,
+          parse_mode: 'HTML',
+          text: `📢 <b>BROADCAST PREVIEW</b>\n\n👥 <b>Active registered users:</b> ${Number(audience?.count || 0)}\n\n<blockquote><i>Confirm below to send your submitted message to all active registered users.</i></blockquote>`,
           reply_markup: { inline_keyboard: [[
             { text: '🚀 Send to all', callback_data: 'broadcast:confirm' },
             { text: '❌ Cancel', callback_data: 'broadcast:cancel' }
