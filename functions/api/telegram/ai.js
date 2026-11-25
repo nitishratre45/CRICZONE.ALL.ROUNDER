@@ -183,6 +183,15 @@ function escapeTelegramHtml(value) {
   return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
 }
 
+const TELEGRAM_USERS_SNAPSHOT_KEY = "telegram:admin:users:snapshot:v1";
+
+async function getTelegramUsersSnapshot(env) {
+  if (!env.MATCHCENTER_KV) throw new Error("MATCHCENTER_KV binding is not configured");
+  const snapshot = await env.MATCHCENTER_KV.get(TELEGRAM_USERS_SNAPSHOT_KEY, "json");
+  if (!snapshot || snapshot.version !== 1 || !Array.isArray(snapshot.users)) throw new Error("Telegram users snapshot is not available yet");
+  return snapshot;
+}
+
 function getAdminIds(env) {
   return String(env.TELEGRAM_ADMIN_IDS || '').split(',').map(v => v.trim()).filter(Boolean);
 }
@@ -246,14 +255,33 @@ async function handlePrivateMessage({ env, message }) {
     }
 
     if (command === '/userstats') {
-      const counts = await env.TELEGRAM_DB.prepare("SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active=1 THEN 1 ELSE 0 END),0) AS active, COALESCE(SUM(CASE WHEN active=0 THEN 1 ELSE 0 END),0) AS inactive FROM telegram_broadcast_users").first();
-      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\n\n📋 Total registered: ' + Number(counts?.total || 0) + '\n✅ Active: ' + Number(counts?.active || 0) + '\n🚫 Inactive/blocked: ' + Number(counts?.inactive || 0) });
+      let snapshot;
+      try { snapshot = await getTelegramUsersSnapshot(env); }
+      catch (error) {
+        console.error('Telegram /userstats KV snapshot unavailable', error);
+        await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⚠️ User snapshot is not available yet. Please ask an admin to open the Telegram Admin Dashboard once to generate it.' });
+        return;
+      }
+      const total = snapshot.users.length;
+      const active = Number(snapshot.counts?.active ?? snapshot.users.filter(user => user.status === 'active').length);
+      const inactive = Number(snapshot.counts?.inactive ?? (total - active));
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '👥 CRICZONE USER STATS\\n\\n📋 Total registered: ' + total + '\\n✅ Active: ' + active + '\\n🚫 Inactive/blocked: ' + inactive + '\\n\\n🗂 Source: Daily KV snapshot' });
       return;
     }
 
     if (command === '/exportusers') {
-      const usersExportResult = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,last_seen_at,active FROM telegram_broadcast_users ORDER BY started_at').all();
-      const rows = usersExportResult.results || [];
+      let snapshot;
+      try { snapshot = await getTelegramUsersSnapshot(env); }
+      catch (error) {
+        console.error('Telegram /exportusers KV snapshot unavailable', error);
+        await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⚠️ User snapshot is not available yet. Please ask an admin to open the Telegram Admin Dashboard once to generate it.' });
+        return;
+      }
+      const rows = snapshot.users.map(user => ({
+        user_id: user.user_id, first_name: user.first_name, last_name: user.last_name,
+        username: user.username, started_at: user.started_at, last_seen_at: user.last_seen_at,
+        active: user.status === 'active' ? 1 : 0
+      }));
       if (!rows.length) {
         await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '📭 No registered users found to export.' });
         return;
@@ -273,13 +301,21 @@ async function handlePrivateMessage({ env, message }) {
       return;
     }
 
-    const parts = text.split(/\s+/);
+    let snapshot;
+    try { snapshot = await getTelegramUsersSnapshot(env); }
+    catch (error) {
+      console.error('Telegram /users KV snapshot unavailable', error);
+      await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⚠️ User snapshot is not available yet. Please ask an admin to open the Telegram Admin Dashboard once to generate it.' });
+      return;
+    }
+    const parts = text.split(/\\s+/);
     const page = Math.max(1, parseInt(parts[1] || '1', 10) || 1);
     const perPage = 10;
-    const total = await env.TELEGRAM_DB.prepare('SELECT COUNT(*) AS count FROM telegram_broadcast_users').first();
-    const count = Number(total?.count || 0);
-    const users = await env.TELEGRAM_DB.prepare('SELECT user_id,first_name,last_name,username,started_at,active FROM telegram_broadcast_users ORDER BY started_at DESC LIMIT ? OFFSET ?').bind(perPage, (page-1)*perPage).all();
-    const list = users.results || [];
+    const count = snapshot.users.length;
+    const list = snapshot.users.slice((page-1)*perPage, page*perPage).map(user => ({
+      user_id: user.user_id, first_name: user.first_name, last_name: user.last_name,
+      username: user.username, started_at: user.started_at, active: user.status === 'active' ? 1 : 0
+    }));
     if (!list.length) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: page === 1 ? '📭 No registered users found.' : '❌ Page not found. Total pages: ' + Math.max(1, Math.ceil(count/perPage)) });
       return;
