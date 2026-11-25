@@ -87,19 +87,22 @@ export async function onRequestGet({ request, env }) {
 
   try {
     // One aggregate scan replaces three separate COUNT(*) table scans.
-    const broadcastQueries = page === 1 ? [
-      env.TELEGRAM_DB.prepare("SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1").first(),
-      env.TELEGRAM_DB.prepare("SELECT id, created_at, recipients, sent, failed, blocked FROM telegram_broadcast_logs ORDER BY id DESC LIMIT 10").all()
-    ] : [Promise.resolve(null), Promise.resolve({ results: [] })];
-    const [counts, users, broadcastTotals, recentBroadcasts] = await Promise.all([
+    const broadcastDataPromise = page === 1
+      ? Promise.all([
+          env.TELEGRAM_DB.prepare("SELECT broadcasts, recipients, sent, failed, blocked, updated_at FROM telegram_broadcast_totals WHERE id=1").first(),
+          env.TELEGRAM_DB.prepare("SELECT id, created_at, recipients, sent, failed, blocked FROM telegram_broadcast_logs ORDER BY id DESC LIMIT 10").all()
+        ]).catch(() => [null, { results: [] }])
+      : Promise.resolve([null, { results: [] }]);
+    const [counts, users, broadcastData] = await Promise.all([
       env.TELEGRAM_DB.prepare(
         "SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active, COALESCE(SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END), 0) AS inactive FROM telegram_broadcast_users"
       ).first(),
       env.TELEGRAM_DB.prepare(
         "SELECT user_id, first_name, last_name, username, started_at, last_seen_at, active FROM telegram_broadcast_users ORDER BY started_at DESC, user_id ASC LIMIT ? OFFSET ?"
       ).bind(limit, offset).all(),
-      ...broadcastQueries
+      broadcastDataPromise
     ]);
+    const [broadcastTotals, recentBroadcasts] = broadcastData;
     const totalRegistered = Number(counts?.total || 0);
     const rows = (users.results || []).map(row => ({
       user_id: String(row.user_id || ""),
