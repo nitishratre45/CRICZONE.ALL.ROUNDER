@@ -308,8 +308,8 @@ async function handlePrivateMessage({ env, message }) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: '⛔ This command is available to admins only.' });
       return;
     }
-    const targetId = text.split(/\\s+/)[1] || '';
-    if (!/^\\d{5,20}$/.test(targetId)) {
+    const targetId = text.split(/\s+/)[1] || '';
+    if (!/^\d{5,20}$/.test(targetId)) {
       await telegramCall(env, 'sendMessage', { chat_id: chatId, text: 'Usage: /sendto TELEGRAM_USER_ID\\nExample: /sendto 123456789' });
       return;
     }
@@ -328,7 +328,7 @@ async function handlePrivateMessage({ env, message }) {
 
   if (isAdmin) {
     const state = await env.TELEGRAM_DB.prepare('SELECT * FROM telegram_broadcast_states WHERE admin_id=?').bind(senderId).first();
-    const waitingMatch = /^waiting_message(?::(\\d+))?$/.exec(String(state?.step || ''));
+    const waitingMatch = /^waiting_message(?::(\d+))?$/.exec(String(state?.step || ''));
     if (waitingMatch) {
       const targetId = waitingMatch[1] || '';
       const nextStep = targetId ? 'confirm:'+targetId : 'confirm';
@@ -1140,7 +1140,7 @@ export async function onRequestPost({ request, env }) {
       }
       if (broadcastAction === 'broadcast:confirm' || broadcastAction.startsWith('broadcast:confirm:')) {
         const requestedTarget = broadcastAction.split(':')[2] || '';
-        if (requestedTarget && !/^\\d{5,20}$/.test(requestedTarget)) {
+        if (requestedTarget && !/^\d{5,20}$/.test(requestedTarget)) {
           await telegramCall(env,'answerCallbackQuery',{callback_query_id:callback.id,text:'Invalid user ID.'});
           return json({ok:true,received:true});
         }
