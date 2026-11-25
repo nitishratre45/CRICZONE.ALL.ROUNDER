@@ -2,7 +2,7 @@
   "use strict";
 
   var root = document.documentElement;
-  var cfg = window.CNPTV_CONFIG || window.MATCHDEKHO_CONFIG || {};
+  var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
   var FORCE = cfg.forceScrollAnimation !== false;
 
   function reducedMotion() {
