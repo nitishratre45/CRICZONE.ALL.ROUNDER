@@ -46,7 +46,7 @@ async function issueSession(secret) {
 
 async function verifySession(secret, token) {
   const parts = String(token || "").split(".");
-  if (parts.length !== 2 || !/^\\d+$/.test(parts[0])) return false;
+  if (parts.length !== 2 || !/^\d+$/.test(parts[0])) return false;
   const expiresAt = Number(parts[0]);
   if (!Number.isSafeInteger(expiresAt) || expiresAt <= Math.floor(Date.now() / 1000)) return false;
   try {
