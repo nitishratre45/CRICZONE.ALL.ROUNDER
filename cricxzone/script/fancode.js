@@ -5,7 +5,7 @@
   var apis         = cfg.apis || {};
   var API_URL      = apis.fanCode || apis.fancode || '';
   var ROUTES       = cfg.routes || {};
-  var PLAYER_ROUTE = ROUTES.fancodePlayer || '/watch/fancode/pz/';
+  var PLAYER_ROUTE = ROUTES.fancodePlayer || '/fancodeweb/fc-play.html';
   var PLAYER_BASE  = cfg.playerBase || '';
   var EAGER_CARDS  = 5;
 
@@ -150,7 +150,7 @@
       base = routeBase + route;
     }
     var bid = baseId(matchId);
-    if (!bid) return String(secCfg.viewAllLink || '/watch/fancode/');
+    if (!bid) return String(secCfg.viewAllLink || '/criczonefancode/');
 
     var lc = String(languageCode || 'en').toLowerCase();
     var separator = base.indexOf('?') === -1 ? '?' : '&';
@@ -253,7 +253,7 @@
     var comingSoonLabel = labels.comingSoon || 'Coming Soon';
     var viewAllLabel = labels.viewAll || 'View All Events';
     var secCfg = (cfgObj.sections || {}).fancode || {};
-    var viewAllLink = secCfg.viewAllLink || '/watch/fancode/';
+    var viewAllLink = secCfg.viewAllLink || '/criczonefancode/';
 
     updateSectionStatus(matches);
 
