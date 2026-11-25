@@ -354,7 +354,7 @@
     document.addEventListener('pointermove', function (event) {
       if (!pressed || event.pointerId !== pointerId) return;
       var delta = event.clientX - startX;
-      if (!dragging && Math.abs(delta) > 7) {
+      if (!dragging && Math.abs(delta) > 16) {
         dragging = true;
         track.classList.add('is-dragging');
       }
