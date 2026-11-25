@@ -318,18 +318,29 @@ function scheduleRecovery(reason, immediate = false) {
     recovering = true;
     try {
       video.pause();
+      let resumed = false;
       try {
+        // Shaka returns false when no retryable streaming failure is pending.
+        // In that case, explicitly reload the live manifest instead of leaving
+        // the player stuck forever on the buffering overlay.
         if (typeof player.retryStreaming === "function") {
-          await player.retryStreaming();
-        } else {
-          throw new Error("Streaming retry unavailable");
+          resumed = await player.retryStreaming(0.1);
         }
       } catch (retryError) {
-        console.warn("Retry streaming failed; reloading manifest:", retryError);
+        console.warn("Shaka retryStreaming failed:", retryError);
+      }
+
+      if (!resumed) {
+        console.warn("No pending Shaka retry; rebuilding live playback pipeline.");
         await player.unload();
         await player.load(streamUrl);
       }
-      await video.play().catch(() => {});
+
+      await video.play().catch(async playError => {
+        console.warn("Playback resume was blocked:", playError);
+        video.muted = true;
+        await video.play();
+      });
       markProgress();
     } catch (error) {
       console.error("Recovery attempt failed:", error);
@@ -469,6 +480,13 @@ async function initPlayer() {
     if (player) scheduleRecovery(error && (error.code || error.message || error), true);
   }
 }
+
+window.addEventListener("online", () => {
+  if (player && !video.paused) {
+    retryCount = 0;
+    scheduleRecovery("network connection restored", true);
+  }
+});
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && player && !video.paused) {
