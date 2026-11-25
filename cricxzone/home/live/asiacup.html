@@ -476,7 +476,7 @@
     .asia-counter-mount #viewerBadge .cz-global-live{border-left:1px solid rgba(70,235,210,.2)!important;padding-left:7px!important}
     .asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{display:inline-block!important;min-width:25px!important;padding:2px 5px!important;border-radius:5px!important;background:linear-gradient(135deg,#a7fff0,#39d9bd)!important;color:#062326!important;font:950 9px/1.1 system-ui,sans-serif!important;text-align:center!important;font-variant-numeric:tabular-nums!important}
     .asia-counter-mount #viewerBadge #counterServer{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:22px!important;margin-left:2px!important;padding:3px 5px!important;border-radius:5px!important;border:1px solid rgba(249,115,22,.35)!important;background:rgba(249,115,22,.12)!important;color:#ffb36d!important;font:900 8px/1 system-ui,sans-serif!important}
-    @media(max-width:640px){.asia-stream-divider{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;margin-top:20px}.asia-stream-divider::before,.asia-stream-divider::after{display:none}.asia-stream-divider .section-label{min-width:0;white-space:normal}.asia-stream-divider .section-label-text{font-size:clamp(.62rem,2.8vw,.72rem);letter-spacing:.07em}.asia-counter-mount{justify-self:end}.asia-counter-mount #viewerBadge{padding:5px 6px!important;gap:2px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:7px!important;gap:3px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:8px!important;min-width:22px!important;padding:2px 4px!important}}
+    @media(max-width:640px){.asia-stream-divider{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:18px;min-width:0}.asia-stream-divider::before,.asia-stream-divider::after{display:none}.asia-stream-divider .section-label{min-width:0;gap:5px;padding:0}.asia-stream-divider .section-label-text{font-size:clamp(.58rem,2.4vw,.68rem);letter-spacing:.055em}.asia-stream-divider .section-label .material-icons-round{font-size:12px}.asia-stream-divider .section-label-count{font-size:8px;padding:1px 5px}.asia-counter-mount{flex:0 0 auto;justify-self:end}.asia-counter-mount #viewerBadge{padding:3px 5px!important;gap:2px!important;border-radius:7px!important}.asia-counter-mount #viewerBadge .cz-global-total,.asia-counter-mount #viewerBadge .cz-global-live{font-size:6.5px!important;gap:2px!important;padding:1px 2px!important}.asia-counter-mount #viewerBadge #totalVisits,.asia-counter-mount #viewerBadge #liveWatching{font-size:7px!important;min-width:19px!important;padding:2px 3px!important}.asia-counter-mount #viewerBadge #counterServer{font-size:6px!important;min-width:17px!important;padding:2px 3px!important;margin-left:1px!important}}
     @media(max-width:360px){.asia-stream-divider{grid-template-columns:1fr;justify-items:start}.asia-counter-mount{justify-self:start}}
 
     /* CRICZONE full-screen refresh — page chrome only; keep stream/player untouched */
@@ -525,6 +525,12 @@
       .inner-wrap{padding-left:12px!important;padding-right:12px!important}
       .channels-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
     }
+
+
+    .ch-id{display:block;margin-top:5px;font:600 8px/1.2 system-ui,sans-serif;letter-spacing:.025em;color:rgba(151,190,203,.58);overflow-wrap:anywhere}
+    .ch-card.is-active{border-color:rgba(57,230,176,.72)!important;box-shadow:0 0 0 1px rgba(57,230,176,.16),0 8px 22px rgba(0,190,155,.12)!important}
+    .ch-card.is-active .ch-id{color:#6debc7}
+    @media(max-width:420px){.ch-id{font-size:7px;margin-top:4px}}
 
   </style>
 
@@ -866,59 +872,80 @@
       const streamCount = channels.filter(c => !c.external).length;
       if (countBadge) countBadge.textContent = streamCount;
 
-      let activeChannelIdx = -1;
+      // Stable channel IDs are based on channel name + language label.
+      function makeChannelId(channel, index) {
+        const base = (String(channel.name || 'channel') + '-' + String(channel.label || 'stream'))
+          .toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || ('channel-' + index);
+        let id = base, suffix = 2;
+        while (channels.some((other, otherIndex) => otherIndex < index && other.id === id)) id = base + '-' + suffix++;
+        return id;
+      }
+      channels.forEach((channel, index) => { channel.id = makeChannelId(channel, index); });
 
+      let activeChannelIdx = -1;
+      function writeChannelToUrl(channel, replace) {
+        if (!channel) return;
+        const url = new URL(location.href);
+        url.searchParams.set('channel', channel.id);
+        history[replace ? 'replaceState' : 'pushState']({ channelId: channel.id }, '', url);
+      }
       function renderGrid(activeIdx) {
         activeChannelIdx = activeIdx;
         grid.innerHTML = channels.map((ch, i) => `
-          <div
-            class="ch-card${i === activeIdx ? ' is-active' : ''}${ch.external ? ' is-ext' : ''}"
-            data-index="${i}"
-            role="listitem"
-            tabindex="0"
-            aria-label="${ch.name}${ch.external ? ' — opens in new tab' : ''}"
-          >
+          <div class="ch-card${i === activeIdx ? ' is-active' : ''}${ch.external ? ' is-ext' : ''}"
+            data-index="${i}" data-channel-id="${ch.id}" role="listitem" tabindex="0"
+            aria-label="${ch.name} — Channel ID: ${ch.id}${ch.external ? ' — opens in new tab' : ''}">
             <div class="ch-inner">
               <span class="ch-name">${ch.name}</span>
               <span class="ch-label">${ch.label || (ch.external ? '↗ External' : 'HD Stream')}</span>
+              <span class="ch-id">ID: ${ch.id}</span>
             </div>
-          </div>
-        `).join('');
-
+          </div>`).join('');
         grid.querySelectorAll('.ch-card').forEach(card => {
-          const activate = () => switchChannel(parseInt(card.dataset.index, 10));
+          const activate = () => switchChannel(parseInt(card.dataset.index, 10), false);
           card.addEventListener('click', activate);
           card.addEventListener('keydown', e => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
           });
         });
       }
-
       function setActiveCard(idx) {
         activeChannelIdx = idx;
         grid.querySelectorAll('.ch-card').forEach(card => {
-          card.classList.toggle('is-active', parseInt(card.dataset.index, 10) === idx);
+          const active = parseInt(card.dataset.index, 10) === idx;
+          card.classList.toggle('is-active', active);
+          card.setAttribute('aria-current', active ? 'true' : 'false');
         });
       }
-
-      function switchChannel(idx) {
+      function switchChannel(idx, fromHistory) {
         const ch = channels[idx];
         if (!ch) return;
+        if (!fromHistory) writeChannelToUrl(ch, false);
+        setActiveCard(idx);
         if (ch.external) {
           window.open(ch.url, '_blank', 'noopener,noreferrer');
           return;
         }
-        if (idx === activeChannelIdx) return;
-        setActiveCard(idx);
-        player.src = ch.url;
+        if (player && player.src !== ch.url) player.src = ch.url;
       }
-
       function initPlayer() {
+        const requestedId = new URLSearchParams(location.search).get('channel');
+        const requestedIdx = requestedId ? channels.findIndex(ch => ch.id === requestedId) : -1;
         const firstIdx = channels.findIndex(c => !c.external);
-        const first = firstIdx !== -1 ? channels[firstIdx] : null;
-        if (first && player) player.src = first.url;
-        return firstIdx !== -1 ? firstIdx : 0;
+        const startIdx = requestedIdx >= 0 ? requestedIdx : (firstIdx !== -1 ? firstIdx : 0);
+        const selected = channels[startIdx];
+        if (selected) {
+          setActiveCard(startIdx);
+          if (!selected.external && player) player.src = selected.url;
+          writeChannelToUrl(selected, true);
+        }
+        return startIdx;
       }
+      window.addEventListener('popstate', () => {
+        const id = new URLSearchParams(location.search).get('channel');
+        const idx = channels.findIndex(ch => ch.id === id);
+        if (idx >= 0) switchChannel(idx, true);
+      });
       const yearEl = document.getElementById('footerYear');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
 
