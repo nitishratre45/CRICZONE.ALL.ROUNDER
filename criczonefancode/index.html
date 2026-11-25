@@ -648,15 +648,44 @@ async function fetchFancodeJson() {
 }
 
 async function loadData() {
-  const data = await fetchFancodeJson();
-  state.fancodeMatches = parseFancodeMatches(data);
+  // Prevent slow refreshes from overlapping and racing each other.
+  if (window.__CZ_FANCODE_LOADING__) return;
+  window.__CZ_FANCODE_LOADING__ = true;
 
-  renderHub();
-  checkAlerts();
+  try {
+    const data = await fetchFancodeJson();
 
-  if (!window.__booted) {
-    window.__booted = true;
-    route();
+    // Keep the last good match list if the upstream feed is temporarily unavailable.
+    // A failed request must never turn a populated home page into an empty one.
+    if (!data || !Array.isArray(data.matches)) {
+      if (state.fancodeMatches.length) {
+        showHubToast("Refresh unavailable — showing last loaded matches", 3500);
+      } else {
+        showHubToast("Match feed unavailable — please retry shortly", 4500);
+      }
+    } else {
+      const nextMatches = parseFancodeMatches(data);
+      state.fancodeMatches = nextMatches;
+      renderHub();
+      checkAlerts();
+    }
+
+    if (!window.__booted) {
+      window.__booted = true;
+      route();
+    }
+  } catch (error) {
+    if (state.fancodeMatches.length) {
+      showHubToast("Refresh failed — keeping last loaded matches", 3500);
+    } else {
+      showHubToast("Unable to load matches — please retry shortly", 4500);
+    }
+    if (!window.__booted) {
+      window.__booted = true;
+      route();
+    }
+  } finally {
+    window.__CZ_FANCODE_LOADING__ = false;
   }
 }
 
