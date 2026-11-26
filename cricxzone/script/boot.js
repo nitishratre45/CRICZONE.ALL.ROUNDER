@@ -42,7 +42,7 @@
       football:    { link: "/cricxzone/watch/football/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/football/"  },
       cricket:     { link: "/cricxzone/watch/cricket/",    idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/cricket/"   },
       willow:      { link: "/cricxzone/watch/willow/",     idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/willow/"    },
-      fancode:     { link: "/fancodeweb/fc-play.html", idMode: "param", idKey: "id", viewAllLink: "/criczonefancode/"   },
+      fancode:     { link: "/fancodeweb/fc-play.html", idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/fancode/" },
       worldSports: { link: "/cricxzone/watch/wwsports/",   idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/wwsports/"  },
       sonyLiv:     { link: "/cricxzone/watch/sliv/",       idMode: "param", idKey: "id", viewAllLink: "/cricxzone/watch/sliv/"      }
     },
@@ -58,6 +58,7 @@
     routes: {
       willowPlayer:  "/cricxzone/watch/willow/",
       fancodePlayer: "/fancodeweb/fc-play.html",
+      fancodePage: "/cricxzone/watch/fancode/",
       sonyPlayer:    "/cricxzone/watch/sliv/"
     },
     willowPlayerMode: "stream",
