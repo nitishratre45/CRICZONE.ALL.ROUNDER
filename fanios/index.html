@@ -200,9 +200,9 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 /* Keep the community badge in the open left-side area of the live player.
    It sits below the broadcaster mark and stays clear of the FanCode watermark
    and the AUTO quality control on the right. */
-#tgBadge{top:164px!important;bottom:auto!important;left:clamp(78px,5.8vw,100px)!important;right:auto!important;z-index:10001}
-@media(max-width:640px){#tgBadge{top:126px!important;left:14px!important;right:auto!important;bottom:auto!important;padding:10px 14px!important}}
-@media(max-height:520px){#tgBadge{top:112px!important}}
+#tgBadge{top:max(18px,env(safe-area-inset-top))!important;bottom:auto!important;left:clamp(82px,5.8vw,100px)!important;right:auto!important;z-index:10001}
+@media(max-width:640px){#tgBadge{top:max(14px,env(safe-area-inset-top))!important;left:14px!important;right:auto!important;bottom:auto!important;padding:10px 14px!important}}
+@media(max-height:520px){#tgBadge{top:12px!important}}
 @media(prefers-reduced-motion:reduce){.logo-icon #cz-navbar-player{transition:none}}
 </style>
 </head>
