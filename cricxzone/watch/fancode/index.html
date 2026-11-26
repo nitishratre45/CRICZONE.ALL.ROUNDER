@@ -1,1 +1,1295 @@
 
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D0E10">
+<meta name="referrer" content="no-referrer">
+<title>CRICZONE • FANCODE LIVE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Acme&family=Amaranth:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/controls.css">
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.3.3/dist/shaka-player.ui.min.js"></script>
+<style>
+:root{--cream:#F8EFD4;--olive:#5F684C;--white:#FFFFFF;--ink:#141414;--muted:#595959;--accent:#0088cc;--border:rgba(0,0,0,.12);--surface2:#F0E4C3;--surface3:#E4D7B2;--live:#FF3355;--soon:#D48806;--done:#5C6B80;--radius:16px;--shadow:0 12px 35px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);--shadow-deep:0 20px 50px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);--display:'Space Grotesk','Inter',sans-serif;--body:'Inter',system-ui,sans-serif}
+[data-theme="dark"]{--cream:#0D0E10;--olive:#7E8F6A;--white:#17191C;--ink:#F4F6F8;--muted:#9FA6AD;--accent:#3399ff;--border:rgba(255,255,255,.1);--surface2:#202327;--surface3:#2A2E33;--shadow:0 12px 35px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);--shadow-deep:0 20px 50px rgba(0,0,0,.7),0 4px 12px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}body{font:400 15px/1.5 var(--body);color:var(--ink);background:var(--cream);min-height:100vh;padding-bottom:48px;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;position:relative}
+body:before{content:"";position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(95,104,76,.16),transparent 45%),radial-gradient(circle at 70% 70%,rgba(0,136,204,.12),transparent 50%),radial-gradient(circle at 50% 50%,rgba(255,51,85,.07),transparent 55%);animation:wateryFlow 16s ease infinite alternate;pointer-events:none;z-index:0}
+@keyframes wateryFlow{0%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(-30px,20px) rotate(3deg) scale(1.03)}100%{transform:translate(20px,-25px) rotate(-3deg) scale(0.97)}}
+
+button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;will-change:transform;transition:transform 0.18s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.18s ease}button:active{transform:scale(0.94)!important}a{color:var(--accent);text-decoration:none}img{display:block;max-width:100%}[hidden]{display:none!important}:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.container{max-width:1320px;margin:auto;padding:0 20px;position:relative;z-index:1}.view{display:none}.view.active{display:block;animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;background:var(--white);margin-left:-20px;margin-right:-20px;box-shadow:var(--shadow);flex-wrap:nowrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--olive),#0088cc);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:700;box-shadow:0 6px 20px rgba(0,136,204,.3);flex:none}
+.brand-text{min-width:0}
+.brand-text h1{font:700 19px/1.1 var(--display);letter-spacing:-0.3px;background:linear-gradient(135deg,var(--ink),var(--olive));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-text p{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.header-actions{display:flex;align-items:center;gap:8px;flex:none}
+.live-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.28);color:var(--live);font-size:12px;font-weight:600;white-space:nowrap}
+.live-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse 1.3s infinite}@keyframes pulse{50%{opacity:.3}}
+.clock{font-size:12px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums;display:none}
+.icon-action-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);display:grid;place-items:center;font-size:15px;box-shadow:var(--shadow);cursor:pointer;flex:none;transition:all .22s ease}
+.icon-action-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.icon-action-btn.alert-active{border-color:var(--accent);color:var(--accent);background:rgba(0,136,204,.14)}
+.join-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:linear-gradient(135deg,#0088cc,#00aaff);color:#fff;font-size:12px;font-weight:700;transition:all .25s ease;box-shadow:0 6px 18px rgba(0,136,204,.35);white-space:nowrap;flex:none}
+.join-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.join-btn svg{width:14px;height:14px}
+
+.search-container{margin-bottom:18px;position:relative}.search-input{width:100%;padding:13px 18px 13px 46px;background:var(--white);color:var(--ink);border:1px solid var(--border);border-radius:12px;font-size:14.5px;font-weight:500;box-shadow:var(--shadow);transition:all .25s}.search-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(0,136,204,.18),var(--shadow-deep)}.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted);pointer-events:none}
+
+.filters{display:flex;flex-direction:column;gap:10px;padding:4px 0 16px;border-bottom:1px solid var(--border);margin-bottom:24px}.filter-row{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.filter-row::-webkit-scrollbar{display:none}
+.pill{flex:none;display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--white);border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.03);transition:all .2s ease;white-space:nowrap}
+.pill:hover{color:var(--ink);background:var(--surface2);transform:translateY(-2px)}
+.pill.active{color:var(--cream);background:var(--olive);border-color:var(--olive);box-shadow:0 6px 18px rgba(95,104,76,.3)}
+.pill .count{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--surface3);color:var(--muted)}
+.pill.active .count{background:rgba(255,255,255,.22);color:var(--cream)}
+.pill[data-tab=live].active{color:var(--live);background:rgba(255,51,85,.15);border-color:var(--live)}
+.pill[data-tab=live].active .count{background:rgba(255,51,85,.25);color:var(--live)}
+.cat-pill{padding:7px 13px;font-size:12.5px;border-radius:999px}
+.cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(0,136,204,.32)}
+.cat-pill.active .count{background:rgba(255,255,255,.22);color:#fff}
+
+.section-block{margin-bottom:32px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.section-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+.section-heading{font:700 16px/1.2 var(--display);color:var(--ink);letter-spacing:-0.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.section-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--accent);white-space:nowrap;flex:none}
+.slider-controls{display:flex;align-items:center;gap:6px;flex:none}
+.slider-nav-btn{width:34px;height:34px;border-radius:10px;background:var(--white);border:1px solid var(--border);color:var(--ink);display:grid;place-items:center;font-size:15px;box-shadow:var(--shadow)}
+.slider-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.matches-slider{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+.matches-slider::-webkit-scrollbar{height:6px}
+.matches-slider::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:999px}
+
+.upcoming-blocks-stack{display:flex;flex-direction:column;gap:28px}
+.upcoming-list-stack{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+
+.slider-card{flex:0 0 344px;max-width:86vw;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:12px;padding:16px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .25s ease}
+.upcoming-list-stack .slider-card{flex:none;max-width:none;width:100%}
+
+.slider-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow-deep);background:var(--surface2)}
+.slider-card.is-live{border-color:rgba(255,51,85,.4)}
+
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sport-chip{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-width:0;flex:1}
+.sport-chip .name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status{flex:none;font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:6px;text-transform:uppercase}.status.live{color:var(--live);background:rgba(255,51,85,.12);border:1px solid rgba(255,51,85,.3)}.status.soon{color:var(--soon);background:rgba(212,136,6,.12);border:1px solid rgba(212,136,6,.3)}.status.done{color:var(--done);background:rgba(92,107,128,.12);border:1px solid rgba(92,107,128,.25)}
+
+.card-main-click{background:none;border:0;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;padding:0}
+
+.fav-team-btn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13.5px;padding:1px;flex:none}
+.fav-team-btn.active{color:var(--live)}
+
+.kickoff-time{font:700 14.5px/1.15 var(--display);color:var(--olive);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kickoff-date{font-size:10.5px;color:var(--muted);font-weight:500;white-space:nowrap}
+
+.poster-slider-wrap{position:relative;aspect-ratio:16/9;width:100%;border-radius:12px;overflow:hidden;background:var(--surface3);border:1px solid var(--border);display:grid;place-items:center}
+.poster-slider-wrap img{width:100%;height:100%;object-fit:cover;background:#08090b}
+.poster-slider-fallback{font:700 12px var(--display);color:var(--muted);padding:10px;text-align:center}
+.slider-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.slider-match-title{font:700 14px/1.3 var(--display);color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slider-time-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.lang-tags{display:flex;gap:5px;flex-wrap:wrap}
+.lang-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--surface3);color:var(--ink);border:1px solid var(--border)}
+.lang-tag.cat-badge{color:var(--accent);border-color:rgba(51,153,255,.32);background:rgba(51,153,255,.1)}
+
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border);font-size:12px}
+.card-foot-left{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.card-foot-right{display:flex;align-items:center;gap:8px;flex:none}
+.stream-count{color:var(--muted);font-weight:500}.stream-count.empty{color:var(--live)}
+.thumb-dl-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 8px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--ink);font-size:11px;font-weight:600;flex:none}
+.thumb-dl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.watch-cta{display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;font-size:12px;cursor:pointer;background:none;border:0;flex:none}
+
+.fmt-tag{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:lowercase;padding:1px 5px;border-radius:4px;border:1px solid var(--border);line-height:1.2}
+.fmt-tag.android{color:#3ddc84;background:rgba(61,220,132,.12);border-color:rgba(61,220,132,.28)}
+.fmt-tag.ios{color:#5ac8fa;background:rgba(90,200,250,.12);border-color:rgba(90,200,250,.28)}
+
+.empty-box{padding:26px 18px;text-align:center;background:var(--white);border:1px dashed var(--border);border-radius:var(--radius);color:var(--muted);font-size:13.5px}
+
+.hub-toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(15,17,21,.94);color:#fff;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;z-index:2000;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.hub-toast.show{opacity:1}
+
+#playerView.active{display:block;position:fixed;inset:0;width:100vw;height:100dvh;background:#000;z-index:999;overflow:hidden;padding:0;margin:0}
+.pure-stage{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+#player-container{position:absolute;inset:0;width:100%;height:100%;background:#000;overflow:hidden}
+#player-container video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:block}
+#player-container .shaka-controls-button-panel{padding-bottom:env(safe-area-inset-bottom)}
+
+.top-left-stream-bar{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:1005;max-width:calc(55vw - 14px)}
+.tl-stream-wrap{position:relative;display:inline-block}
+.tl-stream-btn{height:28px;padding:0 10px;border-radius:999px;background:rgba(13,14,16,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-stream-btn:hover{border-color:var(--accent)}
+.tl-stream-menu{position:absolute;top:calc(100% + 5px);left:0;min-width:170px;max-width:min(270px,calc(100vw - 24px));max-height:58dvh;overflow-y:auto;background:rgba(15,17,21,.94);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:3px;box-shadow:0 14px 36px rgba(0,0,0,.65);display:none;z-index:1010}
+.tl-stream-menu.open{display:block}
+.tl-stream-item{width:100%;text-align:left;padding:6px 9px;border-radius:7px;color:#e9edf2;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tl-stream-item:hover{background:rgba(255,255,255,.08)}
+.tl-stream-item.active{background:rgba(0,136,204,.3);color:#fff;font-weight:700}
+.tl-stream-item-right{display:inline-flex;align-items:center;gap:4px;flex:none}
+
+.top-right-player-bar{position:fixed;top:calc(10px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));z-index:1005;display:flex;align-items:center;gap:6px}
+.tr-pill-btn{height:28px;padding:0 10px;border-radius:999px;background:rgba(13,14,16,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.tr-pill-btn:hover{border-color:var(--accent)}
+.tr-pill-btn.get-btn{background:rgba(0,136,204,.86);border-color:rgba(255,255,255,.18);color:#fff}
+.tr-pill-btn.get-btn:hover{filter:brightness(1.08)}
+.tr-pill-btn svg{width:12px;height:12px;fill:currentColor;flex:none}
+
+.player-notice{position:fixed;top:calc(44px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));z-index:1005;background:rgba(13,14,16,.84);color:#fff;border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:7px;font-size:10.5px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .2s ease}
+.player-notice.show{opacity:1}
+
+.screen-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;background:#000;color:#fff;font:600 15px var(--body);z-index:1001}
+.screen-msg small{font-weight:400;color:#aaa;max-width:90%;overflow-wrap:anywhere}
+
+.popup-overlay{position:fixed;inset:0;background:rgba(20,20,20,.75);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:18px;z-index:2147483647;opacity:0;visibility:hidden;transition:.3s}
+.popup-overlay.visible{display:flex;opacity:1;visibility:visible}
+.popup-wrap{width:100%;max-width:455px;padding:3px;background:linear-gradient(145deg,var(--olive),#0088cc,var(--olive));border-radius:28px;box-shadow:0 20px 60px rgba(0,136,204,.35),0 35px 80px rgba(0,0,0,.5);transform:scale(.82) translateY(-4px);opacity:0;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),opacity .3s,max-width .35s}
+.popup-overlay.visible .popup-wrap{transform:scale(1) translateY(-28px);opacity:1}
+.popup-box{background:var(--cream);border-radius:25px;padding:44px 32px 26px;text-align:center;border:1px solid rgba(95,104,76,.25);box-shadow:inset 0 2px 6px rgba(255,255,255,.4)}
+.popup-overlay.button-stage .popup-wrap{max-width:320px;padding:0;background:transparent;border-radius:16px;box-shadow:none;transform:scale(.8) translateY(-14px);opacity:0;animation:joinFirstPop .42s cubic-bezier(.18,.9,.25,1.25) forwards}
+.popup-overlay.button-stage .popup-box{padding:0;background:transparent;border:0;border-radius:16px}
+.popup-overlay.button-stage .popup-title,.popup-overlay.button-stage .popup-text,.popup-overlay.button-stage .btn-joined-main{display:none}
+.popup-overlay.button-stage .popup-join{animation:joinButtonPulse 1.8s ease-in-out infinite;box-shadow:0 10px 35px rgba(0,136,204,.5)}
+@keyframes joinFirstPop{0%{opacity:0;transform:scale(.55) translateY(-14px)}75%{opacity:1;transform:scale(1.06) translateY(-28px)}100%{opacity:1;transform:scale(1) translateY(-28px)}}
+@keyframes joinButtonPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+.popup-overlay.revealing .popup-wrap{animation:popupExpand .42s cubic-bezier(.18,.9,.25,1.15) both}
+@keyframes popupExpand{0%{transform:scale(.88) translateY(-16px)}65%{transform:scale(1.025) translateY(-30px)}100%{transform:scale(1) translateY(-28px)}}
+.popup-overlay.revealing .popup-title,.popup-overlay.revealing .popup-text,.popup-overlay.revealing .btn-joined-main{animation:popupContentIn .28s ease both;animation-delay:.08s}
+@keyframes popupContentIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.popup-title{color:var(--olive);font-family:Acme,sans-serif;font-size:34px;margin-bottom:8px}
+.popup-text{color:var(--muted);font-size:15.5px;line-height:1.6;margin-bottom:22px;font-weight:500}
+.popup-text b{color:var(--ink);font-family:Amaranth,sans-serif;font-size:20px;display:block;margin-top:6px}
+.popup-join{width:100%;padding:22px 18px;border-radius:15px;font:700 19.5px Amaranth,sans-serif;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#0088cc,var(--olive));box-shadow:0 8px 25px rgba(0,136,204,.4);animation:btnPop 1.8s ease-in-out infinite;margin-bottom:10px}
+.btn-joined-main{color:var(--muted);font-size:10px;font-weight:600;width:auto;margin:4px auto 0;padding:2px 8px;background:transparent;border:0;opacity:0.7}
+@keyframes btnPop{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+
+@media(max-width:600px){.container{padding:0 14px}.header{padding:12px 14px;margin-left:-14px;margin-right:-14px}.brand-text h1{font-size:16px}.brand-text p{font-size:9.5px}.brand-mark{width:36px;height:36px;font-size:15px}.live-pill{padding:5px 8px;font-size:11px}.icon-action-btn{width:34px;height:34px;font-size:13px}.join-btn{padding:6px 10px;font-size:11px}.slider-card{flex:0 0 304px}.upcoming-list-stack{grid-template-columns:1fr}.tl-stream-btn{max-width:140px}.popup-wrap{max-width:94vw}.popup-box{padding:36px 22px 22px}}
+</style>
+<link rel="stylesheet" href="./fancode-premium.css?v=20261125b">
+
+</head>
+<body>
+<div class="container">
+  <section id="hubView" class="view active">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark">CZ</div>
+        <div class="brand-text"><h1>CRICZONE</h1><p>FANCODE LIVE SPORTS</p></div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-action-btn" id="alertToggleBtn" type="button" aria-label="Match Alerts" title="Match Alerts">🔔</button>
+        <button class="icon-action-btn" id="themeToggle" type="button" aria-label="Toggle Theme">☀️</button>
+        <div class="live-pill"><span class="dot"></span> Live</div>
+        <div class="clock" id="clock"></div>
+        <a class="join-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Telegram</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" class="search-input" type="search" placeholder="Search matches, teams, sports or series..." autocomplete="off">
+    </div>
+
+    <div class="filters">
+      <div class="filter-row" id="tabs" role="tablist" aria-label="Status"></div>
+      <div class="filter-row" id="catTabs" role="tablist" aria-label="Sport Category"></div>
+    </div>
+
+    <div id="hubSectionsContainer">
+      <div class="empty-box">Loading FanCode live matches…</div>
+    </div>
+  </section>
+
+  <section id="playerView" class="view">
+    <div class="pure-stage" id="pureStage">
+      <div class="top-left-stream-bar" id="topLeftStreamBar">
+        <div class="tl-stream-wrap" id="streamMenuWrap">
+          <button class="tl-stream-btn" id="streamSelectBtn" type="button" aria-expanded="false">
+            <span id="activeStreamLabel">Select Stream</span>
+            <span id="activeStreamTag"></span>
+            <span>▾</span>
+          </button>
+          <div class="tl-stream-menu" id="streamSelectMenu" role="listbox"></div>
+        </div>
+      </div>
+
+      <div class="top-right-player-bar" id="topRightPlayerBar">
+        <button class="tr-pill-btn" id="shareBtn" type="button" aria-label="Share">
+          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+          <span>Share</span>
+        </button>
+        <a class="tr-pill-btn get-btn" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener" aria-label="Get App">
+          <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Get App</span>
+        </a>
+      </div>
+
+      <div class="player-notice" id="playerNotice"></div>
+      <div id="player-container"><div class="screen-msg">Starting stream…</div></div>
+    </div>
+  </section>
+</div>
+
+<div class="hub-toast" id="hubToast"></div>
+
+<script>
+"use strict";
+
+const FANCODE_FEED = "https://raw.githubusercontent.com/ARYANBHAIcool/ascode/main/data/fancode.json";
+const TG_LINK = "https://t.me/+pN15_8gc54s2NDU1";
+const FETCH_TIMEOUT_MS = 20000;
+const $ = id => document.getElementById(id);
+
+function isSharedStreamHash(h) {
+  const raw = String(h || "");
+  return /^#w\?id=[^&]+/.test(raw) || /^#watch\?id=[^&]+/.test(raw);
+}
+
+if (isSharedStreamHash(location.hash || "")) {
+  $("hubView").classList.remove("active");
+  $("playerView").classList.add("active");
+}
+
+const state = {
+  fancodeMatches: [],
+  tab: "all",
+  category: "all",
+  searchQuery: "",
+  currentEvent: null,
+  currentStreams: [],
+  currentIndex: 0,
+  menuOpen: false,
+  favs: JSON.parse(localStorage.getItem("cx_favs") || "[]"),
+  notified: JSON.parse(localStorage.getItem("cx_notified") || "[]"),
+  alertsOn: localStorage.getItem("cx_alerts") === "true"
+};
+
+let shakaPlayer = null, shakaOverlay = null, playSeq = 0, noticeTimer = null, hubToastTimer = null;
+
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[c]));
+
+function showHubToast(msg, ms = 2400) {
+  const el = $("hubToast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(hubToastTimer);
+  if (ms) hubToastTimer = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+function safeFileName(title) {
+  const base = String(title || "thumbnail")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 50) || "thumbnail";
+  return `${base}.jpg`;
+}
+
+async function downloadThumbnail(url, title) {
+  const cleanUrl = String(url || "").trim();
+  if (!/^https?:\/\//i.test(cleanUrl) || cleanUrl === "null") {
+    showHubToast("Thumbnail unavailable");
+    return;
+  }
+  const fileName = safeFileName(title);
+  try {
+    const res = await fetch(cleanUrl, { mode: "cors" });
+    if (!res.ok) throw Error("Fetch failed");
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
+    showHubToast("Thumbnail downloaded");
+  } catch (e) {
+    const a = document.createElement("a");
+    a.href = cleanUrl;
+    a.download = fileName;
+    a.target = "_blank";
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showHubToast("Opened thumbnail");
+  }
+}
+
+function makeShortId(rawPart, fallbackNum) {
+  const cleaned = String(rawPart || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 12);
+  return `fc_${cleaned || fallbackNum}`;
+}
+
+function streamParamValue(stream, idx) {
+  if (!stream) return "";
+  const rawName = String(stream.label || `stream_${idx + 1}`).trim();
+  return encodeURIComponent(rawName.replace(/\s+/g, "_"));
+}
+
+function buildWatchHash(ev, idx) {
+  const s = ev.streams[idx] || ev.streams[0];
+  const stVal = streamParamValue(s, idx);
+  return `#w?id=${encodeURIComponent(ev.id)}${stVal ? `&st=${stVal}` : ""}`;
+}
+
+function isBlockedTamashaOrTapmad(labelOrUrl) {
+  return /\b(tamasha|tapmad)\b/i.test(String(labelOrUrl || ""));
+}
+
+function detectPlatformTag(stream) {
+  if (!stream) return "";
+  const link = String(stream.link || "");
+  const isMpd = /\.mpd(?:\?|$)/i.test(link);
+  const isM3u8 = /\.m3u8(?:\?|$)/i.test(link);
+  const hasKeys = Boolean(
+    (stream.clearKeys && Object.keys(stream.clearKeys).length) ||
+    (stream.kid && stream.key) ||
+    (stream.key && String(stream.key).includes(":"))
+  );
+  if (isMpd && hasKeys) return "android";
+  if (isM3u8) return "ios";
+  return "";
+}
+
+function tinyFmtTag(tag) {
+  if (!tag) return "";
+  return `<span class="fmt-tag ${tag}">${tag}</span>`;
+}
+
+function eventFmtBadges(streams) {
+  if (!Array.isArray(streams) || !streams.length) return "";
+  const set = new Set();
+  streams.forEach(s => {
+    const t = detectPlatformTag(s);
+    if (t) set.add(t);
+  });
+  return Array.from(set).map(tinyFmtTag).join("");
+}
+
+function showNotice(msg, ms = 3000) {
+  const el = $("playerNotice");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(noticeTimer);
+  if (ms) noticeTimer = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const next = dark ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("cx_theme", next);
+  $("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
+}
+
+function updateAlertIcon() {
+  const btn = $("alertToggleBtn");
+  if (!btn) return;
+  const ok = state.alertsOn && ("Notification" in window) && Notification.permission === "granted";
+  btn.classList.toggle("alert-active", ok);
+}
+
+async function toggleAlerts() {
+  if (!("Notification" in window)) return;
+  if (!state.alertsOn) {
+    const p = await Notification.requestPermission();
+    if (p === "granted") {
+      state.alertsOn = true;
+      localStorage.setItem("cx_alerts", "true");
+      new Notification("CʀɪᴄxCʀᴀᴛᴇ", { body: "Live match alerts enabled." });
+    }
+  } else {
+    state.alertsOn = false;
+    localStorage.setItem("cx_alerts", "false");
+  }
+  updateAlertIcon();
+}
+
+function checkAlerts() {
+  if (!state.alertsOn || !("Notification" in window) || Notification.permission !== "granted") return;
+  let changed = false;
+  state.fancodeMatches.forEach(ev => {
+    if (getStatus(ev) === "live" && state.favs.includes(ev.id) && !state.notified.includes(ev.id)) {
+      new Notification("Live Now", { body: ev.title });
+      state.notified.push(ev.id);
+      changed = true;
+    }
+  });
+  if (changed) localStorage.setItem("cx_notified", JSON.stringify(state.notified.slice(-100)));
+}
+
+function parseFancodeDate(val) {
+  if (!val) return new Date(Date.now() + 3600000);
+  if (typeof val === "number" && !isNaN(val) && val > 0) return new Date(val);
+  const s = String(val).trim();
+  if (!s || s === "null" || s === "undefined") return new Date(Date.now() + 3600000);
+  if (/^live\s*now$/i.test(s)) return new Date(Date.now() - 600000);
+
+  const fcMatch = s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)\s+(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/i);
+  if (fcMatch) {
+    let hr = Number(fcMatch[1]);
+    const min = Number(fcMatch[2]);
+    const sec = Number(fcMatch[3] || 0);
+    const mer = fcMatch[4].toUpperCase();
+    const day = Number(fcMatch[5]);
+    const month = Number(fcMatch[6]);
+    const year = Number(fcMatch[7]);
+
+    if (mer === "PM" && hr < 12) hr += 12;
+    if (mer === "AM" && hr === 12) hr = 0;
+
+    const utcMs = Date.UTC(year, month - 1, day, hr, min, sec) - (5 * 60 + 30) * 60000;
+    const dt = new Date(utcMs);
+    if (!isNaN(dt)) return dt;
+  }
+
+  const m1 = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m1) {
+    const [, y, mo, d, h, mi, se = "00"] = m1;
+    const dt = new Date(`${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}T${h.padStart(2, "0")}:${mi}:${se}+05:30`);
+    if (!isNaN(dt)) return dt;
+  }
+
+  const dt = new Date(s);
+  return isNaN(dt) ? new Date(Date.now() + 3600000) : dt;
+}
+
+function getStatus(ev) {
+  if (ev.forceLive) return "live";
+  if (ev.forcePaused) return "soon";
+  const now = Date.now();
+  if (now < ev.st.getTime()) return "soon";
+  if (now <= ev.en.getTime()) return "live";
+  return "done";
+}
+
+function fmtDur(ms) {
+  const n = Math.max(0, Math.round(ms / 60000));
+  const h = Math.floor(n / 60), m = n % 60;
+  if (h >= 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+const fmtTime = d => d.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit" });
+const fmtDate = d => d.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short" });
+
+function normalizeCategory(rawCat) {
+  const c = String(rawCat || "").trim();
+  if (!c) return "Other";
+  const low = c.toLowerCase();
+  if (low === "motogp") return "MotoGP";
+  if (low === "motorsports" || low === "motorsport") return "Motorsports";
+  if (low === "f1" || low === "formula 1") return "Formula 1";
+  if (low === "ufc" || low === "mma") return "MMA / UFC";
+  return c.charAt(0).toUpperCase() + c.slice(1);
+}
+
+function cleanLabelName(rawKey) {
+  return String(rawKey || "")
+    .replace(/_/g, " ")
+    .replace(/\bcdn\b/gi, "CDN")
+    .replace(/\bbd\b/gi, "BD")
+    .replace(/\bnp\b/gi, "NP")
+    .replace(/\blk\b/gi, "LK")
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .trim();
+}
+
+function extractStreamsFromMatch(m, idx) {
+  const streams = [];
+  const seen = new Set();
+  const lang = String(m.language || "").trim();
+
+  const pushStream = (label, rawUrl, rawKey = "", rawKid = "") => {
+    const link = String(rawUrl || "").split("|")[0].trim();
+    if (!/^https?:\/\//i.test(link) || seen.has(link)) return;
+    const chLabel = String(label || lang || `Stream ${streams.length + 1}`).trim();
+    if (isBlockedTamashaOrTapmad(`${chLabel} ${link}`)) return;
+    seen.add(link);
+    streams.push({
+      id: `fc_${idx}_${streams.length}`,
+      label: chLabel,
+      link,
+      key: String(rawKey || "").trim(),
+      kid: String(rawKid || "").trim(),
+      clearKeys: null
+    });
+  };
+
+  if (m.stream_url) {
+    pushStream(lang ? `${lang} (Main)` : "Main Stream", m.stream_url, m.key || m.drm_key || "", m.kid || "");
+  }
+
+  if (m.streams && typeof m.streams === "object" && !Array.isArray(m.streams)) {
+    Object.entries(m.streams).forEach(([k, v]) => {
+      if (!v || v === "UNAVAILABLE") return;
+      if (typeof v === "string") {
+        pushStream(cleanLabelName(k), v);
+      } else if (typeof v === "object") {
+        Object.entries(v).forEach(([bk, bv]) => {
+          if (typeof bv === "string") pushStream(cleanLabelName(bk), bv);
+          else if (bv && typeof bv === "object") {
+            pushStream(bv.name || bv.label || cleanLabelName(bk), bv.url || bv.stream_url || bv.link || "", bv.key || "", bv.kid || "");
+          }
+        });
+      }
+    });
+  } else if (Array.isArray(m.streams)) {
+    m.streams.forEach((s, sIdx) => {
+      if (!s) return;
+      if (typeof s === "string") pushStream(`Stream ${sIdx + 1}`, s);
+      else if (typeof s === "object") {
+        pushStream(
+          s.name || s.label || s.title || s.channel_name || `Stream ${sIdx + 1}`,
+          s.url || s.stream_url || s.link || s.src || "",
+          s.key || s.drm_key || s.clearkey || "",
+          s.kid || ""
+        );
+      }
+    });
+  }
+
+  if (m.auto_streams && typeof m.auto_streams === "object") {
+    Object.entries(m.auto_streams).forEach(([k, v]) => {
+      if (typeof v === "string") pushStream(cleanLabelName(k), v);
+      else if (v && typeof v === "object") {
+        pushStream(v.name || v.label || cleanLabelName(k), v.url || v.stream_url || v.link || "", v.key || "", v.kid || "");
+      }
+    });
+  }
+
+  return streams;
+}
+
+function parseFancodeMatches(data) {
+  const list = Array.isArray(data)
+    ? data
+    : (Array.isArray(data?.matches) ? data.matches : []);
+  if (!Array.isArray(list)) return [];
+
+  const events = [];
+  list.forEach((m, idx) => {
+    if (!m || typeof m !== "object") return;
+
+    const category = normalizeCategory(m.event_category);
+    const statusUpper = String(m.status || "").trim().toUpperCase();
+    const forceLive = statusUpper === "LIVE" || statusUpper === "IN_PLAY" || statusUpper === "STARTED";
+    const forcePaused = statusUpper === "PAUSED" || statusUpper === "BREAK" || statusUpper === "UPCOMING" || statusUpper === "NOT_STARTED";
+
+    const st = parseFancodeDate(m.startTime);
+    const isLongEvent = /\b(test|sheffield|golf|open|day\s*\d)\b/i.test(`${m.title || ""} ${m.event_name || ""}`);
+    const en = new Date(st.getTime() + (isLongEvent ? 9 * 3600000 : 4.5 * 3600000));
+
+    const matchName = String(m.match_name || m.title || "Live Event").trim();
+    const eventName = String(m.event_name || category).trim();
+    const title = String(m.title || (m.team_1 && m.team_2 ? `${m.team_1} vs ${m.team_2}` : matchName)).trim();
+    const poster = String(m.src || m.cover_image || "").trim();
+    const streams = extractStreamsFromMatch(m, idx);
+    const id = makeShortId(m.match_id || `${matchName}_${idx}`, idx + 1);
+
+    events.push({
+      id,
+      matchId: m.match_id ?? idx,
+      source: "fancode",
+      category,
+      categoryKey: category.toLowerCase(),
+      title,
+      matchName,
+      comp: eventName,
+      language: String(m.language || "").trim(),
+      team1: String(m.team_1 || "").trim(),
+      team2: String(m.team_2 || "").trim(),
+      rawStatus: statusUpper || (forceLive ? "LIVE" : "UPCOMING"),
+      poster,
+      scheduleText: String(m.startTime || "").trim(),
+      st,
+      en,
+      forceLive,
+      forcePaused,
+      streams
+    });
+  });
+
+  return events;
+}
+
+async function fetchFancodeJson() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(FANCODE_FEED, { cache: "no-store", signal: ctrl.signal });
+    if (!res.ok) return null;
+    const raw = await res.text();
+    if (!raw || raw.trim().startsWith("<")) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function loadData() {
+  // Prevent slow refreshes from overlapping and racing each other.
+  if (window.__CZ_FANCODE_LOADING__) return;
+  window.__CZ_FANCODE_LOADING__ = true;
+
+  try {
+    const data = await fetchFancodeJson();
+
+    // Keep the last good match list if the upstream feed is temporarily unavailable.
+    // A failed request must never turn a populated home page into an empty one.
+    if (!data || !Array.isArray(data.matches)) {
+      if (state.fancodeMatches.length) {
+        showHubToast("Refresh unavailable — showing last loaded matches", 3500);
+      } else {
+        showHubToast("Match feed unavailable — please retry shortly", 4500);
+      }
+    } else {
+      const nextMatches = parseFancodeMatches(data);
+      state.fancodeMatches = nextMatches;
+      renderHub();
+      checkAlerts();
+    }
+
+    if (!window.__booted) {
+      window.__booted = true;
+      route();
+    }
+  } catch (error) {
+    if (state.fancodeMatches.length) {
+      showHubToast("Refresh failed — keeping last loaded matches", 3500);
+    } else {
+      showHubToast("Unable to load matches — please retry shortly", 4500);
+    }
+    if (!window.__booted) {
+      window.__booted = true;
+      route();
+    }
+  } finally {
+    window.__CZ_FANCODE_LOADING__ = false;
+  }
+}
+
+function getMatchesByCategory(list) {
+  if (state.category === "all") return list;
+  return list.filter(ev => ev.categoryKey === state.category);
+}
+
+function filterList(list) {
+  return list.filter(ev => {
+    if (state.category !== "all" && ev.categoryKey !== state.category) return false;
+
+    const st = getStatus(ev);
+    if (state.tab === "live" && st !== "live") return false;
+    if (state.tab === "soon" && st !== "soon") return false;
+    if (state.tab === "favs" && !state.favs.includes(ev.id)) return false;
+
+    if (state.searchQuery) {
+      const hay = [ev.title, ev.matchName, ev.comp, ev.category, ev.language, ev.team1, ev.team2, ev.scheduleText].join(" ").toLowerCase();
+      if (!hay.includes(state.searchQuery)) return false;
+    }
+    return true;
+  }).sort((a, b) => {
+    const rank = { live: 0, soon: 1, done: 2 };
+    const d = (rank[getStatus(a)] ?? 2) - (rank[getStatus(b)] ?? 2);
+    return d || (a.st - b.st);
+  });
+}
+
+function thumbDownloadBtnHtml(ev) {
+  if (!ev.poster || ev.poster === "null") return "";
+  return `<button class="thumb-dl-btn" data-dl-thumb="${esc(ev.poster)}" data-dl-title="${esc(ev.title)}" type="button" title="Download Thumbnail">⬇ Thumb</button>`;
+}
+
+function fancodeCardHtml(ev) {
+  const st = getStatus(ev);
+  const statusLabel = st === "live"
+    ? "Live"
+    : (ev.rawStatus === "PAUSED" && st === "soon")
+      ? "Paused"
+      : st === "soon"
+        ? `in ${fmtDur(ev.st.getTime() - Date.now())}`
+        : "Finished";
+  const n = ev.streams.length;
+  const fav = state.favs.includes(ev.id);
+  const fmtBadges = eventFmtBadges(ev.streams);
+
+  const poster = ev.poster
+    ? `<img src="${esc(ev.poster)}" alt="${esc(ev.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=poster-slider-fallback>${esc(ev.comp || "FanCode")}</div>'">`
+    : `<div class="poster-slider-fallback">${esc(ev.comp || "FanCode")}</div>`;
+
+  const tags = [];
+  if (ev.category) tags.push(`<span class="lang-tag cat-badge">${esc(ev.category)}</span>`);
+  if (ev.language) tags.push(`<span class="lang-tag">${esc(ev.language)}</span>`);
+  if (ev.rawStatus === "PAUSED") tags.push(`<span class="lang-tag">PAUSED</span>`);
+
+  const timeRightText = /^live\s*now$/i.test(ev.scheduleText)
+    ? "Live Now"
+    : `${fmtDate(ev.st)}${ev.scheduleText ? " · " + esc(ev.scheduleText) : ""}`;
+
+  return `<div class="slider-card ${st === "live" ? "is-live" : ""}">
+    <div class="card-top">
+      <span class="sport-chip"><span class="name">${esc(ev.comp || ev.category)}</span></span>
+      <span class="status ${st}">${statusLabel}</span>
+    </div>
+    <div class="card-main-click" data-open="${esc(ev.id)}" style="display:flex;flex-direction:column;gap:10px">
+      <div class="poster-slider-wrap">${poster}</div>
+      <div class="slider-title-row">
+        <div class="slider-match-title">${esc(ev.title)}</div>
+        <button class="fav-team-btn ${fav ? "active" : ""}" data-fav="${esc(ev.id)}" type="button" title="Save">♥</button>
+      </div>
+      <div class="slider-time-line">
+        <span class="kickoff-time">${st === "live" ? "LIVE" : fmtTime(ev.st)}</span>
+        <span class="kickoff-date">${timeRightText}</span>
+      </div>
+      ${tags.length ? `<div class="lang-tags">${tags.join("")}</div>` : ""}
+    </div>
+    <div class="card-foot">
+      <div class="card-foot-left">
+        <span class="stream-count ${n ? "" : "empty"}">${n ? `${n} stream${n > 1 ? "s" : ""}` : (st === "soon" ? "Upcoming" : "No stream")}</span>
+        ${fmtBadges}
+      </div>
+      <div class="card-foot-right">
+        ${thumbDownloadBtnHtml(ev)}
+        <button class="watch-cta" data-open="${esc(ev.id)}" type="button">Watch →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindSliderNavButtons() {
+  $("fcLivePrevBtn")?.addEventListener("click", () => $("fcLiveSlider")?.scrollBy({ left: -350, behavior: "smooth" }));
+  $("fcLiveNextBtn")?.addEventListener("click", () => $("fcLiveSlider")?.scrollBy({ left: 350, behavior: "smooth" }));
+  $("fcSoonPrevBtn")?.addEventListener("click", () => $("fcSoonSlider")?.scrollBy({ left: -350, behavior: "smooth" }));
+  $("fcSoonNextBtn")?.addEventListener("click", () => $("fcSoonSlider")?.scrollBy({ left: 350, behavior: "smooth" }));
+}
+
+function renderCategoryTabs(all) {
+  const catMap = new Map();
+  all.forEach(ev => {
+    const key = ev.categoryKey;
+    if (!catMap.has(key)) {
+      catMap.set(key, { key, label: ev.category, count: 0 });
+    }
+    catMap.get(key).count += 1;
+  });
+
+  if (state.category !== "all" && !catMap.has(state.category)) {
+    state.category = "all";
+  }
+
+  const ordered = Array.from(catMap.values()).sort((a, b) => {
+    const pref = { cricket: 0, football: 1 };
+    const pa = pref[a.key] ?? 10;
+    const pb = pref[b.key] ?? 10;
+    if (pa !== pb) return pa - pb;
+    return b.count - a.count || a.label.localeCompare(b.label);
+  });
+
+  const pills = [{ key: "all", label: "All Sports", count: all.length }, ...ordered];
+  $("catTabs").innerHTML = pills
+    .map(c => `<button class="pill cat-pill ${state.category === c.key ? "active" : ""}" data-cat="${esc(c.key)}" role="tab">${esc(c.label)}<span class="count">${c.count}</span></button>`)
+    .join("");
+}
+
+function renderHub() {
+  if (!$("hubView").classList.contains("active")) return;
+
+  const all = state.fancodeMatches;
+  renderCategoryTabs(all);
+
+  const catScoped = getMatchesByCategory(all);
+  const filtered = filterList(all);
+  const liveRows = filtered.filter(e => getStatus(e) === "live");
+  const soonRows = filtered.filter(e => getStatus(e) === "soon");
+  const doneRows = filtered.filter(e => getStatus(e) === "done");
+
+  const activeCatLabel = state.category === "all"
+    ? "FanCode"
+    : (all.find(e => e.categoryKey === state.category)?.category || "FanCode");
+
+  const isUpcomingView = state.tab === "soon";
+  const host = $("hubSectionsContainer");
+
+  if (isUpcomingView) {
+    host.innerHTML = `<section class="section-block" id="fcUpcomingSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">Upcoming ${esc(activeCatLabel)}</h2>
+          <span class="section-badge">${soonRows.length}</span>
+        </div>
+      </div>
+      <div class="upcoming-list-stack">${
+        soonRows.length
+          ? soonRows.map(fancodeCardHtml).join("")
+          : `<div class="empty-box">No upcoming matches found.</div>`
+      }</div>
+    </section>`;
+  } else if (state.tab === "live") {
+    host.innerHTML = `<section class="section-block" id="fcLiveOnlySection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">Live ${esc(activeCatLabel)}</h2>
+          <span class="section-badge">${liveRows.length}</span>
+        </div>
+      </div>
+      <div class="upcoming-list-stack">${
+        liveRows.length
+          ? liveRows.map(fancodeCardHtml).join("")
+          : `<div class="empty-box">No live matches right now.</div>`
+      }</div>
+    </section>`;
+  } else {
+    const primaryRows = [...liveRows, ...soonRows];
+    const s1 = `<section class="section-block" id="fcLiveSliderSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">${esc(activeCatLabel)} Live &amp; Next Up</h2>
+          <span class="section-badge">${primaryRows.length}</span>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-nav-btn" id="fcLivePrevBtn" type="button" aria-label="Previous">‹</button>
+          <button class="slider-nav-btn" id="fcLiveNextBtn" type="button" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="matches-slider" id="fcLiveSlider">${
+        primaryRows.length
+          ? primaryRows.map(fancodeCardHtml).join("")
+          : `<div class="empty-box" style="width:100%">No matches found.</div>`
+      }</div>
+    </section>`;
+
+    const scheduleRows = [...soonRows, ...doneRows];
+    const s2 = `<section class="section-block" id="fcSoonSliderSection">
+      <div class="section-head">
+        <div class="section-head-left">
+          <h2 class="section-heading">${esc(activeCatLabel)} Schedule</h2>
+          <span class="section-badge">${scheduleRows.length}</span>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-nav-btn" id="fcSoonPrevBtn" type="button" aria-label="Previous">‹</button>
+          <button class="slider-nav-btn" id="fcSoonNextBtn" type="button" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="matches-slider" id="fcSoonSlider">${
+        scheduleRows.length
+          ? scheduleRows.map(fancodeCardHtml).join("")
+          : `<div class="empty-box" style="width:100%">No scheduled matches found.</div>`
+      }</div>
+    </section>`;
+
+    host.innerHTML = s1 + s2;
+    bindSliderNavButtons();
+  }
+
+  const counts = {
+    all: catScoped.length,
+    live: catScoped.filter(e => getStatus(e) === "live").length,
+    soon: catScoped.filter(e => getStatus(e) === "soon").length,
+    favs: catScoped.filter(e => state.favs.includes(e.id)).length
+  };
+
+  $("tabs").innerHTML = [
+    ["all", "All", counts.all],
+    ["live", "Live", counts.live],
+    ["soon", "Upcoming", counts.soon],
+    ["favs", "♥ Saved", counts.favs]
+  ].map(([k, l, n]) => `<button class="pill ${state.tab === k ? "active" : ""}" data-tab="${k}" role="tab">${l}<span class="count">${n}</span></button>`).join("");
+
+  $("clock").textContent = new Date().toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" }) + " IST";
+}
+
+function getClearKey(rec) {
+  if (rec.clearKeys && Object.keys(rec.clearKeys).length) return rec.clearKeys;
+  const kid = String(rec.kid || "").trim().toLowerCase();
+  const key = String(rec.key || "").trim().toLowerCase();
+  if (kid && key && /^[0-9a-f]+$/.test(kid) && /^[0-9a-f]+$/.test(key)) return { [kid]: key };
+  const raw = String(rec.key || "").trim();
+  if (raw.includes(":")) {
+    const parts = raw.split(":");
+    const pKid = parts.shift().trim().replace(/^0x/i, "").toLowerCase();
+    const pKey = parts.join(":").trim().replace(/^0x/i, "").toLowerCase();
+    if (/^[0-9a-f]+$/.test(pKid) && /^[0-9a-f]+$/.test(pKey)) return { [pKid]: pKey };
+  }
+  return null;
+}
+
+async function destroyShaka() {
+  if (shakaOverlay) {
+    try { shakaOverlay.destroy(); } catch (e) {}
+    shakaOverlay = null;
+  }
+  if (shakaPlayer) {
+    try { await shakaPlayer.destroy(); } catch (e) {}
+    shakaPlayer = null;
+  }
+  const c = $("player-container");
+  if (c) c.innerHTML = "";
+}
+
+async function stopVideo() {
+  playSeq++;
+  await destroyShaka();
+}
+
+function setStreamMenuOpen(open) {
+  state.menuOpen = Boolean(open);
+  const menu = $("streamSelectMenu");
+  const btn = $("streamSelectBtn");
+  if (menu) menu.classList.toggle("open", state.menuOpen);
+  if (btn) btn.setAttribute("aria-expanded", String(state.menuOpen));
+}
+
+function renderTopLeftStreamMenu() {
+  const active = state.currentStreams[state.currentIndex];
+  $("activeStreamLabel").textContent = active ? active.label : (state.currentStreams.length ? "Select Stream" : "No Streams");
+  $("activeStreamTag").innerHTML = active ? tinyFmtTag(detectPlatformTag(active)) : "";
+
+  const menu = $("streamSelectMenu");
+  if (!state.currentStreams.length) {
+    menu.innerHTML = `<div class="tl-stream-item">No streams</div>`;
+    return;
+  }
+
+  menu.innerHTML = state.currentStreams.map((s, i) => {
+    const act = i === state.currentIndex;
+    const tag = tinyFmtTag(detectPlatformTag(s));
+    return `<button class="tl-stream-item ${act ? "active" : ""}" data-stream-idx="${i}" type="button">
+      <span>${esc(s.label)}</span>
+      <span class="tl-stream-item-right">${tag}<span>${act ? "●" : ""}</span></span>
+    </button>`;
+  }).join("");
+}
+
+async function playStream(idx) {
+  const total = state.currentStreams.length;
+  if (!total) return;
+
+  const rec = state.currentStreams[idx];
+  if (!rec) return;
+
+  state.currentIndex = idx;
+  renderTopLeftStreamMenu();
+
+  if (state.currentEvent) {
+    history.replaceState(null, "", buildWatchHash(state.currentEvent, idx));
+  }
+
+  const token = ++playSeq;
+  await destroyShaka();
+  if (token !== playSeq) return;
+
+  if (!window.shaka || !window.shaka.Player || !window.shaka.Player.isBrowserSupported()) {
+    $("player-container").innerHTML = `<div class="screen-msg">Playback not supported</div>`;
+    return;
+  }
+
+  shaka.polyfill.installAll();
+
+  const c = $("player-container");
+  const video = document.createElement("video");
+  video.controls = false;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.setAttribute("playsinline", "");
+  video.setAttribute("webkit-playsinline", "");
+  video.preload = "auto";
+  c.appendChild(video);
+
+  const inst = new shaka.Player();
+  shakaPlayer = inst;
+  await inst.attach(video);
+  if (token !== playSeq) return;
+
+  const ui = new shaka.ui.Overlay(inst, c, video);
+  shakaOverlay = ui;
+  ui.configure({
+    controlPanelElements: [
+      "play_pause",
+      "mute",
+      "volume",
+      "time_and_duration",
+      "spacer",
+      "quality",
+      "picture_in_picture",
+      "fullscreen",
+      "overflow_menu"
+    ],
+    overflowMenuButtons: [
+      "quality",
+      "language",
+      "captions",
+      "playback_rate",
+      "picture_in_picture"
+    ],
+    seekBarColors: {
+      base: "#777",
+      buffered: "#D48806",
+      played: "#0088cc",
+      ad: "#fff"
+    }
+  });
+
+  const retryCfg = {
+    maxAttempts: 4,
+    baseDelay: 500,
+    backoffFactor: 1.5,
+    fuzzFactor: 0.3,
+    timeout: 20000,
+    stallTimeout: 10000,
+    connectionTimeout: 10000
+  };
+
+  inst.configure({
+    preferredAudioLanguage: "en",
+    streaming: {
+      bufferingGoal: 20,
+      rebufferingGoal: 2,
+      bufferBehind: 15,
+      lowLatencyMode: false,
+      segmentPrefetchLimit: 0,
+      jumpLargeGaps: true,
+      smallGapLimit: 0.5,
+      retryParameters: retryCfg
+    },
+    manifest: {
+      retryParameters: retryCfg
+    },
+    drm: {
+      retryParameters: retryCfg
+    },
+    abr: { enabled: true, defaultBandwidthEstimate: 3500000 }
+  });
+
+  const ck = getClearKey(rec);
+  if (ck) inst.configure({ drm: { clearKeys: ck } });
+
+  inst.addEventListener("error", ev => {
+    const e = ev.detail;
+    if (token === playSeq && e && e.severity === shaka.util.Error.Severity.CRITICAL) {
+      showNotice(`${rec.label} unavailable — select another from top-left`, 3600);
+    }
+  });
+
+  try {
+    await inst.load(rec.link);
+    if (token !== playSeq) return;
+    try {
+      await video.play();
+    } catch (playErr) {
+      showNotice("Tap Play to start", 3000);
+    }
+  } catch (loadErr) {
+    if (token !== playSeq) return;
+    showNotice(`${rec.label} unavailable — select another from top-left`, 3600);
+  }
+}
+
+function findEvent(id) {
+  return state.fancodeMatches.find(e => e.id === id) || null;
+}
+
+function resolveStreamIndex(ev, stParam) {
+  if (!ev || !Array.isArray(ev.streams) || !ev.streams.length) return 0;
+  if (!stParam) return 0;
+
+  const decoded = decodeURIComponent(stParam).trim().toLowerCase();
+  if (/^\d+$/.test(decoded)) {
+    return Math.max(0, Math.min(Number(decoded), ev.streams.length - 1));
+  }
+
+  const normalizedTarget = decoded.replace(/[_\s-]+/g, " ");
+  const idx = ev.streams.findIndex((s, i) => {
+    const lbl = String(s.label || "").trim().toLowerCase();
+    const lblNorm = lbl.replace(/[_\s-]+/g, " ");
+    return lbl === decoded
+      || lblNorm === normalizedTarget
+      || String(s.id).toLowerCase() === decoded
+      || `s${i + 1}` === decoded;
+  });
+  return idx >= 0 ? idx : 0;
+}
+
+async function openPlayer(id, stParam = "") {
+  $("hubView").classList.remove("active");
+  $("playerView").classList.add("active");
+  setStreamMenuOpen(false);
+  window.scrollTo(0, 0);
+
+  if (!state.fancodeMatches.length) {
+    await loadData();
+  }
+
+  const ev = findEvent(id);
+  if (!ev) {
+    state.currentEvent = null;
+    state.currentStreams = [];
+    renderTopLeftStreamMenu();
+    $("player-container").innerHTML = `<div class="screen-msg">Match not found</div>`;
+    return;
+  }
+
+  state.currentEvent = ev;
+  state.currentStreams = ev.streams || [];
+  const safeIdx = resolveStreamIndex(ev, stParam);
+  renderTopLeftStreamMenu();
+
+  if (state.currentStreams.length) {
+    await playStream(safeIdx);
+  } else {
+    const info = ev.rawStatus === "PAUSED" ? "Match paused" : (ev.scheduleText || ev.title);
+    $("player-container").innerHTML = `<div class="screen-msg">No stream available yet<small>${esc(ev.title)} · ${esc(info)}</small></div>`;
+  }
+}
+
+function showHub() {
+  stopVideo();
+  setStreamMenuOpen(false);
+  state.currentEvent = null;
+  state.currentStreams = [];
+  $("playerView").classList.remove("active");
+  $("hubView").classList.add("active");
+  renderHub();
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  const h = location.hash || "";
+
+  const compact = h.match(/^#w\?id=([^&]+)(?:&st=([^&]+))?/);
+  if (compact) {
+    openPlayer(decodeURIComponent(compact[1]), compact[2] || "");
+    return;
+  }
+  const legacy = h.match(/^#watch\?id=([^&]+)(?:&stream=(\d+))?/);
+  if (legacy) {
+    openPlayer(decodeURIComponent(legacy[1]), legacy[2] || "0");
+    return;
+  }
+
+  showHub();
+}
+
+async function shareCurrentStream() {
+  if (!state.currentEvent) return;
+  const shareUrl = `${location.origin}${location.pathname}${buildWatchHash(state.currentEvent, state.currentIndex)}`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: state.currentEvent.title, url: shareUrl });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+  }
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    showNotice("Link copied", 2200);
+  } catch (e) {
+    showNotice("Copy failed", 2200);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("cx_theme") || "dark";
+  document.documentElement.setAttribute("data-theme", saved);
+  $("themeToggle").textContent = saved === "dark" ? "☀️" : "🌙";
+  updateAlertIcon();
+
+  $("themeToggle").addEventListener("click", toggleTheme);
+  $("alertToggleBtn").addEventListener("click", toggleAlerts);
+  $("shareBtn").addEventListener("click", shareCurrentStream);
+
+  $("streamSelectBtn").addEventListener("click", e => {
+    e.stopPropagation();
+    setStreamMenuOpen(!state.menuOpen);
+  });
+
+  $("streamSelectMenu").addEventListener("click", e => {
+    e.stopPropagation();
+    const item = e.target.closest("[data-stream-idx]");
+    if (!item || !state.currentEvent) return;
+    const idx = Number(item.dataset.streamIdx);
+    setStreamMenuOpen(false);
+    playStream(idx);
+  });
+
+  document.addEventListener("click", e => {
+    if (state.menuOpen && !e.target.closest("#streamMenuWrap")) setStreamMenuOpen(false);
+  });
+
+  $("searchInput").addEventListener("input", e => {
+    state.searchQuery = e.target.value.toLowerCase().trim();
+    renderHub();
+  });
+
+  $("tabs").addEventListener("click", e => {
+    const b = e.target.closest("[data-tab]");
+    if (b) { state.tab = b.dataset.tab; renderHub(); }
+  });
+
+  $("catTabs").addEventListener("click", e => {
+    const b = e.target.closest("[data-cat]");
+    if (b) { state.category = b.dataset.cat; renderHub(); }
+  });
+
+  $("hubSectionsContainer").addEventListener("click", e => {
+    const dlBtn = e.target.closest("[data-dl-thumb]");
+    if (dlBtn) {
+      e.stopPropagation();
+      downloadThumbnail(dlBtn.dataset.dlThumb, dlBtn.dataset.dlTitle);
+      return;
+    }
+    const fav = e.target.closest("[data-fav]");
+    if (fav) {
+      e.stopPropagation();
+      const id = fav.dataset.fav;
+      const i = state.favs.indexOf(id);
+      if (i > -1) state.favs.splice(i, 1);
+      else state.favs.push(id);
+      localStorage.setItem("cx_favs", JSON.stringify(state.favs));
+      renderHub();
+      return;
+    }
+    const open = e.target.closest("[data-open]");
+    if (open) {
+      const ev = state.fancodeMatches.find(x => x.id === open.dataset.open);
+      if (ev) {
+        location.hash = buildWatchHash(ev, 0);
+      }
+    }
+  });
+
+});
+
+window.addEventListener("hashchange", route);
+window.addEventListener("pagehide", stopVideo);
+
+loadData();
+
+setInterval(() => {
+  if (window.__booted && !location.hash.startsWith("#w") && !document.hidden) loadData();
+}, 120000);
+</script>
+<script src="/assets/js/cz-global-community.js" defer></script>
+</body>
+</html>
