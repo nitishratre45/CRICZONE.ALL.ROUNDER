@@ -1184,6 +1184,30 @@
  #player-modal .shaka-settings-menu::-webkit-scrollbar-thumb{background:#c4ff27!important;border-radius:8px!important}
 }
 </style>
+
+<style>
+/* Willow Sports 24x7 channel tab and responsive iframe */
+.willow-channel-tab { white-space: nowrap; }
+.willow-sports-channel {
+    width: 100%; margin: 18px 0 34px; padding: clamp(12px, 2vw, 20px);
+    border: 1px solid rgba(215,255,63,.2); border-radius: 18px;
+    background: linear-gradient(145deg, rgba(18,25,17,.96), rgba(8,12,12,.98));
+    box-shadow: 0 14px 42px rgba(0,0,0,.24);
+}
+.willow-channel-heading { display:flex; align-items:center; gap:11px; margin:0 0 14px; }
+.willow-channel-heading strong { display:block; color:#f4f7e9; font-size:clamp(15px,2vw,19px); font-weight:900; }
+.willow-channel-heading small { display:block; margin-top:2px; color:#a8b39b; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.willow-live-dot { width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:#ff4058; box-shadow:0 0 0 5px rgba(255,64,88,.12),0 0 16px rgba(255,64,88,.65); }
+.willow-channel-frame { position:relative; width:100%; aspect-ratio:16/9; min-height:260px; overflow:hidden; border:1px solid rgba(255,255,255,.1); border-radius:13px; background:#000; }
+.willow-channel-frame iframe { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; background:#000; }
+@media(max-width:600px) {
+    .willow-channel-tab { flex:0 0 auto; }
+    .filter-tabs { overflow-x:auto; flex-wrap:nowrap; max-width:100%; scrollbar-width:thin; }
+    .willow-sports-channel { padding:10px; border-radius:13px; }
+    .willow-channel-frame { aspect-ratio:16/10; min-height:220px; }
+}
+</style>
+
 </head>
 <body>
 
@@ -1226,6 +1250,7 @@
                 <button class="tab-btn" data-filter="live">🔴 Live Now (<span id="count-live">0</span>)</button>
                 <button class="tab-btn" data-filter="upcoming">⏳ Upcoming (<span id="count-upcoming">0</span>)</button>
                 <button class="tab-btn" data-filter="favorites">⭐ My List (<span id="count-favorites">0</span>)</button>
+                <button class="tab-btn willow-channel-tab" data-filter="willow-sports">📺 Willow Sports 24×7</button>
             </div>
             <div class="search-box">
                 <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -1240,6 +1265,22 @@
                 <span>Fetching Live Events...</span>
             </div>
         </div>
+
+        <section id="willow-sports-channel" class="willow-sports-channel" hidden aria-label="Willow Sports 24 by 7 channel">
+            <div class="willow-channel-heading">
+                <span class="willow-live-dot" aria-hidden="true"></span>
+                <div><strong>Willow Sports</strong><small>24×7 Channel</small></div>
+            </div>
+            <div class="willow-channel-frame">
+                <iframe
+                    src="https://criczone.pages.dev/criczone5/?id=All3"
+                    title="Willow Sports 24×7 Live Channel"
+                    loading="lazy"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowfullscreen
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+        </section>
     </main>
 
     <!-- Fullscreen Player Modal -->
@@ -2421,7 +2462,13 @@
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.getAttribute('data-filter');
-                renderMatches();
+
+                const channelView = currentFilter === 'willow-sports';
+                document.getElementById('matches-container').hidden = channelView;
+                document.getElementById('willow-sports-channel').hidden = !channelView;
+                document.querySelector('.search-box').hidden = channelView;
+
+                if (!channelView) renderMatches();
             });
 
             // Search Input
