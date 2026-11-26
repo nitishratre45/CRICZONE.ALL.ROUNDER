@@ -14,7 +14,7 @@ var CRICZONE_CONF = {
     willowLive:          "https://sonujson-v5.pages.dev/Data/willow.json",
     willowSnapshot:      "",
     fancode:             "https://raw.githubusercontent.com/ARYANBHAIcool/ascode/main/data/fancode.json",
-    fanCode:             "https://raw.githubusercontent.com/kajju027/Fancode-Events-Json/refs/heads/main/fancode.json",
+    fanCode:             "https://raw.githubusercontent.com/ARYANBHAIcool/ascode/main/data/fancode.json",
     fancodeSnapshot:     "",
     fanCodeSnapshot:     "",
     worldSports:         "https://matchdekho.in/api/world-sports.json",
