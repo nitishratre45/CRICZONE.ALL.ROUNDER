@@ -115,7 +115,7 @@ if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
         "name": "UAE",
         "logo": "https://flagpedia.net/data/flags/w1160/lk.webp"
       },
-      "poster": "https://i.ibb.co/ksTy0Cr9/photo-2026-11-26-10-08-23.jpg",
+      "poster": "https://imgh.in/host/bj7cji",
       "date": "24 NOVEMBER 2026 - 11:30 AM",
       "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
