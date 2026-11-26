@@ -197,8 +197,12 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 .logo-icon{position:relative;overflow:hidden;padding:0!important;border-radius:13px!important;transform:none!important;background:#121c24!important}
 .logo-icon #cz-navbar-player{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:1;transition:opacity .35s ease,transform .5s ease}
 .logo-icon:hover #cz-navbar-player{transform:scale(1.08)}
-#tgBadge{top:88px!important;bottom:auto!important;left:auto!important;right:max(18px,env(safe-area-inset-right))!important;z-index:10001}
-@media(max-width:640px){#tgBadge{top:76px!important;right:13px!important;bottom:auto!important;padding:10px 14px!important}}
+/* Keep the community badge in the open left-side area of the live player.
+   It sits below the broadcaster mark and stays clear of the FanCode watermark
+   and the AUTO quality control on the right. */
+#tgBadge{top:164px!important;bottom:auto!important;left:clamp(78px,5.8vw,100px)!important;right:auto!important;z-index:10001}
+@media(max-width:640px){#tgBadge{top:126px!important;left:14px!important;right:auto!important;bottom:auto!important;padding:10px 14px!important}}
+@media(max-height:520px){#tgBadge{top:112px!important}}
 @media(prefers-reduced-motion:reduce){.logo-icon #cz-navbar-player{transition:none}}
 </style>
 </head>
