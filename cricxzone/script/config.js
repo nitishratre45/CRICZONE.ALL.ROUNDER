@@ -100,7 +100,7 @@ if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
         "name": "SRI LANKA A",
         "logo": "https://flagpedia.net/data/flags/w1160/lk.webp"
       },
-      "poster": "https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/nfshqpgiplkxkcko4hcd",
+      "poster": "https://kommodo.ai/i/nhlD4zRktLz4wjUpHlqV",
       "date": "26 NOVEMBER 2026 - 3:30 AM",
       "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
