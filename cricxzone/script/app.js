@@ -12,7 +12,7 @@
   const dcloseBtn = document.getElementById("dclose");
   const drNav = document.getElementById("drNav");
   const drSearch = document.getElementById("drSearch");
-  const slideDuration = 5000;
+  const slideDuration = Number(config.heroSlideDuration) || 5000;
   let currentIndex = 0;
   let autoplayTimer = null;
   let physicalIndex = 0;
