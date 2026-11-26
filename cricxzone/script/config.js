@@ -115,7 +115,7 @@ if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
         "name": "UAE",
         "logo": "https://flagpedia.net/data/flags/w1160/lk.webp"
       },
-      "poster": "https://imgh.in/host/bj7cji",
+      "poster": "https://i.ibb.co/B5CpTRMZ/Neon-Asia-Cup-Rising-Stars-Duo.png",
       "date": "24 NOVEMBER 2026 - 11:30 AM",
       "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
