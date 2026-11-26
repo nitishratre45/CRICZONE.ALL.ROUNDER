@@ -120,7 +120,7 @@ if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
       "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
     {
-      "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 1ST TEST",
+      "tournament": "INDIA TOUR OF NEW ZEALAND 2026 - 2ND TEST",
       "homeTeam": {
         "name": "India",
         "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
@@ -130,7 +130,7 @@ if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
         "logo": "https://flagpedia.net/data/flags/w1160/nz.webp"
       },
       "poster": "https://imgh.in/host/x98v9c",
-      "date": "1ST TEST MATCH - 3:30 AM",
+      "date": "27 NOVEMBER - 1 DECEMBER 2026 - 3:30 AM",
       "watchUrl": "/cricxzone/home/live/ind-vs-nz.html"
     }
   ];
