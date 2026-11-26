@@ -89,6 +89,7 @@
         logo: teamValue(away, "logo") || teamValue(away, "flag") || item.away_logo || item.team_2_logo || ""
       },
       poster: item.poster || item.backgroundImage || item.thumbnail || item.cover_image || item.src || item.tvgLogo || "",
+      date: item.date || item.startTime || item.time || "",
       posterPosition: item.posterPosition || "",
       posterPositionMobile: item.posterPositionMobile || "",
       watchUrl: item.watchUrl || item.page_url || item.watch_now || "#willow-live"
@@ -124,6 +125,7 @@
         </div>
         <div class="match-details">
           <div class="match-title">${title}</div>
+          <div class="match-date"${matchDate ? "" : " hidden"}>${matchDate}</div>
           <div class="teams-row">
             <div class="team">
               <span class="team-name">${homeName}</span>
