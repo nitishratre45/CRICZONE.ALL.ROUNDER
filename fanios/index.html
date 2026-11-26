@@ -218,6 +218,15 @@ body.player-active #tgBadge{display:inline-flex!important}
 #czTelegramPopup .cz-pop-join{display:flex;justify-content:center;align-items:center;gap:9px;padding:12px 16px;border-radius:12px;background:linear-gradient(120deg,#d0ff5b,#98ec29);color:#10170b;text-decoration:none;font:800 12px 'Space Grotesk',sans-serif;letter-spacing:.5px}
 #czTelegramPopup .cz-pop-close{position:absolute;top:10px;right:11px;width:30px;height:30px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:#202d36;color:#fff;font-size:18px;cursor:pointer}
 </style>
+<style id="cz-global-loader-polish">
+#overlay{background:rgba(4,9,13,.96)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10020;gap:17px}
+#overlay .spinner{width:58px;height:58px;border:3px solid rgba(202,255,85,.18);border-top-color:#caff55;border-right-color:#caff55;border-radius:50%;background:transparent;box-shadow:0 0 28px rgba(202,255,85,.12);animation:czGlobalSpin .78s linear infinite}
+#overlay p{color:#eef6f9;font-size:11px;font-weight:800;letter-spacing:2.2px;text-align:center;padding:0 20px}
+#overlay p:after{content:'';display:block;width:42px;height:3px;margin:12px auto 0;border-radius:9px;background:linear-gradient(90deg,#caff55,rgba(202,255,85,.12));animation:czLoaderPulse 1.1s ease-in-out infinite alternate}
+@keyframes czGlobalSpin{to{transform:rotate(360deg)}}
+@keyframes czLoaderPulse{from{opacity:.35;transform:scaleX(.55)}to{opacity:1;transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){#overlay .spinner,#overlay p:after{animation:none}}
+</style>
 </head>
 <body>
 
@@ -364,8 +373,28 @@ $themeBtn.addEventListener('click',function(){
 /* ─── TOAST ─── */
 function toast(msg,type,dur){$status.textContent=msg;$status.className="show "+(type||"ok");if(_stTmr)clearTimeout(_stTmr);if(dur!==0)_stTmr=setTimeout(function(){$status.className="";_stTmr=null;},dur||4000);}
 function setMsg(m){if($loadMsg)$loadMsg.textContent=m;}
-function showOverlay(message){if(message)setMsg(message);if($overlay){$overlay.style.display='flex';$overlay.setAttribute('aria-hidden','false');}}
-function hideOverlay(){if($overlay){$overlay.style.display='none';$overlay.setAttribute('aria-hidden','true');}}
+/* Global CRICZONE loader: shared by feed loading, stream startup and recovery. */
+function showOverlay(message){
+  if(message)setMsg(message);
+  if($overlay){
+    $overlay.style.display='flex';
+    $overlay.setAttribute('aria-hidden','false');
+    $overlay.setAttribute('role','status');
+    $overlay.setAttribute('aria-live','polite');
+  }
+  document.body.classList.add('cz-is-loading');
+  document.documentElement.setAttribute('aria-busy','true');
+}
+function hideOverlay(){
+  if($overlay){$overlay.style.display='none';$overlay.setAttribute('aria-hidden','true');}
+  document.body.classList.remove('cz-is-loading');
+  document.documentElement.setAttribute('aria-busy','false');
+}
+window.CRICZONE_LOADING={
+  show:function(message){showOverlay(message||'Loading…');},
+  hide:function(){hideOverlay();},
+  isVisible:function(){return !!($overlay&&$overlay.style.display!=='none');}
+};
 function getMatchId(){return new URLSearchParams(location.search).get("id")||"";}
 
 /* ─── PROXY (for explicit proxy config) ─── */
