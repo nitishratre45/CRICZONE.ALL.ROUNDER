@@ -81,7 +81,9 @@
     .ch-card.disabled{opacity:.6;cursor:not-allowed;}
     .ch-card.disabled:hover{transform:none;box-shadow:6px 6px 0 var(--ink);}
     .card-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--ink);display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--ink);}
-    .card-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s;}
+    .card-thumb img{width:100%;height:100%;object-fit:cover;object-position:50% 16%;transition:transform .35s}
+.card-thumb{aspect-ratio:16/10}
+.ch-card:hover .card-thumb img{transform:scale(1.015)}
     .ch-card:hover .card-thumb img{transform:scale(1.04);}
     .card-thumb .thumb-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#222,#111);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700;letter-spacing:4px;color:var(--yellow);}
     .badge-live{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;background:var(--red);border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff;}
@@ -200,10 +202,21 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 /* Keep the community badge in the open left-side area of the live player.
    It sits below the broadcaster mark and stays clear of the FanCode watermark
    and the AUTO quality control on the right. */
-#tgBadge{top:max(18px,env(safe-area-inset-top))!important;bottom:auto!important;left:clamp(82px,5.8vw,100px)!important;right:auto!important;z-index:10001}
-@media(max-width:640px){#tgBadge{top:max(14px,env(safe-area-inset-top))!important;left:14px!important;right:auto!important;bottom:auto!important;padding:10px 14px!important}}
-@media(max-height:520px){#tgBadge{top:12px!important}}
+#tgBadge{display:none!important;top:max(14px,env(safe-area-inset-top))!important;bottom:auto!important;left:max(14px,env(safe-area-inset-left))!important;right:auto!important;z-index:10001}
+body.player-active #tgBadge{display:inline-flex!important}
+@media(max-width:640px){#tgBadge{padding:9px 12px!important;font-size:10px!important;gap:6px!important}}
+@media(max-height:520px){#tgBadge{top:10px!important}}
 @media(prefers-reduced-motion:reduce){.logo-icon #cz-navbar-player{transition:none}}
+</style>
+<style id="cz-telegram-popup-style">
+#czTelegramPopup{position:fixed;inset:0;z-index:10010;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.58);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+#czTelegramPopup.show{display:flex}
+#czTelegramPopup .cz-pop-card{position:relative;width:min(340px,100%);padding:25px 22px 22px;text-align:center;border:1px solid rgba(199,255,96,.35);border-radius:22px;background:linear-gradient(155deg,#17232b,#091016);box-shadow:0 24px 80px rgba(0,0,0,.55)}
+#czTelegramPopup .cz-pop-icon{width:54px;height:54px;margin:0 auto 13px;border-radius:17px;display:grid;place-items:center;background:#caff55;color:#10170b;font-size:27px}
+#czTelegramPopup h3{margin:0 0 8px;color:#f5f9fb;font:800 19px/1.2 'Space Grotesk',sans-serif}
+#czTelegramPopup p{margin:0 0 18px;color:#aebbc4;font:500 13px/1.5 'Space Grotesk',sans-serif}
+#czTelegramPopup .cz-pop-join{display:flex;justify-content:center;align-items:center;gap:9px;padding:12px 16px;border-radius:12px;background:linear-gradient(120deg,#d0ff5b,#98ec29);color:#10170b;text-decoration:none;font:800 12px 'Space Grotesk',sans-serif;letter-spacing:.5px}
+#czTelegramPopup .cz-pop-close{position:absolute;top:10px;right:11px;width:30px;height:30px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:#202d36;color:#fff;font-size:18px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -219,6 +232,7 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 </div>
 
 <div id="status"></div>
+<div id="czTelegramPopup" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Join CRICZONE Telegram"><div class="cz-pop-card"><button class="cz-pop-close" id="czPopClose" type="button" aria-label="Close">×</button><div class="cz-pop-icon">✈</div><h3>JOIN CRICZONE</h3><p>Get live match updates, stream news and the latest cricket coverage.</p><a class="cz-pop-join" href="https://t.me/+pN15_8gc54s2NDU1" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM ↗</a></div></div>
 
 <header id="app-header">
   <div id="header-inner">
@@ -238,12 +252,12 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 
 <div id="channel-list">
   <div id="content-wrap">
+    <div id="category-filter"></div>
     <div id="live-section-head" class="section-head" style="display:none;">
       <span class="live-dot"></span>
       <span class="section-label">Live Now</span>
       <span class="section-count" id="live-count">0</span>
     </div>
-    <div id="category-filter"></div>
     <div id="ch-grid"></div>
     <div id="empty-state"><p>No matches found in this category.</p></div>
   </div>
@@ -473,6 +487,7 @@ function renderList(matches){hideOverlay();allMatches=matches;renderFilters(allM
 /* ─── PLAYER SHOW/HIDE ─── */
 function showPlayer(){
   $list.classList.remove('visible');
+  document.body.classList.add('player-active');
   $pCont.style.display='flex';
 }
 
@@ -565,6 +580,9 @@ function destroyPlayer(){
 
 function hidePlayer(){
   playToken++;
+  document.body.classList.remove('player-active');
+  clearTelegramPopupTimer();
+  closeTelegramPopup();
   try{var fsEl=document.fullscreenElement||document.webkitFullscreenElement;if(fsEl){if(document.exitFullscreen)document.exitFullscreen().catch(function(){});else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
   $pCont.style.display='none';$list.classList.add('visible');closeQualityMenu();destroyPlayer();
   if(window.history&&window.history.pushState)window.history.pushState({},document.title,window.location.pathname);
@@ -780,6 +798,7 @@ function startHlsEngine(playUrl,label,token,isM3U8,proxyIdx,networkRetries,media
 /* ═══ STREAM ENTRY ═══ */
 function startStream(url,cookie,token){
   if(token!==playToken)return;
+  scheduleTelegramPopupAfterPlayback();
   var streamUrl=url;
   if(cookie)streamUrl+=(streamUrl.indexOf('?')===-1?'?':'&')+'hdntl_cookie='+encodeURIComponent(cookie);
   var playUrl=proxyUrl(streamUrl);
@@ -828,6 +847,7 @@ function playAdThenContent(url,name,cookie,token){
 /* ═══ ENTRY POINT ═══ */
 function setupHLSPlayer(url,name,cookie,match){
   var token=++playToken;
+  clearTelegramPopupTimer();closeTelegramPopup();
   currentMatchObj=match||null;currentQualityKey='auto';
   showPlayer();destroyPlayer();showOverlay("Connecting to stream…");
   if(match){var info=getPlayable(match);var lang=info?info.language:(match.language||'');currentQualities=buildQualities(match,lang);}
@@ -884,5 +904,6 @@ document.addEventListener('DOMContentLoaded',main);
   }
 })();
 </script>
+<script id="cz-telegram-popup-script">(function(){var timer=null,shown=false,popup=document.getElementById('czTelegramPopup'),close=document.getElementById('czPopClose');window.clearTelegramPopupTimer=function(){if(timer){clearTimeout(timer);timer=null;}};window.closeTelegramPopup=function(){if(popup){popup.classList.remove('show');popup.setAttribute('aria-hidden','true');}};window.scheduleTelegramPopupAfterPlayback=function(){if(shown||timer||!popup)return;var video=document.getElementById('player');if(!video)return;var onPlaying=function(){video.removeEventListener('playing',onPlaying);timer=setTimeout(function(){timer=null;if(!document.body.classList.contains('player-active')||shown)return;shown=true;popup.classList.add('show');popup.setAttribute('aria-hidden','false');},60000);};video.addEventListener('playing',onPlaying,{once:true});};if(close)close.addEventListener('click',window.closeTelegramPopup);if(popup)popup.addEventListener('click',function(e){if(e.target===popup)window.closeTelegramPopup();});document.addEventListener('keydown',function(e){if(e.key==='Escape')window.closeTelegramPopup();});})();</script>
 </body>
 </html>
