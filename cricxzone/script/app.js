@@ -298,7 +298,7 @@
       ["Football 24\u00d77", "#footballSection", "foot", false],
       ["Cricket 24\u00d77", "#cricketSection", "cric", false],
       ["Willow Cricbuzz", "#willow-live", "live", false],
-      ["FanCode", "#fancodeSection", "tv", false]
+      ["FanCode", "/cricxzone/watch/fancode/", "tv", false]
     ];
     const MORE = [
       ["World Sports", "#worldSportsSection"],
