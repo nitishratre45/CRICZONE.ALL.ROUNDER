@@ -272,7 +272,7 @@
       var rawTitle   = buildTitle(m);
       var matchup    = parseMatchup(rawTitle);
       var tournament = escapeHtml(pick(m, ['tournament', 'competition', 'series', 'league', 'sport', 'category']));
-      var imgSrc     = escapeHtml(pick(m, ['image', 'poster', 'thumbnail', 'cover', 'tvgLogo']) || FALLBACK);
+      var imgSrc     = escapeHtml(pick(m, ['src', 'image', 'poster', 'thumbnail', 'cover', 'tvgLogo']) || FALLBACK);
       var imgAlt     = escapeHtml(rawTitle || 'FanCode match');
       var time       = escapeHtml(pick(m, ['startTime', 'time', 'date', 'matchTime', 'scheduled_time', 'start_time']));
 
