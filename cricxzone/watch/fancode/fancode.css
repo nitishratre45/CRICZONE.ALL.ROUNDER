@@ -19,3 +19,47 @@
 .fc-footnote{margin:8px 2px 0;color:#75818b;font-size:11px;line-height:1.6}
 @media(max-width:680px){.fancode-page{padding:18px 12px 44px}.fancode-page .hero{border-radius:17px;padding:25px 20px;margin-bottom:24px}.fancode-page .hero:after{right:16px;opacity:.75}.fc-toolbar{align-items:flex-start;flex-direction:column;gap:8px}.fc-status{min-height:27px}.fc-events .fancode-track{gap:11px;padding-bottom:14px}}
 @media(prefers-reduced-motion:reduce){.fc-events .fancode-track{scroll-behavior:auto}}
+
+
+/* Desktop drawer support: keep the same navigation available on PC */
+@media (min-width: 761px) {
+  body > header .hamburger,
+  header .hamburger {
+    display: flex !important;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 60;
+  }
+  .drawer {
+    display: flex !important;
+    visibility: hidden;
+    transform: translateX(-105%);
+    pointer-events: none;
+    z-index: 1001;
+    width: min(360px, 86vw);
+  }
+  .drawer.open {
+    display: flex !important;
+    visibility: visible !important;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .scrim {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  .scrim.open {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
