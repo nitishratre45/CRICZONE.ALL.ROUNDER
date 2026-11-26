@@ -70,8 +70,6 @@
     .filter-pill.active{background:var(--yellow);box-shadow:3px 3px 0 var(--ink);}
 
     /* ─── AD SLOTS ─── */
-    .ad-slot{width:100%;min-height:60px;margin:0 0 24px;display:flex;align-items:center;justify-content:center;background:var(--paper2);border:2px dashed var(--ink);border-radius:12px;overflow:hidden;padding:10px;}
-    .ad-slot:empty{display:none;}
 
     /* ─── GRID ─── */
     #ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px;}
@@ -845,7 +843,7 @@ async function main(){
   if(!m){errMsg('Match not found.');return;}
   var info=getPlayable(m);
   if(!info){errMsg('Stream not available for this match yet.');return;}
-  document.title='SPORTLINK · '+m.title;
+  document.title='CRICZONE · '+m.title;
   renderList(matches);setupHLSPlayer(info.url,m.title,info.cookie,m);
 }
 document.addEventListener('DOMContentLoaded',main);
