@@ -540,7 +540,7 @@
       var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
       var matches = Array.isArray(cfg.heroMatches) ? cfg.heroMatches : [];
       var match = matches.find(function (item) {
-        return String(item.watchUrl || "").replace(/\\/+$/, "").endsWith("/asiacup.html");
+        return String(item.watchUrl || "").replace(/\/+$/, "").endsWith("/asiacup.html");
       }) || matches.find(function (item) {
         return /asia cup rising stars/i.test(String(item.tournament || ""));
       });
