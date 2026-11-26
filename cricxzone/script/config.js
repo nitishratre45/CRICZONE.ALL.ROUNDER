@@ -110,17 +110,17 @@ if (typeof CRICZONE_CONF !== "undefined" && CRICZONE_CONF) {
 if(typeof CRICZONE_CONF!=='undefined'&&CRICZONE_CONF){
   CRICZONE_CONF.heroMatches = [
     {
-      "tournament": "ASIA CUP 2026 LIVE",
+      "tournament": "ASIA CUP RISING STARS 2026 - SEMI-FINAL",
       "homeTeam": {
-        "name": "INDIA",
+        "name": "INDIA A",
         "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
       },
       "awayTeam": {
-        "name": "UAE",
-        "logo": "https://flagpedia.net/data/flags/w1160/ae.webp"
+        "name": "SRI LANKA A",
+        "logo": "https://flagpedia.net/data/flags/w1160/lk.webp"
       },
-      "poster": "https://imgh.in/host/bj7cji",
-      "date": "24 NOVEMBER 2026 - 11:00 PM",
+      "poster": "https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/nfshqpgiplkxkcko4hcd",
+      "date": "26 NOVEMBER 2026 - 3:30 AM",
       "watchUrl": "/cricxzone/home/live/asiacup.html"
     },
     {
