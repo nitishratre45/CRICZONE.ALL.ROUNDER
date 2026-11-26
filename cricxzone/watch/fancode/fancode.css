@@ -1,0 +1,21 @@
+/* FanCode watch page — aligned with Cricket, Football and Willow */
+.fancode-page{width:min(1320px,100%);margin:0 auto;padding:clamp(22px,4vw,48px) clamp(14px,3vw,34px) 64px}
+.fancode-page #list{min-height:68vh}
+.fancode-page .hero{position:relative;overflow:hidden;padding:clamp(24px,4vw,46px);margin:0 0 28px;border:1px solid rgba(255,255,255,.09);border-radius:22px;background:radial-gradient(ellipse at 82% 20%,rgba(69,205,111,.16),transparent 42%),linear-gradient(120deg,#101a19 0%,#0b1117 60%,#10151d 100%);box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.fancode-page .hero:after{content:"FC";position:absolute;right:clamp(20px,5vw,70px);top:50%;transform:translateY(-50%);font-size:clamp(90px,17vw,210px);font-weight:900;letter-spacing:-.1em;color:rgba(255,255,255,.035);pointer-events:none}
+.fc-eyebrow{display:inline-flex;align-items:center;gap:9px;color:#a7e887;font-size:11px;font-weight:850;letter-spacing:.16em}
+.fc-live-dot{width:8px;height:8px;border-radius:50%;background:#63e58a;box-shadow:0 0 0 5px rgba(99,229,138,.12)}
+.fancode-page .hero h1{position:relative;z-index:1;margin:12px 0 8px;color:#f5f8f5;font-size:clamp(34px,6vw,58px);font-weight:900;letter-spacing:-.055em;line-height:1.02}
+.fancode-page .hero h1 em{font-style:normal;color:#9be15d}
+.fancode-page .hero p{position:relative;z-index:1;max-width:620px;margin:0;color:#aeb9c2;font-size:clamp(13px,1.5vw,16px);line-height:1.65}
+.fc-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 2px 12px}
+.fc-kicker{color:#9be15d;font-size:10px;font-weight:850;letter-spacing:.16em}
+.fc-toolbar h2{margin:5px 0 0;color:#f3f6f8;font-size:clamp(20px,2.6vw,27px);font-weight:850;letter-spacing:-.035em}
+.fc-status{display:inline-flex;align-items:center;min-height:30px;padding:6px 11px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.035);color:#aeb9c2;font-size:11px;font-weight:700;white-space:nowrap}
+.fc-events{position:relative;padding:2px 0}
+.fc-events .fancode-track{display:flex;align-items:stretch;gap:16px;overflow-x:auto;overflow-y:hidden;padding:8px 2px 18px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:rgba(155,225,93,.35) transparent}
+.fc-events .md-card,.fc-events .md-skeleton{scroll-snap-align:start}
+.fc-events .fancode-arrow{opacity:.85;pointer-events:auto}
+.fc-footnote{margin:8px 2px 0;color:#75818b;font-size:11px;line-height:1.6}
+@media(max-width:680px){.fancode-page{padding:18px 12px 44px}.fancode-page .hero{border-radius:17px;padding:25px 20px;margin-bottom:24px}.fancode-page .hero:after{right:16px;opacity:.75}.fc-toolbar{align-items:flex-start;flex-direction:column;gap:8px}.fc-status{min-height:27px}.fc-events .fancode-track{gap:11px;padding-bottom:14px}}
+@media(prefers-reduced-motion:reduce){.fc-events .fancode-track{scroll-behavior:auto}}
