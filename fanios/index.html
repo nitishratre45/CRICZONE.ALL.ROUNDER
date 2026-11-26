@@ -193,6 +193,14 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 @media(max-width:640px){#header-inner{height:66px}#app-header{padding:0 14px}#content-wrap{padding:22px 13px 40px}#ch-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card-body{padding:11px;gap:9px}.card-title{font-size:13px;line-height:1.3}.watch-btn{padding:10px 7px;font-size:10px;letter-spacing:.3px}.badge-live,.badge-upcoming,.badge-cat{top:8px;padding:4px 7px;font-size:8px}#tgBadge{right:13px;bottom:13px;padding:11px 15px}}
 @media(max-width:380px){#ch-grid{grid-template-columns:1fr}.card-title{font-size:15px}}
 </style>
+<style id="cz-navbar-rotating-player">
+.logo-icon{position:relative;overflow:hidden;padding:0!important;border-radius:13px!important;transform:none!important;background:#121c24!important}
+.logo-icon #cz-navbar-player{display:block;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:1;transition:opacity .35s ease,transform .5s ease}
+.logo-icon:hover #cz-navbar-player{transform:scale(1.08)}
+#tgBadge{top:88px!important;bottom:auto!important;left:auto!important;right:max(18px,env(safe-area-inset-right))!important;z-index:10001}
+@media(max-width:640px){#tgBadge{top:76px!important;right:13px!important;bottom:auto!important;padding:10px 14px!important}}
+@media(prefers-reduced-motion:reduce){.logo-icon #cz-navbar-player{transition:none}}
+</style>
 </head>
 <body>
 
@@ -211,7 +219,7 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 <header id="app-header">
   <div id="header-inner">
     <div class="logo-wrap">
-      <div class="logo-icon">⚡</div>
+      <div class="logo-icon" aria-label="CRICZONE player spotlight"><img id="cz-navbar-player" src="https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840" alt="Rohit Sharma"></div>
       <div>
         <div class="logo-text">CRICZONE</div>
         <div class="logo-sub">FanCode Live Network</div>
@@ -851,5 +859,26 @@ document.addEventListener('DOMContentLoaded',main);
 </script>
 
 
+<script id="cz-navbar-player-rotator">
+(function(){
+  var img=document.getElementById('cz-navbar-player');
+  if(!img)return;
+  var players=[
+    {name:'Rohit Sharma',src:'https://www.bcci.tv/_next/image?q=75&url=%2Fapi%2Fteam-assets%3Fpathname%3Dsquad%252F11326.png%26brand%3Dbcci%26fallback%3Dfallback-player-men&w=3840'},
+    {name:'Virat Kohli',src:'https://static-files.cricket-australia.pulselive.com/headshots/440/10917-camedia.png'}
+  ];
+  players.forEach(function(p){var preload=new Image();preload.decoding='async';preload.src=p.src;});
+  var current=0;
+  function rotate(){
+    var next=(current+1)%players.length,player=players[next];
+    img.style.opacity='0';
+    var reveal=function(){img.alt=player.name;img.style.opacity='1';};
+    img.onload=reveal;img.onerror=reveal;img.src=player.src;current=next;
+  }
+  if(!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    window.setInterval(function(){if(!document.hidden)rotate();},15000);
+  }
+})();
+</script>
 </body>
 </html>
