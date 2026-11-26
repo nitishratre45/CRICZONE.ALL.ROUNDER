@@ -104,6 +104,7 @@
     const homeName = escapeHtml(home.name);
     const awayName = escapeHtml(away.name);
     const poster = escapeHtml(normalized.poster);
+    const matchDate = escapeHtml(normalized.date);
     const watchUrl = escapeHtml(normalized.watchUrl);
 
     const posDesktop = escapeHtml(normalized.posterPosition);
