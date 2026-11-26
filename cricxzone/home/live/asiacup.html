@@ -533,26 +533,20 @@
 
   </style>
 
-   <script>
-    window.__matchFallback = {
-      "slug": "asiacup",
-      "home": {
-            "name": "INDIA A", 
-            "code": "in",
-            "label": "",
-            "logo": "https://flagpedia.net/data/flags/w1160/in.webp"
-      },
-      "away": {
-            "name": "SRI LANKA A", 
-            "code": "slk", 
-            "label": "",
-            "logo": "https://flagpedia.net/data/flags/w1160/lk.webp"
-      },
-      "competition": "ASIA CUP RISING STARS 2026 - SEMI-FINAL",
-      "description": "INDIA A vs SRI LANKA A live now",
-      "date": "26 NOVEMBER 2026 - 3:30 AM",
-      "poster": "https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/nfshqpgiplkxkcko4hcd",
-      "channels": [
+   <script src="../../script/config.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var cfg = window.CRICZONE_CONFIG || window.CRICZONE_CONFIG || {};
+      var matches = Array.isArray(cfg.heroMatches) ? cfg.heroMatches : [];
+      var match = matches.find(function (item) {
+        return String(item.watchUrl || "").replace(/\\/+$/, "").endsWith("/asiacup.html");
+      }) || matches.find(function (item) {
+        return /asia cup rising stars/i.test(String(item.tournament || ""));
+      });
+
+      // Keep this page's existing stream channel list; match identity comes from config.js.
+      var channels = [
             {
                   "name": "Willow CB",
                   "label": "Live",
@@ -672,8 +666,72 @@
                   "url": "https://sportlink-json.pages.dev/s4k",
                   "logo": "KAN"
             }
-      ]
-};</script>
+      ];
+      var homeTeam = match && match.homeTeam || {};
+      var awayTeam = match && match.awayTeam || {};
+      var homeName = String(homeTeam.name || "INDIA A");
+      var awayName = String(awayTeam.name || "SRI LANKA A");
+      var tournament = String(match && match.tournament || "ASIA CUP RISING STARS 2026 - SEMI-FINAL");
+      var matchDate = String(match && match.date || "26 NOVEMBER 2026 - 3:30 AM");
+      var poster = String(match && match.poster || "https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/nfshqpgiplkxkcko4hcd");
+      var description = homeName + " vs " + awayName + " • " + tournament + " • " + matchDate;
+
+      window.__matchFallback = {
+        slug: "asiacup",
+        home: {
+          name: homeName,
+          code: homeTeam.code || "in",
+          label: "",
+          logo: homeTeam.logo || "https://flagpedia.net/data/flags/w1160/in.webp"
+        },
+        away: {
+          name: awayName,
+          code: awayTeam.code || "lk",
+          label: "",
+          logo: awayTeam.logo || "https://flagpedia.net/data/flags/w1160/lk.webp"
+        },
+        competition: tournament,
+        description: description,
+        date: matchDate,
+        poster: poster,
+        channels: channels
+      };
+
+      document.title = homeName + " vs " + awayName + " | " + tournament + " - CRICZONE";
+      function setMeta(selector, value) {
+        var el = document.querySelector(selector);
+        if (el) el.setAttribute("content", value);
+      }
+      setMeta('meta[name="description"]', description);
+      setMeta('meta[name="keywords"]', homeName + " vs " + awayName + ", " + tournament + ", live match streaming, CRICZONE");
+      setMeta('meta[property="og:title"]', document.title);
+      setMeta('meta[property="og:description"]', description);
+      setMeta('meta[property="og:image"]', poster);
+      setMeta('meta[property="og:image:alt"]', homeName + " vs " + awayName + " match poster");
+      setMeta('meta[name="twitter:title"]', document.title);
+      setMeta('meta[name="twitter:description"]', description);
+      setMeta('meta[name="twitter:image"]', poster);
+      setMeta('meta[name="twitter:image:alt"]', homeName + " vs " + awayName + " match poster");
+
+      var schema = document.querySelector('script[type="application/ld+json"]');
+      if (schema) {
+        try {
+          var data = JSON.parse(schema.textContent);
+          data.name = homeName + " vs " + awayName;
+          data.description = description;
+          data.image = poster;
+          data.sport = tournament;
+          data.competitor = [
+            { "@type": "SportsTeam", name: homeName },
+            { "@type": "SportsTeam", name: awayName }
+          ];
+          schema.textContent = JSON.stringify(data);
+        } catch (error) {
+          console.warn("[asiacup] Could not update event metadata", error);
+        }
+      }
+    })();
+  </script>
 
 </head>
 
