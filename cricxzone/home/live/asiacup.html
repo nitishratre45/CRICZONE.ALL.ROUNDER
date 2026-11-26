@@ -533,7 +533,10 @@
 
   </style>
 
-   <script src="../../script/config.js"></script>
+   <script>
+    // Always fetch the latest central match configuration, avoiding stale browser/CDN cache.
+    document.write('<script src="../../script/config.js?t=' + Date.now() + '"><\\/script>');
+  </script>
   <script>
     (function () {
       "use strict";
