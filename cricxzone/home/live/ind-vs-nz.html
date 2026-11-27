@@ -519,6 +519,14 @@
 
   
     /* NZ vs IND 2nd Test information panel */
+
+    .nz2-teams{display:flex;align-items:center;justify-content:center;gap:clamp(18px,5vw,48px);margin:15px auto 12px}
+    .nz2-team{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+    .nz2-team img{display:block;width:clamp(76px,15vw,112px);height:clamp(50px,10vw,75px);object-fit:contain;border-radius:8px;filter:drop-shadow(0 5px 12px rgba(0,0,0,.45))}
+    .nz2-team strong{font-family:var(--font-display);font-size:clamp(.95rem,2.7vw,1.35rem);font-weight:900;letter-spacing:.06em;color:#fff}
+    .nz2-vs{font-family:var(--font-display);font-size:clamp(1.35rem,4vw,2rem);font-weight:900;color:var(--orange);letter-spacing:.12em}
+    @media(max-width:420px){.nz2-teams{gap:15px}.nz2-team img{width:72px;height:48px}.nz2-team strong{font-size:.9rem}}
+
     .nz2-info{padding:18px 0 38px}
     .nz2-hero{text-align:center;padding:26px 18px;margin:14px 0 18px;border:1px solid rgba(249,115,22,.24);border-radius:18px;background:radial-gradient(ellipse at top,rgba(249,115,22,.16),transparent 70%),#101016}
     .nz2-kicker{font-size:.68rem;letter-spacing:.13em;color:#f9a66a;font-weight:800}
@@ -643,7 +651,11 @@
       <section class="match-info-section nz2-info" aria-label="India vs New Zealand second Test information">
         <div class="nz2-hero">
           <div class="nz2-kicker">INDIA TOUR OF NEW ZEALAND 2026 · 2-MATCH TEST SERIES</div>
-          <h2>NEW ZEALAND <span>VS</span> INDIA</h2>
+          <div class="nz2-teams" aria-label="New Zealand versus India">
+            <div class="nz2-team"><img src="https://flagcdn.com/w160/nz.png" srcset="https://flagcdn.com/w320/nz.png 2x" alt="New Zealand flag" width="112" height="75" loading="lazy"><strong>NEW ZEALAND</strong></div>
+            <span class="nz2-vs">VS</span>
+            <div class="nz2-team"><img src="https://flagcdn.com/w160/in.png" srcset="https://flagcdn.com/w320/in.png 2x" alt="India flag" width="112" height="75" loading="lazy"><strong>INDIA</strong></div>
+          </div>
           <p>2nd Test · Hagley Oval, Christchurch</p>
           <div class="nz2-status">DAY 2 · MATCH IN PROGRESS</div>
         </div>
