@@ -1729,64 +1729,92 @@
             }
         .cz-wordmark{display:inline-flex;align-items:center;font-family:Inter,Arial,sans-serif;font-size:clamp(22px,2vw,29px);font-weight:900;letter-spacing:-1.25px;line-height:1;color:#f4f7ff;text-decoration:none;white-space:nowrap}.cz-wordmark>span{color:#9be15d}.cz-wordmark-drawer{font-size:25px}
 
-            /* CRICZONE football page — smooth premium motion */
-            @keyframes footballCardIn {
-                from { opacity: 0; transform: translateY(18px) scale(.985); }
-                to { opacity: 1; transform: translateY(0) scale(1); }
+            /* Football stream switcher — inspired by the IND vs NZ channel cards */
+            @keyframes footballChannelEnter {
+                from { opacity: 0; transform: translateY(14px); }
+                to { opacity: 1; transform: translateY(0); }
             }
-            @keyframes footballLivePulse {
-                0%,100% { box-shadow: 0 0 0 0 rgba(255,45,85,.24), 0 0 16px rgba(255,45,85,.22); }
-                50% { box-shadow: 0 0 0 6px rgba(255,45,85,0), 0 0 23px rgba(255,45,85,.34); }
+            @keyframes footballChannelShine {
+                from { background-position: -150% 0; }
+                to { background-position: 150% 0; }
             }
-            @keyframes footballGreenSweep {
-                0% { background-position: 0% 50%; }
-                100% { background-position: 200% 50%; }
+            #p1 .lh { margin: 18px 2px 14px; }
+            #p1 .chs {
+                display: grid;
+                grid-template-columns: repeat(2,minmax(0,1fr));
+                gap: 12px;
             }
-            .grid > .card {
-                animation: footballCardIn .55s cubic-bezier(.2,.75,.25,1) both;
-                will-change: transform, opacity;
-            }
-            .grid > .card:nth-child(2n) { animation-delay: .045s; }
-            .grid > .card:nth-child(3n) { animation-delay: .09s; }
-            .grid > .card:nth-child(4n) { animation-delay: .135s; }
-            a.card:hover {
-                transform: translateY(-5px) scale(1.008);
-                border-color: rgba(0,232,123,.58);
-                box-shadow: 0 18px 42px rgba(0,0,0,.4), 0 0 22px rgba(0,232,123,.12);
-            }
-            .chip.live { animation: footballLivePulse 1.8s ease-in-out infinite; }
-            .ch {
+            #p1 .ch {
                 position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                min-width: 0;
+                min-height: 126px;
+                padding: 18px 10px;
                 overflow: hidden;
-                transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease, background .24s ease;
+                border: 1px solid rgba(105,190,190,.20);
+                border-radius: 20px;
+                background: linear-gradient(145deg,#10232d 0%,#0a1b25 55%,#0b202a 100%);
+                color: #f4f8fb;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,.025),0 7px 20px rgba(0,0,0,.14);
+                font-size: clamp(1rem,3.6vw,1.25rem);
+                font-weight: 850;
+                letter-spacing: .025em;
+                text-align: center;
+                cursor: pointer;
+                animation: footballChannelEnter .42s cubic-bezier(.2,.75,.25,1) both;
+                transition: transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease;
             }
-            .ch:before {
+            #p1 .ch:nth-child(2n) { animation-delay: .045s; }
+            #p1 .ch:nth-child(3n) { animation-delay: .09s; }
+            #p1 .ch .bg { display: none; }
+            #p1 .ch small {
+                display: block;
+                margin-top: 1px;
+                color: #9fb3bf;
+                font-size: .78rem;
+                font-weight: 600;
+                letter-spacing: .09em;
+                line-height: 1.35;
+                text-transform: uppercase;
+            }
+            #p1 .ch:after {
                 content: "";
                 position: absolute;
                 inset: 0;
                 pointer-events: none;
                 opacity: 0;
-                background: linear-gradient(110deg,transparent 20%,rgba(0,232,123,.10) 48%,transparent 75%);
+                background: linear-gradient(110deg,transparent 20%,rgba(93,220,206,.10) 48%,transparent 75%);
                 background-size: 200% 100%;
-                transition: opacity .25s ease;
+                transition: opacity .22s ease;
             }
-            .ch:hover {
+            #p1 .ch:hover {
                 transform: translateY(-3px);
-                border-color: rgba(10,173,43,.72);
-                box-shadow: 0 9px 24px rgba(0,0,0,.3), 0 0 17px rgba(10,173,43,.13);
+                border-color: rgba(70,205,190,.55);
+                box-shadow: 0 12px 28px rgba(0,0,0,.28),0 0 18px rgba(70,205,190,.10);
             }
-            .ch:hover:before { opacity: 1; animation: footballGreenSweep 1.4s linear infinite; }
-            .ch.on {
-                border-color: #19d66b;
-                box-shadow: inset 0 0 0 1px #19d66b, 0 0 22px rgba(10,173,43,.22);
+            #p1 .ch:hover:after {
+                opacity: 1;
+                animation: footballChannelShine 1.2s linear infinite;
             }
-            .ch.on .bg {
-                background: rgba(10,173,43,.14);
-                box-shadow: 0 0 14px rgba(10,173,43,.2);
+            #p1 .ch.on {
+                border: 2px solid #f28b35;
+                background: linear-gradient(145deg,#172a35 0%,#10212c 58%,#102530 100%);
+                box-shadow: inset 0 0 0 1px rgba(242,139,53,.16),0 0 20px rgba(242,139,53,.16);
             }
-            @media (prefers-reduced-motion: reduce) {
-                .grid > .card, .chip.live, .ch, .ch:before { animation: none!important; transition: none!important; }
-                a.card:hover, .ch:hover { transform: none!important; }
+            #p1 .ch.on small { color: #c6d2d9; }
+            #p1 .ch.bad { border-color: var(--live); }
+            @media(max-width:360px) {
+                #p1 .chs { gap: 9px; }
+                #p1 .ch { min-height: 112px; padding: 14px 7px; border-radius: 16px; }
+                #p1 .ch small { font-size: .7rem; }
+            }
+            @media(prefers-reduced-motion:reduce) {
+                #p1 .ch,#p1 .ch:after { animation: none!important; transition: none!important; }
+                #p1 .ch:hover { transform: none!important; }
             }
 
         </style>
