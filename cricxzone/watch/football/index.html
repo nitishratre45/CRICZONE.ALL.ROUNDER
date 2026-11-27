@@ -1817,6 +1817,75 @@
                 #p1 .ch:hover { transform: none!important; }
             }
 
+
+            /* Refined football stream cards — compact like the cricket channel layout */
+            #p1 { margin-top: 18px; }
+            #p1 .lh { margin: 18px 3px 13px; align-items: center; }
+            #p1 .lh h2 { font-size: clamp(1.2rem,4.4vw,1.55rem); font-weight: 850; letter-spacing: -.025em; }
+            #p1 .chs {
+                display: grid!important;
+                grid-template-columns: repeat(2,minmax(0,1fr))!important;
+                gap: 10px!important;
+                align-items: stretch;
+            }
+            #p1 .ch {
+                box-sizing: border-box!important;
+                width: 100%!important;
+                min-width: 0!important;
+                height: 126px!important;
+                min-height: 126px!important;
+                max-height: 126px!important;
+                padding: 12px 9px!important;
+                gap: 6px!important;
+                border: 1px solid rgba(117,177,190,.22)!important;
+                border-radius: 19px!important;
+                background: linear-gradient(145deg,#102631 0%,#0c202a 58%,#0a1b24 100%)!important;
+                color: #f4f8fb!important;
+                font-size: clamp(.94rem,3.6vw,1.16rem)!important;
+                font-weight: 850!important;
+                line-height: 1.22!important;
+                letter-spacing: .01em!important;
+                white-space: normal!important;
+                overflow-wrap: anywhere!important;
+                text-align: center!important;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,.035),0 7px 18px rgba(0,0,0,.18)!important;
+            }
+            #p1 .ch > span:not(.bg) {
+                display: block;
+                max-width: 100%;
+                line-height: 1.24;
+            }
+            #p1 .ch small {
+                margin-top: 1px!important;
+                color: #a6bac4!important;
+                font-size: .72rem!important;
+                font-weight: 650!important;
+                line-height: 1.25!important;
+                letter-spacing: .10em!important;
+            }
+            #p1 .ch .bg { display:none!important; }
+            #p1 .ch:after { border-radius: inherit; }
+            #p1 .ch:hover {
+                transform: translateY(-2px)!important;
+                border-color: rgba(81,205,193,.58)!important;
+                box-shadow: 0 10px 23px rgba(0,0,0,.28),0 0 15px rgba(81,205,193,.10)!important;
+            }
+            #p1 .ch.on {
+                border: 2px solid #f28b35!important;
+                background: linear-gradient(145deg,#172c37 0%,#10242e 58%,#102631 100%)!important;
+                box-shadow: inset 0 0 0 1px rgba(242,139,53,.13),0 0 18px rgba(242,139,53,.16)!important;
+            }
+            #p1 .ch.bad { border-color: var(--live)!important; }
+            @media(max-width:380px) {
+                #p1 .chs { gap: 8px!important; }
+                #p1 .ch { height: 116px!important; min-height:116px!important; max-height:116px!important; padding:10px 6px!important; border-radius:16px!important; }
+                #p1 .ch small { font-size:.66rem!important; }
+            }
+            @media(prefers-reduced-motion:reduce) {
+                #p1 .ch,#p1 .ch:after { animation:none!important;transition:none!important; }
+                #p1 .ch:hover { transform:none!important; }
+            }
+
         </style>
     </head>
     <body>
