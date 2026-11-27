@@ -1728,7 +1728,138 @@
                 }
             }
         .cz-wordmark{display:inline-flex;align-items:center;font-family:Inter,Arial,sans-serif;font-size:clamp(22px,2vw,29px);font-weight:900;letter-spacing:-1.25px;line-height:1;color:#f4f7ff;text-decoration:none;white-space:nowrap}.cz-wordmark>span{color:#9be15d}.cz-wordmark-drawer{font-size:25px}
-</style>
+
+        /* CRICZONE Cricket 24x7 — animated broadcast card treatment */
+        @keyframes czCardRise {
+            from { opacity: 0; transform: translateY(15px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes czBorderSpin { to { transform: rotate(360deg); } }
+        @keyframes czLivePulse {
+            0%,100% { box-shadow: 0 0 0 1px rgba(255,45,85,.10), 0 8px 26px rgba(0,0,0,.24); }
+            50% { box-shadow: 0 0 0 1px rgba(255,45,85,.30), 0 0 22px rgba(255,45,85,.12), 0 12px 30px rgba(0,0,0,.32); }
+        }
+        @keyframes czChannelGlow {
+            0%,100% { box-shadow: 0 0 0 1px rgba(87,255,196,.08), 0 8px 24px rgba(0,0,0,.22); }
+            50% { box-shadow: 0 0 0 1px rgba(87,255,196,.23), 0 0 20px rgba(87,255,196,.10), 0 10px 28px rgba(0,0,0,.3); }
+        }
+
+        /* Match cards: smooth entrance, richer depth and live-state glow */
+        .grid > .card {
+            animation: czCardRise .48s cubic-bezier(.2,.75,.25,1) both;
+            border-color: rgba(125,180,190,.16);
+            background: linear-gradient(145deg,#10202b 0%,#0b1721 58%,#0a121b 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.025);
+            will-change: transform;
+        }
+        .grid > .card:nth-child(2) { animation-delay: 45ms; }
+        .grid > .card:nth-child(3) { animation-delay: 90ms; }
+        .grid > .card:nth-child(4) { animation-delay: 135ms; }
+        .grid > .card:nth-child(5) { animation-delay: 180ms; }
+        .grid > .card:nth-child(6) { animation-delay: 225ms; }
+        .grid > .card:nth-child(7) { animation-delay: 270ms; }
+        .grid > .card:nth-child(8) { animation-delay: 315ms; }
+        .grid > .card:nth-child(9) { animation-delay: 360ms; }
+        .grid > .card:nth-child(10) { animation-delay: 405ms; }
+        .grid > .card:nth-child(11) { animation-delay: 450ms; }
+        .grid > .card:nth-child(12) { animation-delay: 495ms; }
+        .grid > .card.live {
+            border-color: rgba(255,75,105,.26);
+            animation: czCardRise .48s cubic-bezier(.2,.75,.25,1) both, czLivePulse 3.2s ease-in-out 0.5s infinite;
+        }
+        .grid > .card.live:nth-child(2) { animation-delay: 45ms, .5s; }
+        .grid > .card.live:nth-child(3) { animation-delay: 90ms, .5s; }
+        .grid > .card.live:nth-child(4) { animation-delay: 135ms, .5s; }
+        .grid > .card.live:nth-child(5) { animation-delay: 180ms, .5s; }
+        .grid > .card.live:nth-child(6) { animation-delay: 225ms, .5s; }
+        .grid > .card.live:nth-child(7) { animation-delay: 270ms, .5s; }
+        .grid > .card.live:nth-child(8) { animation-delay: 315ms, .5s; }
+        .grid > .card.live:nth-child(9) { animation-delay: 360ms, .5s; }
+        .grid > .card.live:nth-child(10) { animation-delay: 405ms, .5s; }
+        .grid > .card.live:nth-child(11) { animation-delay: 450ms, .5s; }
+        .grid > .card.live:nth-child(12) { animation-delay: 495ms, .5s; }
+        .grid > .card:hover {
+            transform: translateY(-5px) scale(1.012);
+            border-color: rgba(87,255,196,.42);
+            box-shadow: 0 18px 40px rgba(0,0,0,.42), 0 0 22px rgba(87,255,196,.09);
+        }
+        .grid > .card .vis {
+            background: radial-gradient(circle at 4% 1%,rgba(87,255,196,.17),transparent 40%), radial-gradient(circle at 96% 96%,rgba(56,148,255,.22),transparent 48%), linear-gradient(125deg,#102d2a 0%,#0d1b2a 58%,#102039 100%);
+        }
+        .grid > .card .info {
+            background: linear-gradient(155deg,rgba(14,28,39,.99),#09131d);
+        }
+
+        /* Stream channel tiles: screenshot-inspired rounded navy cards */
+        .chs { gap: 10px; }
+        .ch {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            min-height: 94px;
+            border: 1px solid rgba(105,180,190,.20);
+            border-radius: 16px;
+            background: linear-gradient(145deg,#102431 0%,#0b1b27 58%,#091722 100%);
+            box-shadow: 0 8px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.025);
+            transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s, background .25s, box-shadow .25s;
+        }
+        .ch > * { position: relative; z-index: 1; }
+        .ch::before {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            inset: -55%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,transparent 0 24%,rgba(87,255,196,.85) 34%,rgba(255,255,255,.85) 39%,rgba(87,255,196,.75) 45%,transparent 56% 100%);
+            opacity: 0;
+            transition: opacity .25s;
+            pointer-events: none;
+        }
+        .ch::after {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            inset: 1.5px;
+            border-radius: 14px;
+            background: linear-gradient(145deg,#102431 0%,#0b1b27 58%,#091722 100%);
+            pointer-events: none;
+        }
+        .ch:hover {
+            transform: translateY(-3px);
+            border-color: rgba(87,255,196,.46);
+            box-shadow: 0 13px 30px rgba(0,0,0,.34), 0 0 18px rgba(87,255,196,.09);
+        }
+        .ch.on {
+            border-color: rgba(255,153,51,.9);
+            box-shadow: 0 0 0 1px rgba(255,153,51,.35), 0 8px 26px rgba(0,0,0,.34), 0 0 20px rgba(255,153,51,.12);
+        }
+        .ch.on::before {
+            opacity: 1;
+            background: conic-gradient(from 0deg,transparent 0 20%,#ff9933 31%,#ffe0a8 38%,#ffffff 42%,#ff9933 51%,transparent 62% 100%);
+            animation: czBorderSpin 2.8s linear infinite;
+        }
+        .ch.on::after {
+            background: linear-gradient(145deg,#18232b 0%,#101d27 62%,#0b1720 100%);
+        }
+        .ch.on .bg {
+            border-color: #ff9933;
+            color: #ffb36f;
+            background: rgba(255,153,51,.12);
+        }
+        .ch.bad { border-color: rgba(255,45,85,.55); }
+        .ch:focus-visible, .card:focus-visible {
+            outline: 2px solid var(--aq);
+            outline-offset: 3px;
+        }
+        @media (max-width: 499px) {
+            .chs { gap: 9px; }
+            .ch { min-height: 88px; border-radius: 15px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .grid > .card, .grid > .card.live, .ch.on::before { animation: none!important; }
+        }
+
+        </style>
     </head>
     <body>
         <header>
